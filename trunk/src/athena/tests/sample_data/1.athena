@@ -1,0 +1,93 @@
+# sample configuration for use with ATHENA
+# Specifies back propagation as part of run
+
+# specify algorithm 
+# all parameters until END keyword are for the  algorithm specified
+ALGORITHM GENN
+
+# minimum genome size
+MINSIZE 20
+
+# maximum genome size
+MAXSIZE 1000
+
+# max depth for sensible initialization
+MAXDEPTH 9
+
+# set sensible initialization
+SENSIBLEINIT TRUE
+
+# number of genomes in population
+POPSIZE 10
+
+# probability of crossover event
+PROBCROSS 0.9
+
+# probability of mutation
+PROBMUT 0.001
+
+# location of grammar file
+GRAMMARFILE /home/dudeksm/lab/athena/example/grammar/add.gram
+
+# calculation type for evaluation of solutions
+CALCTYPE RSQUARED
+#CALCTYPE BALANCEDACC
+
+# effective crossover -- set to true to make use this type
+EFFECTIVEXO TRUE
+
+# a step is the number of generations to run before transferring best models
+# if there is more than one algorithm running
+GENSPERSTEP 20
+
+# when set to true will include all SNPs in data file, ignoring whatever is specified
+# in the grammar file
+INCLUDEALLSNPS TRUE
+
+# sets first generation where backpropagation will occur
+BACKPROPSTART 0
+
+# sets interval for conductin back propagation - if set to zero
+# will only occur at generation specified by BACKPROPSTART
+BACKPROPFREQ 0
+
+END GENN
+
+
+# specify general parameters for run
+DATASET config.sim.0.1.1-DATASET.mdr
+
+# this file would contain continuous data
+# CONTINFILE 
+
+# indicates whether an ID column is present in data and continous data files
+IDINCLUDED FALSE
+
+# sets missing value
+MISSINGVALUE -1
+
+# dummy encodes genotypes when set to true
+DUMMYENCODE FALSE
+
+# sets missing value for continuous data
+# CONTINMISS -9999
+
+# sets the random seed for the analysis
+RANDSEED 77
+
+# sets the prefix for all output files
+OUT config.sim.0.1.1-DATASET.mdr
+
+# sets number of cross-validation intervals to do
+CV 1
+
+# sets number of incremets that each algorithm will be run
+# when run in parallel each step will be followed by exchange of best models
+NUMSTEPS 2
+
+# set to true to get text files showing the CV splits
+WRITECV TRUE
+
+# adjust output
+STATUSADJUST NORMMAX
+

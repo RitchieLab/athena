@@ -1,0 +1,28 @@
+Making all in .
+make[1]: Entering directory `/home/dudeksm/lab/nnplatform/linux/libGE-0.26'
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT Genotype.o -MD -MP -MF ".deps/Genotype.Tpo" -c -o Genotype.o `test -f 'src/Genotype.cpp' || echo './'`src/Genotype.cpp; \
+	then mv -f ".deps/Genotype.Tpo" ".deps/Genotype.Po"; else rm -f ".deps/Genotype.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT Phenotype.o -MD -MP -MF ".deps/Phenotype.Tpo" -c -o Phenotype.o `test -f 'src/Phenotype.cpp' || echo './'`src/Phenotype.cpp; \
+	then mv -f ".deps/Phenotype.Tpo" ".deps/Phenotype.Po"; else rm -f ".deps/Phenotype.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT Symbol.o -MD -MP -MF ".deps/Symbol.Tpo" -c -o Symbol.o `test -f 'src/Symbol.cpp' || echo './'`src/Symbol.cpp; \
+	then mv -f ".deps/Symbol.Tpo" ".deps/Symbol.Po"; else rm -f ".deps/Symbol.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT Production.o -MD -MP -MF ".deps/Production.Tpo" -c -o Production.o `test -f 'src/Production.cpp' || echo './'`src/Production.cpp; \
+	then mv -f ".deps/Production.Tpo" ".deps/Production.Po"; else rm -f ".deps/Production.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT Rule.o -MD -MP -MF ".deps/Rule.Tpo" -c -o Rule.o `test -f 'src/Rule.cpp' || echo './'`src/Rule.cpp; \
+	then mv -f ".deps/Rule.Tpo" ".deps/Rule.Po"; else rm -f ".deps/Rule.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT Mapper.o -MD -MP -MF ".deps/Mapper.Tpo" -c -o Mapper.o `test -f 'src/Mapper.cpp' || echo './'`src/Mapper.cpp; \
+	then mv -f ".deps/Mapper.Tpo" ".deps/Mapper.Po"; else rm -f ".deps/Mapper.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT Grammar.o -MD -MP -MF ".deps/Grammar.Tpo" -c -o Grammar.o `test -f 'src/Grammar.cpp' || echo './'`src/Grammar.cpp; \
+	then mv -f ".deps/Grammar.Tpo" ".deps/Grammar.Po"; else rm -f ".deps/Grammar.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT CFGrammar.o -MD -MP -MF ".deps/CFGrammar.Tpo" -c -o CFGrammar.o `test -f 'src/CFGrammar.cpp' || echo './'`src/CFGrammar.cpp; \
+	then mv -f ".deps/CFGrammar.Tpo" ".deps/CFGrammar.Po"; else rm -f ".deps/CFGrammar.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT GEGrammar.o -MD -MP -MF ".deps/GEGrammar.Tpo" -c -o GEGrammar.o `test -f 'src/GEGrammar.cpp' || echo './'`src/GEGrammar.cpp; \
+	then mv -f ".deps/GEGrammar.Tpo" ".deps/GEGrammar.Po"; else rm -f ".deps/GEGrammar.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT Initialiser.o -MD -MP -MF ".deps/Initialiser.Tpo" -c -o Initialiser.o `test -f 'src/Initialiser.cpp' || echo './'`src/Initialiser.cpp; \
+	then mv -f ".deps/Initialiser.Tpo" ".deps/Initialiser.Po"; else rm -f ".deps/Initialiser.Tpo"; exit 1; fi
+if g++ -DHAVE_CONFIG_H -I. -I. -I./src  -Wall  -I../galib247/ga/..  -O2 -MT GEGrammarSI.o -MD -MP -MF ".deps/GEGrammarSI.Tpo" -c -o GEGrammarSI.o `test -f 'src/GEGrammarSI.cpp' || echo './'`src/GEGrammarSI.cpp; \
+	then mv -f ".deps/GEGrammarSI.Tpo" ".deps/GEGrammarSI.Po"; else rm -f ".deps/GEGrammarSI.Tpo"; exit 1; fi
+rm -f libGE.a
+ar cru libGE.a  Genotype.o Phenotype.o Symbol.o Production.o Rule.o Mapper.o Grammar.o CFGrammar.o GEGrammar.o Initialiser.o GEGrammarSI.o  
+ranlib libGE.a
+make[1]: Leaving directory `/home/dudeksm/lab/nnplatform/linux/libGE-0.26'

@@ -1,0 +1,37 @@
+CFGrammar.h:26:		CFGrammar(const Genotype &);
+CFGrammar.h:47:		virtual bool phenotype2Genotype() = 0;
+GEGrammar.h:23:		GEGrammar(const Genotype &);
+GEGrammar.h:34:		bool phenotype2Genotype();
+GEGrammar.h:38:		int genotype2PhenotypeStep(stack<const Symbol*>&,Genotype::iterator,bool=false);
+GEGrammarSI.h:21:		GEGrammarSI(const Genotype &);
+ge.h:5:	#include "Genotype.h"
+GE_ILLIGALSGA.h:7:extern int GE_ILLIGALSGA_getGenotype(int **);
+GE_ILLIGALSGA.h:46:Accepts an sga-c chromosome, transforms it into a libGE Genotype structure, and
+Genotype.h:1:// Genotype.h -*- C++ -*-
+Genotype.h:27:class Genotype: public vector<CodonType>{
+Genotype.h:29:		Genotype(const int * = 0, const unsigned int = 0, const bool = true, const FitnessType=MIN_GENOTYPE_FITNESS);
+Genotype.h:30:		Genotype(const vector<CodonType> &, const bool = true, const FitnessType=MIN_GENOTYPE_FITNESS);
+Genotype.h:31:		Genotype(const CodonType);
+Genotype.h:32:		Genotype(const Genotype &);
+Genotype.h:33:		~Genotype();
+Genotype.h:44:		friend ostream &operator<<(ostream &, const Genotype &);
+Genotype.h:46:		bool _libGE_Genotype_valid;
+Genotype.h:47:		FitnessType _libGE_Genotype_fitness;
+Genotype.h:48:		CodonType _libGE_Genotype_maxCodonValue;
+Genotype.h:49:		unsigned int _libGE_Genotype_effectiveSize;
+Genotype.h:50:		unsigned int _libGE_Genotype_wraps;
+Grammar.h:26:		Grammar(const Genotype &);
+Grammar.h:39:		virtual bool phenotype2Genotype() = 0;
+Mapper.h:8:/* composed of both a Genotype and Phenotype structures, and contains a      */
+Mapper.h:16:#include "Genotype.h"
+Mapper.h:35:		Mapper(const Genotype &);
+Mapper.h:39:		const Genotype * getGenotype() const;
+Mapper.h:40:		void setGenotype(const Genotype &);
+Mapper.h:42:		//void setGenotype(const GAListGenome<unsigned char> &);
+Mapper.h:43:		template <class T>void setGenotype(const GA1DArrayGenome<T> &);
+Mapper.h:44:		template <class T>void setGenotype(const GAListGenome<T> &);
+Mapper.h:48:		void setGenotypeMaxCodonValue(const CodonType);
+Mapper.h:50:		Genotype genotype;
+Mapper.h:53:		virtual bool phenotype2Genotype() = 0;
+Mapper.h:61:void Mapper::setGenotype(const GA1DArrayGenome<T> &genome){
+Mapper.h:80:void Mapper::setGenotype(const GAListGenome<T> &genome){
