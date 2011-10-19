@@ -1,6 +1,8 @@
 #ifndef CROSSVALIDATOR_H_
 #define CROSSVALIDATOR_H_
 
+#include <cstdlib>
+
 #include "CVSet.h"
 #include "Dataholder.h"
 

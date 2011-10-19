@@ -122,7 +122,7 @@ struct Selector	: TSTransformer {
 	 */	
 	typedef std::vector<int> Selection;
 	Selector(Selection ins, Selection outs) : TSTransformer(ins.size(), outs.size()), _ins(ins), _outs(outs)	{}	//TODO: check the bounds
-	virtual void xform(const Vector &in1, const Vector &in1, Vector &out1, Vector &out2) const;
+	virtual void xform(const Vector &in1, const Vector &in2, Vector &out1, Vector &out2) const;
   protected:
 	Selection _ins, _outs;
 };

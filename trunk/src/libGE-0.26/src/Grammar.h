@@ -14,6 +14,8 @@
 
 #include<vector>
 #include<string>
+#include <climits>
+#include <limits.h>
 
 #include "Mapper.h"
 #include "Rule.h"

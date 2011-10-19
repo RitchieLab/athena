@@ -5,6 +5,7 @@
 #include "Control.h"
 #include <map>
 #include <stdlib.h>
+#include <string.h>
 
 using namespace std;
 namespace annie	{

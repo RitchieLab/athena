@@ -1,6 +1,7 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#include <cstdlib>
 #include "config.h"
 #include <string>
 #include "Exception.h"

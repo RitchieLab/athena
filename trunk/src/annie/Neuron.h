@@ -4,6 +4,7 @@
 #include "Link.h"
 #include "defines.h"
 #include <string>
+#include <string.h>
 
 namespace annie
 {

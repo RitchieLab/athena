@@ -6,6 +6,7 @@
 
 #include<iostream>
 #include<string>
+#include <limits.h>
 
 #include"Genotype.h"
 

@@ -1,6 +1,7 @@
 #ifndef SAMPLENOREPLACEMENT_H_
 #define SAMPLENOREPLACEMENT_H_
 
+#include <cstdlib>
 #include <vector>
 
 namespace data_manage

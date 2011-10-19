@@ -8,6 +8,8 @@
 /* methods from the class Initialiser.                                       */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include <limits.h>
+
 #include "libGEdefs.h"
 
 #include "Initialiser.h"

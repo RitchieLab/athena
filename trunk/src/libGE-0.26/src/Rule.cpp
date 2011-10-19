@@ -5,6 +5,7 @@
 //#include <config.h>
 
 #include<iostream>
+#include <limits.h>
 
 #include"Rule.h"
 

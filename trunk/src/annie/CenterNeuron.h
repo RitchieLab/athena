@@ -1,6 +1,8 @@
 #ifndef _CENTERNEURON_H
 #define _CENTERNEURON_H
 
+#include <cstdlib>
+
 #include "Neuron.h"
 
 namespace annie
