@@ -14,6 +14,7 @@
 
 #include<iostream>
 #include<vector>
+#include<cstdio>
 
 #define MIN_GENOTYPE_FITNESS		0.0
 #define MAX_GENOTYPE_LENGTH		32767

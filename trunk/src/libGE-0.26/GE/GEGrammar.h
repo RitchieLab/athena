@@ -12,6 +12,7 @@
 
 #include<stack>
 #include<vector>
+#include<climits>
 
 #include "CFGrammar.h"
 

@@ -2,17 +2,13 @@
 
 using namespace std;
 
-///
-/// Constructor
-///
+/// /// Constructor ///
 Config::Config(){
     initialize();
 }
 
 
-///
-/// Initializes variables
-///
+/// /// Initializes variables ///
 void Config::initialize(){
     data_type = "TEXT";
     out_name = "athena";
@@ -54,10 +50,7 @@ void Config::initialize(){
     summary_map["BEST"] = Best;
 }
 
-///
-/// Checks configuration parameters for errors
-/// @throws HemannExcept
-///
+/// /// Checks configuration parameters for errors /// @throws HemannExcept /// void 
 void Config::checkConfig(){
   if(num_exchanges < 0)
     throw HemannExcept("NUMEXCHANGES must be greater than zero");
@@ -66,13 +59,11 @@ void Config::checkConfig(){
 
 #ifdef PARALLEL
 
-///
-/// Broadcasts all parameters to slave nodes that the slave nodes require
-/// for running.
-///
+/// /// Broadcasts all parameters to slave nodes that the slave nodes require
+/// for running. ///
 void Config::sendConfig(){
-  int nParams = 6; 
-  // package each type and send to the other nodes  
+  int nParams = 6;
+  // package each type and send to the other nodes
   // only include those that the slaves need
   int * intvals = new int[nParams];
   
@@ -111,7 +102,7 @@ void Config::sendConfig(){
   
   int displacement = 0;
   
-  uint i, j;
+  unsigned int i, j;
   
   for(i=0; i < alg_params[0].name.size(); i++){
     params[i] = alg_params[0].name[i];
@@ -143,14 +134,12 @@ void Config::sendConfig(){
   }
   
   MPI_Bcast(params, total_char_size, MPI_CHAR, 0, MPI_COMM_WORLD);
-  delete []  params;
+  delete [] params;
 
 }
 
 
-///
-/// Receives broadcasted parameters from master node
-///
+/// /// Receives broadcasted parameters from master node ///
 void Config::receiveConfig(){
 
   // get integer values from master
@@ -227,7 +216,7 @@ void Config::receiveConfig(){
   
   alg_params.push_back(currentAlg);
   
-  delete []  params;  
+  delete [] params;
   
 }
 

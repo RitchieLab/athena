@@ -13,6 +13,7 @@
 #define _SNP_HOLDER_H
 #include "snpsnpmodel.h"
 #include <map>
+#include <algorithm>
 #include <vector>
 namespace Biofilter {
 
