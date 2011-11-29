@@ -245,6 +245,7 @@ GATournamentSelector::select() const {
 #endif
 
 
+#ifdef ATHENA_BLOAT_CONTROL
 /* ----------------------------------------------------------------------------
  * DoubleTournamentSelector
  * Introduced as a bloat control operator for use with GE and the block crossover
@@ -310,6 +311,7 @@ GADoubleTournamentSelector::roundone_select() const {
       return select_best(ind1, ind2, fitness_first);
 }
 
+#endif
 #endif
 
 

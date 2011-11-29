@@ -137,6 +137,7 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
                 else
                   gaSelector = GASelectorMap[Stringmanip::to_upper(mapIter->second)];
                   break;
+#ifdef ATHENA_BLOAT_CONTROL
             case doubleTournF:
                 doubletourneyF = Stringmanip::stouint(mapIter->second);
                 break;
@@ -146,6 +147,7 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
             case doubleTournFitFirst:
                 fitfirst = Stringmanip::check_true_false(mapIter->second);
                 break;
+#endif
             case blockCrossGens:
                 ngens_block_cross = Stringmanip::stouint(mapIter->second);
                 break;
@@ -158,7 +160,9 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
             case bpfreq:    
                 bp_freq_gen = Stringmanip::stoi(mapIter->second);
                 break;
+#ifdef ATHENA_BLOAT_CONTROL
             case prunePlantFract:
+#endif
             default:
                 throw HemannExcept("No match for parameter " + mapIter->first +
                         " in Algorithm GENN");               
@@ -241,19 +245,25 @@ void GENNAlg::initialize_params(){
    param_map["BACKPROPFREQ"] = bpfreq;
    param_map["BACKPROPSTART"] = bpstart;
    param_map["GASELECTION"] = gaSelection;
+#ifdef ATHENA_BLOAT_CONTROL
    param_map["DOUBTOURNF"] = doubleTournF;
    param_map["DOUBTOURND"] = doubleTournD;
    param_map["DOUBTOURNFITFIRST"] = doubleTournFitFirst;
    param_map["PRUNEPLANT"] = prunePlantFract;
+#endif
    
    BioModelSelectionMap["ROULETTE"] = rouletteSelect;
    BioModelSelectionMap["ORDERED"] = orderedSelect;
    
+#ifdef ATHENA_BLOAT_CONTROL
    GASelectorMap["DOUBLE"] = DoubleTournamentSelection;
+#endif
    GASelectorMap["ROULETTE"] = RouletteWheelSelection;
    
    biofilter_selector_type = orderedSelect;
+#ifdef ATHENA_BLOAT_CONTROL
    pruneAndPlantFract = 0.0;
+#endif
 
    parameters_set = false;
    useAllVars = false;
@@ -277,9 +287,11 @@ void GENNAlg::initialize_params(){
    
    logTypeSelected = LogNone;
    gaSelector = RouletteWheelSelection;
+#ifdef ATHENA_BLOAT_CONTROL
    fitfirst = false;
    doubletourneyF = 7;
    doubletourneyD = 1.4;
+#endif
    
    #ifdef PARALLEL
      genomeInfo = 112;
@@ -716,8 +728,10 @@ void GENNAlg::initialize(){
     // Set up the algorithm
     ga = new GASimpleGA(genome);
     
+#ifdef ATHENA_BLOAT_CONTROL
     ga->setPrunePlant(pruneAndPlantFract);
     ga->pruneplant(GE1DArrayGenome::prune_and_plant);
+#endif
 
     // Set selector type
     GASelectionScheme* selector;
@@ -726,9 +740,11 @@ void GENNAlg::initialize(){
       case RouletteWheelSelection:
         selector = new GARouletteWheelSelector;
         break;
+#ifdef ATHENA_BLOAT_CONTROL
       case DoubleTournamentSelection:
         selector = new GADoubleTournamentSelector(doubletourneyD, doubletourneyF, fitfirst);
         break;
+#endif
     };
     
     ga->selector(*selector);

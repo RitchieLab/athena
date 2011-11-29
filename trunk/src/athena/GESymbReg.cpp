@@ -122,9 +122,11 @@ void GESymbReg::set_params(AlgorithmParams& alg_param, int numExchanges, int num
             case resetVarsAtMigration:
                 reset_restricted_at_migration = Stringmanip::check_true_false(mapIter->second);
                 break;
+#ifdef ATHENA_BLOAT_CONTROL
             case prunePlantFract:
                 pruneAndPlantFract = Stringmanip::stodouble(mapIter->second);
                 break;
+#endif
             case bpstart:
                 throw HemannExcept("No match for parameter " + mapIter->first +
                         " in Algorithm GE Symbolic Regression");

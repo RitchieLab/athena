@@ -275,6 +275,7 @@ int GE1DArrayGenome::effCrossover(const GAGenome &p1,
 }
 
 
+#ifdef ATHENA_BLOAT_CONTROL
 ///
 /// Performs prune and plant on genome passed
 ///
@@ -335,6 +336,7 @@ int GE1DArrayGenome::prune_and_plant(GAGenome* startGenome,
   delete cloned;
   return inc=1;
 }
+#endif
 
 
 

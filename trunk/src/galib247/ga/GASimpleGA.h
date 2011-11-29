@@ -29,7 +29,9 @@ public:
   virtual void initialize(unsigned int seed=0);
   virtual void evaluatePop();
   virtual void step();
+#ifdef ATHENA_BLOAT_CONTROL
   void prune_and_plant_step();
+#endif
   GASimpleGA & operator++() { step(); return *this; }
 
   virtual int setptr(const char* name, const void* value);
@@ -55,13 +57,17 @@ public:
   virtual void objectiveFunction(GAGenome::Evaluator f);
   virtual void objectiveData(const GAEvalData& v);
   
+#ifdef ATHENA_BLOAT_CONTROL
   virtual void setPrunePlant(float ppf){prunePlantFract=ppf;}
   virtual float getPrunePlant(){return prunePlantFract;}
+#endif
 
 protected:
   GAPopulation *oldPop;		// current and old populations
   GABoolean el;			// are we elitist?
+#ifdef ATHENA_BLOAT_CONTROL
   float prunePlantFract;
+#endif
 };
 
 

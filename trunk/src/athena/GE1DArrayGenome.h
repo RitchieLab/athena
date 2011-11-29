@@ -45,7 +45,9 @@ public:
 			  GAGenome* c1, 
 			  GAGenome* c2);
 
+#ifdef ATHENA_BLOAT_CONTROL
   static int prune_and_plant(GAGenome* start, GAGenome* planted);
+#endif
 
   static int codonMutator(GAGenome& g, float pmut);
 

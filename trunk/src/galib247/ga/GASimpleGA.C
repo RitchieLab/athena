@@ -26,14 +26,18 @@ GASimpleGA::GASimpleGA(const GAGenome& c) : GAGeneticAlgorithm(c){
   oldPop = pop->clone();
 
   el = gaTrue;
+#ifdef ATHENA_BLOAT_CONTROL
   prunePlantFract = 0.0;
+#endif
   params.add(gaNelitism, gaSNelitism, GAParameter::BOOLEAN, &el);
 }
 GASimpleGA::GASimpleGA(const GAPopulation& p) : GAGeneticAlgorithm(p){
   oldPop = pop->clone();
 
   el = gaTrue;
+#ifdef ATHENA_BLOAT_CONTROL
   prunePlantFract = 0.0;
+#endif
   params.add(gaNelitism, gaSNelitism, GAParameter::BOOLEAN, &el);
 }
 GASimpleGA::GASimpleGA(const GASimpleGA& ga) : GAGeneticAlgorithm(ga){
@@ -53,7 +57,9 @@ GASimpleGA::copy(const GAGeneticAlgorithm & g){
   GAGeneticAlgorithm::copy(g);
   const GASimpleGA& ga = DYN_CAST(const GASimpleGA&,g);
   el = ga.el;
+#ifdef ATHENA_BLOAT_CONTROL
   prunePlantFract = ga.prunePlantFract;
+#endif
   if(oldPop) oldPop->copy(*(ga.oldPop));
   else oldPop = ga.oldPop->clone();
   oldPop->geneticAlgorithm(*this);
@@ -170,10 +176,12 @@ void GASimpleGA::evaluatePop(){
 void
 GASimpleGA::step()
 {
+#ifdef ATHENA_BLOAT_CONTROL
   if(getPrunePlant()>0.0){
     prune_and_plant_step();
     return;
   }
+#endif
 
   int i, mut, c1, c2;
   GAGenome *mom, *dad;          // tmp holders for selected genomes
@@ -254,6 +262,7 @@ GASimpleGA::step()
 
 
 
+#ifdef ATHENA_BLOAT_CONTROL
 //   Evolve a new generation of genomes.  When we start this routine, pop
 // contains the current generation.  When we finish, pop contains the new 
 // generation and oldPop contains the (no longer) current generation.  The 
@@ -356,3 +365,4 @@ GASimpleGA::prune_and_plant_step()
 
   stats.update(*pop);		// update the statistics by one generation
 }
+#endif

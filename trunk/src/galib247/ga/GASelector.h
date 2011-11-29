@@ -164,6 +164,7 @@ public:
  * We derive from the roulette wheel class so
 that we can use its update method.
 ---------------------------------------------------------------------------- */
+#ifdef ATHENA_BLOAT_CONTROL
 #if USE_DOUBLETOURNAMENT_SELECTOR == 1
 class GADoubleTournamentSelector : public GASelectionScheme {
 public:
@@ -191,6 +192,7 @@ public:
     
 };
 
+#endif
 #endif
 
 

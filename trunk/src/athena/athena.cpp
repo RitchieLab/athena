@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "5/20/11";
+    string version_date = "11/8/2011";
     string exec_name = "ATHENA";
     
     if(argc < 2){

@@ -191,8 +191,10 @@ public:
   GAGenome::AsexualCrossover crossover(GAGenome::AsexualCrossover f)
     {return across=f;}
   GAGenome::AsexualCrossover asexual() const {return across;}
+#ifdef ATHENA_BLOAT_CONTROL
   GAGenome::PruneAndPlant pruneplant(GAGenome::PruneAndPlant f) {return pandp=f;;}
   GAGenome::PruneAndPlant pruneplant() const {return pandp;}
+#endif
 
 //  const GAStatistics & statistics() const {return stats;}
   GAStatistics & statistics() {return stats;}
@@ -251,7 +253,9 @@ protected:
   int minmax;
   GAGenome::SexualCrossover scross;	// sexual crossover to use
   GAGenome::AsexualCrossover across;	// asexual crossover to use
+#ifdef ATHENA_BLOAT_CONTROL
   GAGenome::PruneAndPlant pandp; // prune and plant to use
+#endif
 };
 
 #endif
