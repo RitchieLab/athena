@@ -20,11 +20,11 @@ TerminalSymbCreator::TerminalSymbCreator(){
 /// Returns a terminal associated with the string passed.
 /// @param symbol string with name of terminal
 /// @return TerminalSymbol pointer
-/// @throws HemannExcept when no match
+/// @throws AthenaExcept when no match
 ///
 TerminalSymbol* TerminalSymbCreator::get_term(string& symbol){
     if(TerminalMap.find(symbol) == TerminalMap.end())
-        throw HemannExcept("No terminal match for " + symbol);
+        throw AthenaExcept("No terminal match for " + symbol);
     
     return TerminalMap[symbol]; 
 }

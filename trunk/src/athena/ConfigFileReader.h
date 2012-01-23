@@ -14,7 +14,7 @@
 ///
 
 #include "Config.h"
-#include "HemannExcept.h"
+#include "AthenaExcept.h"
 #include <Stringmanip.h>
 #include <fstream>
 

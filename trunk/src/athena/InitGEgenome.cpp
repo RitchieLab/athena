@@ -1,7 +1,7 @@
 #include "InitGEgenome.h"
 
 // GEGrammarSI* InitGEgenome::mapper = NULL;
-HemannGrammarSI* InitGEgenome::mapper = NULL;
+AthenaGrammarSI* InitGEgenome::mapper = NULL;
 unsigned int InitGEgenome::min_size = 50;
 unsigned int InitGEgenome::max_size = 200;
 

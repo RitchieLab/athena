@@ -10,7 +10,7 @@
 
 
 #include <GE/GEGrammarSI.h>
-#include "HemannGrammarSI.h"
+#include "AthenaGrammarSI.h"
 #include <set>
 
 ///
@@ -33,7 +33,7 @@ public:
     void include_all_vars(int nGenos, int nContin);
     
     /// passes the grammar string to the mapper
-    void set_mapper(HemannGrammarSI& mapper, int rank=0);
+    void set_mapper(AthenaGrammarSI& mapper, int rank=0);
     
     ///  Expands shorthand for continuous variables and genotypes into useable format
     void expand_variables();

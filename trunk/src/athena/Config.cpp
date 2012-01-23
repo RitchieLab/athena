@@ -50,10 +50,10 @@ void Config::initialize(){
     summary_map["BEST"] = Best;
 }
 
-/// /// Checks configuration parameters for errors /// @throws HemannExcept /// void 
+/// /// Checks configuration parameters for errors /// @throws AthenaExcept /// void 
 void Config::checkConfig(){
   if(num_exchanges < 0)
-    throw HemannExcept("NUMEXCHANGES must be greater than zero");
+    throw AthenaExcept("NUMEXCHANGES must be greater than zero");
 }
 
 

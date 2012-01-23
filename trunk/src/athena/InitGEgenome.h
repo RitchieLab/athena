@@ -10,7 +10,7 @@
 
 #include <GE/ge.h>
 #include <ga/ga.h>
-#include "HemannGrammarSI.h"
+#include "AthenaGrammarSI.h"
 
 ///
 /// Contains functions for initializing genomes in the GA libaray when
@@ -34,14 +34,14 @@ public:
     static void setMaxSize(unsigned int msize){max_size = msize;}
     
     /// sets the mapper to use
-    static void setMapper(HemannGrammarSI* m){mapper = m;}
+    static void setMapper(AthenaGrammarSI* m){mapper = m;}
     
     /// sets rank
     static void setrank(int r){rank=r;}
     
 private:
     
-    static HemannGrammarSI* mapper;
+    static AthenaGrammarSI* mapper;
     static unsigned int min_size, max_size;
     
     static int rank;

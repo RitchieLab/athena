@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "HemannExcept.h"
+#include "AthenaExcept.h"
 #include "Structs.h"
 
 #ifdef PARALLEL
@@ -45,7 +45,7 @@ public:
     int getMissingValue(){return miss_value;}
     void setMissingValue(int mval, std::string id=""){
       if(mval >= 0 && mval <= 2)
-        throw HemannExcept("The missing value " + id +" cannot be between 0 and 2 inclusive.");
+        throw AthenaExcept("The missing value " + id +" cannot be between 0 and 2 inclusive.");
       miss_value = mval;
     }
     
@@ -58,7 +58,7 @@ public:
     int getNumCV(){return ncv;}
     void setNumCV(int numcv, std::string id=""){
       if(numcv < 1)
-        throw HemannExcept("Number of cv " + id + " must be greater than zero");
+        throw AthenaExcept("Number of cv " + id + " must be greater than zero");
       ncv = numcv;
     }
     
@@ -83,7 +83,7 @@ public:
     int getNumExchanges(){return num_exchanges;}
     void setNumExchanges(int numEx, std::string id=""){
       if(numEx < 0)
-        throw HemannExcept("Number of exchanges " + id + " must be greater than or equal to zero");
+        throw AthenaExcept("Number of exchanges " + id + " must be greater than or equal to zero");
       num_exchanges = numEx;
     }
     
@@ -145,7 +145,7 @@ public:
         summary_only = iter->second;
       }
       else{
-        throw HemannExcept(val + " is not a valid parameter for summary type");
+        throw AthenaExcept(val + " is not a valid parameter for summary type");
       }  
     }
     
@@ -157,7 +157,7 @@ public:
       if(iter != data_encode_map.end())
         encodeDataType = iter->second;
       else
-        throw HemannExcept(encodeType + " is not a valid parameter for data encoding");
+        throw AthenaExcept(encodeType + " is not a valid parameter for data encoding");
       if(encodeDataType == OttDummy)
         setOttEncoded(true);
       else
@@ -172,7 +172,7 @@ public:
       if(iter != log_type_map.end())
         logTypeSelected = iter->second;
       else
-        throw HemannExcept(logType + " is not a valid parameter for log type selection");
+        throw AthenaExcept(logType + " is not a valid parameter for log type selection");
     }
     
     inline LogType getLogType(){return logTypeSelected;}

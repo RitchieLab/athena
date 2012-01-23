@@ -1,9 +1,9 @@
-#include "HemannGrammarSI.h"
+#include "AthenaGrammarSI.h"
 
 #include <iostream>
 #include <sstream>
 #include <map>
-#include "HemannExcept.h"
+#include "AthenaExcept.h"
 
 using namespace std;
 
@@ -12,7 +12,7 @@ using namespace std;
 /// Sets the rule to be used in recoding values during intialization
 /// @param rule_string
 ///
-void HemannGrammarSI::setRestrictRule(std::string rule_string){
+void AthenaGrammarSI::setRestrictRule(std::string rule_string){
   Symbol searchSymbol(rule_string, NTSymbol);
   restrictRulePtr = findRule(searchSymbol);
 // cout << "number of productions=" << restrictRulePtr->size() << endl;
@@ -26,7 +26,7 @@ void HemannGrammarSI::setRestrictRule(std::string rule_string){
 /// Adds vector representing model by indexes in original genotype dataset array
 /// @param indexes vector contain indexes with positions in original geno array of the dataset
 /// 
-void HemannGrammarSI::addModel(std::vector<int> indexes){
+void AthenaGrammarSI::addModel(std::vector<int> indexes){
   GrammarModel mod;
   mod.dataset_indexes = indexes;
   gramModels.push_back(mod);
@@ -39,7 +39,7 @@ void HemannGrammarSI::addModel(std::vector<int> indexes){
 /// in initialization to replace the variables that were randomly selected.
 /// @param dummyEncoded when true the codons can be either of two different choices
 ///
-void HemannGrammarSI::setModelCodons(bool dummyEncoded){
+void AthenaGrammarSI::setModelCodons(bool dummyEncoded){
   
   // construct map with value being the codon value for the rule
   map<string, int> geno_loc_map;
@@ -77,7 +77,7 @@ void HemannGrammarSI::setModelCodons(bool dummyEncoded){
       
       // now find codon for it by searching for match in productions of the restricted rule
       if((mapiter=geno_loc_map.find(ss.str())) == geno_loc_map.end()){
-        throw HemannExcept(ss.str() + " is not a valid genotype in grammar for initialization");
+        throw AthenaExcept(ss.str() + " is not a valid genotype in grammar for initialization");
       }
 // cout << "iter codon value is " << mapiter->second << endl;
       iter->codon_values.push_back(mapiter->second);
@@ -91,7 +91,7 @@ void HemannGrammarSI::setModelCodons(bool dummyEncoded){
 ///////////////////////////////////////////////////////////////////////////////
 // Grow the derivation tree according to the grow or full method, up to the
 // maximumDepth specified.
-bool HemannGrammarSI::growTree(DerivationTree &tree,const bool &growMethod,const unsigned int &maximumDepth){
+bool AthenaGrammarSI::growTree(DerivationTree &tree,const bool &growMethod,const unsigned int &maximumDepth){
 	#if (DEBUG_LEVEL >= 2)
 	cerr << "'bool GEGrammarSI::growTree(DerivationTree&, const bool&, const int&)' called\n";
 	#endif
@@ -212,7 +212,7 @@ bool HemannGrammarSI::growTree(DerivationTree &tree,const bool &growMethod,const
 // the index-th individual of a population of popSize, and the next call
 // to this routine will initialise the index-th+1 individual (unless a
 // specific index is set again).
-bool HemannGrammarSI::init(const unsigned int index){
+bool AthenaGrammarSI::init(const unsigned int index){
 	#if (DEBUG_LEVEL >= 2)
 	cerr << "'bool GEGrammarSI::init(const unsigned int)' called\n";
 	#endif
@@ -297,7 +297,7 @@ unsigned int maxDepth = getMaxDepth();
 /// Establishes variable_codon_map for use in transferring genomes from 
 /// one grammar to another.  The restrictRulePtr needs to be set first.
 ///
-void HemannGrammarSI::setVariableCodonMap(){
+void AthenaGrammarSI::setVariableCodonMap(){
   for(unsigned int prod=0; prod < restrictRulePtr->size(); prod++){
 // cout << "prod=" << prod << endl;
     for(unsigned int symb=0; symb < (*restrictRulePtr)[prod].size(); symb++){
@@ -321,7 +321,7 @@ void HemannGrammarSI::setVariableCodonMap(){
 /// @param maxCodonValue maximum possible codon value (get from genotype.getMaxCodonValue)
 /// @return codon value
 ///
-int HemannGrammarSI::getCodonVarValue(std::string variable, int maxCodonValue){
+int AthenaGrammarSI::getCodonVarValue(std::string variable, int maxCodonValue){
 // static_cast<CodonType>((genotype.getMaxCodonValue()/restrictRulePtr->size()*(rand()/(RAND_MAX+1.0))))*rulePtr->size();
 // static_cast<CodonType>(possibleRules.size()*(rand()/(RAND_MAX+1.0)))]
   // return is unmodded 
@@ -340,13 +340,13 @@ int HemannGrammarSI::getCodonVarValue(std::string variable, int maxCodonValue){
 ///
 /// Takes a genome translates it using current rules and then alters the variables for new mapper rules
 ///
-void HemannGrammarSI::convertGenomeVariables(HemannGrammarSI& newMapper, 
+void AthenaGrammarSI::convertGenomeVariables(AthenaGrammarSI& newMapper, 
   const GA1DArrayGenome<int> &genome){
 
   setGenotype(genome);
 
 
-// cout << "Genotype in HemannGrammarSI before any conversion done" << endl;
+// cout << "Genotype in AthenaGrammarSI before any conversion done" << endl;
 // Genotype::const_iterator genIt=getGenotype()->begin();
 // int i=0;
 // while(genIt!=getGenotype()->end()){
@@ -360,7 +360,7 @@ void HemannGrammarSI::convertGenomeVariables(HemannGrammarSI& newMapper,
   
   genotype2PhenotypeConvert(newMapper);
 
-// cout << "Genotype in HemannGrammarSI after any conversion done" << endl;
+// cout << "Genotype in AthenaGrammarSI after any conversion done" << endl;
 // Genotype::const_iterator genIt2=getGenotype()->begin();
 // // int i=0;
 // i=0;
@@ -382,7 +382,7 @@ void HemannGrammarSI::convertGenomeVariables(HemannGrammarSI& newMapper,
 // mapping process. Returns true upon a successful mapping, and false
 // otherwise, and also updates the valid field of the phenotype.
 // With argument set to true, also updates derivationTree.
-bool HemannGrammarSI::genotype2PhenotypeConvert(HemannGrammarSI& newMapper, const bool buildDerivationTree){
+bool AthenaGrammarSI::genotype2PhenotypeConvert(AthenaGrammarSI& newMapper, const bool buildDerivationTree){
 
 	#if (DEBUG_LEVEL >= 2)
 	cerr << "'bool GEGrammar::genotype2Phenotype(const bool)' called\n";
@@ -491,7 +491,7 @@ bool HemannGrammarSI::genotype2PhenotypeConvert(HemannGrammarSI& newMapper, cons
 /// @param buildDerivationTree
 /// @return number of codons consumed, -1 if not successful
 ///
-int HemannGrammarSI::genotype2PhenotypeStepConvert(HemannGrammarSI& newMapper, 
+int AthenaGrammarSI::genotype2PhenotypeStepConvert(AthenaGrammarSI& newMapper, 
   stack<const Symbol*> &nonterminals, Genotype::iterator genoIt, bool buildDerivationTree){
 	#if (DEBUG_LEVEL >= 2)
 	cerr << "'bool GEGrammar::genotype2PhenotypeStep(stack<const Symbol*>&,Genotype::iterator&,bool)' called\n";
@@ -663,7 +663,7 @@ output = true;
 ///
 /// Determines size of genome block from starting codon passed
 ///
-int HemannGrammarSI::determineBlockLength(int startCodon){
+int AthenaGrammarSI::determineBlockLength(int startCodon){
 
   int blocksize = 0;
   
@@ -722,7 +722,7 @@ int HemannGrammarSI::determineBlockLength(int startCodon){
 /// Constructs vector and multimap for use in crossovers
 /// @param genome
 ///
-void HemannGrammarSI::establishCodons(const GA1DArrayGenome<int> &genome){
+void AthenaGrammarSI::establishCodons(const GA1DArrayGenome<int> &genome){
   
   // clear holding structures
   codon_map.clear();
@@ -737,7 +737,7 @@ void HemannGrammarSI::establishCodons(const GA1DArrayGenome<int> &genome){
 ///
 /// fills structures that identify codons -- No wrapping allowed in this case
 ///
-int HemannGrammarSI::fillCodons(){
+int AthenaGrammarSI::fillCodons(){
 
 	phenotype.clear();
 
@@ -814,7 +814,7 @@ int HemannGrammarSI::fillCodons(){
 /// @param rule string
 /// @return index of codon that matches
 ///
-int HemannGrammarSI::getMatchingCodon(string rule){
+int AthenaGrammarSI::getMatchingCodon(string rule){
 
   int count = codon_map.count(rule);
   int returnIndex = -1;
@@ -843,7 +843,7 @@ int HemannGrammarSI::getMatchingCodon(string rule){
 /// @return vector with struct marking start and end of codons for
 /// later conversion
 ///
-vector<HemannGrammarSI::codonBlocks> HemannGrammarSI::setGenotypeOpt(const GA1DArrayGenome<int> &genome){
+vector<AthenaGrammarSI::codonBlocks> AthenaGrammarSI::setGenotypeOpt(const GA1DArrayGenome<int> &genome){
 
   // similar to original but tracks the location of blocks corresponding to the
   // optimized values (in GENN, those are the weights -- optimized by backpropagation)
@@ -858,7 +858,7 @@ vector<HemannGrammarSI::codonBlocks> HemannGrammarSI::setGenotypeOpt(const GA1DA
 		genotype.setValid(true);
   }
   
-  vector<HemannGrammarSI::codonBlocks> blocks;
+  vector<AthenaGrammarSI::codonBlocks> blocks;
   
   // call genotype2PhenotypeOpt -- sets block vector
   genotype2PhenotypeOpt(blocks);
@@ -879,7 +879,7 @@ vector<HemannGrammarSI::codonBlocks> HemannGrammarSI::setGenotypeOpt(const GA1DA
 /// @return vector with struct marking start and end of codons for
 /// later conversion
 ///
-vector<HemannGrammarSI::codonBlocks> HemannGrammarSI::setGenotypeOpt(const GA1DArrayGenome<int> &genome,
+vector<AthenaGrammarSI::codonBlocks> AthenaGrammarSI::setGenotypeOpt(const GA1DArrayGenome<int> &genome,
   std::set<string> compressed_set, string startSymbol){
 
   setOptStartSymbol(startSymbol);
@@ -896,7 +896,7 @@ vector<HemannGrammarSI::codonBlocks> HemannGrammarSI::setGenotypeOpt(const GA1DA
 // mapping process. Returns true upon a successful mapping, and false
 // otherwise, and also updates the valid field of the phenotype.
 // With argument set to true, also updates derivationTree.
-bool HemannGrammarSI::genotype2PhenotypeOpt(vector<HemannGrammarSI::codonBlocks>& blocks){
+bool AthenaGrammarSI::genotype2PhenotypeOpt(vector<AthenaGrammarSI::codonBlocks>& blocks){
 	#if (DEBUG_LEVEL >= 2)
 	cerr << "'bool GEGrammar::genotype2Phenotype(const bool)' called\n";
 	#endif
@@ -998,7 +998,7 @@ bool HemannGrammarSI::genotype2PhenotypeOpt(vector<HemannGrammarSI::codonBlocks>
 // non-terminal symbol on the nonterminals stack passed as argument, using the
 // codon at the position pointed by genoIt.
 // Returns number of codons consumed, -1 if not successful
-int HemannGrammarSI::genotype2PhenotypeStepOpt(stack<const Symbol*> &nonterminals,
+int AthenaGrammarSI::genotype2PhenotypeStepOpt(stack<const Symbol*> &nonterminals,
 		Genotype::iterator genoIt){
 		
 	#if (DEBUG_LEVEL >= 2)
@@ -1137,7 +1137,7 @@ int HemannGrammarSI::genotype2PhenotypeStepOpt(stack<const Symbol*> &nonterminal
 /// @param opt_value Value that needs to be converted into grammar representation
 /// @return vector of int with values of codons needed
 ///
-vector<int> HemannGrammarSI::translateOptValue(symbVector& optimized_symb){
+vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimized_symb){
    
   stack<gramelement> terms;
   stack<gramelement> workingStack;
@@ -1315,7 +1315,7 @@ vector<int> HemannGrammarSI::translateOptValue(symbVector& optimized_symb){
 /// @param codon
 /// @return codon value
 ///
-bool HemannGrammarSI::getRuleFromProduction(string& production_string, string& left_hand, int&
+bool AthenaGrammarSI::getRuleFromProduction(string& production_string, string& left_hand, int&
   codon){
 
   map<string, reverseRule>::iterator revIter = reverseRules.find(production_string);
@@ -1346,7 +1346,7 @@ bool HemannGrammarSI::getRuleFromProduction(string& production_string, string& l
 /// are unique (when considering the entire line in the grammar).  When there is only one
 /// choice for a production, the codon is set to -1.
 ///
-void HemannGrammarSI::constructReverseGrammar(){
+void AthenaGrammarSI::constructReverseGrammar(){
 
   reverseRules.clear();
   

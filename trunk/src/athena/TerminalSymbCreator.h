@@ -11,7 +11,7 @@
 #include "TerminalSymbol.h"
 #include <map>
 #include <vector>
-#include "HemannExcept.h"
+#include "AthenaExcept.h"
 #include <Individual.h>
 #include "Structs.h"
 

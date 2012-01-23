@@ -26,7 +26,7 @@
 #include "TransferData.h"
 #endif
 
-void exit_app(HemannExcept& he);
+void exit_app(AthenaExcept& he);
 
 int main(int argc, char** argv) {
 
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
     string exec_name = "ATHENA";
     
     if(argc < 2){
-        HemannExcept he("\n\tATHENA\n\t" + version_date + 
+        AthenaExcept he("\n\tATHENA\n\t" + version_date + 
             "\n\n\tUsage: ATHENA <config>\n\n");
         exit_app(he);
     }
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     // read config file
     try{
       config = configread.read_config(configfile);
-    }catch(HemannExcept he){
+    }catch(AthenaExcept he){
         exit_app(he);
     }
     
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
           scaler->adjust_contin(&data, c);
         }
 
-    }catch(HemannExcept he){
+    }catch(AthenaExcept he){
         exit_app(he);
     }
  
@@ -293,9 +293,9 @@ int main(int argc, char** argv) {
 
 ///
 /// Outputs message in exception and exits program
-/// @param he HemannExcept
+/// @param he AthenaExcept
 ///
-void exit_app(HemannExcept& he){
+void exit_app(AthenaExcept& he){
   cout << he.what() << endl << endl;;
   exit(EXIT_FAILURE);    
 } 

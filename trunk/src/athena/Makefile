@@ -12,8 +12,8 @@ GEDIR = ../libGE-0.26
 ANNIEDIR = ../annie
 
 INCLUDEDIR = -I. -I$(STATDIR) -I$(DATADIR) -I$(GADIR) -I$(GEDIR) -I$(ANNIEDIR)
-DFLAGS = -DPARALLEL
-#DFLAGS = 
+#DFLAGS = -DPARALLEL
+DFLAGS = 
 CCFLAGS = -Wall $(DFLAGS) -O2 $(INCLUDEDIR)
 #CCFLAGS = -Wall $(DFLAGS) -g $(INCLUDEDIR)
 
@@ -33,20 +33,20 @@ SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	SolutionFactory.o Terminals.o TerminalSymbCreator.o TerminalSymbol.o \
 	GENNAlg.o NNSolutionCreatorIncludeAll.o NNSolutionCreatorIncludeOnce.o \
 	ExpressionTree.o NNLog.o Algorithm.o RSquaredCalculator.o BioFilterReader.o \
-	HemannGrammarSI.o BioFilterModelCollection.o BackProp.o BackPropTree.o \
+	AthenaGrammarSI.o BioFilterModelCollection.o BackProp.o BackPropTree.o \
 	BioFilterBinReader.o genegenemodel.o BackPropSMD.o BackPropAnnie.o \
 	BackPropAnnieTree.o SymRegressSolutionCreator.o GESymbReg.o
 
 SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	CalculatorFactory.h CalculatorList.h ConfigFileReader.h Config.h \
 	GE1DArrayGenome.h GENNAlg.h GENNGrammarAdjuster.h GEObjective.h \
-	HemannExcept.h InitGEgenome.h MeanSquaredErrCalculator.h NNSolution.h \
+	AthenaExcept.h InitGEgenome.h MeanSquaredErrCalculator.h NNSolution.h \
 	NNSolutionCreator.h OutputManager.h Population.h rbtree.h \
 	SolutionCalculator.h SolutionCreator.h SolutionFactory.h Solution.h \
 	Terminals.h TerminalSymbCreator.h TerminalSymbol.h RSquaredCalculator.h \
 	NNSolutionCreatorIncludeAll.h NNSolutionCreatorIncludeOnce.h \
 	ExpressionTree.h Tree.hh AlgorithmLog.h NNLog.h BioFilterReader.h \
-	HemannGrammarSI.h BioFilterModelCollection.h BackProp.h \
+	AthenaGrammarSI.h BioFilterModelCollection.h BackProp.h \
 	BackPropTree.h Structs.h BioFilterBinReader.h BioReader.h \
 	genegenemodel.h genegenemodelreader.h region.h snpholder.h \
 	snpsnpmodel.h biomodel.h BackPropSMD.h BackPropAnnie.h BackPropAnnieTree.h \

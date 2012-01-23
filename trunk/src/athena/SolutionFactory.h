@@ -12,7 +12,7 @@ using namespace std;
 
 #include <map>
 #include "SolutionCreator.h"
-#include "HemannExcept.h"
+#include "AthenaExcept.h"
 
 ///
 /// Creates and returns solution based on name passed

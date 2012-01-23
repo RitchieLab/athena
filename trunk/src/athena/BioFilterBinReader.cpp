@@ -1,7 +1,7 @@
 //BioFilterBinReader.cpp
 
 #include "BioFilterBinReader.h"
-#include "HemannExcept.h"
+#include "AthenaExcept.h"
 #include <sstream>
 #include <iostream>
 
@@ -36,7 +36,7 @@ int BioFilterBinReader::GetModels(std::vector<BioModel>& models, string filename
   if(!reader.is_open()){
     reader.open(filename.c_str(), ios::binary);
     if(!reader.is_open()){
-      throw HemannExcept("Unable to open bio filter file " + filename);
+      throw AthenaExcept("Unable to open bio filter file " + filename);
     }
   }
   

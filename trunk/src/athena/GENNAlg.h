@@ -101,9 +101,9 @@ protected:
     
     void outputGenome(GAGenome& g);
     
-    void convertNetworks(HemannGrammarSI& currentMapper, HemannGrammarSI& newMapper);
+    void convertNetworks(AthenaGrammarSI& currentMapper, AthenaGrammarSI& newMapper);
     
-    void set_mapper_prefs(HemannGrammarSI& hemannMapper);
+    void set_mapper_prefs(AthenaGrammarSI& hemannMapper);
     
     void ResetCrossover();
     
@@ -208,7 +208,7 @@ protected:
     NNLog* gelog;
     
     // GE parameters
-    HemannGrammarSI mapper, restrictMapper;
+    AthenaGrammarSI mapper, restrictMapper;
     
     // Genetic algorithm
     GASimpleGA* ga;

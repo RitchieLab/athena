@@ -61,7 +61,7 @@ Config ConfigFileReader::read_config(string configfile){
     
    ifstream configstream(configfile.c_str(), ios::in);
    if(!configstream.is_open()){
-     throw HemannExcept("Failed in attempt to open file " + configfile 
+     throw AthenaExcept("Failed in attempt to open file " + configfile 
         + "\n");
    }
    
@@ -83,7 +83,7 @@ Config ConfigFileReader::read_config(string configfile){
        keyword = Stringmanip::to_upper(keyword);      
        switch(keywordMap[keyword]){
            case keyNoMatch:
-               throw HemannExcept(keyword + " is not a valid keyword in configuration file");
+               throw AthenaExcept(keyword + " is not a valid keyword in configuration file");
                break;
            case keyDataset:
                ss >> dataname;             
@@ -114,7 +114,7 @@ Config ConfigFileReader::read_config(string configfile){
                configuration.setNumCV(num_cv, keyword);
                break;
            case keyEnd:
-               throw(HemannExcept(keyword + " is unmatched by ALGORITHM keyword"));
+               throw(AthenaExcept(keyword + " is unmatched by ALGORITHM keyword"));
                break;
            case keyDatasetType:
                ss >> data_type;
@@ -208,7 +208,7 @@ Config ConfigFileReader::read_config(string configfile){
               configuration.setLogType(Stringmanip::to_upper(value));
               break;
            default:
-              throw HemannExcept(keyword + " is not a valid keyword in configuration file");
+              throw AthenaExcept(keyword + " is not a valid keyword in configuration file");
               break;
        }
    }

@@ -30,7 +30,7 @@ void GENNGrammarAdjuster::read_grammar_file(string filename){
 /// @param mapper GEGrammarSI&
 ///
 //void GENNGrammarAdjuster::set_mapper(GEGrammarSI& mapper){
-void GENNGrammarAdjuster::set_mapper(HemannGrammarSI& mapper, int rank){
+void GENNGrammarAdjuster::set_mapper(AthenaGrammarSI& mapper, int rank){
   vector<string>::iterator iter;
   string program;
   

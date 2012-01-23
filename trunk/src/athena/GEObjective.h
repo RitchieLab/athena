@@ -14,7 +14,7 @@
 #include "SolutionFactory.h"
 #include "GE1DArrayGenome.h"
 #include "Population.h"
-#include "HemannGrammarSI.h"
+#include "AthenaGrammarSI.h"
 
 ///
 /// Provides objective function for use with GALIb and GE library
@@ -33,7 +33,7 @@ public:
     static void OutputSymbols(GAGenome& g, ostream& os);
     
     /// sets the mapper to use
-    static void setMapper(HemannGrammarSI* m){
+    static void setMapper(AthenaGrammarSI* m){
       mapper = m;
       mapper->setLeftOptBound(sol_creator->getLeftOptBound());
       mapper->setRightOptBound(sol_creator->getRightOptBound());
@@ -84,8 +84,8 @@ public:
     static int rank;
 private:
 
-    static void insertBlocks(GE1DArrayGenome& g, vector<HemannGrammarSI::codonBlocks>& blocks);
-    static HemannGrammarSI* mapper;
+    static void insertBlocks(GE1DArrayGenome& g, vector<AthenaGrammarSI::codonBlocks>& blocks);
+    static AthenaGrammarSI* mapper;
     static data_manage::Dataset* set;
     static SolutionCreator* sol_creator;
     static unsigned int maxGenSize;  

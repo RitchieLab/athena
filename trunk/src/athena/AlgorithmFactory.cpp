@@ -9,7 +9,7 @@ std::map<string, AlgorithmFactory::AlgorithmType> AlgorithmFactory::AlgorithmMap
 /// is responsible for freeing the memory.
 /// @param alg_name
 /// @return new Algorithm
-/// @throws HemannExcept when no algorithm with that name
+/// @throws AthenaExcept when no algorithm with that name
 ///
 Algorithm* AlgorithmFactory::create_algorithm(string alg_name){
     
@@ -20,7 +20,7 @@ Algorithm* AlgorithmFactory::create_algorithm(string alg_name){
     Algorithm* newAlgorithm = NULL;
     switch(AlgorithmMap[alg_name]){
         case NoAlgorithm:
-            throw HemannExcept(alg_name + " is not a valid Algorithm name.");
+            throw AthenaExcept(alg_name + " is not a valid Algorithm name.");
             break;
         case GENNAlgorithm:
             newAlgorithm = new GENNAlg;

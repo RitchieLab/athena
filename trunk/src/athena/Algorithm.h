@@ -12,7 +12,7 @@
 #include <Stringmanip.h>
 #include "Config.h"
 #include "Population.h"
-#include "HemannExcept.h"
+#include "AthenaExcept.h"
 #include "AlgorithmLog.h"
 #include <Dataholder.h>
 

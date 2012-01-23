@@ -1,12 +1,12 @@
 /* 
- * File:   HemannExcept.h
+ * File:   AthenaExcept.h
  * Author: dudeksm
  *
  * Created on November 6, 2008, 12:43 PM
  */
 
-#ifndef _HEMANNEXCEPT_H
-#define	_HEMANNEXCEPT_H
+#ifndef _ATHENAEXCEPT_H
+#define	_ATHENAEXCEPT_H
 
 #include <exception>
 #include <string>
@@ -18,16 +18,16 @@ using namespace std;
 ///
 
 /// Exception for plato
-class HemannExcept: public exception{
+class AthenaExcept: public exception{
         public:
-          HemannExcept() throw();
-          HemannExcept(string message){error=message;}
-          ~HemannExcept()throw(){};
+          AthenaExcept() throw();
+          AthenaExcept(string message){error=message;}
+          ~AthenaExcept()throw(){};
           virtual const char* what() const throw(){return error.c_str();}
 
         private:
           string error;
 };
 
-#endif	/* _HEMANNEXCEPT_H */
+#endif	/* _ATHENAEXCEPT_H */
 

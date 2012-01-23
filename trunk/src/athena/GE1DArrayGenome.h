@@ -5,7 +5,7 @@
 #include<ga/ga.h>
 #include<iostream>
 #include<vector>
-#include "HemannGrammarSI.h"
+#include "AthenaGrammarSI.h"
 
 class GE1DArrayGenome:public GA1DArrayGenome<int>{
 public:
@@ -75,7 +75,7 @@ public:
   inline void setSSTotal(float s){ssTotal = s;}
   inline float getSSTotal(){return ssTotal;}
   
-  static void setMapper(HemannGrammarSI* m){mapper = m;}
+  static void setMapper(AthenaGrammarSI* m){mapper = m;}
   
   static int myrank;
 
@@ -93,7 +93,7 @@ private:
   float ssTotal;
   std::vector<int> genos, covars;
   
-  static HemannGrammarSI* mapper;
+  static AthenaGrammarSI* mapper;
   
 };
 

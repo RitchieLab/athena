@@ -52,7 +52,8 @@ void MDRFileHandler::parse_file(string filename, Dataholder * holder,
   bool any_missing = false;
 
   do{
-    if(line.find_first_of("0123456789") == string::npos){
+    if(line.find_first_of("0123456789") == string::npos || line.find("#")==0){
+      getline(data_stream, line);
       continue;
     }
     // remove windows carriage return

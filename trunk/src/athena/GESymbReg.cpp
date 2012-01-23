@@ -30,7 +30,7 @@ void GESymbReg::set_params(AlgorithmParams& alg_param, int numExchanges, int num
 //cout << "param=" << mapIter->first << " value=" << mapIter->second << endl;        
         switch(param_map[mapIter->first]){
             case noMatchParam:
-                throw HemannExcept("No match for parameter " + mapIter->first +
+                throw AthenaExcept("No match for parameter " + mapIter->first +
                         "in Algorithm GE Symbolic Regression");
                 break;
             case minSizeParam:
@@ -96,14 +96,14 @@ void GESymbReg::set_params(AlgorithmParams& alg_param, int numExchanges, int num
             case bioModelSelection:
                 if(BioModelSelectionMap.find(Stringmanip::to_upper(mapIter->second)) == 
                     BioModelSelectionMap.end())
-                  throw HemannExcept("No match for bio model selection type " + mapIter->second);
+                  throw AthenaExcept("No match for bio model selection type " + mapIter->second);
                 else
                   biofilter_selector_type = BioModelSelectionMap[Stringmanip::to_upper(mapIter->second)];
                 break;
             case gaSelection:
                 if(GASelectorMap.find(Stringmanip::to_upper(mapIter->second)) ==
                   GASelectorMap.end())
-                  throw HemannExcept("No match for GA selection type " + mapIter->second);
+                  throw AthenaExcept("No match for GA selection type " + mapIter->second);
                 else
                   gaSelector = GASelectorMap[Stringmanip::to_upper(mapIter->second)];
                   break;
@@ -128,15 +128,15 @@ void GESymbReg::set_params(AlgorithmParams& alg_param, int numExchanges, int num
                 break;
 #endif
             case bpstart:
-                throw HemannExcept("No match for parameter " + mapIter->first +
+                throw AthenaExcept("No match for parameter " + mapIter->first +
                         " in Algorithm GE Symbolic Regression");
                 break;
             case bpfreq:    
-                throw HemannExcept("No match for parameter " + mapIter->first +
+                throw AthenaExcept("No match for parameter " + mapIter->first +
                         " in Algorithm GE Symbolic Regression");
                 break;
             default:
-                throw HemannExcept("No match for parameter " + mapIter->first +
+                throw AthenaExcept("No match for parameter " + mapIter->first +
                         " in Algorithm GE Symbolic Regression");               
         }
     }
@@ -158,7 +158,7 @@ void GESymbReg::set_params(AlgorithmParams& alg_param, int numExchanges, int num
 ///
 /// Sets parameters for use with GAlib
 /// @param alg_params AlgorithmParams
-/// @throws HemannExcept on error
+/// @throws AthenaExcept on error
 ///
 void GESymbReg::set_ga_params(){   
 

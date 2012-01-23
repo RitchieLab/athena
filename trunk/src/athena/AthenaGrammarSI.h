@@ -1,7 +1,7 @@
-//HemannGrammarSI.h
+//AthenaGrammarSI.h
 
-#ifndef _HEMANNGRAMMARSI_H
-#define	_HEMANNGRAMMARSI_H
+#ifndef _AthenaGrammarSI_H
+#define	_AthenaGrammarSI_H
 
 #include <GE/GEGrammarSI.h>
 #include "Structs.h"
@@ -12,7 +12,7 @@
 /// Adds functionality for incorporating biofilter models into
 /// initialized models.
 ///
-class HemannGrammarSI: public GEGrammarSI{
+class AthenaGrammarSI: public GEGrammarSI{
 
   public:
     void addModel(std::vector<int> indexes);
@@ -38,7 +38,7 @@ class HemannGrammarSI: public GEGrammarSI{
     void setVariableCodonMap();
     
     /// Takes a genome translates it using current rules and then alters the variables for new mapper rules
-    void convertGenomeVariables(HemannGrammarSI& newMapper, const GA1DArrayGenome<int> &genome);
+    void convertGenomeVariables(AthenaGrammarSI& newMapper, const GA1DArrayGenome<int> &genome);
     
     /// Determines size of genome block from starting codon passed
     int determineBlockLength(int startCodon);
@@ -97,9 +97,9 @@ class HemannGrammarSI: public GEGrammarSI{
       vector<int> codon_values; // contains codon values to replace the existing ones in genome with
     };
   
-    bool genotype2PhenotypeConvert(HemannGrammarSI& newMapper, const bool buildDerivationTree=false);
+    bool genotype2PhenotypeConvert(AthenaGrammarSI& newMapper, const bool buildDerivationTree=false);
   
-    int genotype2PhenotypeStepConvert(HemannGrammarSI& newMapper, stack<const Symbol*> &nonterminals,
+    int genotype2PhenotypeStepConvert(AthenaGrammarSI& newMapper, stack<const Symbol*> &nonterminals,
   		Genotype::iterator genoIt, bool buildDerivationTree);
     
     bool genotype2PhenotypeOpt(vector<codonBlocks>& blocks);

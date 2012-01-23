@@ -9,7 +9,7 @@
 #define	_CALCULATORFACTORY_H
 
 #include "SolutionCalculator.h"
-#include "HemannExcept.h"
+#include "AthenaExcept.h"
 #include <map>
 #include <string>
 

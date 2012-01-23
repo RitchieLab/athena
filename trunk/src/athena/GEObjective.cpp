@@ -2,7 +2,7 @@
 #include <math.h>
 #include "Structs.h"
 
-HemannGrammarSI* GEObjective::mapper = NULL;
+AthenaGrammarSI* GEObjective::mapper = NULL;
 data_manage::Dataset* GEObjective::set = NULL;
 SolutionCreator* GEObjective::sol_creator = NULL;
 unsigned int GEObjective::maxGenSize = 250;
@@ -127,7 +127,7 @@ float GEObjective::GEObjectiveFuncOut(GAGenome& g, ostream& os){
 /// @param g GAGenome
 /// @param blocks codonBlocks defining the blocks that will be replaced
 ///
-void GEObjective::insertBlocks(GE1DArrayGenome& genome, vector<HemannGrammarSI::codonBlocks>& blocks){
+void GEObjective::insertBlocks(GE1DArrayGenome& genome, vector<AthenaGrammarSI::codonBlocks>& blocks){
 
     // go through original list and copy to new genome 
     // use vector to create new genome list
@@ -190,7 +190,7 @@ void GEObjective::optimizeSolution(GAGenome& g){
   
   GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
 	//Assign genotype to mapper
-	vector<HemannGrammarSI::codonBlocks> blocks = mapper->setGenotypeOpt(genome, 
+	vector<AthenaGrammarSI::codonBlocks> blocks = mapper->setGenotypeOpt(genome, 
 	  sol_creator->getOptIncluded(), sol_creator->getStartOptSymbol());
 
   Phenotype const *phenotype=mapper->getPhenotype();

@@ -9,7 +9,7 @@
 #define	_OUTPUTMANAGER_H
 
 #include "Population.h"
-#include "HemannExcept.h"
+#include "AthenaExcept.h"
 #include <vector>
 #include <fstream>
 #include "Algorithm.h"

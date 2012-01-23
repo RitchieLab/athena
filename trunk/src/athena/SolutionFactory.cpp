@@ -12,7 +12,7 @@ map<string, SolutionFactory::SolutionType> SolutionFactory::SolutionMap;
 /// Function that creates a solution based on the name 
 /// @param solution_name name of solution
 /// @return pointer to new Solution object
-/// @throws HEMannExcept if not a valid solution name
+/// @throws AthenaExcept if not a valid solution name
 ///
 SolutionCreator* SolutionFactory::create_solution(string solution_name){
     
@@ -23,7 +23,7 @@ SolutionCreator* SolutionFactory::create_solution(string solution_name){
   SolutionCreator* new_solution;
   switch(SolutionMap[solution_name]){
       case MissingSolutionType:
-          throw HemannExcept("No solution matching " + solution_name);
+          throw AthenaExcept("No solution matching " + solution_name);
           break;
       case SymRegressSolutionType:
           new_solution = new SymRegressSolutionCreator;
@@ -38,7 +38,7 @@ SolutionCreator* SolutionFactory::create_solution(string solution_name){
           new_solution = new NNSolutionCreatorIncludeOnce;
           break;
       default:
-          throw HemannExcept("No solution matching " + solution_name); 
+          throw AthenaExcept("No solution matching " + solution_name); 
   }
   
   return new_solution;
@@ -50,7 +50,7 @@ SolutionCreator* SolutionFactory::create_solution(string solution_name){
 /// @param solution_name name of solution
 /// @param vars vector that contains strings restricting solution
 /// @return pointer to new Solution object
-/// @throws HEMannExcept if not a valid solution name
+/// @throws AthenaExcept if not a valid solution name
 ///
 SolutionCreator* SolutionFactory::create_solution(string solution_name, vector<string>& vars){
   SolutionCreator* new_creator = create_solution(solution_name);

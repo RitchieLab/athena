@@ -60,7 +60,7 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
       mapIter++){     
         switch(param_map[mapIter->first]){
             case noMatchParam:
-                throw HemannExcept("No match for parameter " + mapIter->first +
+                throw AthenaExcept("No match for parameter " + mapIter->first +
                         "in Algorithm GENN");
                 break;
             case minSizeParam:
@@ -126,14 +126,14 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
             case bioModelSelection:
                 if(BioModelSelectionMap.find(Stringmanip::to_upper(mapIter->second)) == 
                     BioModelSelectionMap.end())
-                  throw HemannExcept("No match for bio model selection type " + mapIter->second);
+                  throw AthenaExcept("No match for bio model selection type " + mapIter->second);
                 else
                   biofilter_selector_type = BioModelSelectionMap[Stringmanip::to_upper(mapIter->second)];
                 break;
             case gaSelection:
                 if(GASelectorMap.find(Stringmanip::to_upper(mapIter->second)) ==
                   GASelectorMap.end())
-                  throw HemannExcept("No match for GA selection type " + mapIter->second);
+                  throw AthenaExcept("No match for GA selection type " + mapIter->second);
                 else
                   gaSelector = GASelectorMap[Stringmanip::to_upper(mapIter->second)];
                   break;
@@ -164,7 +164,7 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
             case prunePlantFract:
 #endif
             default:
-                throw HemannExcept("No match for parameter " + mapIter->first +
+                throw AthenaExcept("No match for parameter " + mapIter->first +
                         " in Algorithm GENN");               
         }
     }
@@ -304,7 +304,7 @@ void GENNAlg::initialize_params(){
 ///
 /// Sets parameters for use with GAlib
 /// @param alg_params AlgorithmParams
-/// @throws HemannExcept on error
+/// @throws AthenaExcept on error
 ///
 void GENNAlg::set_ga_params(){   
     GARandomSeed(randSeed);
@@ -355,9 +355,9 @@ void GENNAlg::set_ga_params(){
 
 ///
 /// sets mapper preferences
-/// @param hemannMapper HemannGrammarSI
+/// @param hemannMapper AthenaGrammarSI
 ///
-void GENNAlg::set_mapper_prefs(HemannGrammarSI& hemannMapper){
+void GENNAlg::set_mapper_prefs(AthenaGrammarSI& hemannMapper){
     // Mapper settings.
 	  hemannMapper.setGenotypeMaxCodonValue(INT_MAX);
 	  hemannMapper.setPopSize(pop_size);
@@ -836,7 +836,7 @@ void GENNAlg::setRestrictedGrammar(bool clearVariables){
 /// @param currentMapper
 /// @param newMapper
 ///
-void GENNAlg::convertNetworks(HemannGrammarSI& currentMapper, HemannGrammarSI& newMapper){
+void GENNAlg::convertNetworks(AthenaGrammarSI& currentMapper, AthenaGrammarSI& newMapper){
     unsigned int num_inds = ga->population().size();
     for(unsigned int curr_ind = 0; curr_ind < num_inds; curr_ind++){
       GE1DArrayGenome& genome = (GE1DArrayGenome&)(ga->population().individual(curr_ind));            
@@ -900,7 +900,7 @@ void GENNAlg::writeLog(string basename, int cv){
     ofstream outfile;
     outfile.open(filename.c_str(), ios::out);
       if(!outfile.is_open()){
-        throw HemannExcept(filename + " unable to open for writing log file");
+        throw AthenaExcept(filename + " unable to open for writing log file");
       }   
       gelog->output_log(outfile);
       outfile.close();
@@ -910,7 +910,7 @@ void GENNAlg::writeLog(string basename, int cv){
       ofstream fitout;
       fitout.open(fitnessname.c_str(), ios::out);
       if(!fitout.is_open()){
-        throw HemannExcept(fitnessname + " unable to open for writing log file");
+        throw AthenaExcept(fitnessname + " unable to open for writing log file");
       }
       gelog->output_fitness(fitout, totalPopSize);
       fitout.close();
@@ -920,7 +920,7 @@ void GENNAlg::writeLog(string basename, int cv){
       ofstream sizeout;
       sizeout.open(snpname.c_str(), ios::out);
       if(!sizeout.is_open()){
-        throw HemannExcept(snpname + " unable to open for writing log file");
+        throw AthenaExcept(snpname + " unable to open for writing log file");
       }
       gelog->output_snp_sizes(sizeout, totalPopSize);
       sizeout.close();

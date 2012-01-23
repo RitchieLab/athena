@@ -86,7 +86,7 @@ void OutputManager::outputBestModels(vector<Population>& pops, int nmodels,
         cout << "Writing best model file: " << currFileName << endl;
         outfile.open(currFileName.c_str(), ios::out);
         if(!outfile.is_open()){
-            throw HemannExcept(currFileName + " unable to open for writing best model");
+            throw AthenaExcept(currFileName + " unable to open for writing best model");
         }
         bestSolution = pops[currPop][mod];
         
@@ -114,7 +114,7 @@ void OutputManager::outputBestModels(vector<Population>& pops, int nmodels,
 std::ostream& OutputManager::getStream(std::string filename){
   log_stream.open(filename.c_str(), ios::out);
   if(!log_stream.is_open()){
-    throw HemannExcept(filename + " unable to open for writing results");
+    throw AthenaExcept(filename + " unable to open for writing results");
   }
   
   return log_stream;
@@ -144,7 +144,7 @@ void OutputManager::outputGraphic(Algorithm* alg, std::vector<Population>& pops,
       cout << "Writing file " << currFileName << endl;         
       outfile.open(currFileName.c_str(), ios::out);
       if(!outfile.is_open()){
-          throw HemannExcept(currFileName + " unable to open for writing best model");
+          throw AthenaExcept(currFileName + " unable to open for writing best model");
       }  
       
       currSolution = pops[currPop][mod];

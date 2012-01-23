@@ -70,7 +70,7 @@ BioReader* BioFilterModelCollection::getBioReader(string bioFileType){
       break;
     case NoMatch:
     default:
-      throw HemannExcept(bioFileType + " is not a valid parameter for specifying biofilter file type");
+      throw AthenaExcept(bioFileType + " is not a valid parameter for specifying biofilter file type");
   }
   return reader;
   
@@ -147,7 +147,7 @@ void BioFilterModelCollection::fill_tree_archive(std::string genegeneFile, std::
   unsigned int binaryCheck;
   reader.open(archiveFile.c_str(), ios::binary);
   if(!reader.is_open()){
-    throw HemannExcept("Unable to open bio filter file " + archiveFile);
+    throw AthenaExcept("Unable to open bio filter file " + archiveFile);
   }
   reader.read((char*)&binaryCheck, sizeof(unsigned int));
   if(binaryCheck==0){

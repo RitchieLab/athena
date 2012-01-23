@@ -9,7 +9,7 @@ int GE1DArrayGenome::myrank=-1;
 
 using namespace std;
 
-HemannGrammarSI* GE1DArrayGenome::mapper = NULL;
+AthenaGrammarSI* GE1DArrayGenome::mapper = NULL;
 
 
 GE1DArrayGenome::GE1DArrayGenome(unsigned int len)

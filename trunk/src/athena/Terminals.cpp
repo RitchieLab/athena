@@ -65,7 +65,7 @@ GenotypeTerm::GenotypeTerm(string gname, int var_index)
 /// Returns value for the individual at the indicated location
 /// @param args deque not used in this evaluation
 /// @return value of the variable
-/// @throws HemannExcept when missing variable data at the indicated
+/// @throws AthenaExcept when missing variable data at the indicated
 /// locus for the indicated individual
 ///
 float GenotypeTerm::evaluate(deque<float> & args){ 
@@ -104,7 +104,7 @@ ContinVariable::ContinVariable(string gname, int var_index)
 /// Returns value for the individual at the indicated location
 /// @param args deque not used in this evaluation
 /// @return value of the variable
-/// @throws HemannExcept when missing variable data at the indicated
+/// @throws AthenaExcept when missing variable data at the indicated
 /// locus for the indicated individual
 ///
 float ContinVariable::evaluate(deque<float> & args){ 
