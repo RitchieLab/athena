@@ -32,7 +32,7 @@ ArgParser::ArgParser(const NumberParameter *numeric, StringParameter *string, Pu
 
 void ArgParser::parse(int argc, char *argv[])	{
 	for(int j=1; j<argc; j++)	{
-		const char *a = argv[j];
+		char *a = argv[j];
 		char *eq;
 		if((eq = strchr(a, '=')))	{
 			const char *val = eq+1;

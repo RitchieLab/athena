@@ -1,0 +1,10 @@
+CV: 5
+Model Rank: 1
+Training result: 0.614375
+Testing result: 0.6225
+Model:
+PA( W(23.13,G1), W(0.57,G2), W((3+(6.24+2)),G10), W(3,G17),4)
+
+Grammar-compatible version:
+ScaleMax=1 StatusAdjust=0
+PA ( W ( Concat ( 2 3 . 1 3 5 ) , G1 ) , W ( Concat ( . 5 7 3 ) , G2 ) , W ( ( Concat ( 3 1 ) + ( Concat ( 0 6 . 2 4 5 ) + Concat ( 2 1 ) ) ) , G10 ) , W ( Concat ( 3 1 ) , G17 ) , 4 ) 

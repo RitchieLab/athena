@@ -1,0 +1,37 @@
+digraph G{
+	size="7.5,11.0";
+	dir="none";
+	rankdir="LR";
+	orientation="landscape";
+	PADD1 [shape="doublecircle" style="bold" label="PADD"];
+	W1->PADD1;
+	W1 [shape="circle" style="bold" label="W"];
+	const1->W1;
+	const1 [shape="box" style="bold" label="9.5"];
+	G11->W1;
+	G11 [shape="box" style="filled" label="G1"];
+	W2->PADD1;
+	W2 [shape="circle" style="bold" label="W"];
+	const2->W2;
+	const2 [shape="box" style="bold" label="5.5555"];
+	PADD2->W2;
+	PADD2 [shape="doublecircle" style="bold" label="PADD"];
+	W3->PADD2;
+	W3 [shape="circle" style="bold" label="W"];
+	const3->W3;
+	const3 [shape="box" style="bold" label="5.02"];
+	G191->W3;
+	G191 [shape="box" style="filled" label="G19"];
+	W4->PADD2;
+	W4 [shape="circle" style="bold" label="W"];
+	const4->W4;
+	const4 [shape="box" style="bold" label="65.22"];
+	G101->W4;
+	G101 [shape="box" style="filled" label="G10"];
+	W5->PADD2;
+	W5 [shape="circle" style="bold" label="W"];
+	const5->W5;
+	const5 [shape="box" style="bold" label="9"];
+	G231->W5;
+	G231 [shape="box" style="filled" label="G23"];
+}

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#PBS -M yourusernam@mail.com
+## specifies the email address to which all updates/alerts should be sent
+
+#PBS -m bae
+## specifies that I should be emailed when my job begins, aborts, and/or ends
+
+#PBS -l nodes=4
+##  the number of nodes I want and the number of processors per node (2 or 4 CPUs)--therefore a total of 10 nodes. x86 is type of node.
+
+#PBS -l pmem=1gb
+## total amount of memory for the job
+
+#PBS -l walltime=4:00:00
+## max amount of time to run the job hr:min:sec
+
+#PBS -o SampleAthena.out
+## name of file to which the output is written
+
+#PBS -j oe
+## output and error written to output file
+
+/path/to/run_athena.pl or run_athenap.pl/ /path/to/config/files/*.config
+## job command -- notice I had to give the path to my configuration file

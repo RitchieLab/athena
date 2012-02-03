@@ -1,0 +1,10 @@
+CV: 2
+Model Rank: 1
+Training result: 0.631875
+Testing result: 0.635
+Model:
+PA( W(6.56,G1), W((((6/(((((6+3.7)/8.22)/(((6.8+0.41)+0.14)+((1.24+8)+0.12)))+45.72)+0.23))+(((61.81+(((0.44+9.6)+(1+4.56))+(6.5-0.35)))+6)/((4.06+1.63)+(((6.81+1.6)/0)-(12.14+((1.24+8)+0.12))))))+45.72),G10),2)
+
+Grammar-compatible version:
+ScaleMax=1 StatusAdjust=0
+PA ( W ( Concat ( 6 . 5 6 4 ) , G1 ) , W ( ( ( ( Concat ( 6 1 ) / ( ( ( ( ( Concat ( 6 1 ) + Concat ( 3 . 7 3 ) ) / Concat ( 8 . 2 2 4 ) ) / ( ( ( Concat ( 6 . 8 3 ) + Concat ( . 4 1 3 ) ) + Concat ( . 1 4 3 ) ) + ( ( Concat ( 1 . 2 4 4 ) + Concat ( 8 1 ) ) + Concat ( . 1 2 3 ) ) ) ) + Concat ( 4 5 . 7 2 5 ) ) + Concat ( . 2 3 3 ) ) ) + ( ( ( Concat ( 6 1 . 8 1 5 ) + ( ( ( Concat ( . 4 4 3 ) + Concat ( 9 . 6 3 ) ) + ( Concat ( 1 1 ) + Concat ( 4 . 5 6 4 ) ) ) + ( Concat ( 6 . 5 3 ) - Concat ( . 3 5 3 ) ) ) ) + Concat ( 6 1 ) ) / ( ( Concat ( 0 4 . 0 6 5 ) + Concat ( 1 . 6 3 4 ) ) + ( ( ( Concat ( 6 . 8 1 4 ) + Concat ( 1 . 6 3 ) ) / Concat ( 0 1 ) ) - ( Concat ( 1 2 . 1 4 5 ) + ( ( Concat ( 1 . 2 4 4 ) + Concat ( 8 1 ) ) + Concat ( . 1 2 3 ) ) ) ) ) ) ) + Concat ( 4 5 . 7 2 5 ) ) , G10 ) , 2 ) 

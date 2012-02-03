@@ -1,13 +1,5 @@
 <p>      ::= <pn>(<pinput>)
 <pn>     ::= PA
-           | PS
-           | PM
-           | PD
-           | PAND
-           | POR
-           | PNOR
-           | PXOR
-           | PNAND
 <pinput> ::=  <W>(<winput>)<,><W>(<winput>)<,>2 
            |  <W>(<winput>)<,><W>(<winput>)<,><W>(<winput>)<,>3
            |  <W>(<winput>)<,><W>(<winput>)<,><W>(<winput>)<,><W>(<winput>)<,>4

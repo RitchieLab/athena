@@ -1,7 +1,6 @@
 <p>      ::= <expr>
 <expr>   ::= <expr><op><expr>
            | (<expr><op><expr>)
-           | <preop>(<expr>)
            | <v>
            | <Concat>(<num>)
 <Concat> ::= Concat
@@ -9,11 +8,6 @@
            | *
            | -
            | /
-           | ^
-<preop>  ::= log
-           | sin
-           | cosin
-           | tan
 <num>    ::= <dig>.<dig>3
            | .<dig><dig>3
 <dig>    ::= 0
