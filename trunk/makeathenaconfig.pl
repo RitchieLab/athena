@@ -47,7 +47,7 @@ print "outdirectory=$outdirectory\n";
 # Write out the full path to the datasets before the number in the dataset name for prefix and after the number in the name for suffix
 
 for (my $i = 1; $i<=100; $i++){
-	open (CFG,">$i.config");
+	open (CFG,">$outdirectory/$i.config");
 	my $dataset = "$datadirectory/$prefix$i$suffix";
         my $outfile = "$outdirectory/$prefix$i$suffix";
 	print CFG "
