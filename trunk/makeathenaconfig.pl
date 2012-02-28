@@ -8,7 +8,7 @@ my $PRGM_NAME = 'makeathenaconfigs.pl';
 # Displays current version date and usage
 sub usage{
   print "\nusage:\t\t$PRGM_NAME <arguments>\n\n";
-  print "example:\t$PRGM_NAME -p Sample_Dataset- -s .txt -d ./sample_sets -a GENN -g ./genn_add.gram\n\n";
+  print "example:\t$PRGM_NAME -p Sample_Dataset- -s .txt -d /my/full/path/to/sample_sets -a GENN -g /my/full/path/to/genn_add.gram\n\n";
   print "\tOptions:\n";
   print "\t\t-p Prefix for datasets\n";
   print "\t\t-s Suffix for datasets\n";
