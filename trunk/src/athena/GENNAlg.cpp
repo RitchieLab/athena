@@ -68,6 +68,11 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
                 break;
             case maxSizeParam:
                 maxSize = Stringmanip::stouint(mapIter->second);
+                #ifdef PARALLEL
+                  if(maxSize > MAX_GENOME_SIZE)
+                    throw AthenaExcept(mapIter->first + " can be no more than " + 
+                      Stringmanip::itos(MAX_GENOME_SIZE));
+                #endif
                 break;
             case tailRatioParam:
                 tailRatio = Stringmanip::stodouble(mapIter->second);
@@ -190,7 +195,7 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
 /// can be modified using the set_params function
 ///
 void GENNAlg::initialize_params(){
-
+   
    myRank = 0;
    minSize = 50; // Minimum size for Random Initialization
    maxSize = 200; // Maximum size for Random Initialization
@@ -438,14 +443,9 @@ GE1DArrayGenome::myrank = myRank;
          convertNetworks(restrictMapper, mapper);
       } 
 
+      SendAndReceiveStruct(totalNodes, myRank);
+
       // when running in parallel transfer around populations
-      if(myRank==0){
-        ReceiveSlavesBest(totalNodes, myRank);
-      }
-      else{
-        SendMasterBest();
-        slaveReceiveBest(totalNodes, myRank);
-      }
       if(ngens_var_restrict && restrict_steps_done < ngens_var_restrict){
         // after transfer construct new grammar and set for use
         setRestrictedGrammar(reset_restricted_at_migration);
@@ -1041,157 +1041,156 @@ void GENNAlg::setRank(int rank){
         GEObjective::setrank(rank);
 }
 
+
 ///
-/// Sends best to master node
+/// Alternate MPI messaging taking advantage of MPI_Allgather functionality using struct
+/// @param totalNodes
+/// @param myRank
 ///
-void GENNAlg::SendMasterBest(){
+void GENNAlg::SendAndReceiveStruct(int totalNodes, int myRank){
+
+  struct_mpi * send = new struct_mpi;
+  GE1DArrayGenome& genome = (GE1DArrayGenome&)ga->statistics().bestIndividual();
+  // package genome Info
+  send->genomeParams[0] = genome.length();
+  send->genomeParams[1] = genome.score();;
+  send->genomeParams[2] = genome.getEffectiveSize();
+  send->genomeParams[3] = genome.getNumGenes();
+  send->genomeParams[4] = genome.getNumCovars();
+  send->genomeParams[5] = genome.getNumIndsEvaluated();
+  send->genomeParams[6] = genome.getSSTotal();
+  
+  // package codons
+  for(int i=0; i<genome.length(); i++){
+    send->codons[i] = genome.gene(i);
+  }
+  
+  // prepare receiving array
+  struct_mpi * recv = new struct_mpi[totalNodes];
+  
+  MPI_Allgather (send, sizeof(*send), MPI_BYTE, recv, sizeof(*send), MPI_BYTE, MPI_COMM_WORLD);
+  
+  updateWithMigration(recv, totalNodes, myRank);
+  
+  delete send;
+  delete [] recv;
+  
+}
+
+
+///
+/// Alternate MPI messaging taking advantage of MPI_Allgather functionality
+/// @param totalNodes
+/// @param myRank
+///
+void GENNAlg::SendAndReceive(int totalNodes, int myRank){
+
+  // each sends the basic info for best model
+  int nParams = 7;
+  float * genomeParams = new float[nParams];
+  int totalParams = nParams * totalNodes;
+  float * allGenomeParams = new float[totalParams];
 
   GE1DArrayGenome& genome = (GE1DArrayGenome&)ga->statistics().bestIndividual();
-  int len = genome.length();
-  float score = genome.score();
-  int * send = new int[len];
-  
-  float * genomeParams = new float[7];
-  genomeParams[0] = len;
-  genomeParams[1] = score;
+  // package genome Info
+  genomeParams[0] = genome.length();
+  genomeParams[1] = genome.score();;
   genomeParams[2] = genome.getEffectiveSize();
   genomeParams[3] = genome.getNumGenes();
   genomeParams[4] = genome.getNumCovars();
   genomeParams[5] = genome.getNumIndsEvaluated();
   genomeParams[6] = genome.getSSTotal();
-  
-  MPI_Send(genomeParams, 7, MPI_FLOAT, 0, genomeInfo, MPI_COMM_WORLD);
-  delete [] genomeParams;
 
-  for(int i=0; i<len; i++){
-    send[i] = genome.gene(i);
+  MPI_Allgather(genomeParams, nParams, MPI_FLOAT, allGenomeParams, nParams, MPI_FLOAT, MPI_COMM_WORLD);
+  // determine largest genome
+  int max_genome=0;
+  for(int i=0; i<totalNodes; i++){
+    if(allGenomeParams[i*nParams] > max_genome)
+      max_genome = allGenomeParams[i*nParams];
   }
-  MPI_Send(send, len, MPI_INT, 0, genomeArray, MPI_COMM_WORLD);
-  delete [] send;
+  
+  int * sendGenome = new int[max_genome];
+  int total_genome_size = max_genome * totalNodes;
+  int * totalGenomes = new int[total_genome_size];
+
+  for(int i=0; i<genome.length(); i++){
+    sendGenome[i]=genome.gene(i);
+  }
+
+  // then each sends and receives the actual codons and
+  // incorporates those into its own population
+  // needs to be large enough to hold the largest genome
+  MPI_Allgather(sendGenome, max_genome, MPI_INT, totalGenomes, max_genome, MPI_INT, MPI_COMM_WORLD);
+  updateWithMigration(allGenomeParams, totalGenomes, totalNodes, myRank, max_genome);
+  
+  delete [] genomeParams;
+  delete [] allGenomeParams;
+  delete [] sendGenome;
+  delete [] totalGenomes;
 }
 
 
 ///
-/// Master receives all slave best models and then broadcasts them
-/// back to the slaves.
+/// Incorporates migration into population
+/// @param genomes 
 /// @param totalNodes
 /// @param myRank
 ///
-void GENNAlg::ReceiveSlavesBest(int totalNodes, int myRank){
-
-  MPI_Status status; 
-  int number_params  = 7;
-  float * slaveStats = new float[number_params * totalNodes];
-  float * stats = new float[number_params];
-
-  GE1DArrayGenome& genome = (GE1DArrayGenome&)ga->statistics().bestIndividual();
-  // place master's best into array
-  slaveStats[0] = genome.length();
-  slaveStats[1] = genome.score();
+void GENNAlg::updateWithMigration(struct_mpi* mpi_genomes, int totalNodes, int myRank){
+  GAPopulation pop(ga->population());
   
-  slaveStats[2] = genome.getEffectiveSize();
-  slaveStats[3] = genome.getNumGenes();
-  slaveStats[4] = genome.getNumCovars();
-  slaveStats[5] = genome.getNumIndsEvaluated();
-  slaveStats[6] = genome.getSSTotal();
-  
-  int total_length = genome.length(), max_length=genome.length();
-
-  // Receive all the info first
-  for(int node=1; node < totalNodes; node++){
-    MPI_Recv(stats, number_params, MPI_FLOAT, node, genomeInfo, MPI_COMM_WORLD, &status);
-    slaveStats[node*number_params] = stats[0];
-    slaveStats[node*number_params+1] = stats[1];
-    slaveStats[node*number_params+2] = stats[2];
-    slaveStats[node*number_params+3] = stats[3];
-    slaveStats[node*number_params+4] = stats[4];
-    slaveStats[node*number_params+5] = stats[5];
-    slaveStats[node*number_params+6] = stats[6];
-    total_length += int(stats[0]);
-    if(int(stats[0]) > max_length)
-      max_length = int(stats[0]);
-  }
-  delete [] stats;
-
-  // char will be the total length of all the models to send
-  int * sendCodons = new int[total_length];
-  int currCodon = 0;
-
-  // fill with master's best first
-  for(int i=0; i < slaveStats[0]; i++){
-     sendCodons[currCodon++] = genome.gene(i);
-  }
-
-  // create a char array large enough to hold any of the genomes
-  int * receiveGenome = new int[max_length];
-
-  // cycle through and get best from each slave
-  int currLength = 0;
-  for(int node=1; node < totalNodes; node++){
-    currLength = slaveStats[node*number_params];
-    MPI_Recv(receiveGenome, currLength, MPI_INT, node, genomeArray, 
-      MPI_COMM_WORLD, &status);
-    for(int i=0; i < currLength; i++){
-      sendCodons[currCodon++] = receiveGenome[i];
+  for(int node=0; node < totalNodes; node++){
+    if(myRank==node){
+      continue;
     }
+    
+    GAGenome *tmpind = ga->population().individual(0).clone();
+    GE1DArrayGenome& genome = (GE1DArrayGenome&)*tmpind;
+    int len = mpi_genomes[node].genomeParams[0];
+    genome.length(len);
+    genome.setEffectiveSize(mpi_genomes[node].genomeParams[2]);
+    genome.setNumGenes(mpi_genomes[node].genomeParams[3]);
+    genome.setNumCovars(mpi_genomes[node].genomeParams[4]);
+    genome.setNumIndsEvaluated(mpi_genomes[node].genomeParams[5]);
+    genome.setSSTotal(mpi_genomes[node].genomeParams[6]);
+    for(int i=0; i<len; i++){
+      genome.gene(i, mpi_genomes[node].codons[i]);
+    }
+    genome.score(mpi_genomes[node].genomeParams[1]);
+
+    pop.add(genome);
+    
+    delete tmpind;
   }
-  delete [] receiveGenome;
 
-  // now broadcast all info to all slaves
-  MPI_Bcast(slaveStats, totalNodes*number_params, MPI_FLOAT, 0, MPI_COMM_WORLD); 
-  // broadcast all genome info 
-  MPI_Bcast(sendCodons, total_length, MPI_INT, 0, MPI_COMM_WORLD);
-
-  // use the arrays constructed here to update the master population
-  updateWithMigration(slaveStats, sendCodons, totalNodes, myRank);
-  delete [] slaveStats;
-  delete [] sendCodons;
-}
-
-
-///
-/// Slave receives all the best genomes at one time in a broadcast 
-/// from the master.
-///
-void GENNAlg::slaveReceiveBest(int totalNodes, int myRank){
-
-  // first receive the stats
-  int number_params = 7;
-  int float_size = totalNodes * number_params;
-  float * stats = new float[float_size];
-  MPI_Bcast(stats, float_size, MPI_FLOAT, 0, MPI_COMM_WORLD);
-
-
-  int total_length=0;
-  // calculate over all size
-  for(int i=0; i < float_size; i+=number_params){
-    total_length += stats[i];
-  }
-  int * codons = new int[total_length];
-
-  MPI_Bcast(codons, total_length, MPI_INT, 0, MPI_COMM_WORLD);
-
-  updateWithMigration(stats, codons, totalNodes, myRank);
-  delete [] stats;
-  delete [] codons;
+  // remove worst individuals from population
+  for(int i=0; i < totalNodes-1; i++)
+    pop.destroy();
+    
+  ga->population(pop);
 
 }
-
 
 ///
 /// Incorporates migration into population
 /// @param stats
 /// @param codons
 /// @param totalNodes
+/// @param myRank
+/// @param max_length Maximum length of a genome
 ///
-void GENNAlg::updateWithMigration(float* stats, int* codons, int totalNodes, int myRank){
+void GENNAlg::updateWithMigration(float* stats, int* codons, int totalNodes, int myRank, int max_length){
   int currCodon=0, len;
 
   GAPopulation pop(ga->population());
-  
   for(int node=0; node < totalNodes; node++){
     if(myRank == node){ // skip when same node 
-      currCodon += (unsigned int)(stats[node*7]);
+      if(!max_length){
+        currCodon += (unsigned int)(stats[node*7]);
+      }
+      else{
+        currCodon += max_length;
+      }
       continue;
     }
         
@@ -1207,9 +1206,15 @@ void GENNAlg::updateWithMigration(float* stats, int* codons, int totalNodes, int
     genome.setNumCovars(stats[node*number_params+4]);
     genome.setNumIndsEvaluated(stats[node*number_params+5]);
     genome.setSSTotal(stats[node*number_params+6]);
-       
+    
+    int final_codon = max_length + currCodon;
+    
     for(int i=0; i<len; i++){
       genome.gene(i, codons[currCodon++]);
+    }
+
+    if(max_length && currCodon < final_codon){
+      currCodon = final_codon;
     }
 
     genome.score(stats[node*number_params+1]);

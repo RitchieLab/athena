@@ -466,8 +466,6 @@ MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     }
     
     delete [] rec_snps;
-    
-    
   }
   
 #endif

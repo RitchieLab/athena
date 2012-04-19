@@ -15,7 +15,7 @@
 #include "Structs.h"
 
 #ifdef PARALLEL
-#include "mpi.h"
+#include <mpi.h>
 #endif
 
 /// holds parameters and name of the Algorithm

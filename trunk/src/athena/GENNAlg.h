@@ -15,6 +15,11 @@
 #include "GENNGrammarAdjuster.h"
 #include "BioFilterModelCollection.h"
 
+#ifdef PARALLEL
+#define MAX_GENOME_SIZE 10000
+#endif
+
+
 class GENNAlg:public Algorithm{
     
 public:
@@ -75,11 +80,18 @@ public:
     void getBioModelsArchive(string genegeneFile, string archiveFile, data_manage::Dataholder* holder);
     
     #ifdef PARALLEL
+      struct genome_mpi{
+        float genomeParams[7];
+        int codons[MAX_GENOME_SIZE];
+      };
+    
+      typedef struct genome_mpi struct_mpi;
+      
       virtual void setRank(int rank);
-      void SendMasterBest();
-      void ReceiveSlavesBest(int totalNodes, int myRank);
-      void slaveReceiveBest(int totalNodes, int myRank);
-      void updateWithMigration(float* stats, int* codons, int totalNodes, int myRank);
+      void updateWithMigration(float* stats, int* codons, int totalNodes, int myRank, int max_length=0);
+      void updateWithMigration(struct_mpi * genomes, int totalNodes, int myRank);
+      void SendAndReceive(int totalNodes, int myRank);
+      void SendAndReceiveStruct(int totalNodes, int myRank);
     #endif
     
     void tempoOutputName(string outname){oname = outname;
@@ -160,6 +172,7 @@ protected:
       RouletteWheelSelection,
       DoubleTournamentSelection
     };
+  
     
     void free_memory();
     

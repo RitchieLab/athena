@@ -297,6 +297,9 @@ int main(int argc, char** argv) {
 ///
 void exit_app(AthenaExcept& he){
   cout << he.what() << endl << endl;;
+#ifdef PARALLEL
+  MPI_Finalize();
+#endif
   exit(EXIT_FAILURE);    
 } 
 

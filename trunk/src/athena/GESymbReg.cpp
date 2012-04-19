@@ -263,16 +263,8 @@ void GESymbReg::step(){
          GEObjective::setMapper(&mapper);
          GE1DArrayGenome::setMapper(&mapper);
          convertNetworks(restrictMapper, mapper);
-      } 
-
-      // when running in parallel transfer around populations
-      if(myRank==0){
-        ReceiveSlavesBest(totalNodes, myRank);
       }
-      else{
-        SendMasterBest();
-        slaveReceiveBest(totalNodes, myRank);
-      }
+      SendAndReceiveStruct(totalNodes, myRank);
 
       if(ngens_var_restrict && restrict_steps_done < ngens_var_restrict){
         // after transfer construct new grammar and set for use

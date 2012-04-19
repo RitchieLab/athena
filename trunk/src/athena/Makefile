@@ -3,8 +3,6 @@
 # -----------------------------------------------------------------------------
 
 # compiler flags
-
-
 STATDIR = ../stat_calc
 DATADIR = ../data_manage
 GADIR = ../galib247
@@ -12,8 +10,8 @@ GEDIR = ../libGE-0.26
 ANNIEDIR = ../annie
 
 INCLUDEDIR = -I. -I$(STATDIR) -I$(DATADIR) -I$(GADIR) -I$(GEDIR) -I$(ANNIEDIR)
-#DFLAGS = -DPARALLEL
-DFLAGS = 
+DFLAGS = -DPARALLEL -DATHENA_BLOAT_CONTROL
+#DFLAGS = 
 CCFLAGS = -Wall $(DFLAGS) -O2 $(INCLUDEDIR)
 #CCFLAGS = -Wall $(DFLAGS) -g $(INCLUDEDIR)
 
@@ -52,7 +50,9 @@ SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	snpsnpmodel.h biomodel.h BackPropSMD.h BackPropAnnie.h BackPropAnnieTree.h \
 	SymRegressSolutionCreator.h GESymbReg.h
 
-ifeq ($(DFLAGS),-DPARALLEL)
+#ifeq ($(DFLAGS),-DPARALLEL)
+PARALLEL_NEEDED := $(shell echo $(DFLAGS) | cut -f1 -d' ')
+ifeq ($(PARALLEL_NEEDED),-DPARALLEL)
 CC = mpiCC
 SYSOBJS += TransferData.o
 SYSHEADERS += TransferData.h
