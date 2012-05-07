@@ -17,7 +17,7 @@ typedef vector<optSymbol> symbVector;
 enum LogType{
   LogNone,
   LogSummary,
-  LogDetailed
+  LogDetailed,
 };
 
 #endif

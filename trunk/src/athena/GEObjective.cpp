@@ -6,6 +6,7 @@ AthenaGrammarSI* GEObjective::mapper = NULL;
 data_manage::Dataset* GEObjective::set = NULL;
 SolutionCreator* GEObjective::sol_creator = NULL;
 unsigned int GEObjective::maxGenSize = 250;
+bool GEObjective::additional_logging = false;
 
 int GEObjective::rank=0;
 
@@ -37,6 +38,12 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 
       fitness = sol_creator->evaluate(set);
       
+      if(additional_logging){
+        sol_creator->detailed_logging();
+        genome.setDepth(sol_creator->get_detailed_log());
+//cout << "added depth=" << genome.getDepth() << endl;
+      }
+      
       sol_creator->free_solution();
 
       genome.setEffectiveSize(mapper->getGenotype()->getEffectiveSize());   
@@ -45,6 +52,8 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
       genome.add_genos(sol_creator->getGeneIndexes());
       genome.add_covars(sol_creator->getCovarIndexes());
       genome.setNumIndsEvaluated(sol_creator->getNumIndsEvaluated());
+      
+      
       
       // when set 
       if(genome.getNumIndsEvaluated() != int(set->num_inds())){
@@ -254,8 +263,6 @@ void GEObjective::optimizeSolution(GAGenome& g){
   }  	
 
 }
-
-
 
 
 

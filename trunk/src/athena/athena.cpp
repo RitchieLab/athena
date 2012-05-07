@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "11/8/2011";
+    string version_date = "4/27/2012";
     string exec_name = "ATHENA";
     
     if(argc < 2){
@@ -203,14 +203,16 @@ int main(int argc, char** argv) {
     else if(config.getBioGeneFile().size() > 0){
       alg->getBioModelsArchive(config.getBioGeneFile(), config.getBioArchiveFile(), &data);
     }
-
+      // prepare logs -- these are written as job progresses
+      alg->prepareLog(config.getOutputName(), curr_cv+1);
+      
       alg->initialize();
- 
+      
       for(int step=0; step < config.getNumExchanges(); step++)
          alg->step();
 
       // prepare and write logs -- algorithm will output as much information as requested
-      alg->writeLog(config.getOutputName(), curr_cv+1);
+//       alg->writeLog(config.getOutputName(), curr_cv+1);
 
       if(num_cv > 1)
         alg->test_solution(&(cv_set.get_interval(curr_cv).get_testing()), nproc);

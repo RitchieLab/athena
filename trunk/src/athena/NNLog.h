@@ -21,7 +21,8 @@ class NNLog: public AlgorithmLog{
   public:
   
     NNLog(int num_snps):AlgorithmLog(num_snps) {
-      genTotals newgen(num_snps);
+      gen_number=0;
+      genTotals newgen(num_snps, gen_number);
       gens.push_back(newgen);
       gen_index = 0;
       total_snps = num_snps;
@@ -36,9 +37,16 @@ class NNLog: public AlgorithmLog{
 
     /// Adds a generation worth of data information
     inline void add_generation(){
-      genTotals newgen(total_snps);
-      gens.push_back(newgen);
-      gen_index++;
+//       genTotals newgen(total_snps);
+//       gens.push_back(newgen);
+//       gen_index++;
+        // change to re-use generation 
+        // will output after every generation
+        gens.clear();
+        gen_number++;
+        genTotals newgen(total_snps,gen_number);
+        gens.push_back(newgen);
+        gen_index=0;
     }
 
     inline void complete_gen(){
@@ -92,6 +100,10 @@ class NNLog: public AlgorithmLog{
       gens[gen_index].totalSize += size;
     }
     
+    inline void add_nn_depth(int depth){
+      gens[gen_index].totalDepth += depth;
+    }
+    
     /// add the snps present in the network
     inline void add_snps(std::vector<int> snps){
       std::vector<int>::iterator iter;
@@ -108,24 +120,34 @@ class NNLog: public AlgorithmLog{
     /// output snp sizes for each
     void output_snp_sizes(std::ostream& os, unsigned int totalPopSize);
     
+    /// output snp sizes headers
+    void output_snp_headers(std::ostream& os);
+    
     /// output fitnesses for all models in each generation
     void output_fitness(std::ostream& os, unsigned int totalPopSize);
+    
+    void output_fitness_headers(std::ostream& os);
+    
+    void output_main_headers(std::ostream& os);
 
     #ifdef PARALLEL
       void sendLog(); // for slaves
       void receiveLogs(int nprocs); // for master
       void sendDetailedLog(); // for slaves
       void receiveDetailedLogs(int nprocs); // for master
+      void SendReceiveLogs(int nprocs, int myrank);
     #endif
 
   private:
     struct genTotals{   
-      genTotals(int num_snps){
+      genTotals(int num_snps, int gen_num){
+        generationNumber=gen_num;
         numValidNN = 0;
         numGenotypes = 0;
         numCovariates = 0;
         totalFitness = 0.0;
         totalSize = 0;
+        totalDepth=0;
         maxFitness = -100000000;
         minFitness = 100000000;
         avgGenos = 0.0;
@@ -145,17 +167,22 @@ class NNLog: public AlgorithmLog{
         avgFitness = totalFitness / float(numValidNN);
         avgSize = totalSize / float(numValidNN);
         avgEpochs = totalEpochs / float(numValidNN);
+        avgDepth = totalDepth / float(numValidNN);
       }
       
-      int numValidNN, numGenotypes, numCovariates, totalSize, totalEpochs, minEpochs, maxEpochs;
+      int numValidNN, numGenotypes, numCovariates, totalSize, totalEpochs, minEpochs, 
+        maxEpochs, totalDepth, generationNumber;
       float avgGenos, avgCovars, avgFitness, avgSize, totalFitness, maxFitness, minFitness,
-        avgEpochs;
+        avgEpochs, avgDepth;
       std::vector<int> snp_totals, best_model_snps;
       std::vector<std::vector<int> > allmodels;
       std::vector<float> allfitness;
     };
        
     #ifdef PARALLEL
+      void fill_master_log(float* rec_data, int basic_size, float* snps, int snp_size,
+        int nprocs);
+      void fill_send_buffer(float* send_data);
       void packageDetailed(int& total_fit_size, float*& fit_send, int& total_snp_size, int*& snp_send);
       void mergeDetailed(int total_fit_size, float* fit_rec, int total_snp_size, int* snp_rec, 
         std::vector<std::vector<indModel> >& indmodels);
@@ -163,7 +190,7 @@ class NNLog: public AlgorithmLog{
 
     std::vector<genTotals> gens;
     unsigned int gen_index;
-    int total_snps;
+    int total_snps, gen_number;
     bool maxbest;
 };
 

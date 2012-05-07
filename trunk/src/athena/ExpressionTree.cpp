@@ -155,6 +155,55 @@ void ExpressionTree::clear_constants(){
 }
 
 ///
+/// Returns maximum depth of the tree.  For neural networks the depth of the nodes will
+/// be one less than the maximum depth of the tree.
+/// @return maximum depth of the tree
+///
+unsigned int ExpressionTree::get_max_depth(){
+//   tree<Element_node>::iterator iter;
+//   unsigned int max_depth=0;
+//   for(iter=express_tree.begin();iter != express_tree.end(); iter++){
+//     cout << iter->el->get_label() <<  " type=" << iter->el->get_type() << endl;
+//     if(iter->el->get_type()[0]  == 'P'){
+//         cout << "NODE" << endl;
+//     }
+//   }
+//   cout << endl;
+// 
+//   max_depth = increment_depth(express_tree.begin(), 0);
+//   cout << "MAX DEPTH=" << max_depth << endl;
+// cout << "---------------------------------------" << endl;
+//   
+//   return max_depth;
+    return increment_depth(express_tree.begin(), 0);
+}
+
+///
+/// Recursively traverse tree and record deepest depth of a neural network node
+/// @param iter
+/// @param currdepth
+/// @return maximum depth found
+///
+unsigned int ExpressionTree::increment_depth(tree<Element_node>::iterator baseIter, unsigned int currdepth){
+    tree<Element_node>::iterator childIter;
+    
+    unsigned int max_depth=0, depth;
+    
+    for(int child=0; child < int(express_tree.number_of_children(baseIter)); child++){  
+        childIter = express_tree.child(baseIter, child);  
+        depth=increment_depth(childIter, currdepth);
+        if(depth > max_depth){
+            max_depth=depth;
+        }
+    }
+    if(baseIter->el->get_type()[0] == 'P')
+      max_depth+=1;
+      
+    return max_depth;
+}
+
+
+///
 /// Output expression tree in dot language for use by Graphviz to
 /// create an image file
 ///

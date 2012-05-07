@@ -77,13 +77,16 @@ public:
     virtual void startLog(int num_snps)=0;
 
     /// Writes the log
-    virtual void writeLog(string basename, int cv)=0;
+    virtual void writeLog()=0;
     
     /// Clears the logs
     virtual void clearLogs()=0;
     
     /// Sets log type 
     virtual void setLogType(LogType ltype){logTypeSelected = ltype;}
+    
+    /// Prepares log files
+    virtual void prepareLog(std::string basename, int cv)=0;
     
     /// Retrieves the models from BioFilter and stores the information in the algorithm
     virtual void getBioModels(std::string filename, std::string biofiletype, 

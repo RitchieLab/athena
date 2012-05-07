@@ -30,6 +30,8 @@ class ExpressionTree{
       string id;
     };
     
+    unsigned int get_max_depth();
+    
     /// returns iterator to beginning of tree
     inline tree<Element_node>::iterator begin(){return express_tree.begin();}
     
@@ -45,6 +47,8 @@ class ExpressionTree{
       return express_tree.number_of_children(iter);}
       
   private:
+    unsigned int increment_depth(tree<Element_node>::iterator baseIter, 
+        unsigned int currdepth);
   
     std::string alter_label(data_manage::Dataholder* holder,
       bool map_used, bool ott_dummy, std::string label);

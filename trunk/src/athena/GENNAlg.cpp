@@ -19,6 +19,10 @@ GENNAlg::GENNAlg(){
 /// Destructor
 ///
 GENNAlg::~GENNAlg(){
+    if(gelog != NULL){
+        delete gelog;
+        gelog=NULL;
+    }
     free_memory();
 }
 
@@ -282,6 +286,7 @@ void GENNAlg::initialize_params(){
    ngens_block_cross = 0;
    
    ga = NULL;
+   gelog = NULL;
    
    maxbest = true;
    
@@ -353,10 +358,16 @@ void GENNAlg::set_ga_params(){
 
    // add mapper to objective function
    GEObjective::setMapper(&mapper);
+   if(logTypeSelected == LogNone)
+     GEObjective::addLogging(false);
+   else
+     GEObjective::addLogging(true);
+
    InitGEgenome::setMinSize(minSize);
    InitGEgenome::setMaxSize(maxSize);
    InitGEgenome::setMapper(&mapper);
 }
+
 
 ///
 /// sets mapper preferences
@@ -376,12 +387,11 @@ void GENNAlg::set_mapper_prefs(AthenaGrammarSI& hemannMapper){
 		  hemannMapper.setTailRatio(tailRatio);
 	  }
 	  hemannMapper.setRestrictRule("<v>");
-	  	
+	  
 	  // set up reverse grammar that can be used with resetting genome based
 	  // on optimization (such as backpropagation)
     hemannMapper.constructReverseGrammar();
 }
-
 
 
 ///
@@ -395,7 +405,6 @@ void GENNAlg::run(){
 }
 
 
-
 ///
 /// Runs an indicated interval for the algorithm. This interval is set
 /// in the step_size variable.  
@@ -405,7 +414,9 @@ void GENNAlg::step(){
 GE1DArrayGenome::myrank = myRank;
     for(unsigned int i=0; i < step_size; i++){
         if(!ga->done()){
-         gelog->add_generation();
+            if(logTypeSelected!=LogNone){
+                gelog->add_generation();
+            }
          ga->step();
 
          restrict_steps_done++;
@@ -428,7 +439,6 @@ GE1DArrayGenome::myrank = myRank;
          }
          fillLog();
         }
-        
     }
 
     #ifdef PARALLEL
@@ -478,6 +488,7 @@ void GENNAlg::fillLog(){
       if(worst_score != genome.score()){
         gelog->add_network();
         gelog->add_nn_size(genome.getEffectiveSize());
+        gelog->add_nn_depth(genome.getDepth());
         if(!pop.getConvertScores()){
           gelog->add_fitness(genome.score(), genome.get_genos());
         }
@@ -493,6 +504,22 @@ void GENNAlg::fillLog(){
       } 
     }
     gelog->complete_gen();
+    
+    #ifdef PARALLEL
+      gelog->SendReceiveLogs(totalNodes, myRank);
+//     if(myRank==0)
+//     
+//       gelog->receiveLogs(totalNodes);
+//     else
+//       gelog->sendLog();
+    #endif
+    
+    
+    // output log information -- appended to existing log files
+    if(myRank==0){
+        writeLog();
+// exit(1);
+    }
 }
 
 
@@ -512,11 +539,14 @@ void GENNAlg::saveLog(){
   logs.push_back(gelog);
 }
 
-
 ///
 /// Starts fresh log 
 ///
 void GENNAlg::startLog(int num_snps){
+  if(gelog != NULL){
+    delete gelog;
+    gelog=NULL;
+  }
   gelog = new NNLog(num_snps);
   gelog->set_max_best(maxbest);
 }
@@ -869,69 +899,127 @@ void GENNAlg::outputGenome(GAGenome& g){
   cout << endl;
 }
 
+///
+/// Prepares for logging
+/// @param outname
+/// @param cv
+///
+void GENNAlg::prepareLog(string basename, int cv){
+    int totalPopSize = pop_size;
+    
+    main_log_filename = basename + ".cv." + Stringmanip::itos(cv) + ".log";
+    fitness_log_filename =  basename + ".cv." + Stringmanip::itos(cv) +
+        ".fitness.log";    
+    snpname_log_filename = basename + ".cv." + Stringmanip::itos(cv) + 
+        ".snpsize.log";    
+  #ifdef PARALLEL
+    if(myRank==0){
+  #endif
+  
+  ofstream outfile;
+  switch(logTypeSelected){
+    case LogDetailed:
+        outfile.open(fitness_log_filename.c_str(), ios::out);
+        if(!outfile.is_open()){
+            throw AthenaExcept(fitness_log_filename + " unable to open for writing log file");
+          }   
+      gelog->output_fitness_headers(outfile);
+      outfile.close();  
+      outfile.open(snpname_log_filename.c_str(), ios::out);
+      if(!outfile.is_open()){
+            throw AthenaExcept(snpname_log_filename + " unable to open for writing log file");
+       }   
+       gelog->output_snp_headers(outfile);
+      outfile.close();      
+    case LogSummary:
+    outfile.open(main_log_filename.c_str(), ios::out);
+        if(!outfile.is_open()){
+            throw AthenaExcept(main_log_filename + " unable to open for writing log file");
+        }  
+      gelog->output_main_headers(outfile); 
+      outfile.close();        
+    case LogNone:
+    break;
+  }
+  
+  
+  #ifdef PARALLEL
+    }
+  #endif
+}
+
 
 ///
 /// Writes current log to output
 /// @param outname
 ///
-void GENNAlg::writeLog(string basename, int cv){
+void GENNAlg::writeLog(){
 
-  int totalPopSize = pop_size;
-  #ifdef PARALLEL
-    if(logTypeSelected != LogNone){
-      if(myRank==0)
-        gelog->receiveLogs(totalNodes);
-      else
-        gelog->sendLog();      
-      if(logTypeSelected == LogDetailed){
-        if(myRank==0)
-          gelog->receiveDetailedLogs(totalNodes);
-        else
-          gelog->sendDetailedLog();
-      }
-    }
-    totalPopSize *= totalNodes;
-    
-    if(myRank==0){
-  #endif
-
-  if(logTypeSelected != LogNone){
-    string filename = basename + ".cv." + Stringmanip::itos(cv) + ".log";
     ofstream outfile;
-    outfile.open(filename.c_str(), ios::out);
-      if(!outfile.is_open()){
-        throw AthenaExcept(filename + " unable to open for writing log file");
-      }   
-      gelog->output_log(outfile);
-      outfile.close();
-    if(logTypeSelected == LogDetailed){
-      string fitnessname = basename + ".cv." + Stringmanip::itos(cv) +
-        ".fitness.log";
-      ofstream fitout;
-      fitout.open(fitnessname.c_str(), ios::out);
-      if(!fitout.is_open()){
-        throw AthenaExcept(fitnessname + " unable to open for writing log file");
-      }
-      gelog->output_fitness(fitout, totalPopSize);
-      fitout.close();
-      
-      string snpname = basename + ".cv." + Stringmanip::itos(cv) + 
-        ".snpsize.log";
-      ofstream sizeout;
-      sizeout.open(snpname.c_str(), ios::out);
-      if(!sizeout.is_open()){
-        throw AthenaExcept(snpname + " unable to open for writing log file");
-      }
-      gelog->output_snp_sizes(sizeout, totalPopSize);
-      sizeout.close();
-    }
-  }
+    outfile.open(main_log_filename.c_str(), ios::app);
+    if(!outfile.is_open()){
+        throw AthenaExcept(main_log_filename + " unable to open for writing log file");
+     }
+     gelog->output_log(outfile);
+     outfile.close();
+
+//  int totalPopSize = pop_size;
+//   #ifdef PARALLEL
+//     if(logTypeSelected != LogNone){
+//       if(myRank==0)
+//         gelog->receiveLogs(totalNodes);
+//       else
+//         gelog->sendLog();      
+//       if(logTypeSelected == LogDetailed){
+//         if(myRank==0)
+//           gelog->receiveDetailedLogs(totalNodes);
+//         else
+//           gelog->sendDetailedLog();
+//       }
+//     }
+//     totalPopSize *= totalNodes;
+//     
+//     if(myRank==0){
+//   #endif
+// 
+//   if(logTypeSelected != LogNone){
+//     string filename = basename + ".cv." + Stringmanip::itos(cv) + ".log";
+//     ofstream outfile;
+//     outfile.open(filename.c_str(), ios::out);
+//       if(!outfile.is_open()){
+//         throw AthenaExcept(filename + " unable to open for writing log file");
+//       }   
+//       gelog->output_log(outfile);
+//       outfile.close();
+//     if(logTypeSelected == LogDetailed){
+//       string fitnessname = basename + ".cv." + Stringmanip::itos(cv) +
+//         ".fitness.log";
+//       ofstream fitout;
+//       fitout.open(fitnessname.c_str(), ios::out);
+//       if(!fitout.is_open()){
+//         throw AthenaExcept(fitnessname + " unable to open for writing log file");
+//       }
+//       gelog->output_fitness(fitout, totalPopSize);
+//       fitout.close();
+//       
+//       string snpname = basename + ".cv." + Stringmanip::itos(cv) + 
+//         ".snpsize.log";
+//       ofstream sizeout;
+//       sizeout.open(snpname.c_str(), ios::out);
+//       if(!sizeout.is_open()){
+//         throw AthenaExcept(snpname + " unable to open for writing log file");
+//       }
+//       gelog->output_snp_sizes(sizeout, totalPopSize);
+//       sizeout.close();
+//     }
+//   }
+//   
+//   #ifdef PARALLEL
+//   } // end write for master
+//   #endif
   
-  #ifdef PARALLEL
-  } // end write for master
-  #endif
-  
-  delete gelog;
+//   delete gelog;
+//   gelog=NULL;
 }
 
 
@@ -1171,6 +1259,54 @@ void GENNAlg::updateWithMigration(struct_mpi* mpi_genomes, int totalNodes, int m
 
 }
 
+
+///
+/// Incorporates migration into population
+/// @param genomes 
+/// @param totalNodes
+/// @param myRank
+///
+// void GENNAlg::updateWithMigration(struct_mpi* mpi_genomes, int totalNodes, int myRank){
+//   GAPopulation pop(ga->population());
+//   
+//   for(int node=0; node < totalNodes; node++){
+//     if(myRank==node){
+//       continue;
+//     }
+//     
+//     GAGenome *tmpind = ga->population().individual(0).clone();
+//     GE1DArrayGenome& genome = (GE1DArrayGenome&)*tmpind;
+//     int len = mpi_genomes[node].genomeParams[0];
+//     genome.length(len);
+//     genome.setEffectiveSize(mpi_genomes[node].genomeParams[2]);
+//     genome.setNumGenes(mpi_genomes[node].genomeParams[3]);
+//     genome.setNumCovars(mpi_genomes[node].genomeParams[4]);
+//     genome.setNumIndsEvaluated(mpi_genomes[node].genomeParams[5]);
+//     genome.setSSTotal(mpi_genomes[node].genomeParams[6]);
+// if(myRank==1){
+//   cout << "in update " << myRank << " len=" << len << " effsize=" << mpi_genomes[node].genomeParams[2] << " numgenes=" << mpi_genomes[node].genomeParams[3] << endl;
+// }
+//     for(int i=0; i<len; i++){
+//  if(myRank==1){
+//    cout << "in update " << myRank << " adding for i=" << i << " codon " << mpi_genomes[node].codons[i] << endl;
+//  }
+//       genome.gene(i, mpi_genomes[node].codons[i]);
+//     }
+//     genome.score(mpi_genomes[node].genomeParams[1]);
+// 
+//     pop.add(genome);
+//     
+//     delete tmpind;
+//   }
+// 
+//   // remove worst individuals from population
+//   for(int i=0; i < totalNodes-1; i++)
+//     pop.destroy();
+//     
+//   ga->population(pop);
+// 
+// }
+
 ///
 /// Incorporates migration into population
 /// @param stats
@@ -1183,6 +1319,11 @@ void GENNAlg::updateWithMigration(float* stats, int* codons, int totalNodes, int
   int currCodon=0, len;
 
   GAPopulation pop(ga->population());
+//if(myRank==1){
+//  cout << "myRank=" << myRank << " totalNodes=" << totalNodes << endl;
+//  cout << "myRank=" << myRank << " max_length=" << max_length << endl;
+//}
+  
   for(int node=0; node < totalNodes; node++){
     if(myRank == node){ // skip when same node 
       if(!max_length){
@@ -1210,6 +1351,9 @@ void GENNAlg::updateWithMigration(float* stats, int* codons, int totalNodes, int
     int final_codon = max_length + currCodon;
     
     for(int i=0; i<len; i++){
+//if(myRank==1){
+//  cout << "in update " << myRank << " adding for i=" << i << " codon " << codons[currCodon] << endl;
+//}
       genome.gene(i, codons[currCodon++]);
     }
 

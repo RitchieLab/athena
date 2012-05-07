@@ -79,6 +79,8 @@ public:
    
     // returns worst score
     static float get_worst_score(){return sol_creator->get_worst();}
+    
+    static void addLogging(bool val){additional_logging=val;}
 
     static void setrank(int r){rank=r;}
     static int rank;
@@ -88,7 +90,8 @@ private:
     static AthenaGrammarSI* mapper;
     static data_manage::Dataset* set;
     static SolutionCreator* sol_creator;
-    static unsigned int maxGenSize;  
+    static unsigned int maxGenSize;
+    static bool additional_logging;  
 };
 
 #endif	/* _GEOBJECTIVE_H */

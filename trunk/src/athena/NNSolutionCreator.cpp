@@ -67,6 +67,7 @@ void NNSolutionCreator::establish_solution(vector<string>& symbols, Dataset* set
 ///
 void NNSolutionCreator::establish_solution(vector<string>& symbols){
    
+   nn_depth = 0;
    nn_terminal_size= symbols.size();
    
     // as part of stack look for variables and keep a list of those
@@ -426,6 +427,23 @@ float NNSolutionCreator::evaluate(Dataset* set){
     
 }
 
+///
+/// For Networks, the detailed logging determines the depth in nodes of the
+/// model.
+///
+void NNSolutionCreator::detailed_logging(){
+  ExpressionTree extree;
+  extree.convert_postfix(postfix_stack);
+  
+  nn_depth = extree.get_max_depth();
+}
+
+///
+/// Return the network depth
+///
+unsigned int NNSolutionCreator::get_detailed_log(){
+    return nn_depth;
+}
 
 ///
 /// writes a dot compatible text file representing the network

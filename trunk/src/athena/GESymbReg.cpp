@@ -233,7 +233,9 @@ void GESymbReg::step(){
 
     for(unsigned int i=0; i < step_size; i++){
         if(!ga->done()){
-         gelog->add_generation();
+         if(logTypeSelected!=LogNone){
+            gelog->add_generation();
+         }         
          ga->step();
          restrict_steps_done++;
  

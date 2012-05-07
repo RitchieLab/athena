@@ -43,7 +43,8 @@ void Config::initialize(){
     data_encode_map["TRUE"] = OttDummy;
     log_type_map["NONE"] = LogNone;
     log_type_map["SUMMARY"] = LogSummary;
-    log_type_map["DETAILED"] = LogDetailed;
+    // changed to match Summary as part of log optimization
+    log_type_map["DETAILED"] = LogSummary;
     logTypeSelected = LogNone;
     summary_map["TRUE"] = True;
     summary_map["FALSE"] = False;

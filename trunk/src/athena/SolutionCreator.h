@@ -105,6 +105,9 @@ public:
     
     virtual int getNumIndsEvaluated()=0;
     
+    virtual void detailed_logging()=0;
+    virtual unsigned int get_detailed_log()=0;
+    
 protected:
     Solution* sol;
     SolutionCalculator * calculator;

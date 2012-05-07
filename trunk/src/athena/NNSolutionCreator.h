@@ -84,6 +84,9 @@ public:
     char getRightOptBound(){return right_opt_bound;}
     std::set<string> getOptArgSymbols(){return optargsymbols;}
 
+    void detailed_logging();
+    unsigned int get_detailed_log();
+
 protected:
     
     void compress_operator(vector<TerminalSymbol*> & postfix_stack,
@@ -102,7 +105,7 @@ protected:
     
     float optimized_score;
     bool terminals_set;
-    unsigned int nn_terminal_size;
+    unsigned int nn_terminal_size, nn_depth;
     vector<TerminalSymbol *> postfix_stack;
     int nIndsEvaluated;
     string startopt;

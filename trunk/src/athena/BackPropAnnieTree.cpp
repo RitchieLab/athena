@@ -188,7 +188,7 @@ void BackPropAnnieTree::createTree(vector<TerminalSymbol*>& postfix_stack, Datas
   if(net != NULL){
     delete net;
   }
-    
+  
   net = new MultiLayerNetwork(layers[0]);
   for(size_t currLayer = 1; currLayer < layers.size()-1; currLayer++){
     net->addLayer(layers[currLayer]);

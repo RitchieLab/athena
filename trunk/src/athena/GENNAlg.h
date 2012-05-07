@@ -65,10 +65,14 @@ public:
     void startLog(int num_snps);
    
     /// Writes log
-    void writeLog(string basename, int cv);
+    void writeLog();
     
     /// Clears log
     void clearLogs();
+    
+    /// Prepares log files
+    void prepareLog(std::string basename, int cv);
+    
     
     /// Returns covariates and snps in best network 
     vector<string> getBestVariables();
@@ -212,7 +216,8 @@ protected:
     bool effectiveXO, useAllVars, useAllCovars, requireAllVars, requireAllVarsOnce, maxbest,
       reset_restricted_at_migration;
     unsigned int wrapEvents, randSeed;
-    std::string grammarFile, calculatorName;
+    std::string grammarFile, calculatorName, main_log_filename, fitness_log_filename, 
+        snpname_log_filename;
     unsigned int pop_size, num_generations, step_size, ngens_var_restrict, restrict_steps_done,
       ngens_block_cross;
     double prob_cross, prob_mut, init_bio_fract;
