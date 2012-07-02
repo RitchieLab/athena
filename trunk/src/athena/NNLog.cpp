@@ -41,12 +41,14 @@ void NNLog::output_log(ostream& os){
       << setw(9) << gens[gen].maxFitness << setw(9) << gens[gen].minFitness
       << setw(9) << gens[gen].avgGenos << setw(7) << gens[gen].avgCovars 
       << setw(11) << gens[gen].avgEpochs << setw(10) << gens[gen].maxEpochs <<  " ";
-      
-    os << gens[gen].best_model_snps[0];
-    for(unsigned int snp=1; snp < gens[gen].best_model_snps.size(); snp++){
-      os << "_" << gens[gen].best_model_snps[snp];
+    
+    if(!gens[gen].best_model_snps.empty()){  
+        os << gens[gen].best_model_snps[0];
+        for(unsigned int snp=1; snp < gens[gen].best_model_snps.size(); snp++){
+          os << "_" << gens[gen].best_model_snps[snp];
+        }
+        os << " ";
     }
-    os << " ";
     
     for(int snp=0; snp < total_snps; snp++){
       os << gens[gen].snp_totals[snp] << " ";
