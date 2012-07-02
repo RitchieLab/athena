@@ -85,7 +85,6 @@ void NNSolutionCreator::establish_solution(vector<string>& symbols){
    
     vector<TerminalSymbol *> temp_postfix;
    
-
     postfix_stack.clear();
     
     vector<TerminalSymbol *> symbol_stack;

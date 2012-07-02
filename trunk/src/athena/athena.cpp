@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "4/27/2012";
+    string version_date = "6/11/12";
     string exec_name = "ATHENA";
     
     if(argc < 2){
@@ -246,10 +246,14 @@ int main(int argc, char** argv) {
 } /* end of output */
 #endif
     }
-    
     int nmodels = 1;
+    for(int curr_cv=1; curr_cv <= num_cv; curr_cv++){
+        alg->finishLog(config.getOutputName(),curr_cv);
+    }
+    
 #ifdef PARALLEL
     if(myrank==0){
+
       if(config.outputAllNodesBest())
         nmodels = nproc;
 #endif

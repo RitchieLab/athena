@@ -91,11 +91,17 @@ class AthenaGrammarSI: public GEGrammarSI{
     /// Constructs a reverse grammer that will give the left hand side when passed the right side
     void constructReverseGrammar();
     
+    /// Builds the derivation tree and returns max depth of the tree
+    int buildDerivationTree();
+    
+    
   private:
     struct GrammarModel{
       vector<int> dataset_indexes; //location in original array (corresponds to V1,V2, etc. in grammar)
       vector<int> codon_values; // contains codon values to replace the existing ones in genome with
     };
+  
+    int getMax(DerivationTree& tree);
   
     bool genotype2PhenotypeConvert(AthenaGrammarSI& newMapper, const bool buildDerivationTree=false);
   

@@ -160,21 +160,6 @@ void ExpressionTree::clear_constants(){
 /// @return maximum depth of the tree
 ///
 unsigned int ExpressionTree::get_max_depth(){
-//   tree<Element_node>::iterator iter;
-//   unsigned int max_depth=0;
-//   for(iter=express_tree.begin();iter != express_tree.end(); iter++){
-//     cout << iter->el->get_label() <<  " type=" << iter->el->get_type() << endl;
-//     if(iter->el->get_type()[0]  == 'P'){
-//         cout << "NODE" << endl;
-//     }
-//   }
-//   cout << endl;
-// 
-//   max_depth = increment_depth(express_tree.begin(), 0);
-//   cout << "MAX DEPTH=" << max_depth << endl;
-// cout << "---------------------------------------" << endl;
-//   
-//   return max_depth;
     return increment_depth(express_tree.begin(), 0);
 }
 

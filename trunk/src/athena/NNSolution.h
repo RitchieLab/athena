@@ -40,6 +40,12 @@ public:
     /// Adjusts score passed and returns value
     virtual float adjust_score_out(float score, int nIndsTested, float sstotal);
     
+    void set_gram_depth(int dep){gram_depth = dep;}
+    int get_gram_depth(){return gram_depth;}
+    
+    void set_nn_depth(int dep){nn_depth = dep;}
+    int get_nn_depth(){return nn_depth;}
+    
 private:
 
     /// adjusts indexes back to original values if dummy-encoded
@@ -48,6 +54,8 @@ private:
     float alter_score(float mse, int total_inds, float sstotal);
     
     int calc_inds(Dataset* set, float& sstotal);
+    
+    int nn_depth, gram_depth;
     
 };
 

@@ -290,6 +290,7 @@ unsigned int maxDepth = getMaxDepth();
   // increment currGramModel iterator if not already at end
 	if(currGramModel != gramModels.end())
 		++currGramModel;	
+			
 	return returnValue;
 }
 
@@ -1377,5 +1378,119 @@ void AthenaGrammarSI::constructReverseGrammar(){
   }
 }
 
+
+int AthenaGrammarSI::buildDerivationTree(){
+    bool returnValue=true;
+    unsigned int newEffectiveSize=0;
+	// Start by setting effectiveSize to 0
+	genotype.setEffectiveSize(newEffectiveSize);
+
+	phenotype.clear();
+
+    // have to fill the production vector
+    productions.clear();
+    
+    derivationTree.setData(getStartSymbol());
+	// Wraps counter and nonterminals stack
+	unsigned int wraps=0;
+	stack<const Symbol*> nonterminals;
+
+	// Iterators
+	iterator ruleIt;
+	Rule::iterator prodIt;
+	Genotype::iterator genoIt=genotype.begin();
+	
+    // Start with the start symbol
+	nonterminals.push(getStartSymbol());
+	bool gotToUseWrap=false;
+	
+	derivationTree.setData(getStartSymbol());
+	
+	// Get rid of all non-terminal symbols
+	while((!nonterminals.empty())&&(wraps<=getMaxWraps())){
+		// Do a mapping step
+		// call with buildDerivationTree=true
+		switch(genotype2PhenotypeStep(nonterminals,genoIt,true)){
+			case -1:returnValue=false;
+				break;
+			case 0:	;
+				break;
+			case 1:	genoIt++;
+				newEffectiveSize++;
+				if(gotToUseWrap){
+					wraps++;
+					gotToUseWrap=false;
+				}
+				// Check if wrap is needed
+				if(genoIt==genotype.end()){
+					//newEffectiveSize+=genotype.size();
+					genoIt=genotype.begin();
+					gotToUseWrap=true;
+				}
+				break;
+			default:cerr << "Internal error in genotype2Phenotype().\n";
+				cerr << "Execution aborted.\n";
+				exit(0);
+		}
+	}	
+	
+    if((wraps>getMaxWraps())||(!nonterminals.empty())){
+		returnValue=false;
+		// Add remaining symbols in nonterminals queue to phenotype
+		while(!nonterminals.empty()){
+			phenotype.push_back(nonterminals.top());
+			nonterminals.pop();
+		}
+	}
+	
+    phenotype.setValid(returnValue);
+	genotype.setEffectiveSize(newEffectiveSize);
+	genotype.setWraps(wraps); 
+    
+    derivationTree.clear();
+    derivationTree.setData(getStartSymbol());
+    derivationTree.setCurrentLevel(1);
+    derivationTree.setDepth(1);
+    vector<Production*>::iterator prodIterator=productions.begin();
+    buildDTree(derivationTree,prodIterator);
+    
+    // DerivationTree::iterator treeIt=derivationTree.begin();
+    
+    return getMax(derivationTree);
+//     int count=0;
+//     while(treeIt!=derivationTree.end()){
+//         count++;
+//         cout << "iterator " << count << endl;
+//         cout << *(treeIt->getData()) << endl;
+//         
+//         for(DerivationTree::iterator subIt=treeIt->begin(); subIt!=treeIt->end();subIt++){
+//             cout << "subiterator " << *(subIt->getData()) << " current level=" << subIt->getCurrentLevel() << endl;
+//         }
+//         
+//         treeIt++;
+//     }
+    
+}
+
+///
+/// Recursively search for the maximum level in the tree
+///
+int AthenaGrammarSI::getMax(DerivationTree& tree){
+    DerivationTree::iterator treeIt = tree.begin();
+    int maxdepth=0, depth=0;
+    while(treeIt != tree.end()){
+        if(treeIt->empty()){
+            depth = treeIt->getCurrentLevel();
+        }
+        else{
+            depth = getMax(*treeIt);
+        }
+        if(depth > maxdepth){
+            maxdepth=depth;
+        }
+        treeIt++;
+    }
+    return maxdepth;
+}
 
 

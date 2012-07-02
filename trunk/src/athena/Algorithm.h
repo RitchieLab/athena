@@ -82,6 +82,9 @@ public:
     /// Clears the logs
     virtual void clearLogs()=0;
     
+    /// Finish log and pulls together model information
+    virtual void finishLog(std::string basename, int cv)=0;
+    
     /// Sets log type 
     virtual void setLogType(LogType ltype){logTypeSelected = ltype;}
     
@@ -114,9 +117,9 @@ protected:
     vector<AlgorithmLog*> logs;
     int myRank;
     
-    #ifdef PARALLEL
+//    #ifdef PARALLEL
       int totalNodes;
-    #endif
+//    #endif
     
 };
 

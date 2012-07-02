@@ -4,6 +4,7 @@
 #include "GEObjective.h"
 #include "Terminals.h"
 #include "GENNGrammarAdjuster.h"
+#include "ModelLogParser.h"
 #include <ga/ga.h>
 #include <ctime>
 #include <set>
@@ -201,6 +202,7 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
 void GENNAlg::initialize_params(){
    
    myRank = 0;
+   totalNodes = 1;
    minSize = 50; // Minimum size for Random Initialization
    maxSize = 200; // Maximum size for Random Initialization
 
@@ -514,11 +516,18 @@ void GENNAlg::fillLog(){
 //       gelog->sendLog();
     #endif
     
-    
     // output log information -- appended to existing log files
     if(myRank==0){
         writeLog();
-// exit(1);
+    }
+    
+    // add to detailed log files
+    fill_population();
+    NNSolution * solution;
+    int nsolutions = pop.num_solutions();
+    for(int i=0; i<nsolutions; i++){
+        solution = (NNSolution*)pop[i];
+        modellog->write_solution(*solution, gelog->get_current_gen(), i+1);
     }
 }
 
@@ -545,7 +554,9 @@ void GENNAlg::saveLog(){
 void GENNAlg::startLog(int num_snps){
   if(gelog != NULL){
     delete gelog;
+    delete modellog;
     gelog=NULL;
+    modellog=NULL;
   }
   gelog = new NNLog(num_snps);
   gelog->set_max_best(maxbest);
@@ -645,7 +656,7 @@ void GENNAlg::fill_population(){
     pop.clear();
     
     for(unsigned int curr_ind = 0; curr_ind < num_inds; curr_ind++){
-        Solution* sol = GEObjective::getBlankSolution();
+      NNSolution* sol = (NNSolution*)GEObjective::getBlankSolution();
       GE1DArrayGenome& genome = (GE1DArrayGenome&)(ga->population().individual(curr_ind));
       mapper.setGenotype(genome);
       Phenotype const *phenotype=mapper.getPhenotype();
@@ -660,6 +671,11 @@ void GENNAlg::fill_population(){
       sol->set_symbols(symbols);
       sol->fitness(genome.score());
       sol->testval(genome.getTestValue());
+      sol->set_gram_depth(genome.getGramDepth());
+      sol->set_nn_depth(genome.getDepth());
+      
+//       if(
+      
       pop.insert(sol);
     }
 }
@@ -899,6 +915,38 @@ void GENNAlg::outputGenome(GAGenome& g){
   cout << endl;
 }
 
+
+///
+/// Finishes logs and compiles them into a single file
+/// in cases where there are multiple processors
+/// @param basename
+/// @param cv
+///
+void GENNAlg::finishLog(string basename, int cv){
+    if(myRank==0){
+        if(logTypeSelected==LogNone){
+          return;
+        }
+        vector<string> filenames;
+        for(int rank=0; rank < totalNodes; rank++){
+            string modellog_name = basename + ".rank." + Stringmanip::itos(rank) + ".cv." + 
+                Stringmanip::itos(cv) + ".models.log";        
+            filenames.push_back(modellog_name);
+        }
+        string outname = basename + ".cv." + 
+                Stringmanip::itos(cv) + ".models.log"; 
+        ModelLogParser parser;
+        parser.compile_files(filenames, outname);
+        if(totalNodes > 1){
+            for(vector<string>::iterator iter=filenames.begin(); iter != filenames.end();
+                iter++){
+                system(("rm " + *iter).c_str());
+            }
+        }
+    }
+}
+
+
 ///
 /// Prepares for logging
 /// @param outname
@@ -911,7 +959,16 @@ void GENNAlg::prepareLog(string basename, int cv){
     fitness_log_filename =  basename + ".cv." + Stringmanip::itos(cv) +
         ".fitness.log";    
     snpname_log_filename = basename + ".cv." + Stringmanip::itos(cv) + 
-        ".snpsize.log";    
+        ".snpsize.log";
+        
+    modellog = new NNModelLog;
+    string modellog_name = basename + ".rank." + Stringmanip::itos(myRank) + ".cv." + 
+        Stringmanip::itos(cv) + ".models.log";
+  
+  if(logTypeSelected != LogNone){
+    modellog->open_log(modellog_name);
+  }
+    
   #ifdef PARALLEL
     if(myRank==0){
   #endif
@@ -922,7 +979,7 @@ void GENNAlg::prepareLog(string basename, int cv){
         outfile.open(fitness_log_filename.c_str(), ios::out);
         if(!outfile.is_open()){
             throw AthenaExcept(fitness_log_filename + " unable to open for writing log file");
-          }   
+          }
       gelog->output_fitness_headers(outfile);
       outfile.close();  
       outfile.open(snpname_log_filename.c_str(), ios::out);
@@ -937,7 +994,9 @@ void GENNAlg::prepareLog(string basename, int cv){
             throw AthenaExcept(main_log_filename + " unable to open for writing log file");
         }  
       gelog->output_main_headers(outfile); 
-      outfile.close();        
+      outfile.close();
+              
+                
     case LogNone:
     break;
   }

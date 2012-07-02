@@ -11,11 +11,15 @@
 /// Clones current solution
 ///
 Solution* NNSolution::clone(){
-    Solution* newSol = new NNSolution;
+    NNSolution* newNNSol = new NNSolution;
  
+    newNNSol->nn_depth=nn_depth;
+    newNNSol->gram_depth=gram_depth;
+    Solution* newSol = newNNSol;
     Solution* thiscopy = this;
     
     newSol->copy(thiscopy);
+
     return newSol;
 }
 

@@ -12,6 +12,7 @@
 #include "InitGEgenome.h"
 #include "AlgorithmFactory.h"
 #include "NNLog.h"
+#include "NNModelLog.h"
 #include "GENNGrammarAdjuster.h"
 #include "BioFilterModelCollection.h"
 
@@ -70,9 +71,11 @@ public:
     /// Clears log
     void clearLogs();
     
+    /// Finish log and pulls together model information
+    void finishLog(std::string basename, int cv);
+    
     /// Prepares log files
     void prepareLog(std::string basename, int cv);
-    
     
     /// Returns covariates and snps in best network 
     vector<string> getBestVariables();
@@ -224,6 +227,7 @@ protected:
     int num_genotypes, num_continuous, bp_first_gen, bp_freq_gen, bp_next_opt;
     
     NNLog* gelog;
+    NNModelLog* modellog;
     
     // GE parameters
     AthenaGrammarSI mapper, restrictMapper;

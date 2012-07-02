@@ -49,6 +49,9 @@ class NNLog: public AlgorithmLog{
         gen_index=0;
     }
 
+
+    inline unsigned int get_current_gen(){return gen_number;}
+
     inline void complete_gen(){
       gens[gen_index].avgScores();
     }

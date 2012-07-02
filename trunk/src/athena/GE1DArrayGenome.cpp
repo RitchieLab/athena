@@ -14,7 +14,7 @@ AthenaGrammarSI* GE1DArrayGenome::mapper = NULL;
 
 GE1DArrayGenome::GE1DArrayGenome(unsigned int len)
   : GA1DArrayGenome<int>(len), effSize(0), numGenes(0), numCovars(0),  testVal(0), validnn(false), 
-    numEpochsTrained(0), numIndsEvaluated(0), ssTotal(0.0), netDepth(0)
+    numEpochsTrained(0), numIndsEvaluated(0), ssTotal(0.0), netDepth(0), gramDepth(0)
 {
 }
 
@@ -89,6 +89,7 @@ void GE1DArrayGenome::helpCopy(const GE1DArrayGenome& source)
   numGenes = source.numGenes;
   numCovars = source.numCovars;
   netDepth = source.netDepth;
+  gramDepth = source.gramDepth;
   genos = source.genos;
   covars = source.covars;
   numEpochsTrained = source.numEpochsTrained;
@@ -171,6 +172,14 @@ unsigned int GE1DArrayGenome::getDepth()const{
 
 void GE1DArrayGenome::setDepth(const unsigned int depth){
   netDepth = depth;
+}
+
+unsigned int GE1DArrayGenome::getGramDepth()const{
+  return gramDepth;
+}
+
+void GE1DArrayGenome::setGramDepth(const unsigned int depth){
+  gramDepth = depth;
 }
 
 

@@ -37,10 +37,11 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
       sol_creator->establish_solution(symbols, set);
 
       fitness = sol_creator->evaluate(set);
-      
+     
       if(additional_logging){
         sol_creator->detailed_logging();
         genome.setDepth(sol_creator->get_detailed_log());
+        genome.setGramDepth(mapper->buildDerivationTree());
 //cout << "added depth=" << genome.getDepth() << endl;
       }
       
@@ -52,8 +53,6 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
       genome.add_genos(sol_creator->getGeneIndexes());
       genome.add_covars(sol_creator->getCovarIndexes());
       genome.setNumIndsEvaluated(sol_creator->getNumIndsEvaluated());
-      
-      
       
       // when set 
       if(genome.getNumIndsEvaluated() != int(set->num_inds())){

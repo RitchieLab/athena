@@ -38,6 +38,9 @@ public:
   unsigned int getDepth() const;
   void setDepth(const unsigned int depth);
   
+  unsigned int getGramDepth() const;
+  void setGramDepth(const unsigned int depth);
+  
   static int effCrossover(const GAGenome& p1,
 			  const GAGenome& p2,
 			  GAGenome* c1, 
@@ -87,7 +90,7 @@ private:
   void helpCopy(const GE1DArrayGenome& source);
   int helpCompare(const GE1DArrayGenome& source) const;
 
-  unsigned int effSize, numGenes, numCovars, netDepth;
+  unsigned int effSize, numGenes, numCovars, netDepth, gramDepth;
   float testVal;
   int genome_id;
   bool validnn;

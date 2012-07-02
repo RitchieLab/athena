@@ -13,7 +13,7 @@ INCLUDEDIR = -I. -I$(STATDIR) -I$(DATADIR) -I$(GADIR) -I$(GEDIR) -I$(ANNIEDIR)
 DFLAGS = -DPARALLEL -DATHENA_BLOAT_CONTROL
 #DFLAGS = 
 CCFLAGS = -Wall $(DFLAGS) -O2 $(INCLUDEDIR)
-#CCFLAGS = -Wall $(DFLAGS) -g $(INCLUDEDIR)
+CCFLAGS = -Wall $(DFLAGS) -g $(INCLUDEDIR)
 
 GALIBLIB = ../galib247/ga
 GELIBLIB = ../libGE-0.26
@@ -33,7 +33,8 @@ SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	ExpressionTree.o NNLog.o Algorithm.o RSquaredCalculator.o BioFilterReader.o \
 	AthenaGrammarSI.o BioFilterModelCollection.o BackProp.o BackPropTree.o \
 	BioFilterBinReader.o genegenemodel.o BackPropSMD.o BackPropAnnie.o \
-	BackPropAnnieTree.o SymRegressSolutionCreator.o GESymbReg.o
+	BackPropAnnieTree.o SymRegressSolutionCreator.o GESymbReg.o NNModelLog.o \
+	ModelLogParser.o
 
 SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	CalculatorFactory.h CalculatorList.h ConfigFileReader.h Config.h \
@@ -48,7 +49,7 @@ SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	BackPropTree.h Structs.h BioFilterBinReader.h BioReader.h \
 	genegenemodel.h genegenemodelreader.h region.h snpholder.h \
 	snpsnpmodel.h biomodel.h BackPropSMD.h BackPropAnnie.h BackPropAnnieTree.h \
-	SymRegressSolutionCreator.h GESymbReg.h
+	SymRegressSolutionCreator.h GESymbReg.h NNModelLog.h ModelLogParser.h
 
 #ifeq ($(DFLAGS),-DPARALLEL)
 PARALLEL_NEEDED := $(shell echo $(DFLAGS) | cut -f1 -d' ')
