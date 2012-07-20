@@ -1099,8 +1099,8 @@ void GENNAlg::clearLogs(){
 /// @param sol Solution to output to stream
 ///
 void GENNAlg::writeGraphical(ostream& os, Solution* sol, data_manage::Dataholder* holder,
-  bool map_used, bool ott_dummy){
-  GEObjective::outputModel(os, sol, holder, map_used, ott_dummy);
+  bool map_used, bool ott_dummy, bool continmap_used){
+  GEObjective::outputModel(os, sol, holder, map_used, ott_dummy, continmap_used);
 }
 
 ///

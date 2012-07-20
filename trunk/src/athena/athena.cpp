@@ -12,6 +12,7 @@
 #include "MDRFileHandler.h"
 #include "ContinFileReader.h"
 #include "MapFileReader.h"
+#include "ContinMapFileReader.h"
 #include "CrossValidator.h"
 #include "OttDummyConvert.h"
 #include "AlgorithmFactory.h"
@@ -32,7 +33,7 @@ int main(int argc, char** argv) {
 
   int nproc = 1; // only one processor when not running in parallel
 
- bool mapfile_used = false;
+ bool mapfile_used = false, continmap_used = false;
  
 #ifdef PARALLEL
  
@@ -107,7 +108,16 @@ int main(int argc, char** argv) {
             mapfile_used = false;
             data.add_default_snps();
         }
-        data.add_default_covars();
+        
+        if(config.getContinMapName().size() > 0){
+            continmap_used = true;
+            data_manage::ContinMapFileReader continmap_reader;
+            continmap_reader.parse_map_file(config.getContinMapName(), &data);
+        }
+        else{
+            continmap_used = false;
+            data.add_default_covars();
+        }
        
         // convert data to ott dummy representation if needed
         if(config.getOttEncoded()){
@@ -278,10 +288,10 @@ int main(int argc, char** argv) {
     switch(config.getSummaryOnly()){
       case Config::False:
         writer.outputGraphic(alg, pops, config.getOutputName(), nmodels, data, 
-         mapfile_used, config.getOttEncoded());
+         mapfile_used, config.getOttEncoded(), continmap_used);
       case Config::Best:
         writer.outputBestModels(pops, nmodels, scaler->output_scale_info(), data, 
-          mapfile_used, config.getOttEncoded()); 
+          mapfile_used, config.getOttEncoded(), continmap_used); 
       default:
         ;
     }

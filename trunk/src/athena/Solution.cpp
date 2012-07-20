@@ -16,7 +16,7 @@ void Solution::output_solution(std::ostream& os){
 
 /// outputs a more human-readable version of the network
 void Solution::output_clean(std::ostream& os,  data_manage::Dataholder& data, bool map_used,
-  bool ott_dummy){
+  bool ott_dummy, bool continmap_used){
   output_solution(os);
 }
 

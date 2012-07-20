@@ -61,7 +61,7 @@ public:
     
     /// writes a dot compatible text file representing the network
     virtual void graphical_output(ostream& os, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy);
+      bool map_used, bool ott_dummy, bool continmap_used);
  
     vector<int> getGeneIndexes();
     vector<int> getCovarIndexes();

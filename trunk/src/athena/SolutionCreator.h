@@ -85,7 +85,7 @@ public:
     
     /// writes a graphical or file that can be converted to a graphic representation of the solution
     virtual void graphical_output(ostream& os, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy)=0;
+      bool map_used, bool ott_dummy, bool continmap_used)=0;
     
     virtual std::string graphicExt(){return graphic_extension;}
     

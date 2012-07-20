@@ -54,7 +54,7 @@ public:
     
     /// Writes output to stream
     void writeGraphical(ostream& os, Solution* sol, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy);
+      bool map_used, bool ott_dummy, bool continmap_used);
     
     /// Returns extension for graphical representation
     std::string getGraphicalFileExt();

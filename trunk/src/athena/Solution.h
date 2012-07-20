@@ -78,7 +78,7 @@ public:
 
     /// outputs a more human-readable version of the network
     virtual void output_clean(std::ostream& os, data_manage::Dataholder& data, 
-      bool map_used, bool ott_dummy);
+      bool map_used, bool ott_dummy, bool continmap_used);
 
     void copy(Solution* other);
     

@@ -449,13 +449,13 @@ unsigned int NNSolutionCreator::get_detailed_log(){
 /// @param os ostream to write to
 ///
 void NNSolutionCreator::graphical_output(ostream& os, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy){
+      bool map_used, bool ott_dummy, bool continmap_used){
   
   // network will be part of this tree
   ExpressionTree extree;
   
   extree.convert_postfix(postfix_stack);
-  extree.output_dot(os,holder, map_used, ott_dummy);
+  extree.output_dot(os,holder, map_used, ott_dummy, continmap_used);
   extree.clear_constants();
 }
 

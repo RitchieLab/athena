@@ -30,6 +30,7 @@ void ConfigFileReader::initialize_keywords(){
   keywordMap["INPUT"] = keyDatasetType;
   keywordMap["MAPFILE"] = keyMapFile;
   keywordMap["CONTINFILE"] = keyContinFile;
+  keywordMap["CONTINMAP"] = keyContinMapFile;
   keywordMap["TESTCONTINFILE"] = keyContinTestFile;
   keywordMap["TRAINCONTINFILE"] = keyContinTrainFile;
   keywordMap["IDINCLUDED"] = keyIDIncluded;
@@ -96,6 +97,10 @@ Config ConfigFileReader::read_config(string configfile){
            case keyMapFile:
                ss >> map_name;
                configuration.setMapName(map_name);
+               break;
+           case keyContinMapFile:
+               ss >> map_name;
+               configuration.setContinMapName(map_name);
                break;
            case keyMissingValue:
                ss >> missingValue;

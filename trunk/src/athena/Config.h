@@ -123,6 +123,9 @@ public:
     void setBioFileType(std::string filetype){biofilter_file_type = filetype;}
     std::string getBioFileType(){return biofilter_file_type;}
 
+    void setContinMapName(std::string filename){contin_map=filename;}
+    std::string getContinMapName(){return contin_map;}
+
     /// throws an exception if parameters are in error
     void checkConfig();
 
@@ -195,7 +198,7 @@ private:
     
     std::string data_type, out_name, map_name, datafile, continfile, status_change, 
       train_file, test_file, contin_test, contin_train, biofilter_file, biofilter_file_type,
-      bioarchive_file, biogene_file;
+      bioarchive_file, biogene_file, contin_map;
     int miss_value, ncv, rand_seed, num_exchanges;
     float contin_miss, stat_miss_value;
     bool id_included, ott_dummy_encoded, cv_out, inds_output, all_nodes_out;

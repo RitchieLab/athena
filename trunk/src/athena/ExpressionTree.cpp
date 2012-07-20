@@ -129,7 +129,7 @@ void ExpressionTree::compress_operator(vector<TerminalSymbol*> & postfix_stack,
 /// Adjust label for genotypes based on map file contents
 ///
 string ExpressionTree::alter_label(data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy, string label){
+      bool map_used, bool ott_dummy, string label, bool continmap_used){
       
   if(map_used && label[0] == 'G'){
      stringstream ss(label.substr(1,label.length()-1));
@@ -140,6 +140,12 @@ string ExpressionTree::alter_label(data_manage::Dataholder* holder,
       else
         num -= 1;
       label = holder->get_geno_name(num);
+  }
+  else if(continmap_used && label[0] == 'C'){
+    stringstream ss(label.substr(1,label.length()-1));
+    int num;
+    ss >> num;
+    label = holder->get_covar_name(num);
   }        
    
   return label;
@@ -193,7 +199,7 @@ unsigned int ExpressionTree::increment_depth(tree<Element_node>::iterator baseIt
 /// create an image file
 ///
 void ExpressionTree::output_dot(ostream & out, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy){
+      bool map_used, bool ott_dummy, bool continmap_used){
 
   tree<Element_node>::iterator iter;
   // need counter to set the title for the node in the graph
@@ -226,7 +232,7 @@ void ExpressionTree::output_dot(ostream & out, data_manage::Dataholder* holder,
  
   string label = iter->el->get_label();
 
-  label = alter_label(holder, map_used, ott_dummy, label);
+  label = alter_label(holder, map_used, ott_dummy, label, continmap_used);
 
   out << "\t" <<  iter->id << " [shape=\"" << iter->el->get_shape() << "\" style=\"" << 
     iter->el->get_style() << "\" label=\"" << label << "\"];" << endl;
@@ -237,7 +243,7 @@ void ExpressionTree::output_dot(ostream & out, data_manage::Dataholder* holder,
     out << "\t" << iter->id << "->" << parent->id << ";" << endl;
  
     string label = iter->el->get_label();
-    label = alter_label(holder, map_used, ott_dummy, label);
+    label = alter_label(holder, map_used, ott_dummy, label, continmap_used);
  
     out << "\t" << iter->id << " [shape=\"" << iter->el->get_shape() << "\" style=\"" << 
       iter->el->get_style() << "\" label=\"" << label << "\"];" << endl;  

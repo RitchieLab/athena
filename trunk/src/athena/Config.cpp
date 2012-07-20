@@ -29,6 +29,7 @@ void Config::initialize(){
     train_file = "";
     contin_test = "";
     contin_train = "";
+    contin_map = "";
     miss_value = -1;
     biofilter_file = "";
     summary_only = False;

@@ -71,7 +71,8 @@ private:
         keyBioFileType,
         keyBioArchiveFile,
         keyBioGeneFile,
-        keyLogType
+        keyLogType,
+        keyContinMapFile
     };
     
     std::map<std::string, configKeyWords> keywordMap;

@@ -65,7 +65,7 @@ public:
     
     /// Writes output to stream
     virtual void writeGraphical(ostream& os, Solution* sol, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy)=0;
+      bool map_used, bool ott_dummy, bool continmap_used)=0;
     
     /// Returns extension for graphical representation
     virtual std::string getGraphicalFileExt()=0;

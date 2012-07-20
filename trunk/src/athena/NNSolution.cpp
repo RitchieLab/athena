@@ -98,7 +98,7 @@ vector<int> NNSolution::get_covariates(){
 /// @param map_used
 /// 
 void NNSolution::output_clean(std::ostream& os, data_manage::Dataholder& data,
-      bool map_used, bool ott_dummy){
+      bool map_used, bool ott_dummy, bool continmap_used){
 
   // concatenate numbers and output rest without spaces
   os << symbols[0];
@@ -117,8 +117,16 @@ void NNSolution::output_clean(std::ostream& os, data_manage::Dataholder& data,
           num = (num-1)/2;
         else
           num -= 1;
-// cout << symbols[symb] << "num=" << num << endl;
+
         os << data.get_geno_name(num);
+      }
+      else if(continmap_used && symbols[symb][0] == 'C'){
+        stringstream ss(symbols[symb].substr(1,symbols[symb].length()-1));
+        int num;
+        ss >> num;
+        num -=1; // starts at 0 but labels start at 1
+//cout << symbols[symb] << "num=" << num << " and covar=" << data.get_covar_name(num) << endl;
+        os << data.get_covar_name(num);
       }
       else{
         os << symbols[symb];

@@ -20,7 +20,7 @@ class ExpressionTree{
     
     /// output tree in dot language
     void output_dot(ostream & out, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy);
+      bool map_used, bool ott_dummy, bool continmap_used);
 
     /// clears constants
     void clear_constants();
@@ -51,7 +51,7 @@ class ExpressionTree{
         unsigned int currdepth);
   
     std::string alter_label(data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy, std::string label);
+      bool map_used, bool ott_dummy, std::string label, bool continmap_used);
       
     void compress_operator(std::vector<TerminalSymbol*> & postfix_stack,
       std::vector<TerminalSymbol*>& new_stack);

@@ -29,11 +29,11 @@ public:
     
     /// outputs summary of best models
     void outputSummary(std::vector<Population>& pops, data_manage::Dataholder& data, 
-      bool mapfile_used=false, bool dummy_encoded=true);
+      bool mapfile_used=false, bool dummy_encoded=true, bool continmap_used=true);
     
     /// outputs a file for each best model
     void outputBestModels(std::vector<Population>& pops, int nmodels, std::string scaleInfo,
-      data_manage::Dataholder& data, bool map_used, bool ott_dummy);
+      data_manage::Dataholder& data, bool map_used, bool ott_dummy, bool continmap_used);
     
     /// returns a stream for writing
     std::ostream& getStream(std::string filename);
@@ -43,7 +43,7 @@ public:
     
     /// output graphical representation as defined in algorithm
     void outputGraphic(Algorithm* alg,  std::vector<Population>& pops,std::string basename, int numModels,
-      data_manage::Dataholder& data, bool map_used, bool ott_dummy);
+      data_manage::Dataholder& data, bool map_used, bool ott_dummy, bool continmap_used);
     
 private:
     

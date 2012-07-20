@@ -66,9 +66,9 @@ public:
     static std::string getGraphicalExt(){return sol_creator->graphicExt();}
     
     static void outputModel(ostream& os, Solution* sol, data_manage::Dataholder* data,
-      bool map_used, bool ott_dummy){
+      bool map_used, bool ott_dummy, bool continmap_used){
       sol_creator->establish_solution(sol->get_symbols());
-      sol_creator->graphical_output(os, data, map_used, ott_dummy);
+      sol_creator->graphical_output(os, data, map_used, ott_dummy, continmap_used);
     }
 
     /// Optimizes current model using process provided by SolutionCreator

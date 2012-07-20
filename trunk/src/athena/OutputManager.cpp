@@ -16,7 +16,8 @@ using namespace std;
 /// original genotype positions
 ///
 void OutputManager::outputSummary(vector<Population>& pops,
-  data_manage::Dataholder& data,  bool mapfile_used, bool dummy_encoded){
+  data_manage::Dataholder& data,  bool mapfile_used, bool dummy_encoded,
+  bool continmap_used){
     
     string summaryName = basename + ".athena.sum";
     
@@ -25,11 +26,14 @@ void OutputManager::outputSummary(vector<Population>& pops,
    
     Solution* bestSolution;
     
-    string prefix;
+    string prefix, continprefix;
     int width = 30;
     if(!mapfile_used){
       prefix = "G";
       width = 20;
+    }
+    if(!continmap_used){
+      continprefix = "C";
     }
     
     outfile << setw(5) << left << "CV" << setw(width) << "Variables" << " " << setw(10) << "Training"
@@ -46,9 +50,9 @@ void OutputManager::outputSummary(vector<Population>& pops,
         for(unsigned int g=0; g < genos.size(); g++){
             ss << prefix << data.get_geno_name(genos[g]-1) << " ";
         }
-        stringstream cs;    
+        stringstream cs;
         for(unsigned int c=0; c < covars.size(); c++){
-            cs << "C"  << data.get_covar_name(covars[c]-1) << " ";
+            cs << continprefix << data.get_covar_name(covars[c]-1) << " ";
         }
         
         outfile << setw(width) << ss.str() + cs.str() << " ";
@@ -73,7 +77,7 @@ void OutputManager::outputSummary(vector<Population>& pops,
 /// @param map_used
 ///
 void OutputManager::outputBestModels(vector<Population>& pops, int nmodels,
-  string scaleInfo, data_manage::Dataholder& data, bool map_used, bool ott_dummy){
+  string scaleInfo, data_manage::Dataholder& data, bool map_used, bool ott_dummy, bool continmap_used){
     
     Solution* bestSolution;   
     for(unsigned int currPop=0; currPop < pops.size(); currPop++){
@@ -95,7 +99,7 @@ void OutputManager::outputBestModels(vector<Population>& pops, int nmodels,
         outfile << "Training result: " << bestSolution->fitness() << endl;
         outfile << "Testing result: " << bestSolution->testval() << endl;
         outfile << "Model:" << endl;
-        bestSolution->output_clean(outfile, data, map_used, ott_dummy);
+        bestSolution->output_clean(outfile, data, map_used, ott_dummy, continmap_used);
         outfile << endl << endl <<"Grammar-compatible version:" << endl;
         outfile << scaleInfo;
         bestSolution->output_solution(outfile);
@@ -128,7 +132,7 @@ std::ostream& OutputManager::getStream(std::string filename){
 /// @return ostream to write to 
 ///
 void OutputManager::outputGraphic(Algorithm* alg, std::vector<Population>& pops, std::string basename,
-  int nmodels, data_manage::Dataholder& data, bool map_used, bool ott_dummy){
+  int nmodels, data_manage::Dataholder& data, bool map_used, bool ott_dummy, bool continmap_used){
 
   Solution* currSolution;
 
@@ -148,7 +152,7 @@ void OutputManager::outputGraphic(Algorithm* alg, std::vector<Population>& pops,
       }  
       
       currSolution = pops[currPop][mod];
-      alg->writeGraphical(outfile, currSolution, &data, map_used, ott_dummy);
+      alg->writeGraphical(outfile, currSolution, &data, map_used, ott_dummy, continmap_used);
       outfile.close();
     }
   }
