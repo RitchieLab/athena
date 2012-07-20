@@ -33,10 +33,13 @@ public:
   unsigned int num_inds(){return inds.size();}
 
   /// Add variable name
-  inline void add_covar_name(string var_name){covars.push_back(var_name);}
+  inline void add_covar_name(string var_name){covars.push_back(var_name);covars_map[var_name]=covars.size()-1;}
 
   /// Retrieve variable name
   inline string get_covar_name(unsigned int index){return covars[index];}
+
+  /// Retrieve index by name
+  inline unsigned int get_covar_index(string covar_name){return covars_map[covar_name];}
 
   /// Number of covariates in set
   inline unsigned int num_covars(){return covars.size();}
@@ -117,7 +120,7 @@ private:
   std::vector<Individual*> inds;
   std::vector<std::string> genos;
   std::vector<std::string> covars;
-  std::map<std::string, unsigned int> genos_map; //key is geno name, value is index into genos array
+  std::map<std::string, unsigned int> genos_map, covars_map; //key is geno name, value is index into genos array
   std::map<std::string, Individual*> inds_map;
   unsigned int max_locus;
   bool any_missing, ott_encoded;
