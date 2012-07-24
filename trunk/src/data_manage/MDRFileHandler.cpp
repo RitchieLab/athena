@@ -77,13 +77,12 @@ void MDRFileHandler::parse_file(string filename, Dataholder * holder,
     
       ind.set_status(ind_status);
 
-      while(!ss.eof()){
+      while(ss >> geno){
         ss >> geno;
         if(geno == missingValue){
           ind.add_genotype(3);
           any_missing = true;
         }
-//        else if(geno > 2 || geno < 0){  // changed to allow negative genotype values for Emily's experiment
         else if(geno > 2){
         throw DataExcept("All genotypes must be less than 3 or equal the missing value " +
             Stringmanip::itos(missingValue) + "\nIndividual " + Stringmanip::itos(dummy_id++) +

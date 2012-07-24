@@ -37,6 +37,7 @@ void ContinFileReader::read_contin_file(string filename, Dataholder* holder,
     string line, ind_id;
     float value;
     unsigned int curr_ind=0;
+    unsigned int num_covars=0;
 
     while(!c_stream.eof()){
       getline(c_stream, line);
@@ -54,11 +55,15 @@ void ContinFileReader::read_contin_file(string filename, Dataholder* holder,
           ind_id = Stringmanip::itos(dummy_id++);
       }
       
-      while(!ss.eof()){
-        ss >> value;
+      while(ss >> value){
         holder->get_ind_by_id(ind_id)->add_covariate(value);
       }
-
+      if(num_covars > 0 && num_covars != holder->get_ind_by_id(ind_id)->num_covariates()){
+        throw DataExcept("ERROR: in file " +  filename +" individual " + ind_id +" has " +Stringmanip::itos(holder->get_ind_by_id(ind_id)->num_covariates()) + " values but previous line has " + Stringmanip::itos(num_covars));
+      }
+      else{
+         num_covars = holder->get_ind_by_id(ind_id)->num_covariates();
+      }
       curr_ind++;
     }
 
