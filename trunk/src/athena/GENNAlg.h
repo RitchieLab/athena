@@ -17,7 +17,7 @@
 #include "BioFilterModelCollection.h"
 
 #ifdef PARALLEL
-#define MAX_GENOME_SIZE 10000
+#define MAX_GENOME_SIZE 100000
 #endif
 
 
