@@ -145,6 +145,7 @@ string ExpressionTree::alter_label(data_manage::Dataholder* holder,
     stringstream ss(label.substr(1,label.length()-1));
     int num;
     ss >> num;
+    num -= 1;
     label = holder->get_covar_name(num);
   }        
    
