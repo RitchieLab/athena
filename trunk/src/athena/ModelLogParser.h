@@ -25,7 +25,7 @@ class ModelLogParser{
         void compile_files(std::vector<std::string>& filenames, std::string outfilename);
 
     private:
-        logModel get_model(std::ifstream& os);
+        logModel get_model(std::string& line);
         
         void parse_file(std::string filename, std::vector<std::vector<logModel> >& models);
 

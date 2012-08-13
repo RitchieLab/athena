@@ -13,7 +13,10 @@ NNModelLog::~NNModelLog(){
 }
 
 void NNModelLog::header(ostream& os){
-  os << "GEN\tRANK\tFITNESS\tGRAM DEPTH\tNN DEPTH\tNUM G\tNUM C\tMODEL\n";
+  os << "GEN\tRANK\tFITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C";
+  if(detailed)
+    os << "\tMODEL";
+  os << "\n";
 }
 
 void NNModelLog::open_log(std::string filename){
@@ -42,6 +45,8 @@ void NNModelLog::write_solution(NNSolution & solution, int generation, int rank)
     log_stream << solution.get_nn_depth() << "\t";
     log_stream << solution.get_genotypes().size() << "\t";
     log_stream << solution.get_covariates().size() << "\t";
-    solution.output_solution(log_stream);
-    //log_stream << "\n";
+    if(detailed)
+        solution.output_solution(log_stream);
+    else
+        log_stream << "\n";
 }

@@ -962,11 +962,14 @@ void GENNAlg::prepareLog(string basename, int cv){
         ".snpsize.log";
         
     modellog = new NNModelLog;
+    
     string modellog_name = basename + ".rank." + Stringmanip::itos(myRank) + ".cv." + 
         Stringmanip::itos(cv) + ".models.log";
   
   if(logTypeSelected != LogNone){
     modellog->open_log(modellog_name);
+    if(logTypeSelected == LogDetailed)
+        modellog->set_detailed(true);
   }
     
   #ifdef PARALLEL
@@ -976,18 +979,18 @@ void GENNAlg::prepareLog(string basename, int cv){
   ofstream outfile;
   switch(logTypeSelected){
     case LogDetailed:
-        outfile.open(fitness_log_filename.c_str(), ios::out);
-        if(!outfile.is_open()){
-            throw AthenaExcept(fitness_log_filename + " unable to open for writing log file");
-          }
-      gelog->output_fitness_headers(outfile);
-      outfile.close();  
-      outfile.open(snpname_log_filename.c_str(), ios::out);
-      if(!outfile.is_open()){
-            throw AthenaExcept(snpname_log_filename + " unable to open for writing log file");
-       }   
-       gelog->output_snp_headers(outfile);
-      outfile.close();      
+//         outfile.open(fitness_log_filename.c_str(), ios::out);
+//         if(!outfile.is_open()){
+//             throw AthenaExcept(fitness_log_filename + " unable to open for writing log file");
+//           }
+//       gelog->output_fitness_headers(outfile);
+//       outfile.close();  
+//       outfile.open(snpname_log_filename.c_str(), ios::out);
+//       if(!outfile.is_open()){
+//             throw AthenaExcept(snpname_log_filename + " unable to open for writing log file");
+//        }   
+//        gelog->output_snp_headers(outfile);
+//       outfile.close();      
     case LogSummary:
     outfile.open(main_log_filename.c_str(), ios::out);
         if(!outfile.is_open()){

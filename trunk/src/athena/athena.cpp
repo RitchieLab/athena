@@ -22,12 +22,14 @@
 #include "OutputSet.h"
 #include <ScaledDataFactory.h>
 #include <StephenDummyConvert.h>
+#include <time.h>
 
 #ifdef PARALLEL
 #include "TransferData.h"
 #endif
 
 void exit_app(AthenaExcept& he);
+std::string time_diff(double dif);
 
 int main(int argc, char** argv) {
 
@@ -45,9 +47,10 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "7/27/12";
+    string version_date = "8/1/12";
     string exec_name = "ATHENA";
-    
+     time_t start,end;
+     
     if(argc < 2){
         AthenaExcept he("\n\tATHENA\n\t" + version_date + 
             "\n\n\tUsage: ATHENA <config>\n\n");
@@ -55,9 +58,13 @@ int main(int argc, char** argv) {
     }
     else{
 #ifdef PARALLEL
-  if(myrank==0)
+  if(myrank==0){
 #endif
+        time (&start);
         cout << endl << "\t" << exec_name << ":\t" << version_date << endl << endl;
+#ifdef PARALLEL
+        }
+#endif
     }
     
     string configfile = argv[1];
@@ -303,9 +310,41 @@ int main(int argc, char** argv) {
  #endif
     delete scaler;
 
+#ifdef PARALLEL
+    if(myrank==0){
+#endif
+    time(&end);
+    double dif = difftime (end,start);
+    cout << "\n\tAnalysis took " << time_diff(dif) << endl << endl;
+#ifdef PARALLEL
+    }
+#endif
+    
+
     return (EXIT_SUCCESS);
 }
 
+///
+/// Returns string formatted to indicate passage of time
+/// @param dif time in seconds
+///
+std::string time_diff(double dif){
+    double elapsed;
+    string period;
+    if(dif < 60){
+        elapsed = dif;
+        period = " seconds";
+    }
+    else if(dif < 3600){
+        elapsed = dif/60;
+        period = " minutes";
+    }
+    else{
+        elapsed = dif/3600;
+        period = " hours";
+    }
+    return Stringmanip::itos(elapsed) + period;
+}
 
 ///
 /// Outputs message in exception and exits program

@@ -45,7 +45,7 @@ void Config::initialize(){
     log_type_map["NONE"] = LogNone;
     log_type_map["SUMMARY"] = LogSummary;
     // changed to match Summary as part of log optimization
-    log_type_map["DETAILED"] = LogSummary;
+    log_type_map["DETAILED"] = LogDetailed;
     logTypeSelected = LogNone;
     summary_map["TRUE"] = True;
     summary_map["FALSE"] = False;

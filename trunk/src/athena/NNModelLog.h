@@ -16,7 +16,7 @@
 class NNModelLog{
 
 public:
-    NNModelLog(){};
+    NNModelLog(){detailed=false;}
     
     ~NNModelLog();
 
@@ -26,7 +26,13 @@ public:
     
     void write_solution(NNSolution & solution, int generation, int rank);
     
+    void set_detailed(bool include){detailed=include;}
+    
+    bool get_detailed(){return detailed;}
+    
 private:
+    
+    bool detailed;
     
     void header(ostream& os);
     

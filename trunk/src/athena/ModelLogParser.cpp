@@ -2,6 +2,7 @@
 #include "ModelLogParser.h"
 #include <fstream>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -12,9 +13,10 @@ bool compareLogModels(logModel first, logModel second){
     return false;
 }
 
-logModel ModelLogParser::get_model(ifstream& is){
+logModel ModelLogParser::get_model(string& line){
 
     logModel mod;    
+    stringstream is(line);
     is >> mod.gen >> mod.rank >> mod.fitness >> mod.gram_depth >> mod.nn_depth 
         >> mod.n_g >> mod.n_c;
     getline(is, mod.model);
@@ -67,7 +69,9 @@ void ModelLogParser::parse_file(string filename, vector<vector<logModel> >& mode
      
      // get all the models
      while(!log_stream.eof()){
-        logModel log_model = get_model(log_stream);
+        string line;
+        getline(log_stream, line);
+        logModel log_model = get_model(line);
         if(int(models.size()) < log_model.gen+1){
             models.push_back(temp);
         }
@@ -77,7 +81,7 @@ void ModelLogParser::parse_file(string filename, vector<vector<logModel> >& mode
 
 
 void ModelLogParser::write_output(ostream & os, vector<vector<logModel> >& models){
-    os << "GEN\tRANK\tFITNESS\tGRAM DEPTH\tNN DEPTH\tNUM G\tNUM C\tMODEL\n";
+    os << "GEN\tRANK\tFITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C\tMODEL\n";
     int gen=0;
 
 //    os >> gen >> rank >> fitness >> gram_depth >> nn_depth >> n_g >> n_c;
