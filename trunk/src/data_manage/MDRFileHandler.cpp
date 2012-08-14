@@ -3,8 +3,8 @@
 #include <sstream>
 #include "Stringmanip.h"
 #include <math.h>
+#include <float.h>
 
-#include <iostream>
 
 namespace data_manage
 {
@@ -43,7 +43,7 @@ void MDRFileHandler::parse_file(string filename, Dataholder * holder,
 
   string line, out, ind_id;
   string::size_type last_number_pos;
-  float ind_status;
+  double ind_status;
   int geno;
 
   getline(data_stream, line);
@@ -73,7 +73,7 @@ void MDRFileHandler::parse_file(string filename, Dataholder * holder,
     ss >> ind_status;
     
     // check to see if ind should be skipped because status is missing
-    if(fabs(ind_status - statusMissingValue) > .00001){
+    if(fabs(ind_status - statusMissingValue) > DBL_EPSILON){
     
       ind.set_status(ind_status);
 

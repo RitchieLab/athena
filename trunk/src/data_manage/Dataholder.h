@@ -82,7 +82,7 @@ public:
 
   /// Returns individual based on id
   Individual* get_ind_by_id(string id){
-    if(inds_map.find(id)==inds_map.end()) throw DataExcept("AAAH");
+    if(inds_map.find(id)==inds_map.end()) throw DataExcept("Unable to find individual with ID=" + id);
     return inds_map[id];
   }
   
