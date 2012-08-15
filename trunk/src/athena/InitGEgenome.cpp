@@ -43,9 +43,15 @@ void InitGEgenome::initFuncSI(GAGenome& g){
 	}
 	
   unsigned int genome_size = mapper->getGenotype()->size();
+
   genome.resize(genome_size);
-  int i=0;
   
+  if(genome_size > genome.size()){
+    throw AthenaExcept("Sensible initialization is producing models larger than the maximum genome size.  Try reducing the MAXDEPTH or increasing the MAXSIZE");
+  }
+  
+  int i=0;
+ 
  	// Now copy genotype onto genome
 	Genotype::const_iterator genIt=(mapper->getGenotype())->begin();
 	while(genIt!=(mapper->getGenotype())->end()){

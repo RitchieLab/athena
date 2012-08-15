@@ -28,7 +28,7 @@
 #include "TransferData.h"
 #endif
 
-void exit_app(AthenaExcept& he);
+void exit_app(AthenaExcept& he, int myrank);
 std::string time_diff(double dif);
 
 int main(int argc, char** argv) {
@@ -36,10 +36,11 @@ int main(int argc, char** argv) {
   int nproc = 1; // only one processor when not running in parallel
 
  bool mapfile_used = false, continmap_used = false;
- 
+ int myrank = 0;
+   
 #ifdef PARALLEL
  
-  int myrank = 0;
+
   // set up MPI
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
@@ -54,7 +55,7 @@ int main(int argc, char** argv) {
     if(argc < 2){
         AthenaExcept he("\n\tATHENA\n\t" + version_date + 
             "\n\n\tUsage: ATHENA <config>\n\n");
-        exit_app(he);
+        exit_app(he, myrank);
     }
     else{
 #ifdef PARALLEL
@@ -76,7 +77,7 @@ int main(int argc, char** argv) {
     try{
       config = configread.read_config(configfile);
     }catch(AthenaExcept he){
-        exit_app(he);
+        exit_app(he, myrank);
     }
     
     // fill dataholder with data
@@ -144,7 +145,7 @@ int main(int argc, char** argv) {
         }
 
     }catch(AthenaExcept he){
-        exit_app(he);
+        exit_app(he, myrank);
     }
  
     // set random seed  before splitting
@@ -222,8 +223,11 @@ int main(int argc, char** argv) {
     }
       // prepare logs -- these are written as job progresses
       alg->prepareLog(config.getOutputName(), curr_cv+1);
-      
-      alg->initialize();
+      try{
+          alg->initialize();
+    }catch(AthenaExcept& ae){
+        exit_app(ae, myrank);
+    }
       
       for(int step=0; step < config.getNumExchanges(); step++)
          alg->step();
@@ -350,8 +354,9 @@ std::string time_diff(double dif){
 /// Outputs message in exception and exits program
 /// @param he AthenaExcept
 ///
-void exit_app(AthenaExcept& he){
-  cout << he.what() << endl << endl;;
+void exit_app(AthenaExcept& he, int myrank){
+    if(myrank==0)
+      cout << he.what() << endl << endl;;
 #ifdef PARALLEL
   MPI_Finalize();
 #endif

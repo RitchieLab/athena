@@ -11,6 +11,7 @@
 #include <GE/ge.h>
 #include <ga/ga.h>
 #include "AthenaGrammarSI.h"
+#include "AthenaExcept.h"
 
 ///
 /// Contains functions for initializing genomes in the GA libaray when
