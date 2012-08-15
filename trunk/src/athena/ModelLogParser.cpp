@@ -7,7 +7,7 @@
 using namespace std;
 
 bool compareLogModels(logModel first, logModel second){
-  if(first.fitness > second.fitness)
+  if(first.fitness < second.fitness)
     return true;
   else
     return false;
