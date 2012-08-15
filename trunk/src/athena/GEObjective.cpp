@@ -42,7 +42,6 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
         sol_creator->detailed_logging();
         genome.setDepth(sol_creator->get_detailed_log());
         genome.setGramDepth(mapper->buildDerivationTree());
-//cout << "added depth=" << genome.getDepth() << endl;
       }
       
       sol_creator->free_solution();
@@ -65,7 +64,9 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
    else{
         // set fitness to worst score initially
      fitness = sol_creator->get_worst();
+     genome.clearScores();
    }
+
   return fitness;
 }
 

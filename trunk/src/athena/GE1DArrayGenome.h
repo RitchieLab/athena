@@ -81,6 +81,8 @@ public:
   inline void setSSTotal(float s){ssTotal = s;}
   inline float getSSTotal(){return ssTotal;}
   
+  void clearScores();
+  
   static void setMapper(AthenaGrammarSI* m){mapper = m;}
   
   static int myrank;

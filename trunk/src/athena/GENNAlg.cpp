@@ -503,7 +503,8 @@ void GENNAlg::fillLog(){
         gelog->add_epochs(genome.getNumEpochsTrained());
         // zero out epochs
         genome.setNumEpochsTrained(0);
-      } 
+      }
+
     }
     gelog->complete_gen();
     
@@ -673,8 +674,6 @@ void GENNAlg::fill_population(){
       sol->testval(genome.getTestValue());
       sol->set_gram_depth(genome.getGramDepth());
       sol->set_nn_depth(genome.getDepth());
-      
-//       if(
       
       pop.insert(sol);
     }
@@ -1381,10 +1380,6 @@ void GENNAlg::updateWithMigration(float* stats, int* codons, int totalNodes, int
   int currCodon=0, len;
 
   GAPopulation pop(ga->population());
-//if(myRank==1){
-//  cout << "myRank=" << myRank << " totalNodes=" << totalNodes << endl;
-//  cout << "myRank=" << myRank << " max_length=" << max_length << endl;
-//}
   
   for(int node=0; node < totalNodes; node++){
     if(myRank == node){ // skip when same node 

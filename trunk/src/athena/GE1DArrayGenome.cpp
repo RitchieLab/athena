@@ -587,5 +587,17 @@ GE1DArrayGenome::output(ostream & os) const
   return os.fail() ? 1 : 0;
 }
 
+
+void GE1DArrayGenome::clearScores(){
+    std::vector<int> temp;
+    setNumCovars(0);
+    setNumGenes(0);
+    add_genos(temp);
+    add_covars(temp);
+    setNumIndsEvaluated(0);
+    setDepth(0);
+    setGramDepth(0);
+}
+
 #endif
 
