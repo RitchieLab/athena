@@ -18,18 +18,19 @@ bool compareLogModels(logModel first, logModel second);
 /// Compiles all Model Log files into a single file per 
 /// cross-validation.
 ///
-
 class ModelLogParser{
 
     public:
-        void compile_files(std::vector<std::string>& filenames, std::string outfilename);
+        void compile_files(std::vector<std::string>& filenames, std::string outfilename,
+            float not_valid);
 
     private:
         logModel get_model(std::string& line);
         
         void parse_file(std::string filename, std::vector<std::vector<logModel> >& models);
 
-        void write_output(std::ostream & os, std::vector<std::vector<logModel> >& models);
+        void write_output(std::ostream & os, std::vector<std::vector<logModel> >& models,
+            float not_valid);
 
 };
 

@@ -935,7 +935,7 @@ void GENNAlg::finishLog(string basename, int cv){
         string outname = basename + ".cv." + 
                 Stringmanip::itos(cv) + ".models.log"; 
         ModelLogParser parser;
-        parser.compile_files(filenames, outname);
+        parser.compile_files(filenames, outname, GEObjective::get_worst_score());
         if(totalNodes > 1){
             for(vector<string>::iterator iter=filenames.begin(); iter != filenames.end();
                 iter++){

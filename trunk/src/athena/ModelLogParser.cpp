@@ -23,7 +23,7 @@ logModel ModelLogParser::get_model(string& line){
     return mod;
 }
 
-void ModelLogParser::compile_files(vector<string>& filenames, string outfilename){
+void ModelLogParser::compile_files(vector<string>& filenames, string outfilename, float not_valid){
 
     // when only a single file 
     // only need to change name of the filename to match the output name
@@ -51,7 +51,7 @@ void ModelLogParser::compile_files(vector<string>& filenames, string outfilename
     // output the sorted models to the combined file
     ofstream out_stream(outfilename.c_str(), ios::out);
     
-    write_output(out_stream, all_models);
+    write_output(out_stream, all_models, not_valid);
     
 }
 
@@ -80,7 +80,8 @@ void ModelLogParser::parse_file(string filename, vector<vector<logModel> >& mode
 }
 
 
-void ModelLogParser::write_output(ostream & os, vector<vector<logModel> >& models){
+void ModelLogParser::write_output(ostream & os, vector<vector<logModel> >& models,
+    float not_valid){
     os << "GEN\tRANK\tFITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C\tMODEL\n";
     int gen=0;
 
@@ -90,7 +91,12 @@ void ModelLogParser::write_output(ostream & os, vector<vector<logModel> >& model
     for(vector<vector<logModel> >::iterator iter=models.begin(); iter != models.end(); ++iter){
         int rank = 1;
         for(vector<logModel>::iterator mod_iter=iter->begin(); mod_iter != iter->end(); ++mod_iter){
-            os << gen << "\t" << rank <<  "\t" << mod_iter->fitness << "\t" << mod_iter->gram_depth <<
+            os << gen << "\t" << rank <<  "\t";
+            if(mod_iter->fitness == not_valid)
+                os << "NA";
+            else
+                os << mod_iter->fitness;
+            os << "\t" << mod_iter->gram_depth <<
               "\t" << mod_iter->nn_depth << "\t" << mod_iter->n_g << "\t" << mod_iter->n_c << "\t" 
               << mod_iter->model << endl;
             rank++;
