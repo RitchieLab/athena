@@ -134,6 +134,17 @@ void TerminalSymbCreator::create_terminals(int num_genotypes,
   TerminalMap["7"] = create_constant("7");
   TerminalMap["8"] = create_constant("8");
   TerminalMap["9"] = create_constant("9");
+  TerminalMap["10"] = create_constant("10");
+  TerminalMap["11"] = create_constant("11");
+  TerminalMap["12"] = create_constant("12");
+  TerminalMap["13"] = create_constant("13");
+  TerminalMap["14"] = create_constant("14");
+  TerminalMap["15"] = create_constant("15");
+  TerminalMap["16"] = create_constant("16");
+  TerminalMap["17"] = create_constant("17");
+  TerminalMap["18"] = create_constant("18");
+  TerminalMap["19"] = create_constant("19");
+  TerminalMap["20"] = create_constant("20");
   
   addGenotypeVariables(num_genotypes);
   addContinVariables(num_covariates);
