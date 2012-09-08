@@ -3,6 +3,7 @@
 RSquaredCalculator::RSquaredCalculator(){
     reset();
     sstotal = 1;
+    name = "R-Squared";
 }
 
 void RSquaredCalculator::reset(){

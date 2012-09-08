@@ -17,7 +17,7 @@ using namespace std;
 ///
 void OutputManager::outputSummary(vector<Population>& pops,
   data_manage::Dataholder& data,  bool mapfile_used, bool dummy_encoded,
-  bool continmap_used){
+  bool continmap_used, std::string fitness_name){
     
     string summaryName = basename + ".athena.sum";
     
@@ -36,7 +36,7 @@ void OutputManager::outputSummary(vector<Population>& pops,
       continprefix = "C";
     }
     
-    outfile << setw(5) << left << "CV" << setw(width) << "Variables" << " " << setw(10) << "Training"
+    outfile << setw(5) << left << "CV" << setw(width) << "Variables" << " " << setw(20) << fitness_name + " Training"
             << " " << setw(10) << "Testing" << endl;    
      
     for(unsigned int currPop=0; currPop < pops.size(); currPop++){
@@ -57,7 +57,7 @@ void OutputManager::outputSummary(vector<Population>& pops,
         
         outfile << setw(width) << ss.str() + cs.str() << " ";
         
-        outfile << setw(10) << bestSolution->fitness() << " ";
+        outfile << setw(20) << bestSolution->fitness() << " ";
         outfile << setw(10) << bestSolution->testval();
         outfile << endl;
     }

@@ -20,7 +20,7 @@ public:
     
     ~NNModelLog();
 
-    void open_log(std::string filename);
+    void open_log(std::string filename, std::string fitness_name);
     
     void close_log();
     
@@ -34,7 +34,7 @@ private:
     
     bool detailed;
     
-    void header(ostream& os);
+    void header(ostream& os, std::string fitness_name);
     
     std::ofstream log_stream;
 

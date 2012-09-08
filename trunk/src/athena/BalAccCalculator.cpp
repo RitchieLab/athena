@@ -3,6 +3,7 @@
 
 BalAccCalculator::BalAccCalculator(){
     reset();
+    name = "Balanced Accuracy";
 }
 
 

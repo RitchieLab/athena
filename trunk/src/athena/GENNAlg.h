@@ -71,6 +71,9 @@ public:
     /// Clears log
     void clearLogs();
     
+    /// Close log
+    void CloseLog();
+    
     /// Finish log and pulls together model information
     void finishLog(std::string basename, int cv);
     

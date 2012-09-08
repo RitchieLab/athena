@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "8/30/12";
+    string version_date = "8/28/12";
     string exec_name = "ATHENA";
      time_t start,end;
      
@@ -232,6 +232,7 @@ int main(int argc, char** argv) {
       for(int step=0; step < config.getNumExchanges(); step++)
          alg->step();
 
+		alg->CloseLog();
       // prepare and write logs -- algorithm will output as much information as requested
 //       alg->writeLog(config.getOutputName(), curr_cv+1);
 
@@ -293,8 +294,8 @@ int main(int argc, char** argv) {
     // Output results
     writer.setBasename(config.getOutputName());
     
-    writer.outputSummary(pops, data, mapfile_used, config.getOttEncoded());
-    
+    writer.outputSummary(pops, data, mapfile_used, config.getOttEncoded(), continmap_used,
+        alg->get_fitness_name());
     
     switch(config.getSummaryOnly()){
       case Config::False:

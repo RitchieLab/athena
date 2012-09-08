@@ -12,19 +12,20 @@ NNModelLog::~NNModelLog(){
     }
 }
 
-void NNModelLog::header(ostream& os){
-  os << "GEN\tRANK\tFITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C";
+void NNModelLog::header(ostream& os, std::string fitness_name){
+  os << "GEN\tRANK\t" << fitness_name  << 
+    " FITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C";
   if(detailed)
     os << "\tMODEL";
   os << "\n";
 }
 
-void NNModelLog::open_log(std::string filename){
+void NNModelLog::open_log(std::string filename, std::string fitness_name){
   log_stream.open(filename.c_str(), ios::out);
   if(!log_stream.is_open()){
     throw AthenaExcept(filename + " unable to open for writing results");
   }
-  header(log_stream);
+  header(log_stream, fitness_name);
 }
 
 ///

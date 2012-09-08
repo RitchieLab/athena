@@ -4,8 +4,8 @@ using namespace std;
 
 MeanSquaredErrCalculator::MeanSquaredErrCalculator(){
     reset();
+    name = "Mean Squared Error";
 }
-
 
 void MeanSquaredErrCalculator::reset(){
    total_inds_tested = 0;

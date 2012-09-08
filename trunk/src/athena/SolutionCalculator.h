@@ -8,6 +8,8 @@
 #ifndef _SOLUTIONCALCULATOR_H
 #define	_SOLUTIONCALCULATOR_H
 
+#include <string>
+
 ///
 /// Base class for calculation of solution scores.
 /// For example, calculates Balanced accuracy for binary outcomes and
@@ -17,6 +19,8 @@
 class SolutionCalculator{
     
 public:
+    
+    SolutionCalculator(){name = "Calculator";}
     
     virtual ~SolutionCalculator(){}
 
@@ -35,7 +39,10 @@ public:
     /// Used when a sub class needs a constant value for calculations as in RSquared
     virtual void set_constant(float constant){}
     
-private:
+    std::string get_name(){return name;}
+    
+protected:
+    std::string name;
     
 };
 

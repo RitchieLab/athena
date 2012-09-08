@@ -108,6 +108,8 @@ public:
     virtual void detailed_logging()=0;
     virtual unsigned int get_detailed_log()=0;
     
+    std::string calculator_name(){return calculator->get_name();}
+    
 protected:
     Solution* sol;
     SolutionCalculator * calculator;

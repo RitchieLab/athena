@@ -59,6 +59,8 @@ public:
       sol_creator->set_calculator(calculator_name);
     }
     
+    static std::string calculator_name(){return sol_creator->calculator_name();}
+    
     static Solution* getBlankSolution(){return sol_creator->create_new_solution();}
     
     static bool max_best(){return sol_creator->max_best();}

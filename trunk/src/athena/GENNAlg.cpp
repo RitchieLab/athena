@@ -187,6 +187,8 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
     num_genotypes = numGenos;
     num_continuous = numContin;
     
+    set_fitness_name(calculatorName);
+    
     // first optimization of backpropagation 
     bp_next_opt = bp_first_gen;
        
@@ -508,19 +510,6 @@ void GENNAlg::fillLog(){
     }
     gelog->complete_gen();
     
-    #ifdef PARALLEL
-      gelog->SendReceiveLogs(totalNodes, myRank);
-//     if(myRank==0)
-//     
-//       gelog->receiveLogs(totalNodes);
-//     else
-//       gelog->sendLog();
-    #endif
-    
-    // output log information -- appended to existing log files
-    if(myRank==0){
-        writeLog();
-    }
     
     // add to detailed log files
     fill_population();
@@ -530,6 +519,16 @@ void GENNAlg::fillLog(){
         solution = (NNSolution*)pop[i];
         modellog->write_solution(*solution, gelog->get_current_gen(), i+1);
     }
+    
+    #ifdef PARALLEL
+      gelog->SendReceiveLogs(totalNodes, myRank);
+    #endif
+    
+    // output log information -- appended to existing log files
+    if(myRank==0){
+        writeLog();
+    }
+    
 }
 
 
@@ -547,6 +546,15 @@ void GENNAlg::saveLog(){
   #endif
 
   logs.push_back(gelog);
+}
+
+///
+/// Close the log files
+///
+void GENNAlg::CloseLog(){
+	if(logTypeSelected != LogNone){
+		modellog->close_log();
+	}
 }
 
 ///
@@ -966,7 +974,7 @@ void GENNAlg::prepareLog(string basename, int cv){
         Stringmanip::itos(cv) + ".models.log";
   
   if(logTypeSelected != LogNone){
-    modellog->open_log(modellog_name);
+    modellog->open_log(modellog_name, GEObjective::calculator_name());
     if(logTypeSelected == LogDetailed)
         modellog->set_detailed(true);
   }

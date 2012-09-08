@@ -2,7 +2,9 @@
 
 #include "Algorithm.h"
 
-Algorithm::Algorithm(){}
+Algorithm::Algorithm(){
+    fitness_name=" ";
+}
 
 Algorithm::~Algorithm(){
     for(unsigned int i=0; i<logs.size(); i++){

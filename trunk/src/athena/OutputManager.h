@@ -29,7 +29,8 @@ public:
     
     /// outputs summary of best models
     void outputSummary(std::vector<Population>& pops, data_manage::Dataholder& data, 
-      bool mapfile_used=false, bool dummy_encoded=true, bool continmap_used=false);
+      bool mapfile_used=false, bool dummy_encoded=true, bool continmap_used=false,
+      std::string fitness_name=" ");
     
     /// outputs a file for each best model
     void outputBestModels(std::vector<Population>& pops, int nmodels, std::string scaleInfo,

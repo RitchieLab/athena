@@ -91,6 +91,9 @@ public:
     /// Prepares log files
     virtual void prepareLog(std::string basename, int cv)=0;
     
+    /// Close log files
+    virtual void CloseLog()=0;
+    
     /// Retrieves the models from BioFilter and stores the information in the algorithm
     virtual void getBioModels(std::string filename, std::string biofiletype, 
       data_manage::Dataholder* holder)=0;
@@ -100,6 +103,10 @@ public:
       data_manage::Dataholder* holder)=0;
     
     virtual void tempoOutputName(string outname)=0;
+    
+    virtual std::string get_fitness_name(){return fitness_name;}
+    
+    virtual void set_fitness_name(std::string fname){fitness_name = fname;}
     
     #ifdef PARALLEL
       virtual void setRank(int rank){myRank = rank;}
@@ -113,6 +120,7 @@ protected:
     data_manage::Dataset* set;
     LogType logTypeSelected;
     Population pop;
+    std::string fitness_name;
     
     vector<AlgorithmLog*> logs;
     int myRank;
