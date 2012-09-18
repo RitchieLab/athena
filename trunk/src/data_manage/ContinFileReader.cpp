@@ -60,7 +60,7 @@ void ContinFileReader::read_contin_file(string filename, Dataholder* holder,
        ind = holder->get_ind_by_id(ind_id);
      }
      catch(DataExcept& de){
-       cout << "Skipping individual " << ind_id << endl;  
+       cout << "Skipping individual " << ind_id << " while reading " << filename << endl;  
        continue;
      }
       

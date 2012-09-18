@@ -97,6 +97,9 @@ void MDRFileHandler::parse_file(string filename, Dataholder * holder,
       }
       holder->add_ind(ind);
     }
+    else{
+	cout << "Skipping individual " << ind_id << " with status " << ind_status << " (STATUSMISSINGVALUE is set to " << statusMissingValue << ")" << endl;
+    }
 
     getline(data_stream, line);
   }while(!data_stream.eof());
