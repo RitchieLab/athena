@@ -33,7 +33,7 @@ public:
   unsigned int num_inds(){return inds.size();}
 
   /// Add variable name
-  inline void add_covar_name(string var_name){covars.push_back(var_name);covars_map[var_name]=covars.size()-1;}
+  inline void add_covar_name(string var_name){covars.push_back(var_name);covars_map[var_name]=covars.size()-1; }
 
   /// Retrieve variable name
   inline string get_covar_name(unsigned int index){return covars[index];}

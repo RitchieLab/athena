@@ -5,6 +5,9 @@
 #include <math.h>
 #include <float.h>
 
+#include <iostream>
+#include <cstdlib>
+
 
 namespace data_manage
 {
@@ -68,7 +71,6 @@ void MDRFileHandler::parse_file(string filename, Dataholder * holder,
     else{
         ind_id = Stringmanip::itos(dummy_id++);
     }
-    
     ind.set_id(ind_id);
     ss >> ind_status;
     
@@ -76,9 +78,7 @@ void MDRFileHandler::parse_file(string filename, Dataholder * holder,
     if(fabs(ind_status - statusMissingValue) > DBL_EPSILON){
     
       ind.set_status(ind_status);
-
       while(ss >> geno){
-        ss >> geno;
         if(geno == missingValue){
           ind.add_genotype(3);
           any_missing = true;
