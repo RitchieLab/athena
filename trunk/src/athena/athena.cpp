@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "8/28/12";
+    string version_date = "9/18/12";
     string exec_name = "ATHENA";
      time_t start,end;
      

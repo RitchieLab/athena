@@ -18,7 +18,7 @@ using namespace std;
 void OutputManager::outputSummary(vector<Population>& pops,
   data_manage::Dataholder& data,  bool mapfile_used, bool dummy_encoded,
   bool continmap_used, std::string fitness_name){
-    
+
     string summaryName = basename + ".athena.sum";
     
     ofstream outfile;
