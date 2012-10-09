@@ -222,6 +222,7 @@ void ExpressionTree::output_dot(ostream & out, data_manage::Dataholder* holder,
   }
  
   out << "digraph G{\n";
+  out << "\tgraph [ dpi = 300 ];\n";
   out << "\tsize=\"7.5,11.0\";\n";
   out << "\tdir=\"none\";\n";
   out << "\trankdir=\"LR\";\n";
