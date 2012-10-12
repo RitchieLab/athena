@@ -1,3 +1,21 @@
+/*
+Copyright Marylyn Ritchie 2011
+
+This file is part of ATHENA.
+
+ATHENA is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ATHENA is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
+*/
 /* 
  * File:   athena.cpp
  * Author: dudeksm
@@ -23,12 +41,14 @@
 #include <ScaledDataFactory.h>
 #include <StephenDummyConvert.h>
 #include <time.h>
+#include <random_func.h>
 
 #ifdef PARALLEL
 #include "TransferData.h"
 #endif
 
 void exit_app(AthenaExcept& he, int myrank);
+void adjust_seed(Config& config, int cv, int nproc, int myrank);
 std::string time_diff(double dif);
 
 int main(int argc, char** argv) {
@@ -48,7 +68,7 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "9/18/12";
+    string version_date = "10/12/12";
     string exec_name = "ATHENA";
      time_t start,end;
      
@@ -148,27 +168,45 @@ int main(int argc, char** argv) {
         exit_app(he, myrank);
     }
  
+ 
+ 	// restart code needs to be placed here
+ 	// establish original splits and load in the saved states of the random 
+ 	// number generators
+ 	
     // set random seed  before splitting
-    srand(config.getRandSeed());
+    data_manage::rand_seed(config.getRandSeed());
 
     // construct crossvalidation sets to use in running algorithm
     CrossValidator cvmaker;
+    CVSet cv_set;
 
-    CVSet cv_set = cvmaker.split_data(config.getNumCV(), &data);
+	if(config.getSplitFile()==""){
+	    cv_set = cvmaker.split_data(config.getNumCV(), &data);
+#ifdef PARALLEL
+		if(myrank==0)
+#endif
+	    cvmaker.save_splits(config.getOutputName() + ".cvsplit");
+	}
+	else{
+		cv_set = cvmaker.load_splits(config.getSplitFile(), &data);
+cvmaker.save_splits(config.getOutputName() + ".cvsplit2");
+	}
 
     // run crossvalidations and store the populations
     int num_cv = cv_set.num_intervals();
     
-#ifdef PARALLEL
-  // when running in parallel need to change the seeds for slaves
-  // after splitting data so that all algorithms will not be running same seeds
-  if(myrank != 0){
-    int newseed = config.getRandSeed() + myrank * 25;
-    if(newseed > RAND_MAX)
-      newseed -= RAND_MAX;
-    config.setRandSeed(newseed);
-  }
-#endif /* end parallel seed adjustment for slaves */
+// #ifdef PARALLEL
+//   // when running in parallel need to change the seeds for slaves
+//   // after splitting data so that all algorithms will not be running same seeds
+//   if(myrank != 0){
+//     int newseed = config.getRandSeed() + myrank * 25;
+//     if(newseed > RAND_MAX)
+//       newseed -= RAND_MAX;
+//     config.setRandSeed(newseed);
+//   }
+// #endif /* end parallel seed adjustment for slaves */
+   
+//    	adjust_seed(Configuration& config, int cv);
    
     // create algorithm
     vector<AlgorithmParams> alg_params= config.getAlgorithmParams();
@@ -189,8 +227,11 @@ int main(int argc, char** argv) {
     string cvfilename = "cv";
 
     OutputManager writer;
+    int curr_cv=config.getStartCV()-1;
 
-    for(int curr_cv=0; curr_cv < num_cv; curr_cv++){
+    for(; curr_cv < num_cv; curr_cv++){
+    	adjust_seed(config, curr_cv, nproc, myrank);
+    	alg->setrand(config.getRandSeed());
 #ifdef PARALLEL
   if(myrank==0){
 #endif
@@ -363,4 +404,16 @@ void exit_app(AthenaExcept& he, int myrank){
 #endif
   exit(EXIT_FAILURE);    
 } 
+
+///
+/// Adjust seed based on current CV and number of processors in run
+/// @param config Configuration
+/// @param cv Current cross-validation
+/// @param nproc Total number of processors
+/// @param myrank Rank of this process
+///
+void adjust_seed(Config& config, int cv, int nproc, int myrank){
+  int newseed = config.getRandSeed() + nproc * cv + myrank;
+  config.setRandSeed(newseed);
+}
 

@@ -1,4 +1,21 @@
+/*
+Copyright Marylyn Ritchie 2011
 
+This file is part of ATHENA.
+
+ATHENA is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ATHENA is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include "GEObjective.h"
 #include "GENNAlg.h"
 #include "GEObjective.h"
@@ -316,13 +333,22 @@ void GENNAlg::initialize_params(){
 
 
 ///
+/// Sets random seed 
+/// @param seed 
+///
+void GENNAlg::setrand(unsigned int seed){
+	GARandomSeed(seed);
+	srand(seed);
+}
+
+///
 /// Sets parameters for use with GAlib
 /// @param alg_params AlgorithmParams
 /// @throws AthenaExcept on error
 ///
 void GENNAlg::set_ga_params(){   
-    GARandomSeed(randSeed);
-    srand(randSeed);   
+//     GARandomSeed(randSeed);
+//     srand(randSeed);   
     // first free ga memory if already run
     free_memory();
     
@@ -568,7 +594,7 @@ void GENNAlg::startLog(int num_snps){
     modellog=NULL;
   }
   gelog = new NNLog(num_snps);
-  gelog->set_max_best(maxbest);
+  gelog->set_max_best(maxbest); 
 }
 
 

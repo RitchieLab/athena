@@ -479,7 +479,8 @@ incorporate it into the code base.
     !defined(GALIB_USE_RAND48) && \
     !defined(GALIB_USE_RAN2) && \
     !defined(GALIB_USE_RAN3)
-#define GALIB_USE_RAN2
+// #define GALIB_USE_RAN2
+#define GALIB_USE_MERSENNE
 #endif
 
 

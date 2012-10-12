@@ -1,4 +1,3 @@
-//Algorithm.cpp
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -18,15 +17,23 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Algorithm.h"
+#ifndef RANDOM_FUNC_H
+#define RANDOM_FUNC_H
 
-Algorithm::Algorithm(){
-    fitness_name=" ";
+#include<string>
+
+namespace data_manage
+{
+
+void rand_seed(unsigned int seed);
+
+float rand_float();
+
+unsigned int rand_uint();
+
+void rand_load_state(std::string filename);
+
+void rand_save_state(std::string filename);
+
 }
-
-Algorithm::~Algorithm(){
-    for(unsigned int i=0; i<logs.size(); i++){
-      delete logs[i];
-    }
-}
-
+#endif

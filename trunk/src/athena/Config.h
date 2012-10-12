@@ -4,6 +4,24 @@
  *
  * Created on November 5, 2008, 4:59 PM
  */
+/*
+Copyright Marylyn Ritchie 2011
+
+This file is part of ATHENA.
+
+ATHENA is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ATHENA is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #ifndef _CONFIG_H
 #define	_CONFIG_H
@@ -125,6 +143,12 @@ public:
 
     void setContinMapName(std::string filename){contin_map=filename;}
     std::string getContinMapName(){return contin_map;}
+    
+    void setSplitFile(std::string filename){split_file = filename;}
+    std::string getSplitFile(){return split_file;}
+    
+    void setStartCV(int cv){start_cv=cv;}
+    int getStartCV(){return start_cv;}
 
     /// throws an exception if parameters are in error
     void checkConfig();
@@ -198,8 +222,8 @@ private:
     
     std::string data_type, out_name, map_name, datafile, continfile, status_change, 
       train_file, test_file, contin_test, contin_train, biofilter_file, biofilter_file_type,
-      bioarchive_file, biogene_file, contin_map;
-    int miss_value, ncv, rand_seed, num_exchanges;
+      bioarchive_file, biogene_file, contin_map, split_file;
+    int miss_value, ncv, rand_seed, num_exchanges, start_cv;
     float contin_miss, stat_miss_value;
     bool id_included, ott_dummy_encoded, cv_out, inds_output, all_nodes_out;
     std::vector<AlgorithmParams> alg_params;

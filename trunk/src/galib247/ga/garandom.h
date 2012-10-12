@@ -47,6 +47,7 @@ then these functions scale the distribution to that deviation.  Mean is still 0
 #include <stdlib.h>
 #include <ga/gatypes.h>
 #include <ga/gaconfig.h>
+#include "../random/mersenne_twister.h"
 
 // Here we determine which random number generator will be used.  The critical
 // parts here are the name of the random number generator (e.g. rand or random)
@@ -64,7 +65,7 @@ then these functions scale the distribution to that deviation.  Mean is still 0
 // genetic algorithms the random number generator is the bottleneck, so this
 // isn't totally useless musing...
 
-#if defined(GALIB_USE_RAN1) || defined(GALIB_USE_RAN2) || defined(GALIB_USE_RAN3)
+#if defined(GALIB_USE_RAN1) || defined(GALIB_USE_RAN2) || defined(GALIB_USE_RAN3) || defined(GALIB_USE_MERSENNE)
 
 #if defined(GALIB_USE_RAN1)
 
@@ -72,6 +73,15 @@ then these functions scale the distribution to that deviation.  Mean is still 0
 #define _GA_RND_SEED        gasran1
 void gasran1(unsigned int seed=1);
 float garan1();
+
+#elif defined(GALIB_USE_MERSENNE)
+
+#define _GA_RND				gamersenne
+#define _GA_RND_SEED		gasmersenne
+void garand_save_state(std::string filename);
+void garand_load_state(std::string filename);
+float gamersenne();
+void gasmersenne(unsigned int seed);
 
 #elif defined(GALIB_USE_RAN2)
 

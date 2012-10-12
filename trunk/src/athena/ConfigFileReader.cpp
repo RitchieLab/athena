@@ -1,4 +1,21 @@
+/*
+Copyright Marylyn Ritchie 2011
 
+This file is part of ATHENA.
+
+ATHENA is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ATHENA is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include "Config.h"
 
 #include "ConfigFileReader.h"
@@ -49,6 +66,8 @@ void ConfigFileReader::initialize_keywords(){
   keywordMap["BIOGENEFILE"] = keyBioGeneFile;
   keywordMap["BIOARCHIVEFILE"] = keyBioArchiveFile;
   keywordMap["LOG"] = keyLogType;
+  keywordMap["SPLITFILE"] = keySplitFile;
+  keywordMap["CVSTART"]=keyCVStart;
 }
 
 
@@ -212,6 +231,13 @@ Config ConfigFileReader::read_config(string configfile){
               ss >> value;
               configuration.setLogType(Stringmanip::to_upper(value));
               break;
+           case keySplitFile:
+              ss >> value;
+              configuration.setSplitFile(value);
+              break;
+           case keyCVStart:
+           	  ss >> value;
+           	  configuration.setStartCV(Stringmanip::stoi(value));
            default:
               throw AthenaExcept(keyword + " is not a valid keyword in configuration file");
               break;
