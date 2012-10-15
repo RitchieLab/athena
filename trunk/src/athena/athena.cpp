@@ -317,13 +317,13 @@ int main(int argc, char** argv) {
 #endif 
     cout << " Completed" << endl;
     alg->finishLog(config.getOutputName(),curr_cv+1);
+    int nmodels=1;
 #ifdef PARALLEL
     if(myrank==0){
 
       if(config.outputAllNodesBest())
         nmodels = nproc;
 #endif
-	int nmodels=1;
 	// update output when needed
     if(pop.getConvertScores()){
       if(num_cv > 1)
