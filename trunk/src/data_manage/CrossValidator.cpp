@@ -59,41 +59,7 @@ CVSet CrossValidator::split_data(unsigned int num_crossval, Dataholder* holder){
   distribute_inds(num_crossval, affected, splits);
   distribute_inds(num_crossval, unaffected, splits);
 
-cout << "in split_data splits.size()=" << splits.size() << endl;
-cout << "in split_data splits[0].size()=" << splits[0].size() << endl;
-
   return create_set(num_crossval, holder);
-  
-//   if(num_crossval > 1){
-//     unsigned int group;
-//     // using the splits stored in vector construct the CV Intervals and fill the set
-//     for(unsigned int curr_cv=0; curr_cv < num_crossval; curr_cv++){
-//       Dataset training(holder->get_missing_covalue(), holder->get_missing_genotype()), 
-//         testing(holder->get_missing_covalue(), holder->get_missing_genotype());
-//       for(group=0; group < num_crossval; group++){
-//         if(group != curr_cv)
-//           training.add_inds(splits[group]);
-//         else
-//           testing.add_inds(splits[group]);
-//       }
-//       CVInterval interval;
-//       training.calc_sstotal();
-//       testing.calc_sstotal();
-//       interval.add_set(training);
-//       interval.add_set(testing);
-//       set.add_interval(interval);
-//     }
-//   }
-//   else{ // only one interval so don't split data
-//     CVInterval interval;
-//     Dataset training(holder->get_missing_covalue(), holder->get_missing_genotype());
-//     training.add_inds(splits[0]);
-//     training.calc_sstotal();
-//     interval.add_set(training);
-//     set.add_interval(interval);
-//   }
-
-//   return set;
 }
 
 
@@ -234,6 +200,9 @@ void CrossValidator::shuffle_inds(vector<Individual*> & inds){
 CVSet CrossValidator::load_splits(std::string filename, Dataholder* holder){
 	ref_holder = holder;
 	ifstream is(filename.c_str());
+    if(!is.is_open()){
+    	throw DataExcept("ERROR: Unable to open CV split file " + filename + "\n");
+    }
 	string id;
 	splits.clear();
 	vector<Individual*> inds;
@@ -258,10 +227,7 @@ CVSet CrossValidator::load_splits(std::string filename, Dataholder* holder){
 ///
 void CrossValidator::save_splits(std::string filename){
 	ofstream os;
-	cout << "in save splits" << endl;
 	os.open(filename.c_str(), ios::out);
-	cout << "splits.size()=" << splits.size() << endl;
-	cout << "splits[0].size()=" << splits[0].size() << endl;
 	for(vector<vector<Individual*> >::iterator split_iter=splits.begin(); split_iter != splits.end();
 		split_iter++){
 		os << "split" << endl;
@@ -273,43 +239,5 @@ void CrossValidator::save_splits(std::string filename){
 	os.close();
 }
 
-
-// std::ostream& operator<<( std::ostream& os, const CrossValidator& cv )
-// {
-// 	for(vector<vector<Individual*> >::iterator split_iter; split_iter != cv.splits.end();
-// 		split_iter++){
-// 		os << "split" << endl;
-// 		for(vector<Individual*>::iterator ind_iter=split_iter->begin(); ind_iter != split_iter->end();
-// 			ind_iter++){
-// 			os << (*ind_iter)->get_id() << endl;
-// 		}
-// 	}
-// 	return os;
-// }
-
-
-// std::istream& operator>>( std::istream& is, CrossValidator& cv )
-// {
-// // 	register MTRand::uint32 *s = mtrand.state;
-// // 	register int i = mtrand.N;
-// // 	for( ; i--; is >> *s++ ) {}
-// // 	is >> mtrand.left;
-// // 	mtrand.pNext = &mtrand.state[mtrand.N-mtrand.left];
-// 	cv.splits.clear();
-// 	string id;
-// 	vector<Individual*> inds;
-// 	// remove first 'split' line
-// 	is >> id;
-// 	
-// 	while(is >> id){
-// 		if(id.compare("split")==0){
-// 			cv.splits.push_back(inds);
-// 			inds.clear();
-// 			continue;
-// 		}
-// 		inds.push_back(cv.ref_holder->get_ind_by_id(id));
-// 	}
-// 	return is;
-// }
 
 }

@@ -998,7 +998,7 @@ void GENNAlg::prepareLog(string basename, int cv){
     
     string modellog_name = basename + ".rank." + Stringmanip::itos(myRank) + ".cv." + 
         Stringmanip::itos(cv) + ".models.log";
-  
+          
   if(logTypeSelected != LogNone){
     modellog->open_log(modellog_name, GEObjective::calculator_name());
     if(logTypeSelected == LogDetailed)

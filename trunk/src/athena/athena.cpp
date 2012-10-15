@@ -48,6 +48,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 void exit_app(AthenaExcept& he, int myrank);
+void exit_app(DataExcept& de, int myrank);
 void adjust_seed(Config& config, int cv, int nproc, int myrank);
 std::string time_diff(double dif);
 
@@ -188,8 +189,14 @@ int main(int argc, char** argv) {
 	    cvmaker.save_splits(config.getOutputName() + ".cvsplit");
 	}
 	else{
+	    try{
+//       config = configread.read_config(configfile);
+      cv_set = cvmaker.load_splits(config.getSplitFile(), &data);
+    }catch(DataExcept de){
+        exit_app(de, myrank);
+    }
 		cv_set = cvmaker.load_splits(config.getSplitFile(), &data);
-cvmaker.save_splits(config.getOutputName() + ".cvsplit2");
+// cvmaker.save_splits(config.getOutputName() + ".cvsplit2");
 	}
 
     // run crossvalidations and store the populations
@@ -227,7 +234,10 @@ cvmaker.save_splits(config.getOutputName() + ".cvsplit2");
     string cvfilename = "cv";
 
     OutputManager writer;
+    writer.setBasename(config.getOutputName());
     int curr_cv=config.getStartCV()-1;
+	if(curr_cv==0)
+		writer.setFiles(mapfile_used, alg->get_fitness_name());
 
     for(; curr_cv < num_cv; curr_cv++){
     	adjust_seed(config, curr_cv, nproc, myrank);
@@ -281,8 +291,9 @@ cvmaker.save_splits(config.getOutputName() + ".cvsplit2");
         alg->test_solution(&(cv_set.get_interval(curr_cv).get_testing()), nproc);
       
       // check population values
-      pops.push_back(alg->getPopulation());
-
+//       pops.push_back(alg->getPopulation());
+      Population pop = alg->getPopulation();
+	
       int curr_proc = 0;
 #ifdef PARALLEL
   if(myrank==0){
@@ -305,50 +316,83 @@ cvmaker.save_splits(config.getOutputName() + ".cvsplit2");
   }
 #endif 
     cout << " Completed" << endl;
-#ifdef PARALLEL
-} /* end of output */
-#endif
-    }
-    int nmodels = 1;
-    for(int curr_cv=1; curr_cv <= num_cv; curr_cv++){
-        alg->finishLog(config.getOutputName(),curr_cv);
-    }
-    
+    alg->finishLog(config.getOutputName(),curr_cv+1);
 #ifdef PARALLEL
     if(myrank==0){
 
       if(config.outputAllNodesBest())
         nmodels = nproc;
 #endif
-
-    // update output when needed
-    if(pops[0].getConvertScores()){
+	int nmodels=1;
+	// update output when needed
+    if(pop.getConvertScores()){
       if(num_cv > 1)
-        for(int curr_cv=0; curr_cv < num_cv; curr_cv++){ 
-          pops[curr_cv].convert_scores(&(cv_set.get_interval(curr_cv).get_training()), 
+ //        for(int curr_cv=0; curr_cv < num_cv; curr_cv++){ 
+          pop.convert_scores(&(cv_set.get_interval(curr_cv).get_training()), 
             &(cv_set.get_interval(curr_cv).get_testing()));
-        }
+//         }
       else
-        pops[0].convert_scores(&(cv_set.get_interval(0).get_training()));
+        pop.convert_scores(&(cv_set.get_interval(0).get_training()));
     }
-
-    // Output results
-    writer.setBasename(config.getOutputName());
-    
-    writer.outputSummary(pops, data, mapfile_used, config.getOttEncoded(), continmap_used,
+    writer.outputSummary(pop, curr_cv, data, mapfile_used, config.getOttEncoded(), continmap_used,
         alg->get_fitness_name());
-    
+        
     switch(config.getSummaryOnly()){
       case Config::False:
-        writer.outputGraphic(alg, pops, config.getOutputName(), nmodels, data, 
+        writer.outputGraphic(alg, pop, curr_cv, config.getOutputName(), nmodels, data, 
          mapfile_used, config.getOttEncoded(), continmap_used);
       case Config::Best:
-        writer.outputBestModels(pops, nmodels, scaler->output_scale_info(), data, 
+        writer.outputBestModels(pop, nmodels, curr_cv,scaler->output_scale_info(), data, 
           mapfile_used, config.getOttEncoded(), continmap_used); 
       default:
         ;
     }
-    cout << endl;
+    
+#ifdef PARALLEL
+} /* end of output */
+#endif
+		
+    }
+//     int nmodels = 1;
+//     for(int curr_cv=1; curr_cv <= num_cv; curr_cv++){
+//         alg->finishLog(config.getOutputName(),curr_cv);
+//     }
+
+// #ifdef PARALLEL
+//     if(myrank==0){
+// 
+//       if(config.outputAllNodesBest())
+//         nmodels = nproc;
+// #endif
+
+    // update output when needed
+//     if(pops[0].getConvertScores()){
+//       if(num_cv > 1)
+//         for(int curr_cv=0; curr_cv < num_cv; curr_cv++){ 
+//           pops[curr_cv].convert_scores(&(cv_set.get_interval(curr_cv).get_training()), 
+//             &(cv_set.get_interval(curr_cv).get_testing()));
+//         }
+//       else
+//         pops[0].convert_scores(&(cv_set.get_interval(0).get_training()));
+//     }
+
+    // Output results
+//     writer.setBasename(config.getOutputName());
+    
+//     writer.outputSummary(pops, data, mapfile_used, config.getOttEncoded(), continmap_used,
+//         alg->get_fitness_name());
+    
+//     switch(config.getSummaryOnly()){
+//       case Config::False:
+//         writer.outputGraphic(alg, pops, config.getOutputName(), nmodels, data, 
+//          mapfile_used, config.getOttEncoded(), continmap_used);
+//       case Config::Best:
+//         writer.outputBestModels(pops, nmodels, scaler->output_scale_info(), data, 
+//           mapfile_used, config.getOttEncoded(), continmap_used); 
+//       default:
+//         ;
+//     }
+//     cout << endl;
     
 #ifdef PARALLEL
     }   /* ends master processing of output */
@@ -399,6 +443,20 @@ std::string time_diff(double dif){
 void exit_app(AthenaExcept& he, int myrank){
     if(myrank==0)
       cout << he.what() << endl << endl;;
+#ifdef PARALLEL
+  MPI_Finalize();
+#endif
+  exit(EXIT_FAILURE);    
+} 
+
+
+///
+/// Outputs message in exception and exits program
+/// @param he AthenaExcept
+///
+void exit_app(DataExcept& de, int myrank){
+    if(myrank==0)
+      cout << de.what() << endl << endl;;
 #ifdef PARALLEL
   MPI_Finalize();
 #endif

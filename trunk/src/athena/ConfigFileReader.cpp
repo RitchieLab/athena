@@ -238,6 +238,7 @@ Config ConfigFileReader::read_config(string configfile){
            case keyCVStart:
            	  ss >> value;
            	  configuration.setStartCV(Stringmanip::stoi(value));
+              break;
            default:
               throw AthenaExcept(keyword + " is not a valid keyword in configuration file");
               break;

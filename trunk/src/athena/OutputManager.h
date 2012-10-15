@@ -45,13 +45,16 @@ public:
     /// sets basename for output
     void setBasename(std::string base){basename = base;}
     
+    /// creates new files for writing
+    void setFiles(bool mapfile_used, std::string fitness_name);
+    
     /// outputs summary of best models
-    void outputSummary(std::vector<Population>& pops, data_manage::Dataholder& data, 
+    void outputSummary(Population& pop, int currPop, data_manage::Dataholder& data, 
       bool mapfile_used=false, bool dummy_encoded=true, bool continmap_used=false,
       std::string fitness_name=" ");
     
     /// outputs a file for each best model
-    void outputBestModels(std::vector<Population>& pops, int nmodels, std::string scaleInfo,
+    void outputBestModels(Population& pop, int nmodels, int currPop, std::string scaleInfo,
       data_manage::Dataholder& data, bool map_used, bool ott_dummy, bool continmap_used);
     
     /// returns a stream for writing
@@ -61,7 +64,7 @@ public:
     void closeStream(){if(log_stream.is_open()){ log_stream.close();}}
     
     /// output graphical representation as defined in algorithm
-    void outputGraphic(Algorithm* alg,  std::vector<Population>& pops,std::string basename, int numModels,
+    void outputGraphic(Algorithm* alg,  Population& pop, int currPop, std::string basename, int numModels,
       data_manage::Dataholder& data, bool map_used, bool ott_dummy, bool continmap_used);
     
 private:
