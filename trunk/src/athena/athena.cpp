@@ -49,7 +49,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 void exit_app(AthenaExcept& he, int myrank);
 void exit_app(DataExcept& de, int myrank);
-void adjust_seed(Config& config, int cv, int nproc, int myrank);
+void adjust_seed(Config& config, int orig_seed, int cv, int nproc, int myrank);
 std::string time_diff(double dif);
 
 int main(int argc, char** argv) {
@@ -238,9 +238,9 @@ int main(int argc, char** argv) {
     int curr_cv=config.getStartCV()-1;
 	if(curr_cv==0)
 		writer.setFiles(mapfile_used, alg->get_fitness_name());
-
+    int original_seed = config.getRandSeed();
     for(; curr_cv < num_cv; curr_cv++){
-    	adjust_seed(config, curr_cv, nproc, myrank);
+    	adjust_seed(config, original_seed,curr_cv, nproc, myrank);
     	alg->setrand(config.getRandSeed());
 #ifdef PARALLEL
   if(myrank==0){
@@ -470,8 +470,8 @@ void exit_app(DataExcept& de, int myrank){
 /// @param nproc Total number of processors
 /// @param myrank Rank of this process
 ///
-void adjust_seed(Config& config, int cv, int nproc, int myrank){
-  int newseed = config.getRandSeed() + nproc * cv + myrank;
+void adjust_seed(Config& config, int orig_seed, int cv, int nproc, int myrank){
+  int newseed = orig_seed + nproc * cv + myrank;
   config.setRandSeed(newseed);
 }
 
