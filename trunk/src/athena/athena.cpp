@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "10/12/12";
+    string version_date = "10/18/12";
     string exec_name = "ATHENA";
      time_t start,end;
      
@@ -335,8 +335,7 @@ int main(int argc, char** argv) {
         pop.convert_scores(&(cv_set.get_interval(0).get_training()));
     }
     writer.outputSummary(pop, curr_cv, data, mapfile_used, config.getOttEncoded(), continmap_used,
-        alg->get_fitness_name());
-        
+        alg->get_fitness_name());    
     switch(config.getSummaryOnly()){
       case Config::False:
         writer.outputGraphic(alg, pop, curr_cv, config.getOutputName(), nmodels, data, 

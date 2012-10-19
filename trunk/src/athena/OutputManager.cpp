@@ -117,7 +117,7 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 ///
 void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
   string scaleInfo, data_manage::Dataholder& data, bool map_used, bool ott_dummy, bool continmap_used){
-    
+  
     Solution* bestSolution;   
 //     for(unsigned int currPop=0; currPop < pops.size(); currPop++){
       for(int mod=0; mod < nmodels; mod++){

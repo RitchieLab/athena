@@ -179,8 +179,7 @@ public:
     SummaryType getSummaryOnly(){return summary_only;}
     
     inline void setEncodeType(std::string encodeType){
-      std::map<std::string, DataEncodeType>::iterator iter = data_encode_map.find(encodeType);
-      
+      std::map<std::string, DataEncodeType>::iterator iter = data_encode_map.find(encodeType);     
       if(iter != data_encode_map.end())
         encodeDataType = iter->second;
       else
