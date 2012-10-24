@@ -165,7 +165,19 @@ string ExpressionTree::alter_label(data_manage::Dataholder* holder,
     ss >> num;
     num -= 1;
     label = holder->get_covar_name(num);
-  }        
+  }
+  else{
+  	if(label[0]=='G'){
+	  stringstream ss(label.substr(1,label.length()-1));
+      int num;
+      ss >> num;
+      if(ott_dummy)
+        num = (num-1)/2;
+      else
+        num -= 1;
+      label = "G" + holder->get_geno_name(num);
+     }
+  }
    
   return label;
 }
