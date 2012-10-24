@@ -139,9 +139,9 @@ void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
         outfile << "Testing result: " << bestSolution->testval() << endl;
         outfile << "Model:" << endl;
         bestSolution->output_clean(outfile, data, map_used, ott_dummy, continmap_used);
-        outfile << endl << endl <<"Grammar-compatible version:" << endl;
-        outfile << scaleInfo;
-        bestSolution->output_solution(outfile);
+//         outfile << endl << endl <<"Grammar-compatible version:" << endl;
+//         outfile << scaleInfo;
+//         bestSolution->output_solution(outfile);
         
         outfile.close();
       }
