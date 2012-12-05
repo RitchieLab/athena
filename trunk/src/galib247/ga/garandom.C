@@ -248,43 +248,6 @@ float garan1() {
 #endif
 
 
-// Mersenne twister random number generator
-
-#if defined(GALIB_USE_MERSENNE)
-
-#include <iostream>
-#include <fstream>
-using namespace std;
-
-static Random::MTRand rand_mersenne;
-
-void 
-gasmersenne(unsigned int seed) {
-	rand_mersenne.seed(seed);
-}
-
-float
-gamersenne() {
-	return rand_mersenne.rand();
-}
-
-void garand_load_state(string filename){
-	ifstream is;
-	is.open(filename.c_str());
-	is >> rand_mersenne;
-	is.close();
-}
-
-void garand_save_state(string filename){
-	ofstream os(filename.c_str(), ios::out);
-	os << rand_mersenne;
-	os.close();
-}
-
-
-#endif
-
-
 
 
 // The ran2 pseudo-random number generator.  It has a period of 2 * 10^18 and

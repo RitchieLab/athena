@@ -1,9 +1,3 @@
-/* 
- * File:   GeneGeneModel.h
- * Author: Eric Torstenson <torstenson@chgr.mc.vanderbilt.edu>, (C) Marylyn Ritchie 2009
- * Copyright: See COPYING file that comes with this distribution
- * Created on October 19, 2009, 1:45 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   GeneGeneModel.h
+ * Author: Eric Torstenson <torstenson@chgr.mc.vanderbilt.edu>, (C) Marylyn Ritchie 2009
+ * Copyright: See COPYING file that comes with this distribution
+ * Created on October 19, 2009, 1:45 PM
+ */
 #include <string>
 #include <sstream>
 #include "region.h"

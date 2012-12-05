@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #ifndef CROSSVALIDATOR_H_
 #define CROSSVALIDATOR_H_
 
@@ -24,7 +23,6 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CVSet.h"
 #include "Dataholder.h"
-#include "random_func.h"
 
 namespace data_manage
 {
@@ -35,8 +33,7 @@ class TRandom
   public:
   int operator()(int n)
   {
-//      return rand() % n;
-	return rand_uint() % n;
+    return rand() % n;
   }
 
 };
@@ -58,10 +55,7 @@ public:
   void save_splits(std::string filename);
   
   /// load splits with individual IDs
-  CVSet load_splits(std::string filename, Dataholder* holder);
-  
-//   friend std::ostream& operator<<( std::ostream& os, const CrossValidator& cv );
-//   friend std::istream& operator>>( std::istream& is, CrossValidator& cv );
+  CVSet load_splits(std::string filename, Dataholder* holder);  
 
 private:
 
@@ -73,14 +67,12 @@ private:
   void status_bin(Dataholder* holder, std::vector<Individual*>& affected,
       std::vector<Individual*>& unaffected);
       
-  CVSet split_by_num(Dataholder* holder);    
+  CVSet split_by_num(Dataholder* holder);
   
   CVSet create_set(unsigned int num_cv, Dataholder* holder);
 
   vector<vector<Individual*> > splits;
   
-  Dataholder* ref_holder;
-
 };
 
 }

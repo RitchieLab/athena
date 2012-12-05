@@ -1,9 +1,3 @@
-/* 
- * File:   InitGEgenome.h
- * Author: dudeksm
- *
- * Created on November 13, 2008, 11:32 AM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   InitGEgenome.h
+ * Author: dudeksm
+ *
+ * Created on November 13, 2008, 11:32 AM
+ */
 
 #ifndef _INITGEGENOME_H
 #define	_INITGEGENOME_H

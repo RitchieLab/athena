@@ -1,9 +1,3 @@
-/* 
- * File:   Algorithm.h
- * Author: dudeksm
- *
- * Created on November 10, 2008, 1:18 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   Algorithm.h
+ * Author: dudeksm
+ *
+ * Created on November 10, 2008, 1:18 PM
+ */
 
 #ifndef _ALGORITHM_H
 #define	_ALGORITHM_H

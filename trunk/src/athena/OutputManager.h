@@ -1,9 +1,3 @@
-/* 
- * File:   OutputManager.h
- * Author: dudeksm
- *
- * Created on December 29, 2008, 3:37 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   OutputManager.h
+ * Author: dudeksm
+ *
+ * Created on December 29, 2008, 3:37 PM
+ */
 
 #ifndef _OUTPUTMANAGER_H
 #define	_OUTPUTMANAGER_H

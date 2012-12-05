@@ -43,7 +43,6 @@ void OutputManager::setFiles(bool mapfile_used, string fitness_name){
 	
 }
 
-
 ///
 /// outputs summary of best models
 /// @param pop Population containing best model

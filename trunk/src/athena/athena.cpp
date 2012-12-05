@@ -41,7 +41,6 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <ScaledDataFactory.h>
 #include <StephenDummyConvert.h>
 #include <time.h>
-#include <random_func.h>
 
 #ifdef PARALLEL
 #include "TransferData.h"
@@ -69,7 +68,7 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "10/18/12";
+    string version_date = "12/3/12";
     string exec_name = "ATHENA";
      time_t start,end;
      
@@ -169,13 +168,8 @@ int main(int argc, char** argv) {
         exit_app(he, myrank);
     }
  
- 
- 	// restart code needs to be placed here
- 	// establish original splits and load in the saved states of the random 
- 	// number generators
- 	
     // set random seed  before splitting
-    data_manage::rand_seed(config.getRandSeed());
+    srand(config.getRandSeed());
 
     // construct crossvalidation sets to use in running algorithm
     CrossValidator cvmaker;
@@ -195,10 +189,9 @@ int main(int argc, char** argv) {
     }catch(DataExcept de){
         exit_app(de, myrank);
     }
-		cv_set = cvmaker.load_splits(config.getSplitFile(), &data);
-// cvmaker.save_splits(config.getOutputName() + ".cvsplit2");
+//		cv_set = cvmaker.load_splits(config.getSplitFile(), &data);
 	}
-
+	
     // run crossvalidations and store the populations
     int num_cv = cv_set.num_intervals();
     
@@ -212,9 +205,7 @@ int main(int argc, char** argv) {
 //     config.setRandSeed(newseed);
 //   }
 // #endif /* end parallel seed adjustment for slaves */
-   
-//    	adjust_seed(Configuration& config, int cv);
-   
+//    
     // create algorithm
     vector<AlgorithmParams> alg_params= config.getAlgorithmParams();
     Algorithm* alg = AlgorithmFactory::create_algorithm(alg_params[0].name);
@@ -238,7 +229,7 @@ int main(int argc, char** argv) {
     int curr_cv=config.getStartCV()-1;
 	if(curr_cv==0)
 		writer.setFiles(mapfile_used, alg->get_fitness_name());
-    int original_seed = config.getRandSeed();
+	int original_seed = config.getRandSeed();
     for(; curr_cv < num_cv; curr_cv++){
     	adjust_seed(config, original_seed,curr_cv, nproc, myrank);
     	alg->setrand(config.getRandSeed());
@@ -292,8 +283,8 @@ int main(int argc, char** argv) {
       
       // check population values
 //       pops.push_back(alg->getPopulation());
-      Population pop = alg->getPopulation();
-	
+	  Population pop = alg->getPopulation();
+
       int curr_proc = 0;
 #ifdef PARALLEL
   if(myrank==0){
@@ -316,9 +307,10 @@ int main(int argc, char** argv) {
   }
 #endif 
     cout << " Completed" << endl;
-    alg->finishLog(config.getOutputName(),curr_cv+1);
+	alg->finishLog(config.getOutputName(),curr_cv+1);
     int nmodels=1;
-#ifdef PARALLEL
+    
+ #ifdef PARALLEL
     if(myrank==0){
 
       if(config.outputAllNodesBest())
@@ -350,37 +342,36 @@ int main(int argc, char** argv) {
 #ifdef PARALLEL
 } /* end of output */
 #endif
-		
     }
 //     int nmodels = 1;
-//     for(int curr_cv=1; curr_cv <= num_cv; curr_cv++){
+//     for(int curr_cv=start_cv; curr_cv <= num_cv; curr_cv++){
 //         alg->finishLog(config.getOutputName(),curr_cv);
 //     }
-
+//     
 // #ifdef PARALLEL
 //     if(myrank==0){
 // 
 //       if(config.outputAllNodesBest())
 //         nmodels = nproc;
 // #endif
-
-    // update output when needed
+// 
+//     // update output when needed
 //     if(pops[0].getConvertScores()){
 //       if(num_cv > 1)
-//         for(int curr_cv=0; curr_cv < num_cv; curr_cv++){ 
+//         for(int curr_cv=start_cv; curr_cv < num_cv; curr_cv++){ 
 //           pops[curr_cv].convert_scores(&(cv_set.get_interval(curr_cv).get_training()), 
 //             &(cv_set.get_interval(curr_cv).get_testing()));
 //         }
 //       else
 //         pops[0].convert_scores(&(cv_set.get_interval(0).get_training()));
 //     }
-
-    // Output results
+// 
+//     // Output results
 //     writer.setBasename(config.getOutputName());
-    
+//     
 //     writer.outputSummary(pops, data, mapfile_used, config.getOttEncoded(), continmap_used,
 //         alg->get_fitness_name());
-    
+//     
 //     switch(config.getSummaryOnly()){
 //       case Config::False:
 //         writer.outputGraphic(alg, pops, config.getOutputName(), nmodels, data, 
@@ -408,7 +399,6 @@ int main(int argc, char** argv) {
 #ifdef PARALLEL
     }
 #endif
-    
 
     return (EXIT_SUCCESS);
 }
@@ -449,6 +439,7 @@ void exit_app(AthenaExcept& he, int myrank){
 } 
 
 
+
 ///
 /// Outputs message in exception and exits program
 /// @param he AthenaExcept
@@ -462,6 +453,7 @@ void exit_app(DataExcept& de, int myrank){
   exit(EXIT_FAILURE);    
 } 
 
+
 ///
 /// Adjust seed based on current CV and number of processors in run
 /// @param config Configuration
@@ -473,4 +465,3 @@ void adjust_seed(Config& config, int orig_seed, int cv, int nproc, int myrank){
   int newseed = orig_seed + nproc * cv + myrank;
   config.setRandSeed(newseed);
 }
-

@@ -117,6 +117,7 @@ vector<int> NNSolution::get_covariates(){
 /// 
 void NNSolution::output_clean(std::ostream& os, data_manage::Dataholder& data,
       bool map_used, bool ott_dummy, bool continmap_used){
+
   // concatenate numbers and output rest without spaces
   os << symbols[0];
   for(unsigned int symb=1; symb < symbols.size(); symb++){
@@ -133,6 +134,7 @@ void NNSolution::output_clean(std::ostream& os, data_manage::Dataholder& data,
           num = (num-1)/2;
         else
           num -= 1;
+
         os << data.get_geno_name(num);
       }
       else if(continmap_used && symbols[symb][0] == 'C'){
@@ -153,8 +155,8 @@ void NNSolution::output_clean(std::ostream& os, data_manage::Dataholder& data,
             num -= 1;
       	  os << "G" << data.get_geno_name(num);
       	}
-      	else
-	      os << symbols[symb];
+      	else      
+	        os << symbols[symb];
       }
       
     }

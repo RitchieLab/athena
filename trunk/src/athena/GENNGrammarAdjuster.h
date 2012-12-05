@@ -1,9 +1,3 @@
-/* 
- * File:   GENNGrammerAdjuster.h
- * Author: dudeksm
- *
- * Created on December 5, 2008, 4:49 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   GENNGrammerAdjuster.h
+ * Author: dudeksm
+ *
+ * Created on December 5, 2008, 4:49 PM
+ */
 
 #ifndef _GENNGRAMMERADJUSTER_H
 #define	_GENNGRAMMERADJUSTER_H

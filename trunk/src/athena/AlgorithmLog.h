@@ -1,4 +1,3 @@
-//AlgorithmLog.h
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -17,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+//AlgorithmLog.h
 
 #ifndef _ALGORITHMLOG_H
 #define	_ALGORITHMLOG_H

@@ -1,9 +1,3 @@
-/* 
- * File:   ConfigFileReader.h
- * Author: dudeksm
- *
- * Created on November 5, 2008, 4:58 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   ConfigFileReader.h
+ * Author: dudeksm
+ *
+ * Created on November 5, 2008, 4:58 PM
+ */
 
 #ifndef _CONFIGFILEREADER_H
 #define	_CONFIGFILEREADER_H

@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include "CrossValidator.h"
 
 #include <algorithm>
@@ -100,7 +99,6 @@ CVSet CrossValidator::create_set(unsigned int num_crossval, Dataholder* holder){
   return set;
 }
 
-
 ///
 /// Splits data according to index in the holder class.
 /// For use with user-specified splits.
@@ -180,6 +178,7 @@ void CrossValidator::status_bin(Dataholder* holder, vector<Individual*>& affecte
 }
 
 
+
 ///
 /// Shuffles individuals in the dataset
 /// so that the splitting of the data will be independent of the
@@ -187,6 +186,7 @@ void CrossValidator::status_bin(Dataholder* holder, vector<Individual*>& affecte
 /// @param indexes vector will contain pointers to now shuffled individuals
 ///
 void CrossValidator::shuffle_inds(vector<Individual*> & inds){
+
   TRandom myrand;
   random_shuffle(inds.begin(), inds.end(), myrand);
 }
@@ -198,7 +198,6 @@ void CrossValidator::shuffle_inds(vector<Individual*> & inds){
 ///	 @return CVSet
 ///
 CVSet CrossValidator::load_splits(std::string filename, Dataholder* holder){
-	ref_holder = holder;
 	ifstream is(filename.c_str());
     if(!is.is_open()){
     	throw DataExcept("ERROR: Unable to open CV split file " + filename + "\n");
@@ -214,7 +213,7 @@ CVSet CrossValidator::load_splits(std::string filename, Dataholder* holder){
 			inds.clear();
 			continue;
 		}
-		inds.push_back(ref_holder->get_ind_by_id(id));
+		inds.push_back(holder->get_ind_by_id(id));
 	}
 	splits.push_back(inds);
 	is.close();

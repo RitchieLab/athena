@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #include "GEObjective.h"
 #include "GENNAlg.h"
 #include "GEObjective.h"
@@ -341,14 +342,15 @@ void GENNAlg::setrand(unsigned int seed){
 	srand(seed);
 }
 
+
 ///
 /// Sets parameters for use with GAlib
 /// @param alg_params AlgorithmParams
 /// @throws AthenaExcept on error
 ///
 void GENNAlg::set_ga_params(){   
-//     GARandomSeed(randSeed);
-//     srand(randSeed);   
+    GARandomSeed(randSeed);
+    srand(randSeed);   
     // first free ga memory if already run
     free_memory();
     
@@ -594,7 +596,7 @@ void GENNAlg::startLog(int num_snps){
     modellog=NULL;
   }
   gelog = new NNLog(num_snps);
-  gelog->set_max_best(maxbest); 
+  gelog->set_max_best(maxbest);
 }
 
 
@@ -998,7 +1000,7 @@ void GENNAlg::prepareLog(string basename, int cv){
     
     string modellog_name = basename + ".rank." + Stringmanip::itos(myRank) + ".cv." + 
         Stringmanip::itos(cv) + ".models.log";
-          
+  
   if(logTypeSelected != LogNone){
     modellog->open_log(modellog_name, GEObjective::calculator_name());
     if(logTypeSelected == LogDetailed)

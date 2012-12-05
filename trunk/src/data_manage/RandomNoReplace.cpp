@@ -16,9 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include "RandomNoReplace.h"
-#include "random_func.h"
 
 using namespace data_manage;
 
@@ -36,8 +34,7 @@ void RandomNoReplace::SampleWithoutReplacement(int popSize, int sampSize, std::v
     double u;
 
     while (m < n){
-//        u = double(rand()) / RAND_MAX; // call a uniform(0,1) random number generator
-		u = double(rand_float());
+        u = double(rand()) / RAND_MAX; // call a uniform(0,1) random number generator
 
         if ( (N - t)*u >= n - m ){
             t++;

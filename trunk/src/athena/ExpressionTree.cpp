@@ -1,4 +1,3 @@
-//ExpressionTree.cpp
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -17,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+//ExpressionTree.cpp
 
 #include "ExpressionTree.h"
 #include "TerminalSymbol.h"
@@ -165,7 +165,7 @@ string ExpressionTree::alter_label(data_manage::Dataholder* holder,
     ss >> num;
     num -= 1;
     label = holder->get_covar_name(num);
-  }
+  }        
   else{
   	if(label[0]=='G'){
 	  stringstream ss(label.substr(1,label.length()-1));
@@ -178,7 +178,7 @@ string ExpressionTree::alter_label(data_manage::Dataholder* holder,
       label = "G" + holder->get_geno_name(num);
      }
   }
-   
+     
   return label;
 }
 

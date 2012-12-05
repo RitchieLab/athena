@@ -1,9 +1,3 @@
-/* 
- * File:   Config.h
- * Author: dudeksm
- *
- * Created on November 5, 2008, 4:59 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   Config.h
+ * Author: dudeksm
+ *
+ * Created on November 5, 2008, 4:59 PM
+ */
 
 #ifndef _CONFIG_H
 #define	_CONFIG_H
@@ -143,7 +143,8 @@ public:
 
     void setContinMapName(std::string filename){contin_map=filename;}
     std::string getContinMapName(){return contin_map;}
-    
+
+
     void setSplitFile(std::string filename){split_file = filename;}
     std::string getSplitFile(){return split_file;}
     
@@ -179,7 +180,8 @@ public:
     SummaryType getSummaryOnly(){return summary_only;}
     
     inline void setEncodeType(std::string encodeType){
-      std::map<std::string, DataEncodeType>::iterator iter = data_encode_map.find(encodeType);     
+      std::map<std::string, DataEncodeType>::iterator iter = data_encode_map.find(encodeType);
+      
       if(iter != data_encode_map.end())
         encodeDataType = iter->second;
       else

@@ -1,9 +1,3 @@
-/* 
- * File:   GEGrammarSIAltTerm.h
- * Author: dudeksm
- *
- * Created on November 17, 2008, 4:16 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   GEGrammarSIAltTerm.h
+ * Author: dudeksm
+ *
+ * Created on November 17, 2008, 4:16 PM
+ */
 
 #ifndef _GEGRAMMARSIALTTERM_H
 #define	_GEGRAMMARSIALTTERM_H

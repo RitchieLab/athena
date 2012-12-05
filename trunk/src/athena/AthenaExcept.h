@@ -1,9 +1,3 @@
-/* 
- * File:   AthenaExcept.h
- * Author: dudeksm
- *
- * Created on November 6, 2008, 12:43 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   AthenaExcept.h
+ * Author: dudeksm
+ *
+ * Created on November 6, 2008, 12:43 PM
+ */
 
 #ifndef _ATHENAEXCEPT_H
 #define	_ATHENAEXCEPT_H

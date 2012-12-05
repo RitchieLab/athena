@@ -1,9 +1,3 @@
-/* 
- * File:   GESymbReg.h
- * Author: dudeksm
- *
- * Created on August 10, 2010, 2:03 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   GESymbReg.h
+ * Author: dudeksm
+ *
+ * Created on August 10, 2010, 2:03 PM
+ */
 
 #ifndef _GESYMBREG_H
 #define	_GESYMBREG_H

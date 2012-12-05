@@ -48,7 +48,6 @@ void Config::initialize(){
     contin_test = "";
     contin_train = "";
     contin_map = "";
-    split_file = "";
     miss_value = -1;
     biofilter_file = "";
     summary_only = False;

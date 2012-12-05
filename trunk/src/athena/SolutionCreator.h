@@ -1,9 +1,3 @@
-/* 
- * File:   SolutionCreator.h
- * Author: dudeksm
- *
- * Created on December 1, 2008, 4:10 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   SolutionCreator.h
+ * Author: dudeksm
+ *
+ * Created on December 1, 2008, 4:10 PM
+ */
 
 #ifndef _SOLUTIONCREATOR_H
 #define	_SOLUTIONCREATOR_H

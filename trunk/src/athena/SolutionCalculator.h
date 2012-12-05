@@ -1,9 +1,3 @@
-/* 
- * File:   SolutionCalculator.h
- * Author: dudeksm
- *
- * Created on November 20, 2008, 2:38 PM
- */
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -22,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* 
+ * File:   SolutionCalculator.h
+ * Author: dudeksm
+ *
+ * Created on November 20, 2008, 2:38 PM
+ */
 
 #ifndef _SOLUTIONCALCULATOR_H
 #define	_SOLUTIONCALCULATOR_H

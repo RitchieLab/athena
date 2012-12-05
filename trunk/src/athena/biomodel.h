@@ -1,14 +1,3 @@
-//
-// C++ Implementation: biomodel.h
-//
-// Description: Encapsulates any functionality duplicated in Snp/Snp or Gene/Gene models
-//
-//
-// Author: Eric Torstenson <torstenson@chgr.mc.vanderbilt.edu>, (C) Marylyn Ritchie 2009
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -27,6 +16,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+//
+// C++ Implementation: biomodel.h
+//
+// Description: Encapsulates any functionality duplicated in Snp/Snp or Gene/Gene models
+//
+//
+// Author: Eric Torstenson <torstenson@chgr.mc.vanderbilt.edu>, (C) Marylyn Ritchie 2009
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
 #ifndef __BIOFILTER_BIOMODEL_H
 #define __BIOFILTER_BIOMODEL_H
 

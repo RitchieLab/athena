@@ -1,4 +1,3 @@
-// BackPropSMD.h
 /*
 Copyright Marylyn Ritchie 2011
 
@@ -17,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
+// BackPropSMD.h
 #ifndef __BACKPROPSMD_H__
 #define __BACKPROPSMD_H__
 
