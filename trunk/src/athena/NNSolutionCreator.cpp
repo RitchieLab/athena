@@ -451,7 +451,6 @@ float NNSolutionCreator::evaluate(Dataset* set){
 void NNSolutionCreator::detailed_logging(){
   ExpressionTree extree;
   extree.convert_postfix(postfix_stack);
-  
   nn_depth = extree.get_max_depth();
 }
 

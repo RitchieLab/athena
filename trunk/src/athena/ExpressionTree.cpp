@@ -69,7 +69,7 @@ void ExpressionTree::convert_postfix(vector<TerminalSymbol*> & postfix_stack){
       for(int curr_arg=0; curr_arg < num_args; curr_arg++){
         temp_stack.push_back(stack.back());
         stack.pop_back();
-      }      
+      }
       
       // now put in correct order onto original tree
       for(int curr_arg=0; curr_arg < num_args; curr_arg++){
@@ -189,6 +189,14 @@ void ExpressionTree::clear_constants(){
   for(unsigned int i=0; i < constants.size(); i++){
     delete constants[i];
   }
+  constants.clear();
+}
+
+///
+/// Free any left over memory
+///
+ExpressionTree::~ExpressionTree(){
+	clear_constants();
 }
 
 ///

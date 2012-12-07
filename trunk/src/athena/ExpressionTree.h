@@ -33,6 +33,8 @@ class ExpressionTree{
 
   public:
   
+  	~ExpressionTree();
+  
     /// returns prefix stack after conversion from the post fix stack
     void convert_postfix(vector<TerminalSymbol*> & postfix_stack);
     
