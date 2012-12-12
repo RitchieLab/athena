@@ -591,7 +591,8 @@ void GENNAlg::CloseLog(){
 void GENNAlg::startLog(int num_snps){
   if(gelog != NULL){
     delete gelog;
-    delete modellog;
+    if(modellog != NULL)
+	    delete modellog;
     gelog=NULL;
     modellog=NULL;
   }
@@ -972,12 +973,12 @@ void GENNAlg::finishLog(string basename, int cv){
                 Stringmanip::itos(cv) + ".models.log"; 
         ModelLogParser parser;
         parser.compile_files(filenames, outname, GEObjective::get_worst_score());
-        if(totalNodes > 1){
-            for(vector<string>::iterator iter=filenames.begin(); iter != filenames.end();
-                iter++){
-                system(("rm " + *iter).c_str());
-            }
-        }
+//         if(totalNodes > 1){
+//             for(vector<string>::iterator iter=filenames.begin(); iter != filenames.end();
+//                 iter++){
+//                 system(("rm " + *iter).c_str());
+//             }
+//         }
     }
 }
 

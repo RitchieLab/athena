@@ -50,6 +50,8 @@ void ModelLogParser::compile_files(vector<string>& filenames, string outfilename
         system(command.c_str());
         return;
     }
+    else
+    	return;
     
     vector<vector<logModel> > all_models;
 
