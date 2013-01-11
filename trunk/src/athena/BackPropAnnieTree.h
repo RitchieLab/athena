@@ -52,6 +52,12 @@ class BackPropAnnieTree{
     
     void initialize();
     
+	enum InputType{
+		Genotype,
+		Contin,
+		Bias
+    };
+    
     struct Neuron{
       Neuron(){output=0.0;delta=0.0;prevWeight=0.0;currWeight=0.0;
         constantWeightValue=NULL;adjusted_depth=0;}
@@ -82,11 +88,11 @@ class BackPropAnnieTree{
     
     struct inputValue{
       int index;
-      bool isGenotype;
+      InputType intype;
     };
     
     tree<Neuron> bptree;
-    float beta;
+    float beta, bias_value;
     int maxDepth;
     
     void addNeuron(ExpressTreeIter& exIter, tree<Neuron>::iterator& bpIter,

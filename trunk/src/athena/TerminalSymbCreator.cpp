@@ -133,6 +133,7 @@ void TerminalSymbCreator::create_terminals(int num_genotypes,
   TerminalMap["log"] = new LogF("Log", 1);
   TerminalMap["cosin"] = new Cosine("Cosine", 1);
   TerminalMap["tan"] = new Tangent("Tangent", 1);
+  TerminalMap["Bias"] = new BiasTerm("Bias", 0);
   
   // set the special terminals for quick access
   rparen = TerminalMap[")"];

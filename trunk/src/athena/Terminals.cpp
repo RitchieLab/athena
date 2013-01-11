@@ -60,6 +60,23 @@ float Constant::evaluate(deque<float> & args){
   return constant_value;
 } 
 
+
+///////////////////////////////////////
+// BiasTerm class
+///////////////////////////////////////
+BiasTerm::BiasTerm(string symbol, int number_args)
+  :TerminalSymbol(symbol, 0, TerminalSymbol::Bias){
+  num_args=number_args;
+  label = symbol;
+  style = "filled";
+  shape = "box"; 
+  type = symbol;
+}
+
+float BiasTerm::evaluate(deque<float> & args){
+	return 1.0;
+}
+
 //////////////////////////////////////
 // Genotype class
 //////////////////////////////////////

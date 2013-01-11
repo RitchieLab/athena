@@ -237,22 +237,22 @@ bool AthenaGrammarSI::init(const unsigned int index){
 	if(index!=UINT_MAX){
 		setIndex(index);
 	}
-unsigned int maxDepth = getMaxDepth();
+	unsigned int maxDepth = getMaxDepth();
 
 	// Check depth validity
 	if(maxDepth<1){
-		cerr << "Cannot initialise individual with maxDepth set to zero.\n";
+		cerr << "Cannot initialize individual with maxDepth set to zero.\n";
 		return false;
 	}
 	// Check for valid mapper
 	if(!getValidGrammar()){
-		cerr << "Invalid Mapper, cannot initialise individual.\n";
+		cerr << "Invalid Mapper, cannot initialize individual.\n";
 		return false;
 	}
 	// check if start symbol minimumDepth smaller or equal to newMaxDepth
 	const Rule *startRule=getStartRule();
 	if(startRule->getMinimumDepth()>=getMaxDepth()){// maxDepth is smaller
-		cerr << "Current maxDepth (" << getMaxDepth() <<  ") is too small to initialise individual.\n";
+		cerr << "Current maxDepth (" << getMaxDepth() <<  ") is too small to initialize individual.\n";
 		return false;
 	}
 
@@ -622,8 +622,6 @@ output = true;
 				prodIt=rulePtr->begin();
 			}
 			else{
-//if(output) cout << "rulePtr->size()=" << rulePtr->size() <<  " and *genoIt= " << *genoIt
-//  << " so rule number is " << *genoIt%(rulePtr->size()) << endl;
 				prodIt=rulePtr->begin()+*genoIt%(rulePtr->size());
 			}
 			// Place production on productions vector

@@ -59,6 +59,7 @@ void BackPropAnnieTree::initialize(){
   maxDepth = 0;
   net = NULL;
   trainSet = NULL;
+  bias_value = 1;
 }
 
 
@@ -185,10 +186,17 @@ void BackPropAnnieTree::createTree(vector<TerminalSymbol*>& postfix_stack, Datas
     // and whether Genotype ('G') or Covariate ('C')
     string inputString = leafIter->neuronTerminal->get_name();
     if(inputString[0] == 'G')
-      input.isGenotype = true;
-    else
-      input.isGenotype = false;
-    
+//       input.isGenotype = true;
+      input.intype = Genotype;
+    else if(inputString[0] == 'C')
+      input.intype = Contin;
+//       input.isGenotype = false;
+		else{
+			input.intype = Bias;
+			deque<float> args;
+			bias_value = leafIter->neuronTerminal->evaluate(args);
+		}
+	    
     stringstream ss(inputString.substr(1, inputString.size()-1));
     ss >> input.index;
     input.index--; // index should be offset by one as it starts at zero
@@ -273,10 +281,23 @@ void BackPropAnnieTree::constructTrainingSet(Dataset* set){
     for(vector<inputValue>::iterator inputIter = inputIndexes.begin(); inputIter != inputIndexes.end();
       ++inputIter){
       
-      if(inputIter->isGenotype)
-        input.push_back(currInd->get_genotype(inputIter->index));
-      else
-        input.push_back(currInd->get_covariate(inputIter->index));
+//       if(inputIter->isGenotype)
+//         input.push_back(currInd->get_genotype(inputIter->index));
+//       else
+//         input.push_back(currInd->get_covariate(inputIter->index));
+        
+      switch(inputIter->intype){
+      	case Genotype:
+      		input.push_back(currInd->get_genotype(inputIter->index));
+      		break;
+      	case Contin:
+      		input.push_back(currInd->get_covariate(inputIter->index));
+      		break;
+      	case Bias:
+      		input.push_back(bias_value);
+      		break;
+      }  
+        
     }
     output.push_back(currInd->get_status());
     

@@ -560,8 +560,7 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
             sis.copy(*otherParent, startsite, othersite, oBLockLen);
             unsigned int endpoint = startParent->length()-(ssite+sBlockLen);
             sis.copy(*startParent,startsite+otherBlockLen, startsite+startBlockLen, endpoint);
-          }          
-        
+          }
         }
               
 		  }
@@ -581,17 +580,22 @@ int GE1DArrayGenome::codonMutator(GAGenome & g, float pmut){
   if(pmut <= 0.0)
     return 0;
   
-  // round up the number of mutations possible
-  int nmut = int((genome.length() * pmut) + 0.5);
-  int i;
+  float nmut = genome.length() * pmut;
+  register int i,n;
   
-  // mutation should be 0 to INT MAX
-  for(int n=0; n<nmut; n++){
-    //select codon to change
-    i=GARandomInt(0, genome.length()-1);
-    genome.gene(i, GARandomInt(0, INT_MAX)); // change to random value 0-INT_MAX (unsigned int is used)
+  int length = genome.length()-1;
+  
+  // when total is less than one have to check each codon
+  if(nmut < 1.0){
+  	for(i=length; i>=0; i--){
+  		if(GAFlipCoin(pmut))
+	  		genome.gene(i, GARandomInt(0,INT_MAX));
+  	}
   }
-  return nmut;
+  else{
+  	for(n=0; n<nmut; n++)
+  		genome.gene(GARandomInt(0, length), GARandomInt(0,INT_MAX));
+  }
 }
  
 int

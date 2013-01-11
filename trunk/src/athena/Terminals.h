@@ -49,6 +49,26 @@ class Constant :public TerminalSymbol{
 // user-defined terminals below
 ///////////////////////////////
 
+
+///
+/// TerminalSymbol that acts as bias input for nodes
+///
+class BiasTerm :public TerminalSymbol{
+
+	public:
+		BiasTerm(std::string name, int number_args=0);
+		
+		virtual ~BiasTerm(){}
+		
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
+
+    private:
+      float bias_value;		 
+
+};
+
+
+
 ///
 /// TerminalSymbol that contains an index for referencing 
 /// genotypes in the dataset

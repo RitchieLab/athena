@@ -48,7 +48,8 @@ public:
         NotVariable,
         Neuron,
         Weight,
-        PreOperator
+        PreOperator,
+        Bias
     };
     
     TerminalSymbol(){name = ""; priority = 0;}
