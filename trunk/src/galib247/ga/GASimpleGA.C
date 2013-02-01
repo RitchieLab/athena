@@ -112,7 +112,8 @@ GASimpleGA::population(const GAPopulation& p) {
   }
 
   GAGeneticAlgorithm::population(p);
-  oldPop->copy(*pop->clone());
+//   oldPop->copy(*pop->clone());
+  oldPop->copy(*pop);
   oldPop->geneticAlgorithm(*this);
 
   return *pop;
