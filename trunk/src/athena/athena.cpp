@@ -68,12 +68,13 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "1/10/13";
+    string version_date = "2/1/13";
     string exec_name = "ATHENA";
+    string version = "1.0.1";
      time_t start,end;
      
     if(argc < 2){
-        AthenaExcept he("\n\tATHENA\n\t" + version_date + 
+        AthenaExcept he("\n\tATHENA\n\tv" + version + "\n\t" + version_date +  
             "\n\n\tUsage: ATHENA <config>\n\n");
         exit_app(he, myrank);
     }
