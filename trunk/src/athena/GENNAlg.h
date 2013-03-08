@@ -54,7 +54,7 @@ public:
     void run();
     
     /// Runs a step of the algorithm
-    virtual void step();
+    virtual int step();
     
     /// Sets random seed
     void setrand(unsigned int seed);
@@ -120,6 +120,7 @@ public:
       void updateWithMigration(struct_mpi * genomes, int totalNodes, int myRank);
       void SendAndReceive(int totalNodes, int myRank);
       void SendAndReceiveStruct(int totalNodes, int myRank);
+      int nodesCompleted(int complete);
     #endif
     
     void tempoOutputName(string outname){oname = outname;
@@ -153,6 +154,10 @@ protected:
     
     void setBioModels(BioFilterModelCollection& collection, data_manage::Dataholder* holder);
     
+    NNSolution* convert_genome(GAGenome& ind);
+    
+    int reached_goal();
+    
     enum GENNParams{
         noMatchParam,
         minSizeParam,
@@ -185,7 +190,8 @@ protected:
         doubleTournF,
         doubleTournD,
         doubleTournFitFirst,
-        prunePlantFract
+        prunePlantFract,
+        fitGoal
     };
     
     
@@ -244,7 +250,7 @@ protected:
         snpname_log_filename;
     unsigned int pop_size, num_generations, step_size, ngens_var_restrict, restrict_steps_done,
       ngens_block_cross;
-    double prob_cross, prob_mut, init_bio_fract;
+    double prob_cross, prob_mut, init_bio_fract, fitness_goal;
     int num_genotypes, num_continuous, bp_first_gen, bp_freq_gen, bp_next_opt;
     
     NNLog* gelog;

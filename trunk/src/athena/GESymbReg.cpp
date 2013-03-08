@@ -245,7 +245,7 @@ void GESymbReg::set_ga_params(){
 /// Runs an indicated interval for the algorithm. This interval is set
 /// in the step_size variable.  
 ///
-void GESymbReg::step(){
+int GESymbReg::step(){
 
     GE1DArrayGenome::myrank = myRank;
 
@@ -295,6 +295,8 @@ void GESymbReg::step(){
     
     // only need to fill population at this point not at end of each generation
     fill_population();
+    
+    return 0;
 }
 
 

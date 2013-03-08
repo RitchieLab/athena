@@ -89,6 +89,7 @@ public:
       bool map_used, bool ott_dummy, bool continmap_used){
       sol_creator->establish_solution(sol->get_symbols());
       sol_creator->graphical_output(os, data, map_used, ott_dummy, continmap_used);
+      sol_creator->free_solution();
     }
 
     /// Optimizes current model using process provided by SolutionCreator

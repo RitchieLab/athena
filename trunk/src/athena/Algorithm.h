@@ -63,8 +63,8 @@ public:
     /// Runs alorithm
     virtual void run()=0;
     
-    /// Runs algorithm for a step which is whatever duration set by user
-    virtual void step()=0;
+    /// Runs algorithm for a step which is whatever duration set by user, returns true if completed
+    virtual int step()=0;
     
     /// Sets testing values for best solutions
     virtual void test_solution(Dataset* test_set, int nproc)=0;

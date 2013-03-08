@@ -40,7 +40,7 @@ class GESymbReg: public GENNAlg{
     void set_params(AlgorithmParams& alg_params, int numExchanges, int numGenos, int numContin);  
     
     /// Runs a step of the algorithm
-    virtual void step();
+    virtual int step();
   
   private:
     

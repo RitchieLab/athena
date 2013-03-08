@@ -151,6 +151,9 @@ void GENNAlg::set_params(AlgorithmParams& alg_param, int numExchanges, int numGe
             case restrictVarGens:
                 ngens_var_restrict = Stringmanip::stouint(mapIter->second);
                 break;
+            case fitGoal:
+                fitness_goal = Stringmanip::stodouble(mapIter->second);
+                break;
             case bioModelSelection:
                 if(BioModelSelectionMap.find(Stringmanip::to_upper(mapIter->second)) == 
                     BioModelSelectionMap.end())
@@ -241,6 +244,7 @@ void GENNAlg::initialize_params(){
    prob_cross = 0.9;
    prob_mut = 0.01;
    init_bio_fract = 0.0;
+   fitness_goal = 1.0;
    
    step_size = 100;
 
@@ -276,6 +280,7 @@ void GENNAlg::initialize_params(){
    param_map["BACKPROPFREQ"] = bpfreq;
    param_map["BACKPROPSTART"] = bpstart;
    param_map["GASELECTION"] = gaSelection;
+   param_map["FITNESSGOAL"] = fitGoal;
 #ifdef ATHENA_BLOAT_CONTROL
    param_map["DOUBTOURNF"] = doubleTournF;
    param_map["DOUBTOURND"] = doubleTournD;
@@ -427,6 +432,35 @@ void GENNAlg::set_mapper_prefs(AthenaGrammarSI& hemannMapper){
 
 
 ///
+/// Compare bet individual against goal fitness.  If met or exceeded, then
+/// return 1.  If not met, return 0.
+/// @return 1 if goal reached, and 0 otherwise
+///
+int GENNAlg::reached_goal(){
+  GE1DArrayGenome& bestgenome = (GE1DArrayGenome&) ga->population().individual(0);
+  
+  bool goal_done = 0;
+  double fitness;
+  // when running r-squared need to convert the mean-squared error into
+  // r-squared result
+  if(pop.getConvertScores()){
+    NNSolution* best_solution = convert_genome(ga->population().individual(0));
+    best_solution->adjust_score_out(set);
+    fitness = double(best_solution->fitness());
+    delete best_solution;
+  }
+  else{
+    fitness = bestgenome.fitness();
+  }
+  
+  if(fitness >= fitness_goal){
+    goal_done=1;
+  }
+  return goal_done;
+}
+
+
+///
 /// Establishes the algorithm for the run based on the parameters
 /// set in this algorithm.
 ///
@@ -441,9 +475,9 @@ void GENNAlg::run(){
 /// Runs an indicated interval for the algorithm. This interval is set
 /// in the step_size variable.  
 ///
-void GENNAlg::step(){
-
-GE1DArrayGenome::myrank = myRank;
+int GENNAlg::step(){
+    int completed =0;
+    GE1DArrayGenome::myrank = myRank;
     for(unsigned int i=0; i < step_size; i++){
         if(!ga->done()){
             if(logTypeSelected!=LogNone){
@@ -470,6 +504,14 @@ GE1DArrayGenome::myrank = myRank;
           bp_next_opt += bp_freq_gen;
          }
          fillLog();
+         // stop analysis when best model reaches or exceeds the fitness goal
+         completed = reached_goal();
+          #ifdef PARALLEL
+              completed = nodesCompleted(completed);
+          #endif
+          if(completed){
+            break;
+          }
         }
     }
 
@@ -496,6 +538,7 @@ GE1DArrayGenome::myrank = myRank;
     
     // only need to fill population at this point not at end of each generation
     fill_population();
+    return completed;
 }
 
 
@@ -681,6 +724,33 @@ void GENNAlg::AnalyzePopulation(){
 }
 
 
+///
+/// Converts an individual from population into a Solution and returns it
+/// @param GAGenome ind
+/// @return NNSolution*
+///
+NNSolution* GENNAlg::convert_genome(GAGenome& ind){
+  
+  GE1DArrayGenome& genome = (GE1DArrayGenome&) ind;
+  NNSolution* sol = (NNSolution*)GEObjective::getBlankSolution();
+  mapper.setGenotype(genome);
+  Phenotype const *phenotype=mapper.getPhenotype();
+      
+  unsigned int pheno_size=(*phenotype).size();
+  vector<string> symbols(pheno_size, "");
+      
+  for(unsigned int i=0; i<pheno_size; ++i){
+    symbols[i] = *((*phenotype)[i]);
+  }
+      
+  sol->set_symbols(symbols);
+  sol->fitness(genome.score());
+  sol->testval(genome.getTestValue());
+  sol->set_gram_depth(genome.getGramDepth());
+  sol->set_nn_depth(genome.getDepth());  
+  return sol;
+}
+
 
 ///
 /// Fills the population after a step to allow for exchange of models with 
@@ -694,25 +764,26 @@ void GENNAlg::fill_population(){
     pop.clear();
     
     for(unsigned int curr_ind = 0; curr_ind < num_inds; curr_ind++){
-      NNSolution* sol = (NNSolution*)GEObjective::getBlankSolution();
-      GE1DArrayGenome& genome = (GE1DArrayGenome&)(ga->population().individual(curr_ind));
-      mapper.setGenotype(genome);
-      Phenotype const *phenotype=mapper.getPhenotype();
+//       NNSolution* sol = (NNSolution*)GEObjective::getBlankSolution();
+//       GE1DArrayGenome& genome = (GE1DArrayGenome&)(ga->population().individual(curr_ind));
+//       mapper.setGenotype(genome);
+//       Phenotype const *phenotype=mapper.getPhenotype();
+//       
+//       unsigned int pheno_size=(*phenotype).size();
+//       vector<string> symbols(pheno_size, "");
+//       
+//       for(unsigned int i=0; i<pheno_size; ++i){
+//          symbols[i] = *((*phenotype)[i]);
+//       }
+//       
+//       sol->set_symbols(symbols);
+//       sol->fitness(genome.score());
+//       sol->testval(genome.getTestValue());
+//       sol->set_gram_depth(genome.getGramDepth());
+//       sol->set_nn_depth(genome.getDepth());
       
-      unsigned int pheno_size=(*phenotype).size();
-      vector<string> symbols(pheno_size, "");
-      
-      for(unsigned int i=0; i<pheno_size; ++i){
-         symbols[i] = *((*phenotype)[i]);
-      }
-      
-      sol->set_symbols(symbols);
-      sol->fitness(genome.score());
-      sol->testval(genome.getTestValue());
-      sol->set_gram_depth(genome.getGramDepth());
-      sol->set_nn_depth(genome.getDepth());
-      
-      pop.insert(sol);
+//       pop.insert(sol);
+        pop.insert(convert_genome(ga->population().individual(curr_ind)));
     }
 }
 
@@ -989,7 +1060,7 @@ void GENNAlg::finishLog(string basename, int cv){
 /// @param cv
 ///
 void GENNAlg::prepareLog(string basename, int cv){
-    int totalPopSize = pop_size;
+//     int totalPopSize = pop_size;
     
     main_log_filename = basename + ".cv." + Stringmanip::itos(cv) + ".log";
     fitness_log_filename =  basename + ".cv." + Stringmanip::itos(cv) +
@@ -1229,6 +1300,18 @@ void GENNAlg::setRank(int rank){
 
 
 ///
+/// Returns sum of all the fitness goal checks on all nodes.  A 0 means no node has reached
+/// the fitness.  A value > 0 means that many populations found a good enough fit.
+/// @param rank
+/// @param complete
+///
+int GENNAlg::nodesCompleted(int complete){
+  int sum_completed=0;
+  MPI_Allreduce(&complete, &sum_completed, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+  return sum_completed;
+}
+
+///
 /// Alternate MPI messaging taking advantage of MPI_Allgather functionality using struct
 /// @param totalNodes
 /// @param myRank
@@ -1445,9 +1528,6 @@ void GENNAlg::updateWithMigration(float* stats, int* codons, int totalNodes, int
     int final_codon = max_length + currCodon;
     
     for(int i=0; i<len; i++){
-//if(myRank==1){
-//  cout << "in update " << myRank << " adding for i=" << i << " codon " << codons[currCodon] << endl;
-//}
       genome.gene(i, codons[currCodon++]);
     }
 

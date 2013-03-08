@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
   
 #endif /* end PARALLEL code block */
    
-    string version_date = "2/1/13";
+    string version_date = "3/7/13";
     string exec_name = "ATHENA";
     string version = "1.0.1";
      time_t start,end;
@@ -272,8 +272,11 @@ int main(int argc, char** argv) {
         exit_app(ae, myrank);
     }
       
-      for(int step=0; step < config.getNumExchanges(); step++)
-         alg->step();
+      for(int step=0; step < config.getNumExchanges(); step++){
+         if(alg->step()){
+            break; // can complete early
+         }
+      }
 
 		alg->CloseLog();
       // prepare and write logs -- algorithm will output as much information as requested
