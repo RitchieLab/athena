@@ -35,115 +35,115 @@ namespace data_manage
 class Dataholder
 {
 public:
-  Dataholder();
-  ~Dataholder();
+	Dataholder();
+	~Dataholder();
 
-  /// Adds an individual to the dataholder
-  void add_ind(Individual& ind);
-  
-  /// Adds an individual to the dataholder
-  void add_ind(Individual* ind);
+	/// Adds an individual to the dataholder
+	void addInd(Individual& ind);
+	
+	/// Adds an individual to the dataholder
+	void addInd(Individual* ind);
 
-  /// Returns pointer to indiated individual
-  inline Individual* operator[] (unsigned int indIndex){return inds[indIndex];}
+	/// Returns pointer to indiated individual
+	inline Individual* operator[] (unsigned int indIndex){return inds[indIndex];}
 
-  /// Returns number of individuals in set
-  unsigned int num_inds(){return inds.size();}
+	/// Returns number of individuals in set
+	unsigned int numInds(){return inds.size();}
 
-  /// Add variable name
-  inline void add_covar_name(string var_name){covars.push_back(var_name);covars_map[var_name]=covars.size()-1; }
+	/// Add variable name
+	inline void addCovarName(string varName){covars.push_back(varName);covarsMap[varName]=covars.size()-1; }
 
-  /// Retrieve variable name
-  inline string get_covar_name(unsigned int index){return covars[index];}
+	/// Retrieve variable name
+	inline string getCovarName(unsigned int index){return covars[index];}
 
-  /// Retrieve index by name
-  inline unsigned int get_covar_index(string covar_name){return covars_map[covar_name];}
+	/// Retrieve index by name
+	inline unsigned int getCovarIndex(string covarName){return covarsMap[covarName];}
 
-  /// Number of covariates in set
-  inline unsigned int num_covars(){return covars.size();}
+	/// Number of covariates in set
+	inline unsigned int numCovars(){return covars.size();}
 
-  /// Add genotype name
-  inline void add_geno_name(string var_name){genos.push_back(var_name);genos_map[var_name]=genos.size()-1;}
+	/// Add genotype name
+	inline void addGenoName(string varName){genos.push_back(varName);genosMap[varName]=genos.size()-1;}
 
-  /// Retrieve index for name
-  inline unsigned int get_geno_index(string geno_name){return genos_map[geno_name];}
+	/// Retrieve index for name
+	inline unsigned int getGenoIndex(string genoName){return genosMap[genoName];}
 
-  /// Retrieve variable name
-  inline string get_geno_name(unsigned int index){return genos[index];}
+	/// Retrieve variable name
+	inline string getGenoName(unsigned int index){return genos[index];}
 
-  /// Number of genotypes in set
-  inline unsigned int num_genotypes(){return genos.size();}
-  
-  /// Sets maximum locus value in set
-  inline void set_max_locus_value(unsigned int max_locus_value){max_locus=max_locus_value;}
+	/// Number of genotypes in set
+	inline unsigned int numGenotypes(){return genos.size();}
+	
+	/// Sets maximum locus value in set
+	inline void setMaxLocusValue(unsigned int maxLocusValue){maxLocus=maxLocusValue;}
 
-  /// Returns maximum  locus value in set
-  inline unsigned int get_max_locus_value(){return max_locus;}
+	/// Returns maximum  locus value in set
+	inline unsigned int getMaxLocusValue(){return maxLocus;}
 
-  /// Sets indicator when any genotpyes are missing in set
-  inline void any_missing_genos(bool missing){any_missing = missing;}
+	/// Sets indicator when any genotpyes are missing in set
+	inline void anyMissingGenos(bool missing){anyMissing = missing;}
 
-  /// Gets indicator true when mmissing genotypes in data
-  inline bool any_missing_genos(){return any_missing;}
+	/// Gets indicator true when mmissing genotypes in data
+	inline bool anyMissingGenos(){return anyMissing;}
 
-  /// Returns genotype for indicated individual at indicated locus
-  inline float get_genotype(unsigned int currInd, unsigned int currLoc){return inds[currInd]->value(currLoc);}
+	/// Returns genotype for indicated individual at indicated locus
+	inline float getGenotype(unsigned int currInd, unsigned int currLoc){return inds[currInd]->value(currLoc);}
 
-  /// Returns number of genotypes in set
-  inline unsigned int num_genos(){return inds[0]->num_genotypes();}
+	/// Returns number of genotypes in set
+	inline unsigned int numGenos(){return inds[0]->numGenotypes();}
 
-  /// Returns number of covariates in set
-  inline unsigned int num_covariates(){return inds[0]->num_covariates();}
+	/// Returns number of covariates in set
+	inline unsigned int numCovariates(){return inds[0]->numCovariates();}
 
-  /// Returns pointer to ind
-  inline Individual* get_ind(unsigned int index){return inds[index];}
+	/// Returns pointer to ind
+	inline Individual* getInd(unsigned int index){return inds[index];}
 
-  /// Returns individual based on id
-  Individual* get_ind_by_id(string id){
-    if(inds_map.find(id)==inds_map.end()) throw DataExcept("Unable to find individual with ID=" + id);
-    return inds_map[id];
-  }
-  
-  /// Gets value for continous variable missing
-  float get_missing_covalue(){return missing_covalue;}
-  
-  /// Sets missing value for continuous variables
-  void set_missing_covalue(float miss){missing_covalue = miss;}
-  
-  /// Gets missing value for genotypes
-  int get_missing_genotype(){return missing_genotype;}
-  
-  /// Sets missing value for genotypes
-  void set_missing_genotype(int miss){missing_genotype = miss;}
-  
-  /// Adds default snp names
-  void add_default_snps();
-  
-  /// Adds default covariate names
-  void add_default_covars();
-  
-  /// Indicates whether ott-dummy encoding used for genotypes
-  void ott_dummy_encoding(bool val){ott_encoded = val;}
-  
-  /// Returns status on ott_dummy_encoding
-  bool ott_dummy_encoding(){return ott_encoded;}
-  
-  /// Set the cut-off for splitting the training and testing when the 2 files are split
-  void set_test_split(int indnum){split_num = indnum;}
-  
-  /// Returns the split number
-  int get_test_split(){return split_num;}
-  
+	/// Returns individual based on id
+	Individual* getIndByID(string id){
+		if(indsMap.find(id)==indsMap.end()) throw DataExcept("Unable to find individual with ID=" + id);
+		return indsMap[id];
+	}
+	
+	/// Gets value for continous variable missing
+	float getMissingCoValue(){return missingCoValue;}
+	
+	/// Sets missing value for continuous variables
+	void setMissingCoValue(float miss){missingCoValue = miss;}
+	
+	/// Gets missing value for genotypes
+	int getMissingGenotype(){return missingGenotype;}
+	
+	/// Sets missing value for genotypes
+	void setMissingGenotype(int miss){missingGenotype = miss;}
+	
+	/// Adds default snp names
+	void addDefaultSnps();
+	
+	/// Adds default covariate names
+	void addDefaultCovars();
+	
+	/// Indicates whether ott-dummy encoding used for genotypes
+	void ottDummyEncoding(bool val){ottEncoded = val;}
+	
+	/// Returns status on ott_dummy_encoding
+	bool ottDummyEncoding(){return ottEncoded;}
+	
+	/// Set the cut-off for splitting the training and testing when the 2 files are split
+	void setTestSplit(int indnum){splitNum = indnum;}
+	
+	/// Returns the split number
+	int getTestSplit(){return splitNum;}
+	
 private:
-  std::vector<Individual*> inds;
-  std::vector<std::string> genos;
-  std::vector<std::string> covars;
-  std::map<std::string, unsigned int> genos_map, covars_map; //key is geno name, value is index into genos array
-  std::map<std::string, Individual*> inds_map;
-  unsigned int max_locus;
-  bool any_missing, ott_encoded;
-  int missing_genotype, split_num;
-  float missing_covalue;
+	std::vector<Individual*> inds;
+	std::vector<std::string> genos;
+	std::vector<std::string> covars;
+	std::map<std::string, unsigned int> genosMap, covarsMap; //key is geno name, value is index into genos array
+	std::map<std::string, Individual*> indsMap;
+	unsigned int maxLocus;
+	bool anyMissing, ottEncoded;
+	int missingGenotype, splitNum;
+	float missingCoValue;
 
 };
 

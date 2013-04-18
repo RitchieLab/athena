@@ -29,22 +29,22 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Reads models from file 
 class BioFilterBinReader: public BioReader{
 
-  public:
-  
-    BioFilterBinReader();
+	public:
+	
+		BioFilterBinReader();
 
-    /// Fills vector with models from file
-    int GetModels(std::vector<BioModel>& models, std::string filename, unsigned int max_read);
+		/// Fills vector with models from file
+		int getModels(std::vector<BioModel>& models, std::string filename, unsigned int maxRead);
 
-  private:
-  
-    void initialize();
+	private:
+	
+		void initialize();
 
-    std::string filename;
-    unsigned int maximum_reads;
+		std::string filename;
+		unsigned int maximumReads;
 
-    std::ifstream reader;
-    
+		std::ifstream reader;
+		
 };
 
 #endif

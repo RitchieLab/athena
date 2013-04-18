@@ -31,59 +31,59 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 class ExpressionTree{
 
-  public:
-  
-  	~ExpressionTree();
-  
-    /// returns prefix stack after conversion from the post fix stack
-    void convert_postfix(vector<TerminalSymbol*> & postfix_stack);
-    
-    /// output tree in dot language
-    void output_dot(ostream & out, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy, bool continmap_used);
+	public:
+	
+		~ExpressionTree();
+	
+		/// returns prefix stack after conversion from the post fix stack
+		void convertPostFix(vector<TerminalSymbol*> & postFixStack);
+		
+		/// output tree in dot language
+		void outputDot(ostream & out, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, bool continMapUsed);
 
-    /// clears constants
-    void clear_constants();
-    
-    struct Element_node{
-      TerminalSymbol* el;
-      string id;
-    };
-    
-    unsigned int get_max_depth();
-    
-    /// returns iterator to beginning of tree
-    inline tree<Element_node>::iterator begin(){return express_tree.begin();}
-    
-    /// returns iterator to end of tree
-    inline tree<Element_node>::iterator end(){return express_tree.end();}
-    
-    /// returns indexed child iterator 
-    inline tree<Element_node>::iterator child(tree<Element_node>::iterator& iter,
-      int childIndex){return express_tree.child(iter, childIndex);}
-    
-    /// returns number of children for current iterator
-    inline int number_of_children(tree<Element_node>::iterator& iter){
-      return express_tree.number_of_children(iter);}
-      
-  private:
-    unsigned int increment_depth(tree<Element_node>::iterator baseIter, 
-        unsigned int currdepth);
-  
-    std::string alter_label(data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy, std::string label, bool continmap_used);
-      
-    void compress_operator(std::vector<TerminalSymbol*> & postfix_stack,
-      std::vector<TerminalSymbol*>& new_stack);
-  
-    tree<Element_node> express_tree;
-    tree<Element_node>::iterator extree_iter;
-    
-    vector<TerminalSymbol*> constants;
-    
+		/// clears constants
+		void clearConstants();
+		
+		struct ElementNode{
+			TerminalSymbol* el;
+			string id;
+		};
+		
+		unsigned int getMaxDepth();
+		
+		/// returns iterator to beginning of tree
+		inline tree<ElementNode>::iterator begin(){return expressTree.begin();}
+		
+		/// returns iterator to end of tree
+		inline tree<ElementNode>::iterator end(){return expressTree.end();}
+		
+		/// returns indexed child iterator 
+		inline tree<ElementNode>::iterator child(tree<ElementNode>::iterator& iter,
+			int childIndex){return expressTree.child(iter, childIndex);}
+		
+		/// returns number of children for current iterator
+		inline int numberOfChildren(tree<ElementNode>::iterator& iter){
+			return expressTree.number_of_children(iter);}
+			
+	private:
+		unsigned int incrementDepth(tree<ElementNode>::iterator baseIter, 
+				unsigned int currDepth);
+	
+		std::string alterLabel(data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, std::string label, bool continMapUsed);
+			
+		void compressOperator(std::vector<TerminalSymbol*> & postFixStack,
+			std::vector<TerminalSymbol*>& newStack);
+	
+		tree<ElementNode> expressTree;
+		tree<ElementNode>::iterator extreeIter;
+		
+		vector<TerminalSymbol*> constants;
+		
 };
 
-typedef tree<ExpressionTree::Element_node>::iterator ExpressTreeIter;
+typedef tree<ExpressionTree::ElementNode>::iterator ExpressTreeIter;
 
 
 #endif

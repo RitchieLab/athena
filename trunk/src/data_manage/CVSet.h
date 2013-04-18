@@ -27,21 +27,21 @@ namespace data_manage
 class CVSet
 {
 public:
-  CVSet();
-  ~CVSet();
+	CVSet();
+	~CVSet();
 
-  /// Get number of intervals in set
-  unsigned int num_intervals(){return intervals.size();}
+	/// Get number of intervals in set
+	unsigned int numIntervals(){return intervals.size();}
 
-  /// Get specific interval from set
-  CVInterval&  get_interval(unsigned int index){return intervals[index];}
+	/// Get specific interval from set
+	CVInterval&  getInterval(unsigned int index){return intervals[index];}
 
-  /// Add interval to set
-  void add_interval(CVInterval& interval){intervals.push_back(interval);}
+	/// Add interval to set
+	void addInterval(CVInterval& interval){intervals.push_back(interval);}
 
 
 private:
-  std::vector<CVInterval> intervals;
+	std::vector<CVInterval> intervals;
 
 };
 

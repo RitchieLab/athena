@@ -24,56 +24,56 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
 
-map<string, SolutionFactory::SolutionType> SolutionFactory::SolutionMap;
+map<string, SolutionFactory::SolutionType> SolutionFactory::solutionMap;
 
 ///
 /// Function that creates a solution based on the name 
-/// @param solution_name name of solution
+/// @param solutionName name of solution
 /// @return pointer to new Solution object
 /// @throws AthenaExcept if not a valid solution name
 ///
-SolutionCreator* SolutionFactory::create_solution(string solution_name){
-    
-  if(SolutionMap.empty()){
-    setSolutionMap();
-  }
+SolutionCreator* SolutionFactory::createSolution(string solutionName){
+		
+	if(solutionMap.empty()){
+		setSolutionMap();
+	}
 
-  SolutionCreator* new_solution;
-  switch(SolutionMap[solution_name]){
-      case MissingSolutionType:
-          throw AthenaExcept("No solution matching " + solution_name);
-          break;
-      case SymRegressSolutionType:
-          new_solution = new SymRegressSolutionCreator;
-          break;
-      case NNSolutionType:
-          new_solution = new NNSolutionCreator;
-          break;
-      case NNSolutionAllType:
-          new_solution = new NNSolutionCreatorIncludeAll;
-          break;
-      case NNSolutionOnceType:
-          new_solution = new NNSolutionCreatorIncludeOnce;
-          break;
-      default:
-          throw AthenaExcept("No solution matching " + solution_name); 
-  }
-  
-  return new_solution;
+	SolutionCreator* newSolution;
+	switch(solutionMap[solutionName]){
+			case MissingSolutionType:
+					throw AthenaExcept("No solution matching " + solutionName);
+					break;
+			case SymRegressSolutionType:
+					newSolution = new SymRegressSolutionCreator;
+					break;
+			case NNSolutionType:
+					newSolution = new NNSolutionCreator;
+					break;
+			case NNSolutionAllType:
+					newSolution = new NNSolutionCreatorIncludeAll;
+					break;
+			case NNSolutionOnceType:
+					newSolution = new NNSolutionCreatorIncludeOnce;
+					break;
+			default:
+					throw AthenaExcept("No solution matching " + solutionName); 
+	}
+	
+	return newSolution;
 }
 
 ///
 /// Functions that creates a solution based on the name and passes the string vector
 /// for restricting the solutions
-/// @param solution_name name of solution
+/// @param solutionName name of solution
 /// @param vars vector that contains strings restricting solution
 /// @return pointer to new Solution object
 /// @throws AthenaExcept if not a valid solution name
 ///
-SolutionCreator* SolutionFactory::create_solution(string solution_name, vector<string>& vars){
-  SolutionCreator* new_creator = create_solution(solution_name);
-  new_creator->restrict(vars);
-  return new_creator;
+SolutionCreator* SolutionFactory::createSolution(string solutionName, vector<string>& vars){
+	SolutionCreator* newCreator = createSolution(solutionName);
+	newCreator->restrict(vars);
+	return newCreator;
 }
 
 
@@ -82,9 +82,9 @@ SolutionCreator* SolutionFactory::create_solution(string solution_name, vector<s
 /// @return 
 ///
 void SolutionFactory::setSolutionMap(){
-  SolutionMap["NN"]=NNSolutionType;
-  SolutionMap["NNALL"]=NNSolutionAllType;
-  SolutionMap["NNONCE"] = NNSolutionOnceType;
-  SolutionMap["SYMBREG"]=SymRegressSolutionType;
+	solutionMap["NN"]=NNSolutionType;
+	solutionMap["NNALL"]=NNSolutionAllType;
+	solutionMap["NNONCE"] = NNSolutionOnceType;
+	solutionMap["SYMBREG"]=SymRegressSolutionType;
 }
 

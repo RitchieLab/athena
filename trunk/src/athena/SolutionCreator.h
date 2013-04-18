@@ -43,98 +43,98 @@ using namespace data_manage;
 /// support vector machines, etc.
 ///
 class SolutionCreator{
-    
+		
 public:
 
-    virtual ~SolutionCreator(){}
-    
-    /// creates solution from a vector of strings
-    virtual void establish_solution(std::vector<std::string>& symbols, Dataset* set)=0;
+		virtual ~SolutionCreator(){}
+		
+		/// creates solution from a vector of strings
+		virtual void establishSolution(std::vector<std::string>& symbols, Dataset* set)=0;
 
-    /// creates solution from a vector of strings
-    virtual void establish_solution(std::vector<std::string>& symbols)=0;
-    
-    /// returns fitness score through evaluation of solution
-    virtual float evaluate(Dataset* set)=0;
-    
-    /// adds a solution calculator for determining fitness
-    virtual void set_calculator(std::string calc_type){
-        if(calculator != NULL)
-          delete calculator;
-        calculator = CalculatorFactory::create_calculator(calc_type);
-    }
-    
-    virtual void free_solution()=0;
-    
-    /// returns solution
-    Solution* get_solution(){return sol;}
-    
-    /// returns fitness
-    float fitness(){return sol_fitness;}
-    
-    /// set fitness
-    void fitness(float fit){sol_fitness = fit;}
-    
-    /// optimize solution
-    virtual int optimizeSolution(std::vector<std::string>& symbols, Dataset* set)=0;
-    
-    /// returns vector of optimized values for use in adapting the original
-    vector<float> getOptimizedValues(){return opt_values;}
-    
-    /// returns optimized score
-    virtual float getOptimizedScore()=0;
-    
-    /// returns vector of structs containing optimized values stored as strings
-    vector<symbVector> getOptimizedSymbols(){return opt_val_symbols;}
-    
-    /// returns a blank solution of appropriate type
-    virtual Solution* create_new_solution()=0;
-    
-    virtual void set_calculator_constant(float constant){calculator->set_constant(constant);}
-    virtual float get_calculator_constant(){return calculator->get_constant();}
-    
-    virtual bool max_best(){return calculator->max_best();}
-    
-    virtual float get_worst(){return calculator->get_worst();}
-    
-    virtual void restrict(vector<string>& restrictions)=0;
-    
-    virtual float evaluate_with_output(Dataset* set, ostream& os)=0;
-    
-    /// writes a graphical or file that can be converted to a graphic representation of the solution
-    virtual void graphical_output(ostream& os, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy, bool continmap_used)=0;
-    
-    virtual std::string graphicExt(){return graphic_extension;}
-    
-    virtual unsigned int get_num_genes()=0;
-    
-    virtual unsigned int get_num_covars()=0;
-    
-    virtual vector<int> getGeneIndexes()=0;
-    virtual vector<int> getCovarIndexes()=0;
-    
-    virtual string getStartOptSymbol()=0;
-    virtual std::set<string> getOptIncluded()=0;
+		/// creates solution from a vector of strings
+		virtual void establishSolution(std::vector<std::string>& symbols)=0;
+		
+		/// returns fitness score through evaluation of solution
+		virtual float evaluate(Dataset* set)=0;
+		
+		/// adds a solution calculator for determining fitness
+		virtual void setCalculator(std::string calc_type){
+				if(calculator != NULL)
+					delete calculator;
+				calculator = CalculatorFactory::createCalculator(calc_type);
+		}
+		
+		virtual void freeSolution()=0;
+		
+		/// returns solution
+		Solution* getSolution(){return sol;}
+		
+		/// returns fitness
+		float fitness(){return solFitness;}
+		
+		/// set fitness
+		void fitness(float fit){solFitness = fit;}
+		
+		/// optimize solution
+		virtual int optimizeSolution(std::vector<std::string>& symbols, Dataset* set)=0;
+		
+		/// returns vector of optimized values for use in adapting the original
+		vector<float> getOptimizedValues(){return optValues;}
+		
+		/// returns optimized score
+		virtual float getOptimizedScore()=0;
+		
+		/// returns vector of structs containing optimized values stored as strings
+		vector<symbVector> getOptimizedSymbols(){return optValSymbols;}
+		
+		/// returns a blank solution of appropriate type
+		virtual Solution* createNewSolution()=0;
+		
+		virtual void setCalculatorConstant(float constant){calculator->setConstant(constant);}
+		virtual float getCalculatorConstant(){return calculator->getConstant();}
+		
+		virtual bool maxBest(){return calculator->maxBest();}
+		
+		virtual float getWorst(){return calculator->getWorst();}
+		
+		virtual void restrict(vector<string>& restrictions)=0;
+		
+		virtual float evaluateWithOutput(Dataset* set, ostream& os)=0;
+		
+		/// writes a graphical or file that can be converted to a graphic representation of the solution
+		virtual void graphicalOutput(ostream& os, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, bool continMapUsed)=0;
+		
+		virtual std::string graphicExt(){return graphicExtension;}
+		
+		virtual unsigned int getNumGenes()=0;
+		
+		virtual unsigned int getNumCovars()=0;
+		
+		virtual vector<int> getGeneIndexes()=0;
+		virtual vector<int> getCovarIndexes()=0;
+		
+		virtual string getStartOptSymbol()=0;
+		virtual std::set<string> getOptIncluded()=0;
 
-    virtual char getLeftOptBound()=0;
-    virtual char getRightOptBound()=0;
-    virtual std::set<string> getOptArgSymbols()=0;
-    
-    virtual int getNumIndsEvaluated()=0;
-    
-    virtual void detailed_logging()=0;
-    virtual unsigned int get_detailed_log()=0;
-    
-    std::string calculator_name(){return calculator->get_name();}
-    
+		virtual char getLeftOptBound()=0;
+		virtual char getRightOptBound()=0;
+		virtual std::set<string> getOptArgSymbols()=0;
+		
+		virtual int getNumIndsEvaluated()=0;
+		
+		virtual void detailedLogging()=0;
+		virtual unsigned int getDetailedLog()=0;
+		
+		std::string calculatorName(){return calculator->getName();}
+		
 protected:
-    Solution* sol;
-    SolutionCalculator * calculator;
-    std::string graphic_extension;
-    float sol_fitness;
-    vector<float> opt_values;
-    vector<symbVector> opt_val_symbols;
+		Solution* sol;
+		SolutionCalculator * calculator;
+		std::string graphicExtension;
+		float solFitness;
+		vector<float> optValues;
+		vector<symbVector> optValSymbols;
 };
 
 

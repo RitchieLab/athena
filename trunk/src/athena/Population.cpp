@@ -19,16 +19,16 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Population.h"
 #include "Terminals.h"
 
-int floatLT::order_adjust=0;
+int floatLT::orderAdjust=0;
 
 ///
 /// Assignment operator
 ///
 Population& Population::operator=(const Population& other){
-    if(this != &other){
-      copy(other);   
-    }
-    return *this;
+		if(this != &other){
+			copy(other);   
+		}
+		return *this;
 }
 
 
@@ -36,29 +36,30 @@ Population& Population::operator=(const Population& other){
 /// copy population
 ///
 void Population::copy(const Population& other){
-    SolutionTreeNode* current_node;
-    for(current_node = other.solutions.GetFirst(); current_node != other.solutions.GetLast();
-      current_node = current_node->GetNext()){
-        // need to create a clone operator  
-        Solution* sol = current_node->GetData()->clone();
-        solutions.Insert(current_node->GetKey(), sol);
-    }
-    currnode = solutions.GetFirst();
-    convertScores = other.convertScores;
+		SolutionTreeNode* currentNode;
+		for(currentNode = other.solutions.GetFirst(); currentNode != other.solutions.GetLast();
+			currentNode = currentNode->GetNext()){
+				// need to create a clone operator  
+				Solution* sol = currentNode->GetData()->clone();
+				solutions.Insert(currentNode->GetKey(), sol);
+		}
+		currNode = solutions.GetFirst();
+		convScores = other.convScores;
 }
+
 
 
 ///
 /// Outputs fitness of the solutions in tree in order
 /// 
-void Population::output_tree(){
-    SolutionTreeNode* current_node;
-    for(current_node = solutions.GetFirst(); current_node != solutions.GetLast();
-      current_node = current_node->GetNext()){
-        // need to create a clone operator 
-       cout << "tree solution fitness=" << 
-           current_node->GetData()->fitness() << endl;
-    }
+void Population::outputTree(){
+		SolutionTreeNode* currentNode;
+		for(currentNode = solutions.GetFirst(); currentNode != solutions.GetLast();
+			currentNode = currentNode->GetNext()){
+				// need to create a clone operator 
+			 cout << "tree solution fitness=" << 
+					 currentNode->GetData()->fitness() << endl;
+		}
 }
 
 
@@ -66,7 +67,7 @@ void Population::output_tree(){
 /// Copy constructor
 ///
 Population::Population(const Population& p){
-    copy(p);
+		copy(p);
 }
 
 
@@ -74,26 +75,28 @@ Population::Population(const Population& p){
 /// Destructor frees any Solutions
 ///
 Population::~Population(){
-    clear();
+		clear();
 }
+
 
 
 ///
 /// Clears the tree and deletes the Solution pointers
 ///
 void Population::clear(){
-    
-    if(solutions.GetCount() == 0)
-        return;
+		
+		if(solutions.GetCount() == 0)
+				return;
 
-    SolutionTreeNode* current_node;
-    for(current_node = solutions.GetFirst(); current_node != solutions.GetLast();
-      current_node = current_node->GetNext()){
-        delete current_node->GetData();
-    }
-    delete current_node->GetData();
-    solutions.Clear();
+		SolutionTreeNode* currentNode;
+		for(currentNode = solutions.GetFirst(); currentNode != solutions.GetLast();
+			currentNode = currentNode->GetNext()){
+				delete currentNode->GetData();
+		}
+		delete currentNode->GetData();
+		solutions.Clear();
 }
+
 
 
 ///
@@ -101,30 +104,27 @@ void Population::clear(){
 /// @param train Dataset
 /// @param test Dataset
 ///
-void Population::convert_scores(Dataset* train, Dataset* test){
+void Population::convertScores(Dataset* train, Dataset* test){
 
-    SolutionTreeNode* node;
-    for(node = solutions.GetFirst(); node != solutions.GetLast();
-      node = node->GetNext()){
-      node->GetData()->adjust_score_out(train, test);
-    }
+		SolutionTreeNode* node;
+		for(node = solutions.GetFirst(); node != solutions.GetLast();
+			node = node->GetNext()){
+			node->GetData()->adjustScoreOut(train, test);
+		}
 }
+
 
 ///
 /// converts scores of population
 /// @param train Dataset
 ///
-void Population::convert_scores(Dataset* train){
+void Population::convertScores(Dataset* train){
 
-    SolutionTreeNode* node;
-    for(node = solutions.GetFirst(); node != solutions.GetLast();
-      node = node->GetNext()){
-      
-      node->GetData()->adjust_score_out(train);
-    }
+		SolutionTreeNode* node;
+		for(node = solutions.GetFirst(); node != solutions.GetLast();
+			node = node->GetNext()){
+			node->GetData()->adjustScoreOut(train);
+		}
 
 }
-
-
-
 

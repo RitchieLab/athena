@@ -27,32 +27,32 @@ using namespace std;
 /// Establishes solution.  If not all variables are in set, doesn't bother
 /// evaluating model at all.  Sets flag so that worst fitness will be returned.
 ///
-void NNSolutionCreatorIncludeAll::establish_solution(vector<string>& symbols, Dataset* set){
-  
-  NNSolutionCreator::establish_solution(symbols, set);
-    
-  if(!vars_set){
-    required_symbols(req_symbols, set);
-    vars_set = true;
-  }
+void NNSolutionCreatorIncludeAll::establishSolution(vector<string>& symbols, Dataset* set){
+	
+	NNSolutionCreator::establishSolution(symbols, set);
+		
+	if(!varsSet){
+		requiredSymbols(reqSymbols, set);
+		varsSet = true;
+	}
 
-  // check genos
-  all_vars_included = true;
-  vector<TerminalSymbol*>::iterator iter;
-  for(iter=req_genos.begin(); iter != req_genos.end(); *iter++){
-    if(genos.find(*iter) == genos.end()){
-      all_vars_included = false;
-      return;
-    }
-  }
-  
-  // check covars
-  for(iter=req_covars.begin(); iter != req_covars.end(); *iter++){
-    if(covars.find(*iter) == covars.end()){
-      all_vars_included = false;
-      return;
-    }
-  }
+	// check genos
+	allVarsIncluded = true;
+	vector<TerminalSymbol*>::iterator iter;
+	for(iter=reqGenos.begin(); iter != reqGenos.end(); *iter++){
+		if(genos.find(*iter) == genos.end()){
+			allVarsIncluded = false;
+			return;
+		}
+	}
+	
+	// check covars
+	for(iter=reqCovars.begin(); iter != reqCovars.end(); *iter++){
+		if(covars.find(*iter) == covars.end()){
+			allVarsIncluded = false;
+			return;
+		}
+	}
 }
 
 ///
@@ -60,10 +60,10 @@ void NNSolutionCreatorIncludeAll::establish_solution(vector<string>& symbols, Da
 ///
 float NNSolutionCreatorIncludeAll::evaluate(Dataset* set){
 
-  if(all_vars_included)
-    return NNSolutionCreator::evaluate(set);
-  else
-    return calculator->get_worst();
+	if(allVarsIncluded)
+		return NNSolutionCreator::evaluate(set);
+	else
+		return calculator->getWorst();
 }
 
 
@@ -71,21 +71,21 @@ float NNSolutionCreatorIncludeAll::evaluate(Dataset* set){
 /// Takes list of symbols and Dataset to establish list of terminals that must 
 /// be part of the neural network for it to receive 
 ///
-void NNSolutionCreatorIncludeAll::required_symbols(vector<string>& symbols, Dataset* set){
-  
-  if(!terminals_set)
-    NNSolutionCreator::set_variables(set);
-    
-  // use symbols to get pointers that can be used to check for inclusion of all variables
-  req_covars.clear();
-  req_genos.clear();
-  vector<string>::iterator iter;
-  TerminalSymbol* var;
-  for(iter=symbols.begin(); iter != symbols.end(); iter++){
-    var = term_holder.get_term(*iter);
-    if(var->get_term_type() == TerminalSymbol::Genotype)
-      req_genos.push_back(var);
-    else if(var->get_term_type() == TerminalSymbol::Covariate)
-      req_covars.push_back(var);
-  }
+void NNSolutionCreatorIncludeAll::requiredSymbols(vector<string>& symbols, Dataset* set){
+	
+	if(!terminalsSet)
+		NNSolutionCreator::setVariables(set);
+		
+	// use symbols to get pointers that can be used to check for inclusion of all variables
+	reqCovars.clear();
+	reqGenos.clear();
+	vector<string>::iterator iter;
+	TerminalSymbol* var;
+	for(iter=symbols.begin(); iter != symbols.end(); iter++){
+		var = termHolder.getTerm(*iter);
+		if(var->getTermType() == TerminalSymbol::Genotype)
+			reqGenos.push_back(var);
+		else if(var->getTermType() == TerminalSymbol::Covariate)
+			reqCovars.push_back(var);
+	}
 }

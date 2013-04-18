@@ -22,7 +22,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Terminals.h"
 #include <Dataset.h>
-#include "BackPropTree.h"
+//#include "BackPropTree.h"
 #include "BackProp.h"
 #include "BackPropAnnieTree.h"
 
@@ -34,27 +34,27 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 class BackPropAnnie:public BackProp{
 
-  public:
-  
-    BackPropAnnie();
-    
-    /// Receives a postfix stack representation of the neural network
-    int runBackProp(vector<TerminalSymbol*> & postfix_stack, Dataset * set);
+	public:
+	
+		BackPropAnnie();
+		
+		/// Receives a postfix stack representation of the neural network
+		int runBackProp(vector<TerminalSymbol*> & postFixStack, Dataset * set);
 
-    /// Returns the list of weights in network
-    vector<float> getWeights(){return bpAnnieTree.getWeights();}
-    
-    /// Returns optimized score
-    float getOptimizedScore(){return optimized_score;}
+		/// Returns the list of weights in network
+		vector<float> getWeights(){return bpAnnieTree.getWeights();}
+		
+		/// Returns optimized score
+		float getOptimizedScore(){return optimizedScore;}
 
-  private:
-    
-    void initialize();
-    
-    BackPropAnnieTree bpAnnieTree;
+	private:
+		
+		void initialize();
+		
+		BackPropAnnieTree bpAnnieTree;
 
-    double calculateMSE(Dataset* set);
-    float optimized_score;
+		double calculateMSE(Dataset* set);
+		float optimizedScore;
 };
 
 #endif

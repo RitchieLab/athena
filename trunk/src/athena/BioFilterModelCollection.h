@@ -35,28 +35,28 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 // has static variable that allows for sorting either in descending (0) or ascending order (2)
 struct intLT{
-   int operator()(const int l, const int r) const {
-      if (l>r) return 1;
-      if (l<r) return -1;
-      return 0;
-   }
+	 int operator()(const int l, const int r) const {
+			if (l>r) return 1;
+			if (l<r) return -1;
+			return 0;
+	 }
 };
 
 struct impLT{
-   int operator()(const float l, const float r) const {
-      if (l>r) return 1;
-      if (l<r) return -1;
-      return 0;
-   }  
+	 int operator()(const float l, const float r) const {
+			if (l>r) return 1;
+			if (l<r) return -1;
+			return 0;
+	 }  
 };
 
 
 struct randFloatLT{
-   int operator()(const float l, const float r) const {
-      if (l<r) return 1;
-      if (l>r) return -1;
-      return 0;
-   }
+	 int operator()(const float l, const float r) const {
+			if (l<r) return 1;
+			if (l>r) return -1;
+			return 0;
+	 }
 };
 
 typedef Utility::RBTree<float, BioModel, impLT> BioModelTree;
@@ -64,71 +64,68 @@ typedef Utility::RBTreeNode<float, BioModel, impLT> BioModelTreeNode;
 typedef Utility::RBTree<float, BioModel, randFloatLT> RandomTree;
 typedef Utility::RBTreeNode<float, BioModel, randFloatLT> RandomTreeNode;
 
-#include<iostream>
-using namespace std;
-
 class BioFilterModelCollection{
 
-  public:
+	public:
 
-    BioFilterModelCollection();
+		BioFilterModelCollection();
 
-    BioFilterModelCollection(std::string filename, int nModels, std::string bioFileType);
-    
-    BioFilterModelCollection(std::string genegeneFile, std::string archiveFile,
-      int nModels);
-    
-    BioModel GetRandomModel();
-    
-    std::map<float, int> GetImplicationTotals();
-    
-    std::map<int,float> GetPercentages(std::map<int, int>& totals);
-    
-    BioModel GetNextModel(){       
-      BioModelTreeNode* returnNode = currBioModelNode;
-      currBioModelNode = currBioModelNode->GetPrev();
-      if(currBioModelNode == NULL)
-        currBioModelNode = biomodels.GetLast();
-      return returnNode->GetData();
-    }
-    
-    void SetStartModel(int startIndex){
-      int count=0;
-      startBioModelNode = biomodels.GetLast();
-      while(count++ < startIndex){
-        startBioModelNode = startBioModelNode->GetPrev();
-        if(startBioModelNode == NULL) // wrap around
-          startBioModelNode = biomodels.GetLast();
-      }
-      currBioModelNode = startBioModelNode;
-    }
-    
-  private:
-    
-    BioReader* getBioReader(string bioFileType);
-  
-    enum BioModelFileType{
-      NoMatch,
-      textFile,
-      binaryFile
-    };
-  
-    map<std::string, BioModelFileType> bioFileMap;
-  
-    void initialize(int nModels);
-    
-    void fill_tree(std::string filename, int nModels, std::string bioFileType);
-    
-    void fill_tree_archive(std::string genegeneFile, std::string archiveFile, 
-      int nModels);
-    
-    float getImplicationTotal();
-    
-    BioModelTree biomodels;
-    RandomTree randmodels;
-    
-    int start_index;
-    BioModelTreeNode* currBioModelNode, *startBioModelNode;
+		BioFilterModelCollection(std::string filename, int nModels, std::string bioFileType);
+		
+		BioFilterModelCollection(std::string genegeneFile, std::string archiveFile,
+			int nModels);
+		
+		BioModel getRandomModel();
+		
+		std::map<float, int> getImplicationTotals();
+		
+		std::map<int,float> getPercentages(std::map<int, int>& totals);
+		
+		BioModel getNextModel(){       
+			BioModelTreeNode* returnNode = currBioModelNode;
+			currBioModelNode = currBioModelNode->GetPrev();
+			if(currBioModelNode == NULL)
+				currBioModelNode = bioModels.GetLast();
+			return returnNode->GetData();
+		}
+		
+		void setStartModel(int startIndex){
+			int count=0;
+			startBioModelNode = bioModels.GetLast();
+			while(count++ < startIndex){
+				startBioModelNode = startBioModelNode->GetPrev();
+				if(startBioModelNode == NULL) // wrap around
+					startBioModelNode = bioModels.GetLast();
+			}
+			currBioModelNode = startBioModelNode;
+		}
+		
+	private:
+		
+		BioReader* getBioReader(string bioFileType);
+	
+		enum BioModelFileType{
+			NoMatch,
+			textFile,
+			binaryFile
+		};
+	
+		map<std::string, BioModelFileType> bioFileMap;
+	
+		void initialize(int nModels);
+		
+		void fillTree(std::string filename, int nModels, std::string bioFileType);
+		
+		void fillTreeArchive(std::string genegeneFile, std::string archiveFile, 
+			int nModels);
+		
+		float getImplicationTotal();
+		
+		BioModelTree bioModels;
+		RandomTree randModels;
+		
+		int startIndex;
+		BioModelTreeNode* currBioModelNode, *startBioModelNode;
 
 };
 

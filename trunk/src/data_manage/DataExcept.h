@@ -30,13 +30,13 @@ class DataExcept: public std::exception
 {
 
 public:
-  DataExcept() throw();
-  DataExcept(std::string message);
-  ~DataExcept()throw(){};
+	DataExcept() throw();
+	DataExcept(std::string message);
+	~DataExcept()throw(){};
 
-  virtual const char* what() const throw();
+	virtual const char* what() const throw();
 private:
-  std::string error;
+	std::string error;
 };
 
 }

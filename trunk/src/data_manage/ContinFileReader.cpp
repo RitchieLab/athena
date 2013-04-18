@@ -27,7 +27,7 @@ namespace data_manage
 
 ContinFileReader::ContinFileReader()
 {
-  dummy_id = 1;
+	dummyID = 1;
 }
 
 ContinFileReader::~ContinFileReader()
@@ -39,65 +39,65 @@ ContinFileReader::~ContinFileReader()
 /// @param filename string
 /// @param holder Dataholder
 /// @param missingValue value that identifies absence of data
-/// @param contains_id true when first column is an ID that should match the
+/// @param containsID true when first column is an ID that should match the
 /// ID in the corresponding genotype data file
 ///
-void ContinFileReader::read_contin_file(string filename, Dataholder* holder,
-        float missingValue, bool contains_id){
+void ContinFileReader::readContinFile(string filename, Dataholder* holder,
+				float missingValue, bool containsID){
 
-    holder->set_missing_covalue(missingValue);
+		holder->setMissingCoValue(missingValue);
 
-    std::ifstream c_stream(filename.c_str(), ios::in);
+		std::ifstream cStream(filename.c_str(), ios::in);
 
-    if(!c_stream.is_open()){
-      throw DataExcept("ERROR: Unable to open " + filename + "\n");
-    }
+		if(!cStream.is_open()){
+			throw DataExcept("ERROR: Unable to open " + filename + "\n");
+		}
 
-    string line, ind_id;
-    float value;
-    unsigned int curr_ind=0;
-    unsigned int num_covars=0;
+		string line, indID;
+		float value;
+		unsigned int currInd=0;
+		unsigned int numCovars=0;
 
-    while(!c_stream.eof()){
-      getline(c_stream, line);
+		while(!cStream.eof()){
+			getline(cStream, line);
 
-      if(line.find_first_of("0123456789") == string::npos){
-        continue;
-      }
+			if(line.find_first_of("0123456789") == string::npos){
+				continue;
+			}
 
-      stringstream ss(line);
-      
-      if(contains_id){
-          ss >> ind_id;
-      }
-      else{
-          ind_id = Stringmanip::itos(dummy_id++);
-      }
-     Individual * ind;
-     try{
-       ind = holder->get_ind_by_id(ind_id);
-     }
-     catch(DataExcept& de){
-       cout << "Skipping individual " << ind_id << " while reading " << filename << endl;  
-       continue;
-     }
-      
-      while(ss >> value){
-//        holder->get_ind_by_id(ind_id)->add_covariate(value);
-        ind->add_covariate(value);
-      }
-      if(num_covars > 0 && num_covars != ind->num_covariates()){
-        throw DataExcept("ERROR: in file " +  filename +" individual " + ind_id +" has " +Stringmanip::itos(ind->num_covariates()) + " values but previous line has " + Stringmanip::itos(num_covars));
-      }
-      else{
-//         num_covars = holder->get_ind_by_id(ind_id)->num_covariates();
-         num_covars = ind->num_covariates();
-      }
-      curr_ind++;
-    }
+			stringstream ss(line);
+			
+			if(containsID){
+					ss >> indID;
+			}
+			else{
+					indID = Stringmanip::numberToString(dummyID++);
+			}
+		 Individual * ind;
+		 try{
+			 ind = holder->getIndByID(indID);
+		 }
+		 catch(DataExcept& de){
+			 cout << "Skipping individual " << indID << " while reading " << filename << endl;  
+			 continue;
+		 }
+			
+			while(ss >> value){
+				ind->addCovariate(value);
+			}
+			if(numCovars > 0 && numCovars != ind->numCovariates()){
+				throw DataExcept("ERROR: in file " +  filename +" individual " + indID +" has " 
+					+ Stringmanip::numberToString(ind->numCovariates()) + " values but previous line has " 
+					+ Stringmanip::numberToString(numCovars));
+			}
+			else{
+				 numCovars = ind->numCovariates();
+			}
+			currInd++;
+		}
 
-    c_stream.close();
-    
+		cStream.close();
+		
 }
 
 
@@ -111,15 +111,15 @@ void ContinFileReader::read_contin_file(string filename, Dataholder* holder,
 ///@return none
 ///@throws DataExcept on error
 ///
-void ContinFileReader::read_contin_file(std::string train_file, std::string test_file, Dataholder* holder,
-	  float missingValue, bool contains_id){
+void ContinFileReader::readContinFile(std::string trainFile, std::string testFile, Dataholder* holder,
+	  float missingValue, bool containsID){
 	  
-  // parse training file and add to dataholder  
-  read_contin_file(train_file, holder, missingValue, contains_id);
-  
-  // parse the testing file and add to dataholder
-  read_contin_file(test_file, holder, missingValue, contains_id);
-  
+	// parse training file and add to dataholder  
+	readContinFile(trainFile, holder, missingValue, containsID);
+	
+	// parse the testing file and add to dataholder
+	readContinFile(testFile, holder, missingValue, containsID);
+	
 }
 
 }

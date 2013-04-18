@@ -39,39 +39,39 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 
 class OutputManager{
-    
+		
 public:
-    
-    /// sets basename for output
-    void setBasename(std::string base){basename = base;}
-    
-    /// creates new files for writing
-    void setFiles(bool mapfile_used, std::string fitness_name);
-    
-    /// outputs summary of best models
-    void outputSummary(Population& pop, int currPop, data_manage::Dataholder& data, 
-      bool mapfile_used=false, bool dummy_encoded=true, bool continmap_used=false,
-      std::string fitness_name=" ");
-    
-    /// outputs a file for each best model
-    void outputBestModels(Population& pop, int nmodels, int currPop, std::string scaleInfo,
-      data_manage::Dataholder& data, bool map_used, bool ott_dummy, bool continmap_used);
-    
-    /// returns a stream for writing
-    std::ostream& getStream(std::string filename);
-    
-    /// closes the provided stream
-    void closeStream(){if(log_stream.is_open()){ log_stream.close();}}
-    
-    /// output graphical representation as defined in algorithm
-    void outputGraphic(Algorithm* alg,  Population& pop, int currPop, std::string basename, int numModels,
-      data_manage::Dataholder& data, bool map_used, bool ott_dummy, bool continmap_used);
-    
+		
+		/// sets basename for output
+		void setBasename(std::string base){basename = base;}
+		
+		/// creates new files for writing
+		void setFiles(bool mapFileUsed, std::string fitnessName);
+		
+		/// outputs summary of best models
+		void outputSummary(Population& pop, int currPop, data_manage::Dataholder& data, 
+			bool mapFileUsed=false, bool dummyEncoded=true, bool continMapUsed=false,
+			std::string fitnessName=" ");
+		
+		/// outputs a file for each best model
+		void outputBestModels(Population& pop, int nmodels, int currPop, std::string scaleInfo,
+			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed);
+		
+		/// returns a stream for writing
+		std::ostream& getStream(std::string filename);
+		
+		/// closes the provided stream
+		void closeStream(){if(logStream.is_open()){ logStream.close();}}
+		
+		/// output graphical representation as defined in algorithm
+		void outputGraphic(Algorithm* alg,  Population& pop, int currPop, std::string basename, int numModels,
+			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed);
+		
 private:
-    
-    std::string basename;
-    std::ofstream log_stream;
-    
+		
+		std::string basename;
+		std::ofstream logStream;
+		
 };
 
 #endif	/* _OUTPUTMANAGER_H */

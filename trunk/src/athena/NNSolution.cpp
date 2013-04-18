@@ -29,16 +29,16 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Clones current solution
 ///
 Solution* NNSolution::clone(){
-    NNSolution* newNNSol = new NNSolution;
+		NNSolution* newNNSol = new NNSolution;
  
-    newNNSol->nn_depth=nn_depth;
-    newNNSol->gram_depth=gram_depth;
-    Solution* newSol = newNNSol;
-    Solution* thiscopy = this;
-    
-    newSol->copy(thiscopy);
+		newNNSol->nnDepth=nnDepth;
+		newNNSol->gramDepth=gramDepth;
+		Solution* newSol = newNNSol;
+		Solution* thiscopy = this;
+		
+		newSol->copy(thiscopy);
 
-    return newSol;
+		return newSol;
 }
 
 
@@ -47,39 +47,39 @@ Solution* NNSolution::clone(){
 /// @parm genotype Index of genotype (1 is first)
 /// @return 
 ///
-int NNSolution::adjust_dummy_encoding(int genotype){
-    return (genotype+1)/2;
+int NNSolution::adjustDummyEncoding(int genotype){
+		return (genotype+1)/2;
 }
 
 
 ///
 /// Returns the genotypes in the solution
-/// @param dummy_encoded when true will adjust genotype numbers
+/// @param dummyEncoded when true will adjust genotype numbers
 /// to reflect dummy encoding
 /// @return vector of ints listing genotype index numbers
 ///
-vector<int> NNSolution::get_genotypes(bool dummy_encoded){
-    
-    vector<int> genotypeIndexes;
-    
-    std::vector<std::string>::iterator symbolIter;
-    for(symbolIter = symbols.begin(); symbolIter != symbols.end(); ++symbolIter){
-      // look for letter 'G' followed by digits
-      // when only one character long go to next symbol
-      if((*symbolIter)[0] == 'G')            
-          if((*symbolIter).size() >= 2){
-             string num = (*symbolIter).substr(1, (*symbolIter).size()-1);
-            if(Stringmanip::is_number(num)){
-                int genoNum = Stringmanip::stoi(num);
-                if(dummy_encoded)
-                    genotypeIndexes.push_back(adjust_dummy_encoding(genoNum));
-                else
-                    genotypeIndexes.push_back(genoNum);
-            }
-          }
-    }
-    
-    return genotypeIndexes;
+vector<int> NNSolution::getGenotypes(bool dummyEncoded){
+		
+		vector<int> genotypeIndexes;
+		
+		std::vector<std::string>::iterator symbolIter;
+		for(symbolIter = symbols.begin(); symbolIter != symbols.end(); ++symbolIter){
+			// look for letter 'G' followed by digits
+			// when only one character long go to next symbol
+			if((*symbolIter)[0] == 'G')            
+					if((*symbolIter).size() >= 2){
+						 string num = (*symbolIter).substr(1, (*symbolIter).size()-1);
+						if(Stringmanip::is_number(num)){
+								int genoNum = Stringmanip::stringToNumber<int>(num);
+								if(dummyEncoded)
+										genotypeIndexes.push_back(adjustDummyEncoding(genoNum));
+								else
+										genotypeIndexes.push_back(genoNum);
+						}
+					}
+		}
+		
+		return genotypeIndexes;
 }
 
 
@@ -87,24 +87,24 @@ vector<int> NNSolution::get_genotypes(bool dummy_encoded){
 /// Returns the covariates in the solution
 /// @return vector of ints listing covariate numbers
 ///
-vector<int> NNSolution::get_covariates(){
-    
-    vector<int> covariateIndexes;
-    
-    std::vector<std::string>::iterator symbolIter;
-    for(symbolIter = symbols.begin(); symbolIter != symbols.end(); ++symbolIter){
-      // look for letter 'C' followed by digits
-      // when only one character long go to next symbol
-      if((*symbolIter)[0] == 'C')            
-          if((*symbolIter).size() >= 2){
-            string num = (*symbolIter).substr(1, (*symbolIter).size()-1);
-            if(Stringmanip::is_number(num)){
-               covariateIndexes.push_back(Stringmanip::stoi(num));
-            }
-          }  
-    }
-    
-    return covariateIndexes;
+vector<int> NNSolution::getCovariates(){
+		
+		vector<int> covariateIndexes;
+		
+		std::vector<std::string>::iterator symbolIter;
+		for(symbolIter = symbols.begin(); symbolIter != symbols.end(); ++symbolIter){
+			// look for letter 'C' followed by digits
+			// when only one character long go to next symbol
+			if((*symbolIter)[0] == 'C')            
+					if((*symbolIter).size() >= 2){
+						string num = (*symbolIter).substr(1, (*symbolIter).size()-1);
+						if(Stringmanip::is_number(num)){
+							 covariateIndexes.push_back(Stringmanip::stringToNumber<int>(num));
+						}
+					}  
+		}
+		
+		return covariateIndexes;
 }
 
 
@@ -113,112 +113,111 @@ vector<int> NNSolution::get_covariates(){
 /// into corresponding numbers for output
 /// @param os ostream to write to
 /// @param data
-/// @param map_used
+/// @param mapUsed
 /// 
-void NNSolution::output_clean(std::ostream& os, data_manage::Dataholder& data,
-      bool map_used, bool ott_dummy, bool continmap_used){
+void NNSolution::outputClean(std::ostream& os, data_manage::Dataholder& data,
+			bool mapUsed, bool ottDummy, bool continMapUsed){
 
-  // concatenate numbers and output rest without spaces
-  os << symbols[0];
-  for(unsigned int symb=1; symb < symbols.size(); symb++){
-    if(symbols[symb].compare("Concat")!=0){
-      if(symbols[symb].compare("W")==0 || symbols[symb][0] == 'P'){
-        os << " ";
-        os << symbols[symb];
-      }
-      else if(map_used && symbols[symb][0] == 'G'){
-        stringstream ss(symbols[symb].substr(1,symbols[symb].length()-1));
-        int num;
-        ss >> num;
-        if(ott_dummy)
-          num = (num-1)/2;
-        else
-          num -= 1;
+	// concatenate numbers and output rest without spaces
+	os << symbols[0];
+	for(unsigned int symb=1; symb < symbols.size(); symb++){
+		if(symbols[symb].compare("Concat")!=0){
+			if(symbols[symb].compare("W")==0 || symbols[symb][0] == 'P'){
+				os << " ";
+				os << symbols[symb];
+			}
+			else if(mapUsed && symbols[symb][0] == 'G'){
+				stringstream ss(symbols[symb].substr(1,symbols[symb].length()-1));
+				int num;
+				ss >> num;
+				if(ottDummy)
+					num = (num-1)/2;
+				else
+					num -= 1;
 
-        os << data.get_geno_name(num);
-      }
-      else if(continmap_used && symbols[symb][0] == 'C'){
-        stringstream ss(symbols[symb].substr(1,symbols[symb].length()-1));
-        int num;
-        ss >> num;
-        num -=1; // starts at 0 but labels start at 1
-        os << data.get_covar_name(num);
-      }
-      else{
-      	if(symbols[symb][0]=='G'){
-      	  stringstream ss(symbols[symb].substr(1,symbols[symb].length()-1));
-          int num;
-          ss >> num;
-          if(ott_dummy)
-            num = (num-1)/2;
-          else
-            num -= 1;
-      	  os << "G" << data.get_geno_name(num);
-      	}
-      	else      
+				os << data.getGenoName(num);
+			}
+			else if(continMapUsed && symbols[symb][0] == 'C'){
+				stringstream ss(symbols[symb].substr(1,symbols[symb].length()-1));
+				int num;
+				ss >> num;
+				num -=1; // starts at 0 but labels start at 1
+				os << data.getCovarName(num);
+			}
+			else{
+				if(symbols[symb][0]=='G'){
+				  stringstream ss(symbols[symb].substr(1,symbols[symb].length()-1));
+					int num;
+					ss >> num;
+					if(ottDummy)
+						num = (num-1)/2;
+					else
+						num -= 1;
+				  os << "G" << data.getGenoName(num);
+				}
+				else      
 	        os << symbols[symb];
-      }
-      
-    }
-    else{  // for Concat -- concatenate the numbers to create constant
-      // skip next symbol -- must be '('
-      // last number is not part of the concatenated number it is an indicator of the
-      // number of arguments to pass to the concatentation operator so it is removed for
-      // display purposes
-      symb++;
-      string num;
-      while(symbols[++symb].compare(")")!=0){
-        num += symbols[symb];
-      }
-      num = num.substr(0,num.size()-1);
-      float realnum = Stringmanip::stodouble(num);
-      os << realnum;
-    }
-  }
-
-
+			}
+			
+		}
+		else{  // for Concat -- concatenate the numbers to create constant
+			// skip next symbol -- must be '('
+			// last number is not part of the concatenated number it is an indicator of the
+			// number of arguments to pass to the concatentation operator so it is removed for
+			// display purposes
+			symb++;
+			string num;
+			while(symbols[++symb].compare(")")!=0){
+				num += symbols[symb];
+			}
+			num = num.substr(0,num.size()-1);
+			float realnum = Stringmanip::stringToNumber<double>(num);
+			os << realnum;
+		}
+	}
 }
 
+
+
 ///
-/// Adjusts output of the scores when needed (e.g. meansquared to rsquared)
+/// Adjusts output of the scores when needed (e.g. meansquared to rSquared)
 /// Works to alter mean squared error scores to r squared
 /// @param tes
 ///
-void NNSolution::adjust_score_out(Dataset* train_set, Dataset* test_set){
+void NNSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet){
+	float ssTotal;
+	int totalInds = calcInds(trainSet, ssTotal);
+	solFitness = alterScore(solFitness, totalInds, ssTotal);
 
-  float sstotal;
-  int total_inds = calc_inds(train_set, sstotal);
-  sol_fitness = alter_score(sol_fitness, total_inds, sstotal);
+	totalInds = calcInds(testSet, ssTotal);
 
-  total_inds = calc_inds(test_set, sstotal);
-
-  test_score = alter_score(test_score, total_inds, sstotal);
+	testScore = alterScore(testScore, totalInds, ssTotal);
 }
 
 
 ///
-/// Adjusts output of the scores when needed (e.g. meansquared to rsquared)
+/// Adjusts output of the scores when needed (e.g. meansquared to rSquared)
 /// Works to alter mean squared error scores to r squared
-/// @param train_set Dataset
+/// @param trainSet Dataset
 ///
-void NNSolution::adjust_score_out(Dataset* train_set){
-  float sstotal;
-  int total_inds = calc_inds(train_set, sstotal);
+void NNSolution::adjustScoreOut(Dataset* trainSet){
+	float ssTotal;
+	int totalInds = calcInds(trainSet, ssTotal);
 
-  sol_fitness = alter_score(sol_fitness, total_inds, sstotal);
+	solFitness = alterScore(solFitness, totalInds, ssTotal);
 }
 
 
 ///
-/// Adjusts output of the scores when needed (e.g. meansquared to rsquared)
+/// Adjusts output of the scores when needed (e.g. meansquared to rSquared)
 /// Works to alter mean squared error scores to r squared
 /// @param score
 /// @param nIndsTested
-/// @param sstotal
+/// @param ssTotal
 /// @return R-squared value
 ///
-float NNSolution::adjust_score_out(float score, int nIndsTested, float sstotal){
-  return alter_score(score, nIndsTested, sstotal);
+float NNSolution::adjustScoreOut(float score, int nIndsTested, float ssTotal){
+	return alterScore(score, nIndsTested, ssTotal);
 }
 
 
@@ -226,13 +225,13 @@ float NNSolution::adjust_score_out(float score, int nIndsTested, float sstotal){
 /// Converts mean squared error 
 /// @param set Dataset for this score
 /// @param mse mean squared error
-/// @param total_inds Total inds evaluated
-/// @param sstotal
+/// @param totalInds Total inds evaluated
+/// @param ssTotal
 /// @return R squared score for the set
 ///
-float NNSolution::alter_score(float mse, int total_inds, float sstotal){
-   float rsquared = 1-((mse * total_inds) / sstotal);
-  return rsquared;
+float NNSolution::alterScore(float mse, int totalInds, float ssTotal){
+	 float rSquared = 1-((mse * totalInds) / ssTotal);
+	return rSquared;
 }
 
 
@@ -240,69 +239,68 @@ float NNSolution::alter_score(float mse, int total_inds, float sstotal){
 /// Returns number of individuals from the set who are included in the calculation.
 /// Individuals without data for one of the variables in the set are not included.
 /// @param set Dataset
-/// @param sstotal sets the sstotal
+/// @param ssTotal sets the ssTotal
 /// @return number of individuals
 ///
-int NNSolution::calc_inds(Dataset* set, float& sstotal){
+int NNSolution::calcInds(Dataset* set, float& ssTotal){
 
-  // iterate through the symbols and look for anything with a 'G' or 'C'
-  std::vector<std::string>::iterator iter;
-  
-  vector<int> genos, covars;
-  int num;
-  
-  for(iter = symbols.begin(); iter != symbols.end(); iter++){
-    string sym = *iter;
-    if(sym[0] == 'G'){
-      stringstream ss(sym.substr(1, sym.length()-1));
-      ss >> num;
-      genos.push_back(num-1);
-    }
-    else if(sym[0] == 'C' && sym.find_first_of("0123456789") != string::npos){
-      stringstream ss(sym.substr(1, sym.length()-1));
-      ss >> num;
-      covars.push_back(num-1);
-    }
-  }
+	// iterate through the symbols and look for anything with a 'G' or 'C'
+	std::vector<std::string>::iterator iter;
+	
+	vector<int> genos, covars;
+	int num;
+	
+	for(iter = symbols.begin(); iter != symbols.end(); iter++){
+		string sym = *iter;
+		if(sym[0] == 'G'){
+			stringstream ss(sym.substr(1, sym.length()-1));
+			ss >> num;
+			genos.push_back(num-1);
+		}
+		else if(sym[0] == 'C' && sym.find_first_of("0123456789") != string::npos){
+			stringstream ss(sym.substr(1, sym.length()-1));
+			ss >> num;
+			covars.push_back(num-1);
+		}
+	}
 
-  int total_inds = 0;
-  Individual* ind;
-  bool any_missing;
-  
-  float diff=0.0, meanval, stat_total=0.0;
-  vector<float> status_used;
-  
-  for(unsigned int currind=0; currind < set->num_inds(); currind++){
-    ind = (*set)[currind];
-    
-    any_missing = false;
-    for(unsigned int g=0; g < genos.size(); g++){
-      if(ind->get_genotype(genos[g]) == set->get_missing_genotype()){
-        any_missing = true;
-        break;
-      }
-    }
-    for(unsigned int c=0; c < covars.size(); c++){
-      if(ind->get_covariate(covars[c]) == set->get_missing_covalue()){
-        any_missing = true;
-        break;
-      }
-    }
-    
-    if(!any_missing){
-      total_inds++;
-      stat_total += ind->get_status();
-      status_used.push_back(ind->get_status());
-    }
-  }
-  
-  meanval = stat_total / total_inds;
-  for(vector<float>::iterator iter=status_used.begin(); iter != status_used.end();
-    ++iter){
-    diff = diff + (*iter-meanval) * (*iter-meanval);
-  }
-  sstotal=diff;
-  
-  return total_inds;
-  
+	int totalInds = 0;
+	Individual* ind;
+	bool anyMissing;
+	
+	float diff=0.0, meanVal, statTotal=0.0;
+	vector<float> statusUsed;
+	
+	for(unsigned int currind=0; currind < set->numInds(); currind++){
+		ind = (*set)[currind];
+		
+		anyMissing = false;
+		for(unsigned int g=0; g < genos.size(); g++){
+			if(ind->getGenotype(genos[g]) == set->getMissingGenotype()){
+				anyMissing = true;
+				break;
+			}
+		}
+		for(unsigned int c=0; c < covars.size(); c++){
+			if(ind->getCovariate(covars[c]) == set->getMissingCoValue()){
+				anyMissing = true;
+				break;
+			}
+		}
+		
+		if(!anyMissing){
+			totalInds++;
+			statTotal += ind->getStatus();
+			statusUsed.push_back(ind->getStatus());
+		}
+	}
+	
+	meanVal = statTotal / totalInds;
+	for(vector<float>::iterator iter=statusUsed.begin(); iter != statusUsed.end();
+		++iter){
+		diff = diff + (*iter-meanVal) * (*iter-meanVal);
+	}
+	ssTotal=diff;
+	
+	return totalInds;
 }

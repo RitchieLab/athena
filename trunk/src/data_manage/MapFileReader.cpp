@@ -25,36 +25,36 @@ namespace data_manage
 
 ///
 /// Parses map file and stores loci names in the Dataholder
-/// @param mapfile
+/// @param mapFile
 /// @param dataholder Dataholder
 ///
-void MapFileReader::parse_map_file(string mapfile, Dataholder* dataholder){
-  std::ifstream mapStream(mapfile.c_str(), ios::in);
+void MapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
+	std::ifstream mapStream(mapFile.c_str(), ios::in);
 
-  if(!mapStream.is_open()){
-    throw DataExcept("ERROR: Unable to open " + mapfile + "\n");
-  }
+	if(!mapStream.is_open()){
+		throw DataExcept("ERROR: Unable to open " + mapFile + "\n");
+	}
 
-  string line;
+	string line;
 
-  string snpID;
-  unsigned int chrom;
-  unsigned int pos;
+	string snpID;
+	unsigned int chrom;
+	unsigned int pos;
 
-  while(!mapStream.eof()){
-    getline(mapStream, line);
+	while(!mapStream.eof()){
+		getline(mapStream, line);
 
-    if(line.find_first_of("0123456789") == string::npos){
-      continue;
-    }
+		if(line.find_first_of("0123456789") == string::npos){
+			continue;
+		}
 
-    stringstream ss(line);
+		stringstream ss(line);
 
-    ss >> chrom >> snpID >> pos;
-    dataholder->add_geno_name(snpID);
-  }
+		ss >> chrom >> snpID >> pos;
+		dataholder->addGenoName(snpID);
+	}
 
-  mapStream.close();
+	mapStream.close();
 }
 
 

@@ -31,22 +31,22 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 class SymRegressSolutionCreator: public NNSolutionCreator{
 
-  public:
-    /// creates solution from vector of strings
-    virtual void establish_solution(vector<string>& symbols, Dataset* set);
+	public:
+		/// creates solution from vector of strings
+		virtual void establishSolution(vector<string>& symbols, Dataset* set);
  
-     /// creates solution from vector of strings
-    virtual void establish_solution(vector<string>& symbols);
+		 /// creates solution from vector of strings
+		virtual void establishSolution(vector<string>& symbols);
 
-    /// writes a dot compatible text file representing the network
-    virtual void graphical_output(ostream& os, data_manage::Dataholder* holder,
-      bool map_used, bool ott_dummy){}
-    
-  protected:
-  
-     /// evaluates single individual and returns value for that individual
-    float evaluate_ind(Individual* ind);
-    
+		/// writes a dot compatible text file representing the network
+		virtual void graphical_output(ostream& os, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy){}
+		
+	protected:
+	
+		 /// evaluates single individual and returns value for that individual
+		float evaluateInd(Individual* ind);
+		
 };
 
 #endif

@@ -27,45 +27,45 @@ std::map<std::string, CalculatorFactory::CalcType> CalculatorFactory::CalcMap;
 
 ///
 /// Creates and returns calculator
-/// @param calc_type
+/// @param calcName
 /// @return calculator
 /// @throws AthenaExcept when no matching calculator to create
 ///
-SolutionCalculator* CalculatorFactory::create_calculator(string calc_name){
-   if(CalcMap.empty()){
-      set_calc_map();
-   }
-   
-   SolutionCalculator* newSolution;
-   
-   switch(CalcMap[calc_name]){
-       case NoCalcType:
-           throw AthenaExcept(calc_name + " is not a valid calculation");
-           break;
-       case MeanSquaredErrType:
-           newSolution = new MeanSquaredErrCalculator;
-           break;
-       case BalanceCalcType:
-           newSolution = new BalAccCalculator;
-           break;
-       case RSquaredType:
-           newSolution = new RSquaredCalculator;
-           break;
-       default:
-           throw AthenaExcept(calc_name + " is not a valid calculation");
-           break;
-   }
-   
-   return newSolution;
+SolutionCalculator* CalculatorFactory::createCalculator(string calcName){
+	 if(CalcMap.empty()){
+			setCalcMap();
+	 }
+	 
+	 SolutionCalculator* newSolution;
+	 
+	 switch(CalcMap[calcName]){
+			 case NoCalcType:
+					 throw AthenaExcept(calcName + " is not a valid calculation");
+					 break;
+			 case MeanSquaredErrType:
+					 newSolution = new MeanSquaredErrCalculator;
+					 break;
+			 case BalanceCalcType:
+					 newSolution = new BalAccCalculator;
+					 break;
+			 case RSquaredType:
+					 newSolution = new RSquaredCalculator;
+					 break;
+			 default:
+					 throw AthenaExcept(calcName + " is not a valid calculation");
+					 break;
+	 }
+	 
+	 return newSolution;
 }
+
 
 
 ///
 /// Sets the Calculator map
 ///
-void CalculatorFactory::set_calc_map(){
-    CalcMap["BALANCEDACC"] = BalanceCalcType;
-    CalcMap["RSQUARED"] = MeanSquaredErrType;
-    
+void CalculatorFactory::setCalcMap(){
+		CalcMap["BALANCEDACC"] = BalanceCalcType;
+		CalcMap["RSQUARED"] = MeanSquaredErrType;
 }
 

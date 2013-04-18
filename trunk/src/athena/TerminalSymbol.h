@@ -37,74 +37,74 @@ using namespace std;
 ///
 
 class TerminalSymbol{
-    
+		
 public:
-    
-    enum TerminalType{
-        Covariate,
-        Genotype,
-        Operator,
-        Constant,
-        NotVariable,
-        Neuron,
-        Weight,
-        PreOperator,
-        Bias
-    };
-    
-    TerminalSymbol(){name = ""; priority = 0;}
-    
-    virtual ~TerminalSymbol(){}
-    
-    TerminalSymbol(std::string termname, int priority_level, TerminalType t_type=NotVariable)
-      {name = termname; termtype = t_type; priority=priority_level;}
-    
-    /// Returns number of arguments needed by this element
-    int get_num_args() const {return num_args;}
-    
-    /// Sets the number of arguments
-    void set_num_args(int nargs){num_args = nargs;}
-    
-    /// Returns priority level for evaluating this element
-    int get_priority() const {return priority;}
-    
-    /// Sets the priority level for evaluating the element
-    void set_priority(int p){priority = p;}
+		
+		enum TerminalType{
+				Covariate,
+				Genotype,
+				Operator,
+				Constant,
+				NotVariable,
+				Neuron,
+				Weight,
+				PreOperator,
+				Bias
+		};
+		
+		TerminalSymbol(){name = ""; priority = 0;}
+		
+		virtual ~TerminalSymbol(){}
+		
+		TerminalSymbol(std::string termName, int priorityLevel, TerminalType tType=NotVariable)
+			{name = termName; termType = tType; priority=priorityLevel;}
+		
+		/// Returns number of arguments needed by this element
+		int getNumArgs() const {return numArgs;}
+		
+		/// Sets the number of arguments
+		void setNumArgs(int nargs){numArgs = nargs;}
+		
+		/// Returns priority level for evaluating this element
+		int getPriority() const {return priority;}
+		
+		/// Sets the priority level for evaluating the element
+		void setPriority(int p){priority = p;}
 
-    /// scale result using sigmoid function
-    static float ActivateSigmoid(float x);    
-    /// adjust results for infinite or nan
-    static float AdjustResult(float x);
-    
-    /// nonterminals return 0 for evaluation
-    virtual float evaluate(std::deque<float> & elements){return 0;}
-       
-    /// returns name of terminal symbol
-    std::string get_name(){return name;}
-    
-    /// returns correct indicator for covariate or genotype or not
-    TerminalType get_term_type(){return termtype;}
-    
-    /// returns label for dot file production
-    virtual string get_label(){return label;}
-    
-    /// returns style for dot file production
-    string get_style(){return style;}
-    
-    /// returns shape for dot file production
-    string get_shape(){return shape;}
-    
-    /// returns type (used for dot)
-    string get_type(){return type;}
-    
+		/// scale result using sigmoid function
+		static float ActivateSigmoid(float x);    
+		/// adjust results for infinite or nan
+		static float AdjustResult(float x);
+		
+		/// nonterminals return 0 for evaluation
+		virtual float evaluate(std::deque<float> & elements){return 0;}
+			 
+		/// returns name of terminal symbol
+		std::string getName(){return name;}
+		
+		/// returns correct indicator for covariate or genotype or not
+		TerminalType getTermType(){return termType;}
+		
+		/// returns label for dot file production
+		virtual string getLabel(){return label;}
+		
+		/// returns style for dot file production
+		string getStyle(){return style;}
+		
+		/// returns shape for dot file production
+		string getShape(){return shape;}
+		
+		/// returns type (used for dot)
+		string getType(){return type;}
+		
 
-    
-  protected:
-     std::string name, label, style, shape, type;
-     bool var_args;
-     int num_args, priority;    
-     TerminalType termtype;
-    
+		
+	protected:
+		 std::string name, label, style, shape, type;
+		 bool varArgs;
+		 int numArgs, priority;    
+		 TerminalType termType;
+		
 };
 
 

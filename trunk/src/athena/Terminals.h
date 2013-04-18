@@ -33,16 +33,16 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 using namespace data_manage;
 
 class Constant :public TerminalSymbol{
-  
-  public:
-    Constant(std::string symbol, int number_args=0);
-    Constant(float val);
-    virtual ~Constant(){}
-    
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Constant(std::string symbol, int numberArgs=0);
+		Constant(float val);
+		virtual ~Constant(){}
+		
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 
-    private:
-      float constant_value;
+		private:
+			float constantValue;
 };
 
 ///////////////////////////////
@@ -56,14 +56,14 @@ class Constant :public TerminalSymbol{
 class BiasTerm :public TerminalSymbol{
 
 	public:
-		BiasTerm(std::string name, int number_args=0);
+		BiasTerm(std::string name, int numberArgs=0);
 		
 		virtual ~BiasTerm(){}
 		
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
 
-    private:
-      float bias_value;		 
+		private:
+			float biasValue;		 
 
 };
 
@@ -74,21 +74,21 @@ class BiasTerm :public TerminalSymbol{
 /// genotypes in the dataset
 ///
 class GenotypeTerm :public TerminalSymbol{
-  
-  public:
-    GenotypeTerm(std::string name, int variable_index);
-    
-    virtual ~GenotypeTerm(){}
-    
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
-    
-    inline int getIndex(){return index_value;}
-    
-    static void set_ind(Individual* ind);
-    private:
-      int index_value;
-      
-      static Individual* ind;
+	
+	public:
+		GenotypeTerm(std::string name, int variableIndex);
+		
+		virtual ~GenotypeTerm(){}
+		
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
+		
+		inline int getIndex(){return indexValue;}
+		
+		static void setInd(Individual* ind);
+		private:
+			int indexValue;
+			
+			static Individual* ind;
 };
 
 
@@ -97,229 +97,229 @@ class GenotypeTerm :public TerminalSymbol{
 /// genotypes in the dataset
 ///
 class ContinVariable :public TerminalSymbol{
-  
-  public:
-    ContinVariable(std::string name, int variable_index);
-    
-    virtual ~ContinVariable(){}
-    
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
-    static void set_ind(Individual* ind);
-    
-    inline int getIndex(){return index_value;}
-    private:
-      int index_value;
-      static Individual* ind;
+	
+	public:
+		ContinVariable(std::string name, int variableIndex);
+		
+		virtual ~ContinVariable(){}
+		
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
+		static void setInd(Individual* ind);
+		
+		inline int getIndex(){return indexValue;}
+		private:
+			int indexValue;
+			static Individual* ind;
 };
 
 
 class Addition :public TerminalSymbol{
-  
-  public:
-    Addition(std::string symbol, int number_args);
-    virtual ~Addition(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Addition(std::string symbol, int numberArgs);
+		virtual ~Addition(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Subtraction :public TerminalSymbol{
-  
-  public:
-    Subtraction(std::string symbol, int number_args);
-    virtual ~Subtraction(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Subtraction(std::string symbol, int numberArgs);
+		virtual ~Subtraction(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Multiplication :public TerminalSymbol{
-  
-  public:
-    Multiplication(std::string symbol, int number_args);
-    virtual ~Multiplication(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Multiplication(std::string symbol, int numberArgs);
+		virtual ~Multiplication(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Division :public TerminalSymbol{
-  
-  public:
-    Division(std::string symbol, int number_args);
-    virtual ~Division(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Division(std::string symbol, int numberArgs);
+		virtual ~Division(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Power :public TerminalSymbol{
-  
-  public:
-    Power(std::string symbol, int number_args);
-    virtual ~Power(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Power(std::string symbol, int numberArgs);
+		virtual ~Power(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class pAdd :public TerminalSymbol{
-  
-  public:
-    pAdd(std::string symbol, int number_args);
-    virtual ~pAdd(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		pAdd(std::string symbol, int numberArgs);
+		virtual ~pAdd(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class pSub :public TerminalSymbol{
-  
-  public:
-    pSub(std::string symbol, int number_args);
-    virtual ~pSub(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		pSub(std::string symbol, int numberArgs);
+		virtual ~pSub(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class pMult :public TerminalSymbol{
-  
-  public:
-    pMult(std::string symbol, int number_args);
-    virtual ~pMult(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		pMult(std::string symbol, int numberArgs);
+		virtual ~pMult(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class pDiv :public TerminalSymbol{
-  
-  public:
-    pDiv(std::string symbol, int number_args);
-    virtual ~pDiv(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		pDiv(std::string symbol, int numberArgs);
+		virtual ~pDiv(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Weight :public TerminalSymbol{
-  
-  public:
-    Weight(std::string symbol, int number_args);
-    virtual ~Weight(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Weight(std::string symbol, int numberArgs);
+		virtual ~Weight(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 
 class Dot :public TerminalSymbol{
-  
-  public:
-    Dot(std::string symbol, int number_args=0);
-    virtual ~Dot(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Dot(std::string symbol, int numberArgs=0);
+		virtual ~Dot(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class ConCat :public TerminalSymbol{
 
-  public:
-    ConCat(std::string symbol, int number_args);
-    virtual ~ConCat(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
-    friend ostream & operator << (ostream & os, const TerminalSymbol & el);
+	public:
+		ConCat(std::string symbol, int numberArgs);
+		virtual ~ConCat(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
+		friend ostream & operator << (ostream & os, const TerminalSymbol & el);
 };
 
 
 class LogF  :public TerminalSymbol{
-  public:
-    LogF(std::string symbol, int number_args);
-    virtual ~LogF(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	public:
+		LogF(std::string symbol, int numberArgs);
+		virtual ~LogF(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Sine  :public TerminalSymbol{
-  public:
-    Sine(std::string symbol, int number_args);
-    virtual ~Sine(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	public:
+		Sine(std::string symbol, int numberArgs);
+		virtual ~Sine(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Cosine  :public TerminalSymbol{
-  public:
-    Cosine(std::string symbol, int number_args);
-    virtual ~Cosine(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	public:
+		Cosine(std::string symbol, int numberArgs);
+		virtual ~Cosine(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Tangent  :public TerminalSymbol{
-  public:
-    Tangent(std::string symbol, int number_args);
-    virtual ~Tangent(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	public:
+		Tangent(std::string symbol, int numberArgs);
+		virtual ~Tangent(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
-   
+	 
 // Following are the boolean operators for neural nets
 class pAnd :public TerminalSymbol{
-  
-  public:
-    pAnd(std::string symbol, int number_args);
-    virtual ~pAnd(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		pAnd(std::string symbol, int numberArgs);
+		virtual ~pAnd(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class pNand :public TerminalSymbol{
-  
-  public:
-    pNand(std::string symbol, int number_args);
-    virtual ~pNand(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		pNand(std::string symbol, int numberArgs);
+		virtual ~pNand(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class pOr :public TerminalSymbol{
-  
-  public:
-    pOr(std::string symbol, int number_args);
-    virtual ~pOr(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		pOr(std::string symbol, int numberArgs);
+		virtual ~pOr(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class pNor :public TerminalSymbol{
-  
-  public:
-    pNor(std::string symbol, int number_args);
-    virtual ~pNor(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		pNor(std::string symbol, int numberArgs);
+		virtual ~pNor(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class pXor :public TerminalSymbol{
-  
-  public:
-    pXor(std::string symbol, int number_args);
-    virtual ~pXor(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		pXor(std::string symbol, int numberArgs);
+		virtual ~pXor(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 // Following are the boolean operators
 class And :public TerminalSymbol{
-  public:
-    And(std::string symbol, int number_args);
-    virtual ~And(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	public:
+		And(std::string symbol, int numberArgs);
+		virtual ~And(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Nand :public TerminalSymbol{
-  
-  public:
-    Nand(std::string symbol, int number_args);
-    virtual ~Nand(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Nand(std::string symbol, int numberArgs);
+		virtual ~Nand(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Or :public TerminalSymbol{
-  
-  public:
-    Or(std::string symbol, int number_args);
-    virtual ~Or(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Or(std::string symbol, int numberArgs);
+		virtual ~Or(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Nor :public TerminalSymbol{
-  
-  public:
-    Nor(std::string symbol, int number_args);
-    virtual ~Nor(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Nor(std::string symbol, int numberArgs);
+		virtual ~Nor(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 class Xor :public TerminalSymbol{
-  
-  public:
-    Xor(std::string symbol, int number_args);
-    virtual ~Xor(){}
-    virtual float evaluate(std::deque<float> & TerminalSymbols);
+	
+	public:
+		Xor(std::string symbol, int numberArgs);
+		virtual ~Xor(){}
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
 

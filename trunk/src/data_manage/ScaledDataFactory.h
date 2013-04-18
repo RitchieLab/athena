@@ -26,24 +26,24 @@ namespace data_manage{
 
 class ScaledDataFactory{
 
-  public:
+	public:
 
-    static ScaleData* create_scaler(string scale_type);
-    
-  private:
-    
-    enum ScaleType{
-      NoMatch,
-      ScaleNorm,
-      ScaleContin,
-      NoScale
-    };
+		static ScaleData* createScaler(string scaleType);
+		
+	private:
+		
+		enum ScaleType{
+			NoMatch,
+			ScaleNorm,
+			ScaleContin,
+			NoScale
+		};
 
-    static map<string, ScaleType> ScaleMap;
-    
-    /// Sets the map
-    static void setScaleMap();
-    
+		static map<string, ScaleType> scaleMap;
+		
+		/// Sets the map
+		static void setScaleMap();
+		
 };
 
 

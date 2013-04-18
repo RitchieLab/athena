@@ -34,7 +34,7 @@ CVInterval::CVInterval()
 /// @param num Number of sets that the individuals will be split into
 ///
 CVInterval::CVInterval(unsigned int num){
-  num_sets(num);
+	numSets(num);
 }
 
 ///
@@ -49,14 +49,11 @@ CVInterval::~CVInterval()
 /// Sets number of sets
 /// @param num Number of sets that the individuals will be split into
 ///
-void CVInterval::num_sets(unsigned int num){
+void CVInterval::numSets(unsigned int num){
 
-  Dataset blank;
-  /// fills with blank sets
-  sets.assign(num, blank);
+	Dataset blank;
+	/// fills with blank sets
+	sets.assign(num, blank);
 }
-
-
-
 
 }

@@ -24,7 +24,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 
 #ifdef PARALLEL
-  #include "mpi.h"
+#include "mpi.h"
 #endif
 
 ///
@@ -32,19 +32,19 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 class AlgorithmLog{
 
-  public:
+	public:
 
-    AlgorithmLog(int num_snps){}
+		AlgorithmLog(int num_snps){}
 
-    virtual ~AlgorithmLog(){}
+		virtual ~AlgorithmLog(){}
 
-    /// Outputs 
-    virtual void output_log(std::ostream& os)=0;
-    
-    #ifdef PARALLEL
-      virtual void sendLog()=0; // for slaves
-      virtual void receiveLogs(int nprocs)=0; // for master
-    #endif
+		/// Outputs 
+		virtual void outputLog(std::ostream& os)=0;
+		
+		#ifdef PARALLEL
+			virtual void sendLog()=0; // for slaves
+			virtual void receiveLogs(int nprocs)=0; // for master
+		#endif
 
 };
 

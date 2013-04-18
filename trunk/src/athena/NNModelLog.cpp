@@ -25,47 +25,47 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Destructor
 ///
 NNModelLog::~NNModelLog(){
-    if(log_stream.is_open()){
-        close_log();
-    }
+		if(logStream.is_open()){
+				closeLog();
+		}
 }
 
-void NNModelLog::header(ostream& os, std::string fitness_name){
-  os << "GEN\tRANK\t" << fitness_name  << 
-    " FITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C";
-  if(detailed)
-    os << "\tMODEL";
-  os << "\n";
+void NNModelLog::header(ostream& os, std::string fitnessName){
+	os << "GEN\tRANK\t" << fitnessName  << 
+		" FITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C";
+	if(detailed)
+		os << "\tMODEL";
+	os << "\n";
 }
 
-void NNModelLog::open_log(std::string filename, std::string fitness_name){
-  log_stream.open(filename.c_str(), ios::out);
-  if(!log_stream.is_open()){
-    throw AthenaExcept(filename + " unable to open for writing results");
-  }
-  header(log_stream, fitness_name);
+void NNModelLog::openLog(std::string filename, std::string fitnessName){
+	logStream.open(filename.c_str(), ios::out);
+	if(!logStream.is_open()){
+		throw AthenaExcept(filename + " unable to open for writing results");
+	}
+	header(logStream, fitnessName);
 }
 
 ///
 /// Closes output stream
 ///
-void NNModelLog::close_log(){
-    log_stream.close();
+void NNModelLog::closeLog(){
+		logStream.close();
 }
-    
+		
 ///
 /// Add solution to log file
 ///
-void NNModelLog::write_solution(NNSolution & solution, int generation, int rank){
-    log_stream << generation << "\t";
-    log_stream << rank << "\t";
-    log_stream << solution.fitness() << "\t";
-    log_stream << solution.get_gram_depth() << "\t";
-    log_stream << solution.get_nn_depth() << "\t";
-    log_stream << solution.get_genotypes().size() << "\t";
-    log_stream << solution.get_covariates().size() << "\t";
-    if(detailed)
-        solution.output_solution(log_stream);
-    else
-        log_stream << "\n";
+void NNModelLog::writeSolution(NNSolution & solution, int generation, int rank){
+		logStream << generation << "\t";
+		logStream << rank << "\t";
+		logStream << solution.fitness() << "\t";
+		logStream << solution.getGramDepth() << "\t";
+		logStream << solution.getNNDepth() << "\t";
+		logStream << solution.getGenotypes().size() << "\t";
+		logStream << solution.getCovariates().size() << "\t";
+		if(detailed)
+				solution.outputSolution(logStream);
+		else
+				logStream << "\n";
 }

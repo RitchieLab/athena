@@ -37,49 +37,49 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 
 class GENNGrammarAdjuster{
-    
+		
 public:
 
-    /// Reads grammar file and applies any needed modifications to the grammar
-    /// before proceeding
-    void read_grammar_file(string filename);
+		/// Reads grammar file and applies any needed modifications to the grammar
+		/// before proceeding
+		void readGrammarFile(string filename);
 
-    /// Doubles number of genotypes for ott dummy encoding
-    void double_genotype_grammar();
+		/// Doubles number of genotypes for ott dummy encoding
+		void doubleGenotypeGrammar();
 
-    /// Includes all variables in set, overriding the grammar
-    void include_all_vars(int nGenos, int nContin);
-    
-    /// passes the grammar string to the mapper
-    void set_mapper(AthenaGrammarSI& mapper, int rank=0);
-    
-    ///  Expands shorthand for continuous variables and genotypes into useable format
-    void expand_variables();
-    
-    /// Returns variables
-    vector<string> get_variables();
-   
-    /// Clears variables held
-    void clear_variables(){variables_included.clear();}
-    
-    /// Includes only variables in the variables_included set
-    void add_variables(std::vector<std::string>& terminals);
-    
-    /// Creates new variable lines using only those in variables_included set
-    void edit_only_var_included();
-   
+		/// Includes all variables in set, overriding the grammar
+		void includeAllVars(int nGenos, int nContin);
+		
+		/// passes the grammar string to the mapper
+		void setMapper(AthenaGrammarSI& mapper, int rank=0);
+		
+		///  Expands shorthand for continuous variables and genotypes into useable format
+		void expandVariables();
+		
+		/// Returns variables
+		vector<string> getVariables();
+	 
+		/// Clears variables held
+		void clearVariables(){variablesIncluded.clear();}
+		
+		/// Includes only variables in the variables_included set
+		void addVariables(std::vector<std::string>& terminals);
+		
+		/// Creates new variable lines using only those in variables_included set
+		void editOnlyVarIncluded();
+	 
 private:
-    
-    /// creates variable symbol for insertion in grammar
-    string create_variable_symbol(string vPrefix, int num);
-    
-    vector<string>::iterator get_start_variables();
-    
-    int count_var_lines(vector<string>::iterator& start, vector<string>::iterator& last);
-    
-    /// contains the grammar
-    vector<std::string> lines;
-    std::set<std::string> variables_included;
+		
+		/// creates variable symbol for insertion in grammar
+		string createVariableSymbol(string vPrefix, int num);
+		
+		vector<string>::iterator getStartVariables();
+		
+		int countVarLines(vector<string>::iterator& start, vector<string>::iterator& last);
+		
+		/// contains the grammar
+		vector<std::string> lines;
+		std::set<std::string> variablesIncluded;
 };
 
 

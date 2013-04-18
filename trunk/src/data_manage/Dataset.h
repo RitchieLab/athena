@@ -33,51 +33,51 @@ namespace data_manage
 class Dataset
 {
 
-  friend std::ostream& operator<<(std::ostream& os, Dataset& d);
+	friend std::ostream& operator<<(std::ostream& os, Dataset& d);
 
 public:
-  Dataset();
-  Dataset(float comissing, unsigned int genomissing){
-      missing_covalue = comissing;
-      missing_genotype = genomissing;
-      sstotal = 0;
-  }
-  ~Dataset();
+	Dataset();
+	Dataset(float coMissing, unsigned int genoMissing){
+			missingCoValue = coMissing;
+			missingGenotype = genoMissing;
+			ssTotal = 0;
+	}
+	~Dataset();
 
-  inline unsigned int num_inds(){return inds.size();}
+	inline unsigned int numInds(){return inds.size();}
 
-  inline void add_ind(Individual* ind){inds.push_back(ind);}
+	inline void addInd(Individual* ind){inds.push_back(ind);}
 
-  inline Individual* operator[](unsigned int index){return inds[index];}
+	inline Individual* operator[](unsigned int index){return inds[index];}
 
-  inline Individual* get_ind(unsigned int index){return inds[index];}
-  
-  /// Returns number of genotypes in set
-  inline unsigned int num_genos(){return inds[0]->num_genotypes();}
-  
-  /// Returns number of covariates in set
-  inline unsigned int num_covariates(){return inds[0]->num_covariates();}
+	inline Individual* getInd(unsigned int index){return inds[index];}
+	
+	/// Returns number of genotypes in set
+	inline unsigned int numGenos(){return inds[0]->numGenotypes();}
+	
+	/// Returns number of covariates in set
+	inline unsigned int numCovariates(){return inds[0]->numCovariates();}
 
-  void add_inds(std::vector<Individual* >& new_inds);
+	void addInds(std::vector<Individual* >& new_inds);
 
-  inline float get_missing_covalue(){return missing_covalue;}
-  
-  inline void set_missing_covalue(float miss){missing_covalue = miss;}
-  
-  inline int get_missing_genotype(){return missing_genotype;}
-  
-  inline void set_missing_genotype(int miss){missing_genotype = miss;}
-  
-  /// returns SStotal for this set (used in r-squared calculations)
-  float get_sstotal(){return sstotal;}
-  
-  /// Calculates SStotal
-  void calc_sstotal();
-  
+	inline float getMissingCoValue(){return missingCoValue;}
+	
+	inline void setMissingCoValue(float miss){missingCoValue = miss;}
+	
+	inline int getMissingGenotype(){return missingGenotype;}
+	
+	inline void setMissingGenotype(int miss){missingGenotype = miss;}
+	
+	/// returns SStotal for this set (used in r-squared calculations)
+	float getSSTotal(){return ssTotal;}
+	
+	/// Calculates SStotal
+	void calcSSTotal();
+	
 private:
-  std::vector<Individual*> inds;
-  float missing_covalue, sstotal;
-  int missing_genotype;
+	std::vector<Individual*> inds;
+	float missingCoValue, ssTotal;
+	int missingGenotype;
 
 };
 

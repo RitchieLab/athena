@@ -34,29 +34,29 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Calculates balanced accuracy
 ///
 class BalAccCalculator: public SolutionCalculator{
-   
+	 
 public:
-    
-    BalAccCalculator();
-    
-    /// resets calculator for new analysis set
-    void reset();
-    
-    /// adds evaluation score to results
-    void add_ind_score(float score, float status);
-    
-    /// returns balanced accuracy
-    float get_score(){
-      return .5 * (float(caseright) / (caseright + casewrong) + 
-      float(controlright) /(controlright + controlwrong));
-    }
-   bool max_best(){return true;}
-   
-   /// returns worst score
-   float get_worst(){return 0.0;}
+		
+		BalAccCalculator();
+		
+		/// resets calculator for new analysis set
+		void reset();
+		
+		/// adds evaluation score to results
+		void addIndScore(float score, float status);
+		
+		/// returns balanced accuracy
+		float getScore(){
+			return .5 * (float(caseRight) / (caseRight + caseWrong) + 
+			float(controlRight) /(controlRight + controlWrong));
+		}
+	 bool maxBest(){return true;}
+	 
+	 /// returns worst score
+	 float getWorst(){return 0.0;}
 private:
-    float balanced_acc;
-    unsigned int caseright, casewrong, controlright, controlwrong;
+		float balancedAcc;
+		unsigned int caseRight, caseWrong, controlRight, controlWrong;
 };
 
 

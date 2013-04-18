@@ -25,12 +25,12 @@ namespace data_manage
 
 DataExcept::DataExcept(string message)
 {
-  error = message;
+	error = message;
 }
 
 const char * DataExcept::what() const throw()
 {
-  return error.c_str();
+	return error.c_str();
 }
 
 }

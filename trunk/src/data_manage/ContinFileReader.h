@@ -32,17 +32,17 @@ namespace data_manage
 class ContinFileReader
 {
 public:
-  ContinFileReader();
-  ~ContinFileReader();
+	ContinFileReader();
+	~ContinFileReader();
 
-  void read_contin_file(std::string filename, Dataholder* holder, float missingValue,
-          bool contains_id=false);
-          
-  void read_contin_file(std::string train_file, std::string test_file, Dataholder* holder, 
-    float missingValue, bool contains_id=false);  
+	void readContinFile(std::string filename, Dataholder* holder, float missingValue,
+					bool containsID=false);
+					
+	void readContinFile(std::string trainFile, std::string testFile, Dataholder* holder, 
+		float missingValue, bool containsID=false);  
 
 private:
-  int dummy_id;
+	int dummyID;
 };
 
 }

@@ -32,14 +32,14 @@ namespace data_manage
 class OttDummyConvert
 {
 public:
-  OttDummyConvert();
-  ~OttDummyConvert();
+	OttDummyConvert();
+	~OttDummyConvert();
 
-  /// converts all genotypes to the ott-dummy encoding
-  void convert_genotypes(Dataholder* holder);
+	/// converts all genotypes to the ott-dummy encoding
+	void convertGenotypes(Dataholder* holder);
 
 private:
-  std::vector<std::vector<char> > convertor;
+	std::vector<std::vector<char> > convertor;
 
 };
 

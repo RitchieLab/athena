@@ -33,9 +33,9 @@ class RandomNoReplace
 {
 public:
 
-  /// Sampled indexes are returned in the samples vector
-  static void SampleWithoutReplacement(int popSize, int sampSize, std::vector<int>& samples);
-  
+	/// Sampled indexes are returned in the samples vector
+	static void sampleWithoutReplacement(int popSize, int sampSize, std::vector<int>& samples);
+	
 private:
 };
 

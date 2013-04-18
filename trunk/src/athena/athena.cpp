@@ -42,404 +42,341 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <StephenDummyConvert.h>
 #include <time.h>
 
-#ifdef PARALLEL
-#include "TransferData.h"
-#endif
-
-void exit_app(AthenaExcept& he, int myrank);
-void exit_app(DataExcept& de, int myrank);
-void adjust_seed(Config& config, int orig_seed, int cv, int nproc, int myrank);
-std::string time_diff(double dif);
+void exitApp(AthenaExcept& he, int myRank);
+void exitApp(DataExcept& de, int myRank);
+void adjustSeed(Config& config, int orig_seed, int cv, int nproc, int myRank);
+std::string timeDiff(double dif);
 
 int main(int argc, char** argv) {
 
-  int nproc = 1; // only one processor when not running in parallel
+	int nproc = 1; // only one processor when not running in parallel
 
- bool mapfile_used = false, continmap_used = false;
- int myrank = 0;
-   
+ bool mapFileUsed = false, continMapUsed = false;
+ int myRank = 0;
+	 
 #ifdef PARALLEL
  
 
-  // set up MPI
-  MPI_Init(&argc, &argv);
-  MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
-  MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-  
+	// set up MPI
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+	
 #endif /* end PARALLEL code block */
-   
-    string version_date = "3/7/13";
-    string exec_name = "ATHENA";
-    string version = "1.0.1";
-     time_t start,end;
-     
-    if(argc < 2){
-        AthenaExcept he("\n\tATHENA\n\tv" + version + "\n\t" + version_date +  
-            "\n\n\tUsage: ATHENA <config>\n\n");
-        exit_app(he, myrank);
-    }
-    else{
+	 
+		string versionDate = "4/7/13";
+		string execName = "ATHENA";
+		string version = "1.0.1";
+		 time_t start,end;
+		 
+		if(argc < 2){
+				AthenaExcept he("\n\tATHENA\n\tv" + version + "\n\t" + versionDate +  
+						"\n\n\tUsage: ATHENA <config>\n\n");
+				exitApp(he, myRank);
+		}
+		else{
 #ifdef PARALLEL
-  if(myrank==0){
+	if(myRank==0){
 #endif
-        time (&start);
-        cout << endl << "\t" << exec_name << ":\t" << version_date << endl << endl;
+				time (&start);
+				cout << endl << "\t" << execName << ":\t" << versionDate << endl << endl;
 #ifdef PARALLEL
-        }
+				}
 #endif
-    }
-    
-    string configfile = argv[1];
-    ConfigFileReader configread;
-    Config config;
-    ScaleData* scaler = NULL;
+		}
+		
+		string configFile = argv[1];
+		ConfigFileReader configRead;
+		Config config;
+		ScaleData* scaler = NULL;
 
-    // read config file
-    try{
-      config = configread.read_config(configfile);
-    }catch(AthenaExcept he){
-        exit_app(he, myrank);
-    }
-    
-    // fill dataholder with data
-    data_manage::Dataholder data;
+		// read config file
+		try{
+			config = configRead.readConfig(configFile);
+		}catch(AthenaExcept he){
+				exitApp(he, myRank);
+		}
+		
+		// fill dataholder with data
+		data_manage::Dataholder data;
 
-    try{
-      // read in genotype data
-        data_manage::MDRFileHandler mdr_reader;
-        if(config.getTrainFile().size() ==0)
-          mdr_reader.parse_file(config.getDataSetName(), &data, config.getMissingValue(),
-               config.getStatusMissingValue(),config.getIDinData());
-        else
-          mdr_reader.parse_file(config.getTrainFile(), config.getTestFile(), 
-            &data, config.getMissingValue(), config.getStatusMissingValue(), 
-            config.getIDinData());
-        
-        // read in continuous data if any
-        if(config.getContinTrainFile().size() > 0){
-          data_manage::ContinFileReader contin_reader;
-          contin_reader.read_contin_file(config.getContinTrainFile(), config.getContinTestFile(),
-            &data, config.getContinMiss(), config.getIDinData());          
-        }
-        else if(config.getContinFileName().size() > 0){
-            data_manage::ContinFileReader contin_reader;
-            contin_reader.read_contin_file(config.getContinFileName(), &data,
-                    config.getContinMiss(), config.getIDinData());
-        }
-        
-        // if present read map file
-        if(config.getMapName().size() > 0){
-            mapfile_used = true;
-            data_manage::MapFileReader map_reader;
-            map_reader.parse_map_file(config.getMapName(), &data);
-        }
-        else{
-            mapfile_used = false;
-            data.add_default_snps();
-        }
-        
-        if(config.getContinMapName().size() > 0){
-            continmap_used = true;
-            data_manage::ContinMapFileReader continmap_reader;
-            continmap_reader.parse_map_file(config.getContinMapName(), &data);
-        }
-        else{
-            continmap_used = false;
-            data.add_default_covars();
-        }
-       
-        // convert data to ott dummy representation if needed
-        if(config.getOttEncoded()){
-          data_manage::OttDummyConvert ott;
-          ott.convert_genotypes(&data);
-        }
-        else if(config.getEncodeType() == Config::StephenDummy){
-          data_manage::StephenDummyConvert st;
-          st.convert_genotypes(&data);
-        }
+		try{
+			// read in genotype data
+				data_manage::MDRFileHandler mdrReader;
+				if(config.getTrainFile().size() ==0)
+					mdrReader.parseFile(config.getDataSetName(), &data, config.getMissingValue(),
+							 config.getStatusMissingValue(),config.getIDinData());
+				else
+					mdrReader.parseFile(config.getTrainFile(), config.getTestFile(), 
+						&data, config.getMissingValue(), config.getStatusMissingValue(), 
+						config.getIDinData());
+				
+				// read in continuous data if any
+				if(config.getContinTrainFile().size() > 0){
+					data_manage::ContinFileReader continReader;
+					continReader.readContinFile(config.getContinTrainFile(), config.getContinTestFile(),
+						&data, config.getContinMiss(), config.getIDinData());          
+				}
+				else if(config.getContinFileName().size() > 0){
+						data_manage::ContinFileReader continReader;
+						continReader.readContinFile(config.getContinFileName(), &data,
+										config.getContinMiss(), config.getIDinData());
+				}
+				
+				// if present read map file
+				if(config.getMapName().size() > 0){
+						mapFileUsed = true;
+						data_manage::MapFileReader mapReader;
+						mapReader.parseMapFile(config.getMapName(), &data);
+				}
+				else{
+						mapFileUsed = false;
+						data.addDefaultSnps();
+				}
+				
+				if(config.getContinMapName().size() > 0){
+						continMapUsed = true;
+						data_manage::ContinMapFileReader continMapReader;
+						continMapReader.parseMapFile(config.getContinMapName(), &data);
+				}
+				else{
+						continMapUsed = false;
+						data.addDefaultCovars();
+				}
+			 
+				// convert data to ott dummy representation if needed
+				if(config.getOttEncoded()){
+					data_manage::OttDummyConvert ott;
+					ott.convertGenotypes(&data);
+				}
+				else if(config.getEncodeType() == Config::StephenDummy){
+					data_manage::StephenDummyConvert st;
+					st.convertGenotypes(&data);
+				}
 
-        // alter continuous variables and status value
-        scaler = data_manage::ScaledDataFactory::create_scaler(config.getStatusAdjust());
-        scaler->adjust_status(&data);
-        for(unsigned int c=0; c < data.num_covariates(); c++){
-          scaler->adjust_contin(&data, c);
-        }
+				// alter continuous variables and status value
+				scaler = data_manage::ScaledDataFactory::createScaler(config.getStatusAdjust());
+				scaler->adjustStatus(&data);
+				for(unsigned int c=0; c < data.numCovariates(); c++){
+					scaler->adjustContin(&data, c);
+				}
 
-    }catch(AthenaExcept he){
-        exit_app(he, myrank);
-    }
+		}catch(AthenaExcept he){
+				exitApp(he, myRank);
+		}
  
-    // set random seed  before splitting
-    srand(config.getRandSeed());
+		// set random seed  before splitting
+		srand(config.getRandSeed());
 
-    // construct crossvalidation sets to use in running algorithm
-    CrossValidator cvmaker;
-    CVSet cv_set;
+		// construct crossvalidation sets to use in running algorithm
+		CrossValidator cvMaker;
+		CVSet cvSet;
 
 	if(config.getSplitFile()==""){
-	    cv_set = cvmaker.split_data(config.getNumCV(), &data);
+	    cvSet = cvMaker.splitData(config.getNumCV(), &data);
 #ifdef PARALLEL
-		if(myrank==0)
+		if(myRank==0)
 #endif
-	    cvmaker.save_splits(config.getOutputName() + ".cvsplit");
+	    cvMaker.saveSplits(config.getOutputName() + ".cvsplit");
 	}
 	else{
 	    try{
-//       config = configread.read_config(configfile);
-      cv_set = cvmaker.load_splits(config.getSplitFile(), &data);
-    }catch(DataExcept de){
-        exit_app(de, myrank);
-    }
-//		cv_set = cvmaker.load_splits(config.getSplitFile(), &data);
+			cvSet = cvMaker.loadSplits(config.getSplitFile(), &data);
+		}catch(DataExcept de){
+				exitApp(de, myRank);
+		}
 	}
 	
-    // run crossvalidations and store the populations
-    int num_cv = cv_set.num_intervals();
-    
-// #ifdef PARALLEL
-//   // when running in parallel need to change the seeds for slaves
-//   // after splitting data so that all algorithms will not be running same seeds
-//   if(myrank != 0){
-//     int newseed = config.getRandSeed() + myrank * 25;
-//     if(newseed > RAND_MAX)
-//       newseed -= RAND_MAX;
-//     config.setRandSeed(newseed);
-//   }
-// #endif /* end parallel seed adjustment for slaves */
-//    
-    // create algorithm
-    vector<AlgorithmParams> alg_params= config.getAlgorithmParams();
-    Algorithm* alg = AlgorithmFactory::create_algorithm(alg_params[0].name);
+		// run crossvalidations and store the populations
+		int numCV = cvSet.numIntervals();
+			 
+		// create algorithm
+		vector<AlgorithmParams> algParams= config.getAlgorithmParams();
+		Algorithm* alg = AlgorithmFactory::createAlgorithm(algParams[0].name);
 #ifdef PARALLEL
-    alg->setRank(myrank);
-    alg->setTotalNodes(nproc);
+		alg->setRank(myRank);
+		alg->setTotalNodes(nproc);
 #endif
-    alg->setrand(config.getRandSeed());
-    alg->set_dummy_encoding(config.getOttEncoded());
-    alg->setLogType(config.getLogType());
-    
-    alg->set_params(alg_params[0], config.getNumExchanges(), 
-      data.num_genos(), data.num_covariates());
+		alg->setRand(config.getRandSeed());
+		alg->setDummyEncoding(config.getOttEncoded());
+		alg->setLogType(config.getLogType());
+		
+		alg->setParams(algParams[0], config.getNumExchanges(), 
+			data.numGenos(), data.numCovariates());
 
-    /// store results in a population vector
-    vector<Population> pops;
-    string cvfilename = "cv";
+		/// store results in a population vector
+		vector<Population> pops;
+		string cvFileName = "cv";
 
-    OutputManager writer;
-    writer.setBasename(config.getOutputName());
-    int curr_cv=config.getStartCV()-1;
-	if(curr_cv==0)
-		writer.setFiles(mapfile_used, alg->get_fitness_name());
-	int original_seed = config.getRandSeed();
-    for(; curr_cv < num_cv; curr_cv++){
-    	adjust_seed(config, original_seed,curr_cv, nproc, myrank);
-    	alg->setrand(config.getRandSeed());
+		OutputManager writer;
+		writer.setBasename(config.getOutputName());
+		int currCV=config.getStartCV()-1;
+	if(currCV==0)
+		writer.setFiles(mapFileUsed, alg->getFitnessName());
+	  int originalSeed = config.getRandSeed();
+		for(; currCV < numCV; currCV++){
+			adjustSeed(config, originalSeed,currCV, nproc, myRank);
+			alg->setRand(config.getRandSeed());
 #ifdef PARALLEL
-  if(myrank==0){
+	if(myRank==0){
 #endif
-      cout << "Beginning Cross-validation " << curr_cv + 1 << "...";
-      cout.flush();
+			cout << "Beginning Cross-validation " << currCV + 1 << "...";
+			cout.flush();
 #ifdef PARALLEL
-  }
+	}
 #endif
 
-      alg->set_dataset(&(cv_set.get_interval(curr_cv).get_training()));
+			alg->setDataset(&(cvSet.getInterval(currCV).getTraining()));
 
 #ifdef PARALLEL
-    if(myrank==0){  // only have master output cv when desired
+		if(myRank==0){  // only have master output cv when desired
 #endif
-      // output cv interval when requested
-      if(config.getCVOutput()){
-        OutputSet oset;
-        oset.outputCV(cvfilename, cv_set.get_interval(curr_cv).get_training(), curr_cv+1);
-      }
+			// output cv interval when requested
+			if(config.getCVOutput()){
+				OutputSet oSet;
+				oSet.outputCV(cvFileName, cvSet.getInterval(currCV).getTraining(), currCV+1);
+			}
 #ifdef PARALLEL
-  } /* end check for master writing CV splits */
+	} /* end check for master writing CV splits */
 #endif
-      alg->startLog(data.num_genos());
+			alg->startLog(data.numGenos());
 
-    if(config.getBioFilterFile().size() > 0){
-      alg->getBioModels(config.getBioFilterFile(), config.getBioFileType(), &data);
-    }
-    else if(config.getBioGeneFile().size() > 0){
-      alg->getBioModelsArchive(config.getBioGeneFile(), config.getBioArchiveFile(), &data);
-    }
-      // prepare logs -- these are written as job progresses
-      alg->prepareLog(config.getOutputName(), curr_cv+1);
-      try{
-          alg->initialize();
-    }catch(AthenaExcept& ae){
-        exit_app(ae, myrank);
-    }
-      
-      for(int step=0; step < config.getNumExchanges(); step++){
-         if(alg->step()){
-            break; // can complete early
-         }
-      }
+		if(config.getBioFilterFile().size() > 0){
+			alg->getBioModels(config.getBioFilterFile(), config.getBioFileType(), &data);
+		}
+		else if(config.getBioGeneFile().size() > 0){
+			alg->getBioModelsArchive(config.getBioGeneFile(), config.getBioArchiveFile(), &data);
+		}
+			// prepare logs -- these are written as job progresses
+			alg->prepareLog(config.getOutputName(), currCV+1);
+			try{
+					alg->initialize();
+		}catch(AthenaExcept& ae){
+				exitApp(ae, myRank);
+		}
+			
+			for(int step=0; step < config.getNumExchanges(); step++){
+				 if(alg->step()){
+						break; // can complete early
+				 }
+			}
 
-		alg->CloseLog();
-      // prepare and write logs -- algorithm will output as much information as requested
-//       alg->writeLog(config.getOutputName(), curr_cv+1);
-
-      if(num_cv > 1)
-        alg->test_solution(&(cv_set.get_interval(curr_cv).get_testing()), nproc);
-      
-      // check population values
-//       pops.push_back(alg->getPopulation());
+		alg->closeLog();
+			if(numCV > 1)
+				alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
+			
+			// check population values
 	  Population pop = alg->getPopulation();
 
-      int curr_proc = 0;
+		int currProc = 0;
 #ifdef PARALLEL
-  if(myrank==0){
-    int lastproc = 1;
-    if(config.outputAllNodesBest())
-      lastproc = nproc;
-    for(curr_proc=0; curr_proc < lastproc; curr_proc++){
+	if(myRank==0){
+		int lastProc = 1;
+		if(config.outputAllNodesBest())
+			lastProc = nproc;
+		for(currProc=0; currProc < lastProc; currProc++){
 #endif
-      if(config.getIndOutput()){
-        stringstream ss;
-        ss << config.getOutputName() << "." << curr_cv+1 << "." << curr_proc+1 << ".ind_results.txt";
-        ostream & os = writer.getStream(ss.str());
-        os << "Ind ID\tPredicted\tOriginal\n";
-        alg->output_ind_evals(&(cv_set.get_interval(curr_cv).get_training()), os, curr_proc);
-        if(num_cv > 1)
-          alg->output_ind_evals(&(cv_set.get_interval(curr_cv).get_testing()), os, curr_proc);
-        writer.closeStream();
-      }
+			if(config.getIndOutput()){
+				stringstream ss;
+				ss << config.getOutputName() << "." << currCV+1 << "." << currProc+1 << ".ind_results.txt";
+				ostream & os = writer.getStream(ss.str());
+				os << "Ind ID\tPredicted\tOriginal\n";
+				alg->outputIndEvals(&(cvSet.getInterval(currCV).getTraining()), os, currProc);
+				if(numCV > 1)
+					alg->outputIndEvals(&(cvSet.getInterval(currCV).getTesting()), os, currProc);
+				writer.closeStream();
+			}
 #ifdef PARALLEL
-  }
+	}
 #endif 
-    cout << " Completed" << endl;
-	alg->finishLog(config.getOutputName(),curr_cv+1);
-    int nmodels=1;
-    
+		cout << " Completed" << endl;
+	alg->finishLog(config.getOutputName(),currCV+1);
+		int nModels=1;
+		
  #ifdef PARALLEL
-    if(myrank==0){
+		if(myRank==0){
 
-      if(config.outputAllNodesBest())
-        nmodels = nproc;
+			if(config.outputAllNodesBest())
+				nModels = nproc;
 #endif
-	// update output when needed
-    if(pop.getConvertScores()){
-      if(num_cv > 1)
- //        for(int curr_cv=0; curr_cv < num_cv; curr_cv++){ 
-          pop.convert_scores(&(cv_set.get_interval(curr_cv).get_training()), 
-            &(cv_set.get_interval(curr_cv).get_testing()));
-//         }
-      else
-        pop.convert_scores(&(cv_set.get_interval(0).get_training()));
-    }
-    writer.outputSummary(pop, curr_cv, data, mapfile_used, config.getOttEncoded(), continmap_used,
-        alg->get_fitness_name());    
-    switch(config.getSummaryOnly()){
-      case Config::False:
-        writer.outputGraphic(alg, pop, curr_cv, config.getOutputName(), nmodels, data, 
-         mapfile_used, config.getOttEncoded(), continmap_used);
-      case Config::Best:
-        writer.outputBestModels(pop, nmodels, curr_cv,scaler->output_scale_info(), data, 
-          mapfile_used, config.getOttEncoded(), continmap_used); 
-      default:
-        ;
-    }
-    
+	  // update output when needed
+		if(pop.getConvertScores()){
+			if(numCV > 1)
+					pop.convertScores(&(cvSet.getInterval(currCV).getTraining()), 
+						&(cvSet.getInterval(currCV).getTesting()));
+			else
+				pop.convertScores(&(cvSet.getInterval(0).getTraining()));
+		}
+		writer.outputSummary(pop, currCV, data, mapFileUsed, config.getOttEncoded(), continMapUsed,
+				alg->getFitnessName());    
+		switch(config.getSummaryOnly()){
+			case Config::False:
+				writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data, 
+					mapFileUsed, config.getOttEncoded(), continMapUsed);
+			case Config::Best:
+				writer.outputBestModels(pop, nModels, currCV,scaler->outputScaleInfo(), data, 
+					mapFileUsed, config.getOttEncoded(), continMapUsed); 
+			default:
+				;
+		}
+		
 #ifdef PARALLEL
 } /* end of output */
 #endif
-    }
-//     int nmodels = 1;
-//     for(int curr_cv=start_cv; curr_cv <= num_cv; curr_cv++){
-//         alg->finishLog(config.getOutputName(),curr_cv);
-//     }
-//     
-// #ifdef PARALLEL
-//     if(myrank==0){
-// 
-//       if(config.outputAllNodesBest())
-//         nmodels = nproc;
-// #endif
-// 
-//     // update output when needed
-//     if(pops[0].getConvertScores()){
-//       if(num_cv > 1)
-//         for(int curr_cv=start_cv; curr_cv < num_cv; curr_cv++){ 
-//           pops[curr_cv].convert_scores(&(cv_set.get_interval(curr_cv).get_training()), 
-//             &(cv_set.get_interval(curr_cv).get_testing()));
-//         }
-//       else
-//         pops[0].convert_scores(&(cv_set.get_interval(0).get_training()));
-//     }
-// 
-//     // Output results
-//     writer.setBasename(config.getOutputName());
-//     
-//     writer.outputSummary(pops, data, mapfile_used, config.getOttEncoded(), continmap_used,
-//         alg->get_fitness_name());
-//     
-//     switch(config.getSummaryOnly()){
-//       case Config::False:
-//         writer.outputGraphic(alg, pops, config.getOutputName(), nmodels, data, 
-//          mapfile_used, config.getOttEncoded(), continmap_used);
-//       case Config::Best:
-//         writer.outputBestModels(pops, nmodels, scaler->output_scale_info(), data, 
-//           mapfile_used, config.getOttEncoded(), continmap_used); 
-//       default:
-//         ;
-//     }
-//     cout << endl;
-    
+		}
+		
 #ifdef PARALLEL
-    }   /* ends master processing of output */
-    MPI_Finalize();
+		}   /* ends master processing of output */
+		MPI_Finalize();
  #endif
-    delete scaler;
+		delete scaler;
 
 #ifdef PARALLEL
-    if(myrank==0){
+		if(myRank==0){
 #endif
-    time(&end);
-    double dif = difftime (end,start);
-    cout << "\n\tAnalysis took " << time_diff(dif) << endl << endl;
+		time(&end);
+		double dif = difftime (end,start);
+		cout << "\n\tAnalysis took " << timeDiff(dif) << endl << endl;
 #ifdef PARALLEL
-    }
+		}
 #endif
 
-    return (EXIT_SUCCESS);
+		return (EXIT_SUCCESS);
 }
 
 ///
 /// Returns string formatted to indicate passage of time
 /// @param dif time in seconds
 ///
-std::string time_diff(double dif){
-    double elapsed;
-    string period;
-    if(dif < 60){
-        elapsed = dif;
-        period = " seconds";
-    }
-    else if(dif < 3600){
-        elapsed = dif/60;
-        period = " minutes";
-    }
-    else{
-        elapsed = dif/3600;
-        period = " hours";
-    }
-    return Stringmanip::itos(elapsed) + period;
+std::string timeDiff(double dif){
+		double elapsed;
+		string period;
+		if(dif < 60){
+				elapsed = dif;
+				period = " seconds";
+		}
+		else if(dif < 3600){
+				elapsed = dif/60;
+				period = " minutes";
+		}
+		else{
+				elapsed = dif/3600;
+				period = " hours";
+		}
+		return Stringmanip::numberToString(elapsed) + period;
 }
 
 ///
 /// Outputs message in exception and exits program
 /// @param he AthenaExcept
 ///
-void exit_app(AthenaExcept& he, int myrank){
-    if(myrank==0)
-      cout << he.what() << endl << endl;;
+void exitApp(AthenaExcept& he, int myRank){
+		if(myRank==0)
+			cout << he.what() << endl << endl;;
 #ifdef PARALLEL
-  MPI_Finalize();
+	MPI_Finalize();
 #endif
-  exit(EXIT_FAILURE);    
+	exit(EXIT_FAILURE);    
 } 
 
 
@@ -448,13 +385,13 @@ void exit_app(AthenaExcept& he, int myrank){
 /// Outputs message in exception and exits program
 /// @param he AthenaExcept
 ///
-void exit_app(DataExcept& de, int myrank){
-    if(myrank==0)
-      cout << de.what() << endl << endl;;
+void exitApp(DataExcept& de, int myRank){
+		if(myRank==0)
+			cout << de.what() << endl << endl;;
 #ifdef PARALLEL
-  MPI_Finalize();
+	MPI_Finalize();
 #endif
-  exit(EXIT_FAILURE);    
+	exit(EXIT_FAILURE);    
 } 
 
 
@@ -463,9 +400,9 @@ void exit_app(DataExcept& de, int myrank){
 /// @param config Configuration
 /// @param cv Current cross-validation
 /// @param nproc Total number of processors
-/// @param myrank Rank of this process
+/// @param myRank Rank of this process
 ///
-void adjust_seed(Config& config, int orig_seed, int cv, int nproc, int myrank){
-  int newseed = orig_seed + nproc * cv + myrank;
-  config.setRandSeed(newseed);
+void adjustSeed(Config& config, int origSeed, int cv, int nproc, int myRank){
+	int newSeed = origSeed + nproc * cv + myRank;
+	config.setRandSeed(newSeed);
 }

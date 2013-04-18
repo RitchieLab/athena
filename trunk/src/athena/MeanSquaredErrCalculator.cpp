@@ -21,42 +21,44 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 
 MeanSquaredErrCalculator::MeanSquaredErrCalculator(){
-    reset();
-    name = "Mean Squared Error";
+		reset();
+		name = "Mean Squared Error";
 }
 
+
 void MeanSquaredErrCalculator::reset(){
-   total_inds_tested = 0;
-   squared_error_total = 0.0;
-   sstotal = 0.0;
-   stat_total.clear();
+	 totalIndsTested = 0;
+	 squaredErrorTotal = 0.0;
+	 ssTotal = 0.0;
+	 statTotal.clear();
 }
+
 
 ///
 /// Adds score to running total within object
 /// @param score
 ///
-void MeanSquaredErrCalculator::add_ind_score(float score, float stat){
-
-    float difference = score - stat;
-    squared_error_total += difference * difference;
-    total_inds_tested++;
-    sstotal += stat;
-    stat_total.push_back(stat);
+void MeanSquaredErrCalculator::addIndScore(float score, float stat){
+		float difference = score - stat;
+		squaredErrorTotal += difference * difference;
+		totalIndsTested++;
+		ssTotal += stat;
+		statTotal.push_back(stat);
 }
 
+
 ///
-/// Calculates and returns sstotal for use in calculating
+/// Calculates and returns ssTotal for use in calculating
 /// R-squared value
-/// @return sstotal
+/// @return ssTotal
 ///
-float MeanSquaredErrCalculator::get_constant(){
-  float mean = sstotal / total_inds_tested;
-  float diff=0.0;
-  for(vector<float>::iterator iter=stat_total.begin(); iter != stat_total.end();
-    ++iter){
-    diff = diff + (*iter-mean) * (*iter-mean);
-  }  
-  sstotal = diff;
-  return sstotal;
+float MeanSquaredErrCalculator::getConstant(){
+	float mean = ssTotal / totalIndsTested;
+	float diff=0.0;
+	for(vector<float>::iterator iter=statTotal.begin(); iter != statTotal.end();
+		++iter){
+		diff = diff + (*iter-mean) * (*iter-mean);
+	}  
+	ssTotal = diff;
+	return ssTotal;
 }

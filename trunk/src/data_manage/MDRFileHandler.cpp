@@ -32,7 +32,7 @@ namespace data_manage
 
 MDRFileHandler::MDRFileHandler()
 {
-  dummy_id = 1;
+	dummyID = 1;
 }
 
 MDRFileHandler::~MDRFileHandler()
@@ -52,81 +52,83 @@ MDRFileHandler::~MDRFileHandler()
 ///@return none
 ///@throws DataExcept on error
 ///
-void MDRFileHandler::parse_file(string filename, Dataholder * holder, 
-        int missingValue, float statusMissingValue, bool contains_id){
-        
-  int max_locus_value = 0;
-  ifstream data_stream(filename.c_str(), ios::in);
+void MDRFileHandler::parseFile(string filename, Dataholder * holder, 
+				int missingValue, float statusMissingValue, bool containsID){
+				
+	int maxLocusValue = 0;
+	ifstream dataStream(filename.c_str(), ios::in);
 
-  if(!data_stream.is_open()){
-    throw DataExcept("Error:  Unable to open " + filename + "\n");
-  }
+	if(!dataStream.is_open()){
+		throw DataExcept("Error:  Unable to open " + filename + "\n");
+	}
 
-  string line, out, ind_id;
-  string::size_type last_number_pos;
-  double ind_status;
-  int geno;
+	string line, out, indID;
+	string::size_type lastNumberPos;
+	double indStatus;
+	int geno;
 
-  getline(data_stream, line);
+	getline(dataStream, line);
 
-  // format is staus followed by genotypes separated by white space
-  bool any_missing = false;
+	// format is staus followed by genotypes separated by white space
+	bool anyMissing = false;
 
-  do{
-    if(line.find_first_of("0123456789") == string::npos || line.find("#")==0){
-      getline(data_stream, line);
-      continue;
-    }
-    // remove windows carriage return
-    last_number_pos = line.find_last_of("0123456789");
-    line = line.substr(0,last_number_pos+1);
+	do{
+		if(line.find_first_of("0123456789") == string::npos || line.find("#")==0){
+			getline(dataStream, line);
+			continue;
+		}
+		// remove windows carriage return
+		lastNumberPos = line.find_last_of("0123456789");
+		line = line.substr(0,lastNumberPos+1);
 
-    stringstream ss(line);
-    Individual ind;
-    if(contains_id){
-        ss >> ind_id;
-    }
-    else{
-        ind_id = Stringmanip::itos(dummy_id++);
-    }
-    ind.set_id(ind_id);
-    ss >> ind_status;
-    
-    // check to see if ind should be skipped because status is missing
-    if(fabs(ind_status - statusMissingValue) > DBL_EPSILON){
-    
-      ind.set_status(ind_status);
-      while(ss >> geno){
-        if(geno == missingValue){
-          ind.add_genotype(3);
-          any_missing = true;
-        }
-        else if(geno > 2){
-        throw DataExcept("All genotypes must be less than 3 or equal the missing value " +
-            Stringmanip::itos(missingValue) + "\nIndividual " + Stringmanip::itos(dummy_id++) +
-            " has the genotype " + Stringmanip::itos(geno));
-        }
-        else{
-          if(geno > max_locus_value){
-            max_locus_value = geno;
-          }
-          ind.add_genotype(geno);
-        }
-      }
-      holder->add_ind(ind);
-    }
-    else{
-	cout << "Skipping individual " << ind_id << " with status " << ind_status << " (STATUSMISSINGVALUE is set to " << statusMissingValue << ")" << endl;
-    }
+		stringstream ss(line);
+		Individual ind;
+		if(containsID){
+				ss >> indID;
+		}
+		else{
+				indID = Stringmanip::numberToString(dummyID++);
+		}
+		ind.setID(indID);
+		ss >> indStatus;
+		
+		// check to see if ind should be skipped because status is missing
+		if(fabs(indStatus - statusMissingValue) > DBL_EPSILON){
+		
+			ind.setStatus(indStatus);
+			while(ss >> geno){
+				if(geno == missingValue){
+					ind.addGenotype(3);
+					anyMissing = true;
+				}
+				else if(geno > 2){
+				throw DataExcept("All genotypes must be less than 3 or equal the missing value " +
+						Stringmanip::numberToString(missingValue) + "\nIndividual " + 
+						Stringmanip::numberToString(dummyID++) +
+						" has the genotype " + Stringmanip::numberToString(geno));
+				}
+				else{
+					if(geno > maxLocusValue){
+						maxLocusValue = geno;
+					}
+					ind.addGenotype(geno);
+				}
+			}
+			holder->addInd(ind);
+		}
+		else{
+	cout << "Skipping individual " << indID << " with status " << indStatus << 
+	  " (STATUSMISSINGVALUE is set to " << statusMissingValue << ")" << endl;
+		}
 
-    getline(data_stream, line);
-  }while(!data_stream.eof());
+		getline(dataStream, line);
+	}while(!dataStream.eof());
 
-  data_stream.close();
+	dataStream.close();
 
-  holder->set_max_locus_value(max_locus_value);
-  holder->any_missing_genos(any_missing);
-  holder->set_missing_genotype(3);
+	holder->setMaxLocusValue(maxLocusValue);
+	holder->anyMissingGenos(anyMissing);
+	holder->setMissingGenotype(3);
 
 }
 
@@ -141,16 +143,16 @@ void MDRFileHandler::parse_file(string filename, Dataholder * holder,
 ///@return none
 ///@throws DataExcept on error
 ///
-void MDRFileHandler::parse_file(std::string train_file, std::string test_file, Dataholder* holder,
-	  int missingValue, float statusMissingValue, bool contains_id){
-  
-  parse_file(train_file, holder, missingValue, statusMissingValue, contains_id);
-  // now the number of inds in the set will specify the split point for CV generation
-  holder->set_test_split(holder->num_inds());
-  
-  // parse the testing file and add to dataholder
-  parse_file(test_file, holder, missingValue, statusMissingValue, contains_id);
-  
+void MDRFileHandler::parseFile(std::string trainFile, std::string testFile, Dataholder* holder,
+	  int missingValue, float statusMissingValue, bool containsID){
+	
+	parseFile(trainFile, holder, missingValue, statusMissingValue, containsID);
+	// now the number of inds in the set will specify the split point for CV generation
+	holder->setTestSplit(holder->numInds());
+	
+	// parse the testing file and add to dataholder
+	parseFile(testFile, holder, missingValue, statusMissingValue, containsID);
+	
 }
 
 
@@ -163,36 +165,33 @@ void MDRFileHandler::parse_file(std::string train_file, std::string test_file, D
 ///data to write to file
 ///@return none
 ///
-void MDRFileHandler::write_file(string filename,
-  Dataholder* dataholder){
+void MDRFileHandler::writeFile(string filename,
+	Dataholder* dataholder){
 
-  std::ofstream outStream(filename.c_str(), ios::out);
-  if(!outStream.is_open()){
-    throw DataExcept("ERROR: Unable to open " + filename + " for writing\n");
-  }
+	std::ofstream outStream(filename.c_str(), ios::out);
+	if(!outStream.is_open()){
+		throw DataExcept("ERROR: Unable to open " + filename + " for writing\n");
+	}
 
-  unsigned int numInds = dataholder->num_inds();
-  unsigned int lastLocus = dataholder->num_genos();
-  unsigned int currLoc;
+	unsigned int numInds = dataholder->numInds();
+	unsigned int lastLocus = dataholder->numGenos();
+	unsigned int currLoc;
 
-  Individual* curr_ind;
+	Individual* currIndividual;
 
-  for(unsigned int currInd=0; currInd < numInds; currInd++){
-    curr_ind = dataholder->get_ind(currInd);
-    outStream << Stringmanip::itos(curr_ind->get_status())
-      << " ";
-    for(currLoc=0; currLoc < lastLocus; currLoc++){
-      outStream << Stringmanip::itos(curr_ind->get_genotype(currLoc))
-        << " ";
-    }
-    outStream << Stringmanip::itos(curr_ind->get_genotype(currLoc)) << endl;
-  }
+	for(unsigned int currInd=0; currInd < numInds; currInd++){
+		currIndividual = dataholder->getInd(currInd);
+// 		outStream << Stringmanip::itos(currIndividual->getStatus())
+		outStream << Stringmanip::numberToString(currIndividual->getStatus())	<< " ";
+		for(currLoc=0; currLoc < lastLocus; currLoc++){
+// 			outStream << Stringmanip::itos(currIndividual->getGenotype(currLoc))
+			outStream << Stringmanip::numberToString(currIndividual->getGenotype(currLoc)) << " ";
+			
+		}
+		outStream << Stringmanip::numberToString(currIndividual->getGenotype(currLoc)) << endl;
+	}
 
-  outStream.close();
+	outStream.close();
 }
-
-
-
-
 
 }

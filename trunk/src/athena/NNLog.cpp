@@ -25,111 +25,90 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 
 bool compareIndModels(indModel first, indModel second){
-  if(first.fitness > second.fitness)
-    return true;
-  else
-    return false;
+	if(first.fitness > second.fitness)
+		return true;
+	else
+		return false;
 }
 
 ///
 /// Ouputs log information to stream 
 /// os ostream
 ///
-void NNLog::output_log(ostream& os){
-  
-//   os.precision(3);
-//  
-//   // output headers
-//   os << setw(5) << left << "Gen" << setw(11) << "ValidNN" << setw(10) << "AvgSize" << setw(8) 
-//     <<  "AvgDepth" << setw(8) << "AvgFit" 
-//     << setw(9) << "MaxFit" << setw(9) << "MinFit" 
-//     << setw(9) << "AvgGeno" << setw(7) << "AvgCov "
-//     << setw(11) << "AvgEpochs" << setw(10) << "MaxEpoch"
-//     << setw(15) << "Bestmod";
-//  
-//   for(int snp=0; snp < total_snps; snp++){
-//     os << snp << " ";
-//   }
-//   os << endl;
+void NNLog::outputLog(ostream& os){
 
-  os.precision(3);
-  for(unsigned int gen=0; gen < gens.size(); gen++){
-    os << setw(5) << left << gens[gen].generationNumber << setw(11) << gens[gen].numValidNN << setw(10) << gens[gen].avgSize 
-      << setw(9) << gens[gen].avgDepth << setw(8) << gens[gen].avgFitness 
-      << setw(9) << gens[gen].maxFitness << setw(9) << gens[gen].minFitness
-      << setw(9) << gens[gen].avgGenos << setw(7) << gens[gen].avgCovars 
-      << setw(11) << gens[gen].avgEpochs << setw(10) << gens[gen].maxEpochs <<  " ";
-    
-    if(!gens[gen].best_model_snps.empty()){  
-        os << gens[gen].best_model_snps[0];
-        for(unsigned int snp=1; snp < gens[gen].best_model_snps.size(); snp++){
-          os << "_" << gens[gen].best_model_snps[snp];
-        }
-        os << " ";
-    }
-    
-    for(int snp=0; snp < total_snps; snp++){
-      os << gens[gen].snp_totals[snp] << " ";
-    }  
-    os << endl;
-  }
+	os.precision(3);
+	for(unsigned int gen=0; gen < gens.size(); gen++){
+		os << setw(5) << left << gens[gen].generationNumber << setw(11) << gens[gen].numValidNN << setw(10) << gens[gen].avgSize 
+			<< setw(9) << gens[gen].avgDepth << setw(8) << gens[gen].avgFitness 
+			<< setw(9) << gens[gen].maxFitness << setw(9) << gens[gen].minFitness
+			<< setw(9) << gens[gen].avgGenos << setw(7) << gens[gen].avgCovars 
+			<< setw(11) << gens[gen].avgEpochs << setw(10) << gens[gen].maxEpochs <<  " ";
+		
+		if(!gens[gen].bestModelSnps.empty()){  
+				os << gens[gen].bestModelSnps[0];
+				for(unsigned int snp=1; snp < gens[gen].bestModelSnps.size(); snp++){
+					os << "_" << gens[gen].bestModelSnps[snp];
+				}
+				os << " ";
+		}
+		
+		for(int snp=0; snp < totalSnps; snp++){
+			os << gens[gen].snpTotals[snp] << " ";
+		}  
+		os << endl;
+	}
 }
 
-void NNLog::output_main_headers(ostream& os){
-      os.precision(3);
+void NNLog::outputMainHeaders(ostream& os){
+			os.precision(3);
  
-  // output headers
-  os << setw(5) << left << "Gen" << setw(11) << "ValidNN" << setw(10) << "AvgSize" << setw(9) 
-    <<  "AvgDepth" << setw(8) << "AvgFit" 
-    << setw(9) << "MaxFit" << setw(9) << "MinFit" 
-    << setw(9) << "AvgGeno" << setw(7) << "AvgCov "
-    << setw(11) << "AvgEpochs" << setw(10) << "MaxEpoch"
-    << setw(15) << "Bestmod";
+	// output headers
+	os << setw(5) << left << "Gen" << setw(11) << "ValidNN" << setw(10) << "AvgSize" << setw(9) 
+		<<  "AvgDepth" << setw(8) << "AvgFit" 
+		<< setw(9) << "MaxFit" << setw(9) << "MinFit" 
+		<< setw(9) << "AvgGeno" << setw(7) << "AvgCov "
+		<< setw(11) << "AvgEpochs" << setw(10) << "MaxEpoch"
+		<< setw(15) << "Bestmod";
  
-  for(int snp=0; snp < total_snps; snp++){
-    os << snp << " ";
-  }
-  os << endl;
+	for(int snp=0; snp < totalSnps; snp++){
+		os << snp << " ";
+	}
+	os << endl;
 }
 
-void NNLog::output_snp_headers(std::ostream& os){
-  // first row is generation number
-  for(size_t i=0; i<gens.size(); i++){
-    os << "g" << i << " ";
-  }
-  os << endl;    
+void NNLog::outputSNPHeaders(std::ostream& os){
+	// first row is generation number
+	for(size_t i=0; i<gens.size(); i++){
+		os << "g" << i << " ";
+	}
+	os << endl;    
 }
 
 ///
 /// output snp sizes for each
 /// @param os ostream
 ///
-void NNLog::output_snp_sizes(std::ostream& os, unsigned int totalPopSize){
-// first row is generation number
-//   for(size_t i=0; i<gens.size(); i++){
-//     os << "g" << i << " ";
-//   }
-//   os << endl;
-  
-  // in each row place the number of snps in each model at that ranking
-  for(unsigned int curr_ind=0; curr_ind < totalPopSize; curr_ind++){
-    for(size_t i=0; i<gens.size(); i++){
-      if(curr_ind >= gens[i].allmodels.size()){
-        os << "NA ";
-        continue;
-      }
-      os << gens[i].allmodels[curr_ind].size() << " ";
-    }
-    os << endl;
-  }
+void NNLog::outputSNPSizes(std::ostream& os, unsigned int totalPopSize){
+	// in each row place the number of snps in each model at that ranking
+	for(unsigned int currInd=0; currInd < totalPopSize; currInd++){
+		for(size_t i=0; i<gens.size(); i++){
+			if(currInd >= gens[i].allModels.size()){
+				os << "NA ";
+				continue;
+			}
+			os << gens[i].allModels[currInd].size() << " ";
+		}
+		os << endl;
+	}
 }
 
-void NNLog::output_fitness_headers(std::ostream& os){
-  // first row is generation number
-  for(size_t i=0; i<gens.size(); i++){
-    os << "g" << i << " ";
-  }
-  os << endl;  
+void NNLog::outputFitnessHeaders(std::ostream& os){
+	// first row is generation number
+	for(size_t i=0; i<gens.size(); i++){
+		os << "g" << i << " ";
+	}
+	os << endl;  
 }
 
 
@@ -137,344 +116,342 @@ void NNLog::output_fitness_headers(std::ostream& os){
 /// output fitnesses for each
 /// @param os ostream
 ///
-void NNLog::output_fitness(std::ostream& os, unsigned int totalPopSize){
-  // first row is generation number
-  for(size_t i=0; i<gens.size(); i++){
-    os << "g" << i << " ";
-  }
-  os << endl;
-  
-  // in each row place the number of snps in each model at that ranking
-  for(unsigned int curr_ind=0; curr_ind < totalPopSize; curr_ind++){
-    for(size_t i=0; i<gens.size(); i++){
-      if(curr_ind >= gens[i].allfitness.size()){
-        os << "NA ";
-        continue;
-      }
-      os << gens[i].allfitness[curr_ind]<< " ";
-    }
-    os << endl;
-  }
+void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
+	// first row is generation number
+	for(size_t i=0; i<gens.size(); i++){
+		os << "g" << i << " ";
+	}
+	os << endl;
+	
+	// in each row place the number of snps in each model at that ranking
+	for(unsigned int currInd=0; currInd < totalPopSize; currInd++){
+		for(size_t i=0; i<gens.size(); i++){
+			if(currInd >= gens[i].allFitness.size()){
+				os << "NA ";
+				continue;
+			}
+			os << gens[i].allFitness[currInd]<< " ";
+		}
+		os << endl;
+	}
 }
 
 
 #ifdef PARALLEL
 
-  ///
-  /// Send and receive all log information using MPI_Gather.  The log information
-  /// is gather by the master.
-  ///
-  void NNLog::SendReceiveLogs(int nprocs, int myrank){
-    float* rbuf=NULL;
-    int best_model_size = 256;
-    int send_buffer_size = 12 + best_model_size;
-    
-    float* send_buffer = new float[send_buffer_size];
-    if(myrank == 0){
-        rbuf = new float[nprocs*send_buffer_size];
-    }
-    
-    fill_send_buffer(send_buffer);
-    
-    MPI_Gather(send_buffer, send_buffer_size, MPI_FLOAT, rbuf, send_buffer_size, 
-        MPI_FLOAT, 0, MPI_COMM_WORLD);
-        
-    delete [] send_buffer;
-    
-    // receive snp totals
-    int send_size = gens[0].snp_totals.size();
-    int total_size = gens.size() * send_size;
-    int * send_snps = new int[total_size];
-    float* rbuf_snps=NULL;
-    
-    if(myrank==0){
-        rbuf_snps = new float[total_size * nprocs];        
-    }
-    
-    for(unsigned int i=0; i < gens.size(); i++){
-      int base = i * send_size;
-      for(unsigned int j=0; j < gens[i].snp_totals.size(); j++){
-        send_snps[base+j] = gens[i].snp_totals[j];
-      }
-    }
-    
-    MPI_Gather(send_snps, total_size, MPI_INT, rbuf_snps, total_size, MPI_INT,
-        0, MPI_COMM_WORLD);
-    
-    delete [] send_snps;
-    
-    if(myrank==0){
-        fill_master_log(rbuf, send_buffer_size, rbuf_snps, total_size, nprocs);
-        delete [] rbuf;
-        delete [] rbuf_snps;
-    }
-    
-  }
+	///
+	/// Send and receive all log information using MPI_Gather.  The log information
+	/// is gather by the master.
+	///
+	void NNLog::sendReceiveLogs(int nprocs, int myRank){
+		float* rbuf=NULL;
+		int bestModelSize = 256;
+		int sendBufferSize = 12 + bestModelSize;
+		
+		float* sendBuffer = new float[sendBufferSize];
+		if(myRank == 0){
+				rbuf = new float[nprocs*sendBufferSize];
+		}
+		
+		fill_send_buffer(sendBuffer);
+		
+		MPI_Gather(sendBuffer, sendBufferSize, MPI_FLOAT, rbuf, sendBufferSize, 
+				MPI_FLOAT, 0, MPI_COMM_WORLD);
+				
+		delete [] sendBuffer;
+		
+		// receive snp totals
+		int sendSize = gens[0].snpTotals.size();
+		int totalSize = gens.size() * sendSize;
+		int * sendSnps = new int[totalSize];
+		float* rbufSnps=NULL;
+		
+		if(myRank==0){
+				rbufSnps = new float[totalSize * nprocs];        
+		}
+		
+		for(unsigned int i=0; i < gens.size(); i++){
+			int base = i * sendSize;
+			for(unsigned int j=0; j < gens[i].snpTotals.size(); j++){
+				sendSnps[base+j] = gens[i].snpTotals[j];
+			}
+		}
+		
+		MPI_Gather(sendSnps, totalSize, MPI_INT, rbufSnps, totalSize, MPI_INT,
+				0, MPI_COMM_WORLD);
+		
+		delete [] sendSnps;
+		
+		if(myRank==0){
+				fill_master_log(rbuf, sendBufferSize, rbufSnps, totalSize, nprocs);
+				delete [] rbuf;
+				delete [] rbufSnps;
+		}
+		
+	}
 
-  void NNLog::fill_master_log(float* rec_data, int basic_size, float* snps, int snp_size,
-    int nprocs){
-    
-    int i=0, curr_index;
-    
-    // add to the master log
-    // can skip master info as that is already in the master node
-    for(int proc=1; proc < nprocs; proc++){
-        curr_index = proc * basic_size;
-//         for(int curr_index=start; curr_index<finish; curr_index++){
-        gens[i].numValidNN += rec_data[curr_index++];
-        gens[i].numGenotypes += rec_data[curr_index++];
-        gens[i].numCovariates += rec_data[curr_index++];
-        gens[i].totalFitness +=  rec_data[curr_index++];
-        gens[i].totalSize +=  rec_data[curr_index++];    
-        float maxfit = rec_data[curr_index++];
-        float minfit = rec_data[curr_index++];
+	void NNLog::fillMasterLog(float* recData, int basicSize, float* snps, int snpSize,
+		int nprocs){
+		
+		int i=0, currIndex;
+		
+		// add to the master log
+		// can skip master info as that is already in the master node
+		for(int proc=1; proc < nprocs; proc++){
+				currIndex = proc * basicSize;
+				gens[i].numValidNN += recData[currIndex++];
+				gens[i].numGenotypes += recData[currIndex++];
+				gens[i].numCovariates += recData[currIndex++];
+				gens[i].totalFitness +=  recData[currIndex++];
+				gens[i].totalSize +=  recData[currIndex++];    
+				float maxFit = recData[currIndex++];
+				float minFit = recData[currIndex++];
 
-        float minepochs = rec_data[curr_index++];
-        float maxepochs = rec_data[curr_index++];
-        gens[i].totalEpochs += rec_data[curr_index++];
-        gens[i].totalDepth += rec_data[curr_index++];
-        int modsize = rec_data[curr_index++];
-        vector<int> snps(modsize,0);
-        for(int j=0; j < modsize; j++){
-          snps[j] = rec_data[curr_index++];
-        }
-        
-        if(maxfit > gens[i].maxFitness){
-          gens[i].maxFitness = maxfit;
-          gens[i].best_model_snps = snps;
-        }
-        if(minfit < gens[i].minFitness){
-          gens[i].minFitness = minfit;
-        }
-        
-        if(minepochs < gens[i].minEpochs){
-          gens[i].minEpochs = minepochs;
-        }
-        if(maxepochs > gens[i].maxEpochs){
-          gens[i].maxEpochs = maxepochs;
-        } 
-//       }
-//       delete [] rec_data;
-    }
+				float minEpochs = recData[currIndex++];
+				float maxEpochs = recData[currIndex++];
+				gens[i].totalEpochs += recData[currIndex++];
+				gens[i].totalDepth += recData[currIndex++];
+				int modSize = recData[currIndex++];
+				vector<int> snps(modSize,0);
+				for(int j=0; j < modSize; j++){
+					snps[j] = recData[currIndex++];
+				}
+				
+				if(maxFit > gens[i].maxFitness){
+					gens[i].maxFitness = maxFit;
+					gens[i].bestModelSnps = snps;
+				}
+				if(minFit < gens[i].minFitness){
+					gens[i].minFitness = minFit;
+				}
+				
+				if(minEpochs < gens[i].minEpochs){
+					gens[i].minEpochs = minEpochs;
+				}
+				if(maxEpochs > gens[i].maxEpochs){
+					gens[i].maxEpochs = maxEpochs;
+				} 
+		}
 
-//     for(unsigned int i=0; i < gens.size(); i++){
-      gens[i].avgScores();
-//     }         
-    
-    // add snp totals to logging information
-    for(int proc=1; proc < nprocs; proc++){
-        curr_index = proc * snp_size;
-        for(int snp=0; snp<snp_size; snp++){
-            gens[i].snp_totals[snp] += snps[curr_index++];
-        }
-    }
-    
-  }
-
-  void NNLog::fill_send_buffer(float* send_data){ 
-    int curr_index=0;
-    for(unsigned int i=0; i < gens.size(); i++){
-      send_data[curr_index++] = gens[i].numValidNN;
-      send_data[curr_index++] = gens[i].numGenotypes;
-      send_data[curr_index++] = gens[i].numCovariates;
-      send_data[curr_index++] = gens[i].totalFitness;
-      send_data[curr_index++] = gens[i].totalSize;
-      send_data[curr_index++] = gens[i].maxFitness;
-      send_data[curr_index++] = gens[i].minFitness; 
-      
-      send_data[curr_index++] = gens[i].minEpochs;
-      send_data[curr_index++] = gens[i].maxEpochs;
-      send_data[curr_index++] = gens[i].totalEpochs;
-      send_data[curr_index++] = gens[i].totalDepth;
-      
-      send_data[curr_index++] = gens[i].best_model_snps.size();
-      for(unsigned int j=0; j<gens[i].best_model_snps.size(); j++){
-        send_data[curr_index++] = gens[i].best_model_snps[j];
-      }
-      send_data[curr_index] = -1000;
-    }
-    
-  }
+		gens[i].avgScores();        
+		
+		// add snp totals to logging information
+		for(int proc=1; proc < nprocs; proc++){
+				currIndex = proc * snpSize;
+				for(int snp=0; snp<snpSize; snp++){
+						gens[i].snpTotals[snp] += snps[currIndex++];
+				}
+		}
+	}
 
 
-  ///
-  /// Send log information back to master
-  ///
-  void NNLog::sendLog(){
 
-  int myrank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
+	void NNLog::fillSendBuffer(float* sendData){ 
+		int currIndex=0;
+		for(unsigned int i=0; i < gens.size(); i++){
+			sendData[currIndex++] = gens[i].numValidNN;
+			sendData[currIndex++] = gens[i].numGenotypes;
+			sendData[currIndex++] = gens[i].numCovariates;
+			sendData[currIndex++] = gens[i].totalFitness;
+			sendData[currIndex++] = gens[i].totalSize;
+			sendData[currIndex++] = gens[i].maxFitness;
+			sendData[currIndex++] = gens[i].minFitness; 
+			
+			sendData[currIndex++] = gens[i].minEpochs;
+			sendData[currIndex++] = gens[i].maxEpochs;
+			sendData[currIndex++] = gens[i].totalEpochs;
+			sendData[currIndex++] = gens[i].totalDepth;
+			
+			sendData[currIndex++] = gens[i].bestModelSnps.size();
+			for(unsigned int j=0; j<gens[i].bestModelSnps.size(); j++){
+				sendData[currIndex++] = gens[i].bestModelSnps[j];
+			}
+			sendData[currIndex] = -1000;
+		}
+	}
 
-    // need to calculate total size for first part
-    int total_size = 0;
-    for(unsigned int i=0; i< gens.size(); i++){
-      total_size += 12; // 10 info + 1 for size of best model
-      total_size += gens[i].best_model_snps.size();
-    }   
-    // send total size to master
-    MPI_Send(&total_size, 1, MPI_INT, 0, 144, MPI_COMM_WORLD);
-    
-    // create send array
-    float * send_data = new float[total_size];
-    int curr_index = 0;
-    for(unsigned int i=0; i < gens.size(); i++){
-      send_data[curr_index++] = gens[i].numValidNN;
-      send_data[curr_index++] = gens[i].numGenotypes;
-      send_data[curr_index++] = gens[i].numCovariates;
-      send_data[curr_index++] = gens[i].totalFitness;
-      send_data[curr_index++] = gens[i].totalSize;
-      send_data[curr_index++] = gens[i].maxFitness;
-      send_data[curr_index++] = gens[i].minFitness; 
-      
-      send_data[curr_index++] = gens[i].minEpochs;
-      send_data[curr_index++] = gens[i].maxEpochs;
-      send_data[curr_index++] = gens[i].totalEpochs;
-      send_data[curr_index++] = gens[i].totalDepth;
-      
-      send_data[curr_index++] = gens[i].best_model_snps.size();
-      for(unsigned int j=0; j<gens[i].best_model_snps.size(); j++){
-        send_data[curr_index++] = gens[i].best_model_snps[j];
-      }
-    }
-    
-    MPI_Send(send_data, total_size, MPI_FLOAT, 0, 145, MPI_COMM_WORLD);
-    delete [] send_data;
-    
-    // Send snp index information 
-    int send_size = gens[0].snp_totals.size();
-    total_size = gens.size() * send_size;
-    int * send_snps = new int[total_size];
-    
-    for(unsigned int i=0; i < gens.size(); i++){
-      int base = i * send_size;
-      for(unsigned int j=0; j < gens[i].snp_totals.size(); j++){
-        send_snps[base+j] = gens[i].snp_totals[j];
-      }
-    }
-    
-    MPI_Send(send_snps, total_size, MPI_INT, 0, 146, MPI_COMM_WORLD);
-    delete [] send_snps;
-    
-  }
+
+	///
+	/// Send log information back to master
+	///
+	void NNLog::sendLog(){
+
+	int myRank;
+	MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+
+		// need to calculate total size for first part
+		int totalSize = 0;
+		for(unsigned int i=0; i< gens.size(); i++){
+			totalSize += 12; // 10 info + 1 for size of best model
+			totalSize += gens[i].bestModelSnps.size();
+		}   
+		// send total size to master
+		MPI_Send(&totalSize, 1, MPI_INT, 0, 144, MPI_COMM_WORLD);
+		
+		// create send array
+		float * sendData = new float[totalSize];
+		int currIndex = 0;
+		for(unsigned int i=0; i < gens.size(); i++){
+			sendData[currIndex++] = gens[i].numValidNN;
+			sendData[currIndex++] = gens[i].numGenotypes;
+			sendData[currIndex++] = gens[i].numCovariates;
+			sendData[currIndex++] = gens[i].totalFitness;
+			sendData[currIndex++] = gens[i].totalSize;
+			sendData[currIndex++] = gens[i].maxFitness;
+			sendData[currIndex++] = gens[i].minFitness; 
+			
+			sendData[currIndex++] = gens[i].minEpochs;
+			sendData[currIndex++] = gens[i].maxEpochs;
+			sendData[currIndex++] = gens[i].totalEpochs;
+			sendData[currIndex++] = gens[i].totalDepth;
+			
+			sendData[currIndex++] = gens[i].bestModelSnps.size();
+			for(unsigned int j=0; j<gens[i].bestModelSnps.size(); j++){
+				sendData[currIndex++] = gens[i].bestModelSnps[j];
+			}
+		}
+		
+		MPI_Send(sendData, totalSize, MPI_FLOAT, 0, 145, MPI_COMM_WORLD);
+		delete [] sendData;
+		
+		// Send snp index information 
+		int sendSize = gens[0].snpTotals.size();
+		totalSize = gens.size() * sendSize;
+		int * sendSnps = new int[totalSize];
+		
+		for(unsigned int i=0; i < gens.size(); i++){
+			int base = i * sendSize;
+			for(unsigned int j=0; j < gens[i].snpTotals.size(); j++){
+				sendSnps[base+j] = gens[i].snpTotals[j];
+			}
+		}
+		
+		MPI_Send(sendSnps, totalSize, MPI_INT, 0, 146, MPI_COMM_WORLD);
+		delete [] sendSnps;
+	}
+
+
 
  ///
-  /// Receive log information from slaves and store in generations in master.
-  /// After receiving all logs recompute the averages.
-  /// @param nprocs Number of slave processes to receive
-  ///
-  void NNLog::receiveLogs(int nprocs){ 
-    
-    int nprocs_done = 1; // one for master
+	/// Receive log information from slaves and store in generations in master.
+	/// After receiving all logs recompute the averages.
+	/// @param nprocs Number of slave processes to receive
+	///
+	void NNLog::receiveLogs(int nprocs){ 
+		
+		int nProcsDone = 1; // one for master
 
-    MPI_Status status;
-    vector<int> total_sizes(nprocs, 0);
-    int total_size;
+		MPI_Status status;
+		vector<int> totalSizes(nprocs, 0);
+		int totalSize;
 
-    while(nprocs_done < nprocs){
-      MPI_Recv(&total_size, 1, MPI_INT, MPI_ANY_SOURCE, 144, MPI_COMM_WORLD, &status);
-      total_sizes[status.MPI_SOURCE]=total_size;
-      nprocs_done++;
-    }
-    
-    // receive until all slaves have reported log information
-    for(int proc=1; proc < nprocs; proc++){
-    
-      total_size = total_sizes[proc];
-      float * rec_data = new float[total_size];
-      
-      MPI_Recv(rec_data, total_size, MPI_FLOAT, proc, 145, MPI_COMM_WORLD, &status);
-      
-      int curr_index=0, modsize, maxepochs, minepochs;
-      float maxfit, minfit;
-      
-      for(unsigned int i=0; i < gens.size(); i++){
-        gens[i].numValidNN += rec_data[curr_index++];
-        gens[i].numGenotypes += rec_data[curr_index++];
-        gens[i].numCovariates += rec_data[curr_index++];
-        gens[i].totalFitness +=  rec_data[curr_index++];
-        gens[i].totalSize +=  rec_data[curr_index++];    
-        maxfit = rec_data[curr_index++];
-        minfit = rec_data[curr_index++];
+		while(nProcsDone < nprocs){
+			MPI_Recv(&totalSize, 1, MPI_INT, MPI_ANY_SOURCE, 144, MPI_COMM_WORLD, &status);
+			totalSizes[status.MPI_SOURCE]=totalSize;
+			nProcsDone++;
+		}
+		
+		// receive until all slaves have reported log information
+		for(int proc=1; proc < nprocs; proc++){
+		
+			totalSize = totalSizes[proc];
+			float * recData = new float[totalSize];
+			
+			MPI_Recv(recData, totalSize, MPI_FLOAT, proc, 145, MPI_COMM_WORLD, &status);
+			
+			int currIndex=0, modSize, maxEpochs, minEpochs;
+			float maxFit, minFit;
+			
+			for(unsigned int i=0; i < gens.size(); i++){
+				gens[i].numValidNN += recData[currIndex++];
+				gens[i].numGenotypes += recData[currIndex++];
+				gens[i].numCovariates += recData[currIndex++];
+				gens[i].totalFitness +=  recData[currIndex++];
+				gens[i].totalSize +=  recData[currIndex++];    
+				maxFit = recData[currIndex++];
+				minFit = recData[currIndex++];
 
-        minepochs = rec_data[curr_index++];
-        maxepochs = rec_data[curr_index++];
-        gens[i].totalEpochs += rec_data[curr_index++];
-        gens[i].totalDepth += rec_data[curr_index++];
-        
-        modsize = rec_data[curr_index++];
-        vector<int> snps(modsize,0);
-        for(int j=0; j < modsize; j++){
-          snps[j] = rec_data[curr_index++];
-        }
-        
-        if(maxfit > gens[i].maxFitness){
-          gens[i].maxFitness = maxfit;
-          gens[i].best_model_snps = snps;
-        }
-        if(minfit < gens[i].minFitness){
-          gens[i].minFitness = minfit;
-        }
-        
-        if(minepochs < gens[i].minEpochs){
-          gens[i].minEpochs = minepochs;
-        }
-        if(maxepochs > gens[i].maxEpochs){
-          gens[i].maxEpochs = maxepochs;
-        } 
-      }
-      delete [] rec_data;
-    }
+				minEpochs = recData[currIndex++];
+				maxEpochs = recData[currIndex++];
+				gens[i].totalEpochs += recData[currIndex++];
+				gens[i].totalDepth += recData[currIndex++];
+				
+				modSize = recData[currIndex++];
+				vector<int> snps(modSize,0);
+				for(int j=0; j < modSize; j++){
+					snps[j] = recData[currIndex++];
+				}
+				
+				if(maxFit > gens[i].maxFitness){
+					gens[i].maxFitness = maxFit;
+					gens[i].bestModelSnps = snps;
+				}
+				if(minFit < gens[i].minFitness){
+					gens[i].minFitness = minFit;
+				}
+				
+				if(minEpochs < gens[i].minEpochs){
+					gens[i].minEpochs = minEpochs;
+				}
+				if(maxEpochs > gens[i].maxEpochs){
+					gens[i].maxEpochs = maxEpochs;
+				} 
+			}
+			delete [] recData;
+		}
 
-    for(unsigned int i=0; i < gens.size(); i++){
-      gens[i].avgScores();
-    }      
+		for(unsigned int i=0; i < gens.size(); i++){
+			gens[i].avgScores();
+		}      
 
-     // Send snp index information 
-    int send_size = gens[0].snp_totals.size();
-    total_size = gens.size() * send_size;
-    int * rec_snps = new int[total_size];
-    
-    nprocs_done = 1;
-    while(nprocs_done < nprocs){
-    
-      MPI_Recv(rec_snps, total_size, MPI_INT, MPI_ANY_SOURCE, 146, MPI_COMM_WORLD, &status);
-    
-      for(unsigned int i=0; i < gens.size(); i++){
-        int base = i * send_size;
-        for(unsigned int j=0; j < gens[i].snp_totals.size(); j++){
-          gens[i].snp_totals[j] += rec_snps[base+j];
-        }
-      }
-      nprocs_done++;
-    }
-    
-    delete [] rec_snps;
-  }
+		 // Send snp index information 
+		int sendSize = gens[0].snpTotals.size();
+		totalSize = gens.size() * sendSize;
+		int * recSnps = new int[totalSize];
+		
+		nProcsDone = 1;
+		while(nProcsDone < nprocs){
+		
+			MPI_Recv(recSnps, totalSize, MPI_INT, MPI_ANY_SOURCE, 146, MPI_COMM_WORLD, &status);
+		
+			for(unsigned int i=0; i < gens.size(); i++){
+				int base = i * sendSize;
+				for(unsigned int j=0; j < gens[i].snpTotals.size(); j++){
+					gens[i].snpTotals[j] += recSnps[base+j];
+				}
+			}
+			nProcsDone++;
+		}
+		
+		delete [] recSnps;
+	}
+
+
 
 ///
 /// Sends detailed information to master such as fitness of each model 
 /// and the number of snps in each model.
 ///
 void NNLog::sendDetailedLog(){
-  int fitness_size_signal = 199;
-  int fitness_signal = 200;
-  int snp_signal = 202;
-  
-  float *fitness_send=NULL;
-  int total_models, total_snps, *snp_send=NULL; 
-  packageDetailed(total_models, fitness_send, total_snps, snp_send);
+	int fitnessSizeSignal = 199;
+	int fitnessSignal = 200;
+	int snpSignal = 202;
+	
+	float *fitnessSend=NULL;
+	int totalModels, totalSnps, *snpSend=NULL; 
+	packageDetailed(totalModels, fitnessSend, totalSnps, snpSend);
 
-  int * message_sizes = new int[2];
-  message_sizes[0] = total_models;
-  message_sizes[1] = total_snps;
-  MPI_Send(message_sizes, 2, MPI_INT, 0, fitness_size_signal, MPI_COMM_WORLD);
-  delete [] message_sizes;
-  // send to master
-  MPI_Send(fitness_send, total_models, MPI_FLOAT, 0, fitness_signal, MPI_COMM_WORLD);
-  delete [] fitness_send;
-  // send to master
-  MPI_Send(snp_send, total_snps, MPI_INT, 0, snp_signal, MPI_COMM_WORLD);  
-  delete [] snp_send;
+	int * messageSizes = new int[2];
+	messageSizes[0] = totalModels;
+	messageSizes[1] = totalSnps;
+	MPI_Send(messageSizes, 2, MPI_INT, 0, fitnessSizeSignal, MPI_COMM_WORLD);
+	delete [] messageSizes;
+	// send to master
+	MPI_Send(fitnessSend, totalModels, MPI_FLOAT, 0, fitnessSignal, MPI_COMM_WORLD);
+	delete [] fitnessSend;
+	// send to master
+	MPI_Send(snpSend, totalSnps, MPI_INT, 0, snpSignal, MPI_COMM_WORLD);  
+	delete [] snpSend;
 }
 
 
@@ -484,189 +461,186 @@ void NNLog::sendDetailedLog(){
 ///
 void NNLog::receiveDetailedLogs(int nprocs){
 
-  int fitness_size_signal = 199;
-  int fitness_signal = 200;
-  int snp_signal = 202;
-  
-  vector<vector<indModel> > indmodels;
-  
-  // need to package master data first
-  float *fitness_send=NULL;
-  int total_models, total_snps, *snp_send=NULL;  
-  packageDetailed(total_models, fitness_send, total_snps, snp_send);
-  
-  // need to clear master fitness and snp information
-  for(size_t i=0; i<gens.size(); i++){
-    gens[i].allfitness.clear();
-    gens[i].allmodels.clear();
-  }
+	int fitnessSizeSignal = 199;
+	int fitnessSignal = 200;
+	int snpSignal = 202;
+	
+	vector<vector<indModel> > indModels;
+	
+	// need to package master data first
+	float *fitnessSend=NULL;
+	int totalModels, totalSnps, *snpSend=NULL;  
+	packageDetailed(totalModels, fitnessSend, totalSnps, snpSend);
+	
+	// need to clear master fitness and snp information
+	for(size_t i=0; i<gens.size(); i++){
+		gens[i].allFitness.clear();
+		gens[i].allModels.clear();
+	}
 
-  mergeDetailed(total_models, fitness_send, total_snps, snp_send, indmodels);
-  delete [] fitness_send;
-  delete [] snp_send;
+	mergeDetailed(totalModels, fitnessSend, totalSnps, snpSend, indModels);
+	delete [] fitnessSend;
+	delete [] snpSend;
 
-  MPI_Status status;
-  
-  vector<int> total_fit_sizes(nprocs, 0);
+	MPI_Status status;
+	
+	vector<int> totalFitSizes(nprocs, 0);
 
-  // stores models from all nodes before merging and sorting
-  vector<indModel> temp;
-  vector<vector<indModel> > models(nprocs, temp);
-  
-  int * message_sizes = new int[2];
-  
-  for(int proc=1; proc < nprocs; proc++){  
-    MPI_Recv(message_sizes, 2, MPI_INT, proc, fitness_size_signal, MPI_COMM_WORLD, &status);
-    float * fit_rec = new float[message_sizes[0]];
-    MPI_Recv(fit_rec, message_sizes[0], MPI_FLOAT, proc, fitness_signal, MPI_COMM_WORLD, &status);
-    int * snp_rec = new int[message_sizes[1]];
-    MPI_Recv(snp_rec, message_sizes[1], MPI_FLOAT, proc, snp_signal, MPI_COMM_WORLD, &status);
-    mergeDetailed(message_sizes[0], fit_rec, message_sizes[1], snp_rec, indmodels);
-    delete [] fit_rec;
-    delete [] snp_rec;
-  }
-  
-  // need to sort the models by fitness and then transfer into log 
-  for(vector<vector<indModel> >::iterator moditer = indmodels.begin(); moditer != indmodels.end(); 
-    moditer++){
-    sort(moditer->begin(), moditer->end(), compareIndModels);
-  }
-  
-  for(size_t curr_gen=0; curr_gen < gens.size(); curr_gen++){
-    // add sorted information into log
-    for(vector<indModel>::iterator moditer=indmodels[curr_gen].begin(); moditer != indmodels[curr_gen].end();
-      moditer++){
-        gens[curr_gen].allfitness.push_back(moditer->fitness);
-        gens[curr_gen].allmodels.push_back(moditer->snps);
-    }
-  }
-  
+	// stores models from all nodes before merging and sorting
+	vector<indModel> temp;
+	vector<vector<indModel> > models(nprocs, temp);
+	
+	int * messageSizes = new int[2];
+	
+	for(int proc=1; proc < nprocs; proc++){  
+		MPI_Recv(messageSizes, 2, MPI_INT, proc, fitnessSizeSignal, MPI_COMM_WORLD, &status);
+		float * fitRec = new float[messageSizes[0]];
+		MPI_Recv(fitRec, messageSizes[0], MPI_FLOAT, proc, fitnessSignal, MPI_COMM_WORLD, &status);
+		int * snp_rec = new int[messageSizes[1]];
+		MPI_Recv(snp_rec, messageSizes[1], MPI_FLOAT, proc, snpSignal, MPI_COMM_WORLD, &status);
+		mergeDetailed(messageSizes[0], fitRec, messageSizes[1], snp_rec, indModels);
+		delete [] fitRec;
+		delete [] snp_rec;
+	}
+	
+	// need to sort the models by fitness and then transfer into log 
+	for(vector<vector<indModel> >::iterator modIter = indModels.begin(); modIter != indModels.end(); 
+		modIter++){
+		sort(modIter->begin(), modIter->end(), compareIndModels);
+	}
+	
+	for(size_t currGen=0; currGen < gens.size(); currGen++){
+		// add sorted information into log
+		for(vector<indModel>::iterator modIter=indModels[currGen].begin(); modIter != indModels[currGen].end();
+			modIter++){
+				gens[currGen].allFitness.push_back(modIter->fitness);
+				gens[currGen].allModels.push_back(modIter->snps);
+		}
+	}
+	
 }
 
 
 ///
 /// Merges information from a single node into vector of models that will
 /// be sorted and then inserted back into master log
-/// @param total_fit_size total size of fit_send array
-/// @param fit_rec Array with fitness values
-/// @param total_snp_size total size of snp_send array
+/// @param totalFitSize total size of fitSend array
+/// @param fitRec Array with fitness values
+/// @param totalSnpSize total size of snpSend array
 /// @param snp_rec Array with snps in models
 ///
-void NNLog::mergeDetailed(int total_fit_size, float* fit_rec, int total_snp_size,
-  int* snp_rec, vector<vector<indModel> >& indmodels){
-  vector<indModel> temp;
-  vector<vector<indModel> > tempmodels;
+void NNLog::mergeDetailed(int totalFitSize, float* fitRec, int totalSnpSize,
+	int* snp_rec, vector<vector<indModel> >& indModels){
+	vector<indModel> temp;
+	vector<vector<indModel> > tempmodels;
  
-  int myrank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &myrank); 
+	int myRank;
+	MPI_Comm_rank(MPI_COMM_WORLD, &myRank); 
  
-  float split_gen = 77777;
-  // fill with fitness values
-  for(int curr_fit=0; curr_fit < total_fit_size; curr_fit++){
-    if(fit_rec[curr_fit] == split_gen){
-      tempmodels.push_back(temp);
-      temp.clear();
-    }
-    else{
-      indModel indtemp;
-      indtemp.fitness = fit_rec[curr_fit];
-      temp.push_back(indtemp);
-    } 
-  }
-  int curr_gen=0, curr_mod=0;
-  vector<int> currsnps;
+	float splitGen = 77777;
+	// fill with fitness values
+	for(int currFit=0; currFit < totalFitSize; currFit++){
+		if(fitRec[currFit] == splitGen){
+			tempmodels.push_back(temp);
+			temp.clear();
+		}
+		else{
+			indModel indtemp;
+			indtemp.fitness = fitRec[currFit];
+			temp.push_back(indtemp);
+		} 
+	}
+	int currGen=0, currMod=0;
+	vector<int> currSnps;
 
-  // fill with snp information
-  // it is an array of ints with each terminated on a -1
-  // end of a generation is marked with a -2  
-  for(int curr_snp=0; curr_snp < total_snp_size; curr_snp++){
-    if(snp_rec[curr_snp] == -2){
-      curr_gen++;
-      curr_mod = 0;
-    }
-    else if(snp_rec[curr_snp] == -1){
-      tempmodels[curr_gen][curr_mod].snps = currsnps;
-      currsnps.clear();
-      curr_mod++;
-    }
-    else{
-      currsnps.push_back(snp_rec[curr_snp]);
-    }
-    
-  }
-  
-  temp.clear();
-  // add the current models to the overall model
-  for(size_t g=0; g<gens.size(); g++){
-    if(indmodels.size() <= g)
-      indmodels.push_back(temp);
-    indmodels[g].insert(indmodels[g].end(), tempmodels[g].begin(), tempmodels[g].end()); 
-  }
+	// fill with snp information
+	// it is an array of ints with each terminated on a -1
+	// end of a generation is marked with a -2  
+	for(int currSnp=0; currSnp < totalSnpSize; currSnp++){
+		if(snp_rec[currSnp] == -2){
+			currGen++;
+			currMod = 0;
+		}
+		else if(snp_rec[currSnp] == -1){
+			tempmodels[currGen][currMod].snps = currSnps;
+			currSnps.clear();
+			currMod++;
+		}
+		else{
+			currSnps.push_back(snp_rec[currSnp]);
+		}
+		
+	}
+	
+	temp.clear();
+	// add the current models to the overall model
+	for(size_t g=0; g<gens.size(); g++){
+		if(indModels.size() <= g)
+			indModels.push_back(temp);
+		indModels[g].insert(indModels[g].end(), tempmodels[g].begin(), tempmodels[g].end()); 
+	}
 }
 
 
 ///
 /// Packages data from a single node for transfer
-/// @param total_fit_size Out parameter for total size of fit_send array
-/// @param fit_send Array that will be allocated and filled
-/// @param total_snp_size Out parameter for total size of snp_send array
-/// @param snp_send Array that will allocated and filled with snps in models
+/// @param totalFitSize Out parameter for total size of fitSend array
+/// @param fitSend Array that will be allocated and filled
+/// @param totalSnpSize Out parameter for total size of snpSend array
+/// @param snpSend Array that will allocated and filled with snps in models
 ///
-void NNLog::packageDetailed(int& total_fit_size, float*& fit_send, int& total_snp_size,
-  int*&snp_send){
+void NNLog::packageDetailed(int& totalFitSize, float*& fitSend, int& totalSnpSize,
+	int*&snpSend){
 
-int myrank;
-MPI_Comm_rank(MPI_COMM_WORLD, &myrank);  
+int myRank;
+MPI_Comm_rank(MPI_COMM_WORLD, &myRank);  
 
-  float split_gen = 77777;
-  // determine overall size 
-  total_fit_size=0;
-  for(size_t i=0; i < gens.size(); i++){
-    total_fit_size += int(gens[i].allfitness.size());
-  }
-  // add space for indicator to mark generation end
-  total_fit_size += int(gens.size());
-  fit_send = new float[total_fit_size];   
-  int curr_fit=0;
-  
-  // fill float array to send
-  for(size_t i=0; i<gens.size(); i++){  
-    for(vector<float>::iterator fiter=gens[i].allfitness.begin(); fiter != gens[i].allfitness.end();
-      fiter++){
-      fit_send[curr_fit++] = *fiter;
-    }
-    fit_send[curr_fit++] = split_gen;
-  }
-  total_snp_size=0;
-  
-  for(size_t i=0; i<gens.size(); i++){  
-    for(size_t j=0; j<gens[i].allmodels.size(); j++){
-      total_snp_size += int(gens[i].allmodels[j].size());
-      total_snp_size++;
-    }
-    total_snp_size++;
-  }
-  
-  snp_send = new int[total_snp_size];
-  
-  int curr_snp =0;
-  
-  // prepare snp list for models and send
-  // it is an array of ints with each terminated on a -1
-  // end of a generation is marked with a -2  
-  for(size_t i=0; i<gens.size(); i++){  
-    for(size_t j=0; j<gens[i].allmodels.size(); j++){
-      for(vector<int>::iterator snpiter=gens[i].allmodels[j].begin(); snpiter != gens[i].allmodels[j].end();
-        snpiter++){
-        snp_send[curr_snp++] = *snpiter;
-      }
-      snp_send[curr_snp++] = -1;
-    }
-    snp_send[curr_snp++] = -2;
-  }    
+	float splitGen = 77777;
+	// determine overall size 
+	totalFitSize=0;
+	for(size_t i=0; i < gens.size(); i++){
+		totalFitSize += int(gens[i].allFitness.size());
+	}
+	// add space for indicator to mark generation end
+	totalFitSize += int(gens.size());
+	fitSend = new float[totalFitSize];   
+	int currFit=0;
+	
+	// fill float array to send
+	for(size_t i=0; i<gens.size(); i++){  
+		for(vector<float>::iterator fiter=gens[i].allFitness.begin(); fiter != gens[i].allFitness.end();
+			fiter++){
+			fitSend[currFit++] = *fiter;
+		}
+		fitSend[currFit++] = splitGen;
+	}
+	totalSnpSize=0;
+	
+	for(size_t i=0; i<gens.size(); i++){  
+		for(size_t j=0; j<gens[i].allModels.size(); j++){
+			totalSnpSize += int(gens[i].allModels[j].size());
+			totalSnpSize++;
+		}
+		totalSnpSize++;
+	}
+	
+	snpSend = new int[totalSnpSize];
+	
+	int currSnp =0;
+	
+	// prepare snp list for models and send
+	// it is an array of ints with each terminated on a -1
+	// end of a generation is marked with a -2  
+	for(size_t i=0; i<gens.size(); i++){  
+		for(size_t j=0; j<gens[i].allModels.size(); j++){
+			for(vector<int>::iterator snpIter=gens[i].allModels[j].begin(); snpIter != gens[i].allModels[j].end();
+				snpIter++){
+				snpSend[currSnp++] = *snpIter;
+			}
+			snpSend[currSnp++] = -1;
+		}
+		snpSend[currSnp++] = -2;
+	}    
 }
- 
-  
- 
-  
+	
 #endif

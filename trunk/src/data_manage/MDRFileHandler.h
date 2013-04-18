@@ -28,23 +28,23 @@ class MDRFileHandler : public data_manage::FileHandler
 {
 public:
 
-  MDRFileHandler();
+	MDRFileHandler();
 
-  virtual ~MDRFileHandler();
+	virtual ~MDRFileHandler();
 
-  /// provides interface for filling dataholder object with genotypes
-  void parse_file(std::string filename, Dataholder* holder, int missingValue,
-    float statusMissingValue, bool contains_id=false);
+	/// provides interface for filling dataholder object with genotypes
+	void parseFile(std::string filename, Dataholder* holder, int missingValue,
+		float statusMissingValue, bool containsID=false);
 
-  /// parses testing and training files
-  void parse_file(std::string train_file, std::string test_file, Dataholder* holder,
-	  int missingValue, float statusMissingValue, bool contains_id=false);
+	/// parses testing and training files
+	void parseFile(std::string trainFile, std::string testFile, Dataholder* holder,
+	  int missingValue, float statusMissingValue, bool containsID=false);
 
-  /// provides interface for writing out dataholder object
-  void write_file(std::string filename, Dataholder* holder);
-  
+	/// provides interface for writing out dataholder object
+	void writeFile(std::string filename, Dataholder* holder);
+	
 private:
-  int dummy_id;
+	int dummyID;
 
 };
 

@@ -35,36 +35,35 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Contains functions for initializing genomes in the GA libaray when
 /// used with the GE library.
 ///
-
 class InitGEgenome{
-    
+		
 public:
-    
-    /// conducts random intialization of genomes
-    static void initFuncRandom(GAGenome &g);
-    
-    /// conducts sensible initialization of genomes
-    static void initFuncSI(GAGenome &g);
-    
-    /// set minimum size in random initialization
-    static void setMinSize(unsigned int msize){min_size = msize;}
-    
-    /// set maximum size in random initialization
-    static void setMaxSize(unsigned int msize){max_size = msize;}
-    
-    /// sets the mapper to use
-    static void setMapper(AthenaGrammarSI* m){mapper = m;}
-    
-    /// sets rank
-    static void setrank(int r){rank=r;}
-    
+		
+		/// conducts random intialization of genomes
+		static void initFuncRandom(GAGenome &g);
+		
+		/// conducts sensible initialization of genomes
+		static void initFuncSI(GAGenome &g);
+		
+		/// set minimum size in random initialization
+		static void setMinSize(unsigned int mSize){minSize = mSize;}
+		
+		/// set maximum size in random initialization
+		static void setMaxSize(unsigned int mSize){maxSize = mSize;}
+		
+		/// sets the mapper to use
+		static void setMapper(AthenaGrammarSI* m){mapper = m;}
+		
+		/// sets rank
+		static void setrank(int r){rank=r;}
+		
 private:
-    
-    static AthenaGrammarSI* mapper;
-    static unsigned int min_size, max_size;
-    
-    static int rank;
-    
+		
+		static AthenaGrammarSI* mapper;
+		static unsigned int minSize, maxSize;
+		
+		static int rank;
+		
 };
 
 

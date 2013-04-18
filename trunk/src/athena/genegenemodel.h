@@ -40,9 +40,9 @@ typedef std::map<uint, Region*> RegionLookup;
 class GeneGeneModel : public BioModel {
 public:
 	GeneGeneModel();
-    GeneGeneModel(Region* g1, Region* g2, uint pairID = (uint)-1);
-    GeneGeneModel(const GeneGeneModel& orig);
-    virtual ~GeneGeneModel();
+		GeneGeneModel(Region* g1, Region* g2, uint pairID = (uint)-1);
+		GeneGeneModel(const GeneGeneModel& orig);
+		virtual ~GeneGeneModel();
 
 	/* file buffer requirements */
 	bool operator<(const GeneGeneModel& other) const;
@@ -92,7 +92,7 @@ public:
 protected:
 	Region *region1;
 	Region *region2;
-    std::set<uint> diGroups;					///< pairing information
+		std::set<uint> diGroups;					///< pairing information
 };
 
 

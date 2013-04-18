@@ -30,60 +30,60 @@ namespace data_manage
 class Individual
 {
 public:
-  Individual();
+	Individual();
 
-  ~Individual();
+	~Individual();
 
-  /// status of individual
-  inline float status(){return ind_status;}
+	/// status of individual
+	inline float status(){return indStatus;}
 
-  /// returns genotype or environmental value
-  inline float value(unsigned int index){
-    if(index<num_covars) return covariates[index];
-    else return float(genotype[index+num_covars]);
-  }
+	/// returns genotype or environmental value
+	inline float value(unsigned int index){
+		if(index<numCovars) return covariates[index];
+		else return float(genotype[index+numCovars]);
+	}
 
-  inline int get_genotype(unsigned int index){return genotype[index];}
-  
-  inline void set_genotype(unsigned int index, char value){genotype[index]=value;}
+	inline int getGenotype(unsigned int index){return genotype[index];}
+	
+	inline void setGenotype(unsigned int index, char value){genotype[index]=value;}
 
-  inline void set_status(float stat){ind_status = stat;}
+	inline void setStatus(float stat){indStatus = stat;}
 
-  inline float get_status(){return ind_status;}
+	inline float getStatus(){return indStatus;}
 
-  /// appends genotype to genotype lsit
-  inline void add_genotype(int geno){genotype.push_back(geno);num_loci++;}
+	/// appends genotype to genotype lsit
+	inline void addGenotype(int geno){genotype.push_back(geno);numLoci++;}
 
-  /// appends environmental variable to list
-  void add_covariate(float val){covariates.push_back(val);num_covars++;}
+	/// appends environmental variable to list
+	void addCovariate(float val){covariates.push_back(val);numCovars++;}
 
-  /// returns covariate value
-  float get_covariate(unsigned int index){return covariates[index];}
+	/// returns covariate value
+	float getCovariate(unsigned int index){return covariates[index];}
 
-  /// sets covariate value
-  void set_covariate(unsigned int index, float val){covariates[index] = val;}
+	/// sets covariate value
+	void setCovariate(unsigned int index, float val){covariates[index] = val;}
 
-  /// returns number of genotypes
-  inline unsigned int num_genotypes(){return num_loci;}
+	/// returns number of genotypes
+	inline unsigned int numGenotypes(){return numLoci;}
 
-  /// returns number of environmental variables
-  inline unsigned int num_covariates(){return num_covars;}
+	/// returns number of environmental variables
+	inline unsigned int numCovariates(){return numCovars;}
 
-  /// sets genotype vector to be equal to vector passed
-  inline void set_all_genotypes(std::vector<char>& genos){genotype = genos; num_loci = genos.size();}
+	/// sets genotype vector to be equal to vector passed
+	inline void setAllGenotypes(std::vector<char>& genos){genotype = genos; numLoci = genos.size();}
 
-  /// returns ID value as string
-  std::string get_id(){return id;}
-  
-  /// sets ID for individual 
-  void set_id(std::string identification){id=identification;}
-  
+	/// returns ID value as string
+	std::string getID(){return id;}
+	
+	/// sets ID for individual 
+	void setID(std::string identification){id=identification;}
+	
 private:
-  float ind_status;
-  unsigned int num_loci, num_covars;
-  std::string id;
-  std::vector<float> covariates;
-  std::vector<char> genotype;
+	float indStatus;
+	unsigned int numLoci, numCovars;
+	std::string id;
+	std::vector<float> covariates;
+	std::vector<char> genotype;
 
 };
 

@@ -37,14 +37,14 @@ using namespace std;
 
 /// Exception for plato
 class AthenaExcept: public exception{
-        public:
-          AthenaExcept() throw();
-          AthenaExcept(string message){error=message;}
-          ~AthenaExcept()throw(){};
-          virtual const char* what() const throw(){return error.c_str();}
+				public:
+					AthenaExcept() throw();
+					AthenaExcept(string message){error=message;}
+					~AthenaExcept()throw(){};
+					virtual const char* what() const throw(){return error.c_str();}
 
-        private:
-          string error;
+				private:
+					string error;
 };
 
 #endif	/* _ATHENAEXCEPT_H */

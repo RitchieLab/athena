@@ -33,16 +33,16 @@ public:
 	virtual ~FileHandler();
 	
 	/// provides interface for filling dataholder object with genotypes
-	virtual void parse_file(std::string filename, Dataholder* holder, int missingValue,
-           float statusMissingValue, bool contains_id=false)=0; 
+	virtual void parseFile(std::string filename, Dataholder* holder, int missingValue,
+					 float statusMissingValue, bool containsID=false)=0; 
 	
 	/// provides interface for filling dataholder object with genotypes from a testing
 	/// and a training file
-	virtual void parse_file(std::string train_file, std::string test_file, Dataholder* holder,
-	  int missingValue, float statusMissingValue, bool contains_id=false)=0;
+	virtual void parseFile(std::string train_file, std::string test_file, Dataholder* holder,
+	  int missingValue, float statusMissingValue, bool containsID=false)=0;
 	
 	/// provides interface for writing out dataholder object
-	virtual void write_file(std::string filename, Dataholder* holder)=0;
+	virtual void writeFile(std::string filename, Dataholder* holder)=0;
 	
 };
 

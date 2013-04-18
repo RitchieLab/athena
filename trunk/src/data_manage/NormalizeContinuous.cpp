@@ -38,27 +38,27 @@ NormalizeContinuous::~NormalizeContinuous()
 /// Rescales the continuous variables by taking absolute difference
 /// from the mean and dividing by the standard deviation
 /// @param holder Dataholder with all dat
-/// @param var_index Variable to be scaled
+/// @param varIndex Variable to be scaled
 ///
-void NormalizeContinuous::adjust_contin(Dataholder* holder, unsigned int var_index){
-  stat::Descriptive calculator;
+void NormalizeContinuous::adjustContin(Dataholder* holder, unsigned int varIndex){
+	stat::Descriptive calculator;
 
-  vector<float> values(holder->num_inds(), 0);
+	vector<float> values(holder->numInds(), 0);
 
-  unsigned int curr_ind;
-  for(curr_ind = 0; curr_ind < holder->num_inds(); curr_ind++){
-    values[curr_ind] = holder->get_ind(curr_ind)->get_covariate(var_index);
-  }
+	unsigned int currInd;
+	for(currInd = 0; currInd < holder->numInds(); currInd++){
+		values[currInd] = holder->getInd(currInd)->getCovariate(varIndex);
+	}
 
-  float mean_val = calculator.mean(values);
-  float std_dev = calculator.standard_dev(values);
+	float meanValue = calculator.mean(values);
+	float standardDev = calculator.standard_dev(values);
 
-  Individual* ind;
-  // subtract each value from the mean and divide by the standard deviation
-  for(curr_ind=0; curr_ind < holder->num_inds(); curr_ind++){
-    ind = holder->get_ind(curr_ind);
-    ind->set_covariate(var_index, ((ind->get_covariate(var_index) - mean_val) / std_dev));
-  }
+	Individual* ind;
+	// subtract each value from the mean and divide by the standard deviation
+	for(currInd=0; currInd < holder->numInds(); currInd++){
+		ind = holder->getInd(currInd);
+		ind->setCovariate(varIndex, ((ind->getCovariate(varIndex) - meanValue) / standardDev));
+	}
 
 }
 
@@ -69,25 +69,25 @@ void NormalizeContinuous::adjust_contin(Dataholder* holder, unsigned int var_ind
 /// from the mean and dividing by the standard deviation
 /// @param holder Dataholder with all dat
 ///
-void NormalizeContinuous::adjust_status(Dataholder* holder){
-  stat::Descriptive calculator;
-  
-  vector<float> values(holder->num_inds(), 0);
-  
-  unsigned int curr_ind;
-  for(curr_ind=0; curr_ind < holder->num_inds(); curr_ind++){
-    values[curr_ind] = holder->get_ind(curr_ind)->get_status();
-  }
-  meanval = calculator.mean(values);
-  stddev = calculator.standard_dev(values);
+void NormalizeContinuous::adjustStatus(Dataholder* holder){
+	stat::Descriptive calculator;
+	
+	vector<float> values(holder->numInds(), 0);
+	
+	unsigned int currInd;
+	for(currInd=0; currInd < holder->numInds(); currInd++){
+		values[currInd] = holder->getInd(currInd)->getStatus();
+	}
+	meanVal = calculator.mean(values);
+	stdDev = calculator.standard_dev(values);
 
-  Individual* ind;
-  // subtract each value from the mean and divide by the standard deviation
-  for(curr_ind=0; curr_ind < holder->num_inds(); curr_ind++){
-    ind=holder->get_ind(curr_ind);
-    ind->set_status((ind->get_status()-meanval)/stddev);
-  }
-  
+	Individual* ind;
+	// subtract each value from the mean and divide by the standard deviation
+	for(currInd=0; currInd < holder->numInds(); currInd++){
+		ind=holder->getInd(currInd);
+		ind->setStatus((ind->getStatus()-meanVal)/stdDev);
+	}
+	
 }
 
 }

@@ -27,8 +27,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 /// Contains information related to Biofilter models provided
 struct BioModel{
-  std::vector<std::string> idstring;
-  float implication_index;
+	std::vector<std::string> idString;
+	float implicationIndex;
 };
 
 
@@ -37,11 +37,11 @@ struct BioModel{
 ///
 class BioReader{
 
-  public:
-    virtual ~BioReader(){}
+	public:
+		virtual ~BioReader(){}
 
-    /// Fills vector with models from file
-    virtual int GetModels(std::vector<BioModel>& models, std::string filename, unsigned int max_read)=0;
+		/// Fills vector with models from file
+		virtual int getModels(std::vector<BioModel>& models, std::string filename, unsigned int max_read)=0;
 
 };
 

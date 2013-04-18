@@ -35,23 +35,23 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Returns calculator depending on string passed
 ///
 class CalculatorFactory{
-    
+		
 public:
-        
-    static SolutionCalculator* create_calculator(std::string calc_name);
-    
+				
+		static SolutionCalculator* createCalculator(std::string calcName);
+		
 private:
-    
-    static void set_calc_map();
-    
-    enum CalcType{
-        NoCalcType,
-        BalanceCalcType,
-        MeanSquaredErrType,
-        RSquaredType
-    };
-    
-    static std::map<std::string, CalcType> CalcMap;
+		
+		static void setCalcMap();
+		
+		enum CalcType{
+				NoCalcType,
+				BalanceCalcType,
+				MeanSquaredErrType,
+				RSquaredType
+		};
+		
+		static std::map<std::string, CalcType> CalcMap;
 
 };
 

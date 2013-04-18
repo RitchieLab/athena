@@ -29,28 +29,28 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Algorithm.h"
 
 class AlgorithmFactory{
-    
+		
 public:
-    /// Creates and returns the Algorithm
-    static Algorithm* create_algorithm(std::string alg_name);
-    
-    /// Enumeration for algorithm types
-    enum AlgorithmType{
-        /// Enum for missing
-        NoAlgorithm,
-        /// Enum for GENN
-        GENNAlgorithm,
-        /// Enum for Symbolic Regression
-        GESymbRegAlgorithm
-    };
-    
+		/// Creates and returns the Algorithm
+		static Algorithm* createAlgorithm(std::string algName);
+		
+		/// Enumeration for algorithm types
+		enum AlgorithmType{
+				/// Enum for missing
+				NoAlgorithm,
+				/// Enum for GENN
+				GENNAlgorithm,
+				/// Enum for Symbolic Regression
+				GESymbRegAlgorithm
+		};
+		
 private:
-    
-    /// Sets map for Algorithm creation
-    static void set_algorithm_map();
-    
-    static std::map<std::string, AlgorithmType> AlgorithmMap;
-    
+		
+		/// Sets map for Algorithm creation
+		static void setAlgorithmMap();
+		
+		static std::map<std::string, AlgorithmType> AlgorithmMap;
+		
 };
 
 

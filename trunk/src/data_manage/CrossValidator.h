@@ -30,11 +30,11 @@ namespace data_manage
 
 class TRandom
 {
-  public:
-  int operator()(int n)
-  {
-    return rand() % n;
-  }
+	public:
+	int operator()(int n)
+	{
+		return rand() % n;
+	}
 
 };
 
@@ -45,34 +45,34 @@ class TRandom
 class CrossValidator
 {
 public:
-  CrossValidator();
-  ~CrossValidator();
+	CrossValidator();
+	~CrossValidator();
 
-  /// splits data into testing and training sets for the indicated number of intervals
-  CVSet split_data(unsigned int num_crossval, Dataholder* holder);
-  
-  /// save splits with individual IDs
-  void save_splits(std::string filename);
-  
-  /// load splits with individual IDs
-  CVSet load_splits(std::string filename, Dataholder* holder);  
+	/// splits data into testing and training sets for the indicated number of intervals
+	CVSet splitData(unsigned int numCrossVal, Dataholder* holder);
+	
+	/// save splits with individual IDs
+	void saveSplits(std::string filename);
+	
+	/// load splits with individual IDs
+	CVSet loadSplits(std::string filename, Dataholder* holder);  
 
 private:
 
-  void distribute_inds(unsigned int num_splits, std::vector<Individual*>& inds,
-      std::vector<std::vector<Individual*> >& splits);
+	void distributeInds(unsigned int numSplits, std::vector<Individual*>& inds,
+			std::vector<std::vector<Individual*> >& splits);
 
-  void shuffle_inds(std::vector<Individual*> & inds);
+	void shuffleInds(std::vector<Individual*> & inds);
 
-  void status_bin(Dataholder* holder, std::vector<Individual*>& affected,
-      std::vector<Individual*>& unaffected);
-      
-  CVSet split_by_num(Dataholder* holder);
-  
-  CVSet create_set(unsigned int num_cv, Dataholder* holder);
+	void statusBin(Dataholder* holder, std::vector<Individual*>& affected,
+			std::vector<Individual*>& unaffected);
+			
+	CVSet splitByNum(Dataholder* holder);
+	
+	CVSet createSet(unsigned int num_cv, Dataholder* holder);
 
-  vector<vector<Individual*> > splits;
-  
+	vector<vector<Individual*> > splits;
+	
 };
 
 }

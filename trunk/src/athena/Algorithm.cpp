@@ -21,12 +21,12 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Algorithm.h"
 
 Algorithm::Algorithm(){
-    fitness_name=" ";
+		fitnessName=" ";
 }
 
 Algorithm::~Algorithm(){
-    for(unsigned int i=0; i<logs.size(); i++){
-      delete logs[i];
-    }
+		for(unsigned int i=0; i<logs.size(); i++){
+			delete logs[i];
+		}
 }
 

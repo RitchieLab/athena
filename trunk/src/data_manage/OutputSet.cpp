@@ -31,11 +31,11 @@ namespace data_manage
 ///
 void OutputSet::outputSet(string name, Dataset& set){
 
-    ofstream outfile;
-    outfile.open(name.c_str(), ios::out);    
-    outfile << set;
-    outfile.close();
-   
+		ofstream outfile;
+		outfile.open(name.c_str(), ios::out);    
+		outfile << set;
+		outfile.close();
+	 
 }
 
 ///
@@ -43,9 +43,9 @@ void OutputSet::outputSet(string name, Dataset& set){
 ///
 void OutputSet::outputCV(string name, Dataset& set, int cv){
 
-  stringstream ss;
-  ss << name << "." << cv << ".txt";
-  outputSet(ss.str(), set);
+	stringstream ss;
+	ss << name << "." << cv << ".txt";
+	outputSet(ss.str(), set);
 
 }
 

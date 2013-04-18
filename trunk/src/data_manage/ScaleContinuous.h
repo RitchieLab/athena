@@ -27,24 +27,24 @@ namespace data_manage
 class ScaleContinuous : public data_manage::ScaleData
 {
 public:
-  ScaleContinuous();
-  ~ScaleContinuous();
+	ScaleContinuous();
+	~ScaleContinuous();
 
-  void adjust_contin(Dataholder* holder, unsigned int var_index);
-  
-  /// Scales status by dividing all 
-  void adjust_status(Dataholder* holder);
+	void adjustContin(Dataholder* holder, unsigned int varIndex);
+	
+	/// Scales status by dividing all 
+	void adjustStatus(Dataholder* holder);
 
-  /// Returns original value for a scaled status value
-  float get_original_status(float status){return (status*statmax)-statadjust;}
-  
-  /// Writes scaling information to ostream
-  string output_scale_info();
-  
+	/// Returns original value for a scaled status value
+	float getOriginalStatus(float status){return (status*statMax)-statAdjust;}
+	
+	/// Writes scaling information to ostream
+	string outputScaleInfo();
+	
 private:
-  
-  float statmin, statmax, statadjust;
-  
+	
+	float statMin, statMax, statAdjust;
+	
 
 };
 

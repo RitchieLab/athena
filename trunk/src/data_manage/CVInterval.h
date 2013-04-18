@@ -32,25 +32,25 @@ namespace data_manage
 class CVInterval
 {
 public:
-  CVInterval();
-  CVInterval(unsigned int num);
-  ~CVInterval();
+	CVInterval();
+	CVInterval(unsigned int num);
+	~CVInterval();
 
-  Dataset& get_set(unsigned int index){return sets[index];}
+	Dataset& get_set(unsigned int index){return sets[index];}
 
-  unsigned int num_sets(){return sets.size();}
+	unsigned int numSets(){return sets.size();}
 
-  void num_sets(unsigned int num);
+	void numSets(unsigned int num);
 
-  void add_set(Dataset& set){sets.push_back(set);}
+	void addSet(Dataset& set){sets.push_back(set);}
 
-  Dataset& get_training(){return sets[0];}
-  Dataset& get_testing(){return sets[1];}
-  Dataset& get_validation(){return sets[2];}
+	Dataset& getTraining(){return sets[0];}
+	Dataset& getTesting(){return sets[1];}
+	Dataset& getValidation(){return sets[2];}
 
 private:
 
-  std::vector<Dataset> sets;
+	std::vector<Dataset> sets;
 
 };
 

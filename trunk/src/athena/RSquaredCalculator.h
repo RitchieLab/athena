@@ -34,41 +34,38 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Calculates mean squared error
 ///
 class RSquaredCalculator: public SolutionCalculator{
-    
-    public:
-    
-    RSquaredCalculator();
-    
-    /// resets calculator for new analysis set
-    void reset();
-    
-    /// adds evaluation score to results
-    void add_ind_score(float score, float status);
-    
-    /// returns r-squared
-    float get_score(){
-        return 1-(squared_error_total / sstotal);
-    }
-    
-    /// returns false so that the best is the smallest
-    bool max_best(){return true;}
-    
-    /// returns worst score
-    float get_worst(){return -100;}
-    
-    /// Sets the SSTotal which is the square of the differences of the mean status and each ind status
-    void set_constant(float constant){sstotal = constant;}
-    
+		
+		public:
+		
+		RSquaredCalculator();
+		
+		/// resets calculator for new analysis set
+		void reset();
+		
+		/// adds evaluation score to results
+		void addIndScore(float score, float status);
+		
+		/// returns r-squared
+		float getScore(){
+				return 1-(squaredErrorTotal / ssTotal);
+		}
+		
+		/// returns false so that the best is the smallest
+		bool maxBest(){return true;}
+		
+		/// returns worst score
+		float getWorst(){return -100;}
+		
+		/// Sets the SSTotal which is the square of the differences of the mean status and each ind status
+		void setConstant(float constant){ssTotal = constant;}
+		
 private:
-    
-    float squared_error_total, sstotal;
-    unsigned int total_inds_tested;
-    
-    
+		
+		float squaredErrorTotal, ssTotal;
+		unsigned int totalIndsTested;
+		
+		
 };
-
-
-
 
 #endif	/* _MEANSQUAREDERRCALCULATOR_H */
 

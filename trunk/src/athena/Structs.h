@@ -25,17 +25,17 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <set>
 
 struct optSymbol{
-  string symbol;
-  bool noNT;
+	string symbol;
+	bool noNT;
 };
 
 
 typedef vector<optSymbol> symbVector;
 
 enum LogType{
-  LogNone,
-  LogSummary,
-  LogDetailed,
+	LogNone,
+	LogSummary,
+	LogDetailed,
 };
 
 #endif

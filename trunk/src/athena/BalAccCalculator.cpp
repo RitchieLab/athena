@@ -20,39 +20,39 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 
 BalAccCalculator::BalAccCalculator(){
-    reset();
-    name = "Balanced Accuracy";
+		reset();
+		name = "Balanced Accuracy";
 }
+
 
 
 void BalAccCalculator::reset(){
-    caseright=0;
-    casewrong=0;
-    controlright=0;
-    controlwrong=0;
+		caseRight=0;
+		caseWrong=0;
+		controlRight=0;
+		controlWrong=0;
 }
 
-#include<iostream>
-using namespace std;
+
 
 ///
 /// Adds score to running total within object
 /// @param score
 ///
-void BalAccCalculator::add_ind_score(float score, float stat){
-   
-    unsigned int result = score > 0.5?1:0;
-    unsigned int status = (unsigned int)stat;
-    
-    if(result != status){
-        if(status)
-            casewrong++;
-        else
-            controlwrong++;
-    }
-    else if(status)
-        caseright++;
-    else
-        controlright++;
+void BalAccCalculator::addIndScore(float score, float stat){
+	 
+		unsigned int result = score > 0.5?1:0;
+		unsigned int status = (unsigned int)stat;
+		
+		if(result != status){
+				if(status)
+						caseWrong++;
+				else
+						controlWrong++;
+		}
+		else if(status)
+				caseRight++;
+		else
+				controlRight++;
 }
 

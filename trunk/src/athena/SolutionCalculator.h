@@ -35,35 +35,34 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 
 class SolutionCalculator{
-    
+		
 public:
-    
-    SolutionCalculator(){name = "Calculator";}
-    
-    virtual ~SolutionCalculator(){}
+		
+		SolutionCalculator(){name = "Calculator";}
+		
+		virtual ~SolutionCalculator(){}
 
-    virtual void add_ind_score(float score, float status)=0;
-    
-    virtual float get_score()=0;
-    
-    virtual void reset()=0;
-    
-    virtual bool max_best()=0;
-    
-    virtual float get_worst()=0;
-    
-    virtual float get_constant(){return 0.0;}
-    
-    /// Used when a sub class needs a constant value for calculations as in RSquared
-    virtual void set_constant(float constant){}
-    
-    std::string get_name(){return name;}
-    
+		virtual void addIndScore(float score, float status)=0;
+		
+		virtual float getScore()=0;
+		
+		virtual void reset()=0;
+		
+		virtual bool maxBest()=0;
+		
+		virtual float getWorst()=0;
+		
+		virtual float getConstant(){return 0.0;}
+		
+		/// Used when a sub class needs a constant value for calculations as in RSquared
+		virtual void setConstant(float constant){}
+		
+		std::string getName(){return name;}
+		
 protected:
-    std::string name;
-    
+		std::string name;
+		
 };
-
 
 
 #endif	/* _SOLUTIONCALCULATOR_H */

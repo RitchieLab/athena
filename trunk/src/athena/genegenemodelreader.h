@@ -104,13 +104,13 @@ protected:
 
 	bool binaryStorage;						///< True is binary format
 
-        std::string modelSource;					///< The file containing models
+				std::string modelSource;					///< The file containing models
 	//std::ifstream *source;					///< File we are reading from
 
 };
 
 GeneGeneModelReader::iterator& GeneGeneModelReader::iterator::operator=(const GeneGeneModelReader::iterator& other) {
-  source.clear();
+	source.clear();
 	binaryStorage	= other.binaryStorage;
 	isEnd			= other.isEnd;
 	std::streampos  pos = other.GetPos();
@@ -155,18 +155,18 @@ std::streampos GeneGeneModelReader::iterator::GetPos() const {
 }
 inline
 GeneGeneModelReader::iterator::iterator(const GeneGeneModelReader::iterator& other): binaryStorage(other.binaryStorage), isEnd(other.isEnd), curModel(other.curModel) {
-    source.seekg(other.GetPos());
+		source.seekg(other.GetPos());
 }
 
 inline
 GeneGeneModelReader::iterator::iterator(const char *filename, bool binaryStorage, bool isEnd) : binaryStorage(binaryStorage), isEnd(isEnd) {
 
-    source.open(filename, std::ios::binary|std::ios::in);
+		source.open(filename, std::ios::binary|std::ios::in);
 
-    if (!source.good()) {
+		if (!source.good()) {
 	std::cerr<<"Well, the file wasn't opened!\n";
-    }
-    if (binaryStorage) {
+		}
+		if (binaryStorage) {
 	uint d=0;
 	source.read((char*)&d, sizeof(uint));
 	if (d != 0) {
@@ -175,15 +175,15 @@ GeneGeneModelReader::iterator::iterator(const char *filename, bool binaryStorage
 	}
 	uint modelCount;
 	source.read((char*)&modelCount, sizeof(uint));
-    }
-    else {
+		}
+		else {
 	uint modelCount = 0;
 	source >> modelCount;
-    }
+		}
 
-    isEnd = !source.good() || source.eof();
+		isEnd = !source.good() || source.eof();
 
-    if (!isEnd)
+		if (!isEnd)
 	LoadModel();
 	
 }
@@ -217,14 +217,14 @@ GeneGeneModelReader::iterator GeneGeneModelReader::iterator::operator++(int c) {
 
 inline
 bool GeneGeneModelReader::iterator::operator!=(const iterator& other) {
-    return !(*this == other);
+		return !(*this == other);
 }
 
 inline
 bool GeneGeneModelReader::iterator::operator==(const iterator& other) {
 	if (isEnd == true || other.isEnd == true)
 		return isEnd == other.isEnd;
-  return pos == other.pos;
+	return pos == other.pos;
 //	return source == other.source;
 }
 

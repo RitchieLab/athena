@@ -33,12 +33,12 @@ class OutputSet
 
 public:
 
-  /// outputs designated set
-  void outputSet(std::string name, Dataset& set);
-  
-  /// outputs set and adds cv number to name
-  void outputCV(std::string name, Dataset& set, int cv);
-  
+	/// outputs designated set
+	void outputSet(std::string name, Dataset& set);
+	
+	/// outputs set and adds cv number to name
+	void outputCV(std::string name, Dataset& set, int cv);
+	
 private:
 
 };

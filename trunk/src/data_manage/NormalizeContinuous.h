@@ -28,21 +28,21 @@ namespace data_manage
 class NormalizeContinuous : public data_manage::ScaleData
 {
 public:
-  NormalizeContinuous();
-  ~NormalizeContinuous();
+	NormalizeContinuous();
+	~NormalizeContinuous();
 
-  void adjust_contin(Dataholder* holder, unsigned int var_index);
-  
-  /// Adjust continuous status values
-  void adjust_status(Dataholder* holder);
+	void adjustContin(Dataholder* holder, unsigned int varIndex);
+	
+	/// Adjust continuous status values
+	void adjustStatus(Dataholder* holder);
 
-  /// Returns original value for a scaled status value
-  float get_original_status(float status){return (status*stddev)+meanval;}
-  
+	/// Returns original value for a scaled status value
+	float getOriginalStatus(float status){return (status*stdDev)+meanVal;}
+	
 private:
-  
-  float stddev, meanval;
-  
+	
+	float stdDev, meanVal;
+	
 };
 
 }

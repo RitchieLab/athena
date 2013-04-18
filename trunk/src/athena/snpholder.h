@@ -40,8 +40,8 @@ namespace Biofilter {
  */
 class SnpHolder {
 public:
-    SnpHolder(uint id);
-    virtual ~SnpHolder();
+		SnpHolder(uint id);
+		virtual ~SnpHolder();
 
 	uint ID();
 
@@ -79,7 +79,7 @@ public:
 	virtual std::set<uint> GetSnpCoverage(std::set<uint>& snps);
 protected:
 	uint id;								///< Unique ID for item
-    std::set<uint> snps;					///< SNPs
+		std::set<uint> snps;					///< SNPs
 };
 
 inline

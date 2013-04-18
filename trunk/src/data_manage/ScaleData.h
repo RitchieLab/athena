@@ -31,18 +31,18 @@ namespace data_manage
 class ScaleData
 {
 public:
-  ScaleData();
-  virtual ~ScaleData();
+	ScaleData();
+	virtual ~ScaleData();
 
-  virtual void adjust_contin(Dataholder* holder, unsigned int var_index){return;}
-  
-  virtual void adjust_status(Dataholder* holder){return;}
-  
-  virtual float get_original_status(float status){return status;}
+	virtual void adjustContin(Dataholder* holder, unsigned int varIndex){return;}
+	
+	virtual void adjustStatus(Dataholder* holder){return;}
+	
+	virtual float getOriginalStatus(float status){return status;}
 
-  void sigmoid_status(Dataholder* holder);
-  
-  virtual std::string output_scale_info(){return "";}
+	void sigmoidStatus(Dataholder* holder);
+	
+	virtual std::string outputScaleInfo(){return "";}
 
 };
 

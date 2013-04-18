@@ -23,19 +23,21 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 /// Constructor for types that contain a value
 /// @param symbol string containing symbol used for the element
-/// @param terminal_status bool that indicates whether this is a terminal element
-/// @param priority_level int specifying how to prioritize evaluation for this operator
+/// @param terminalStatus bool that indicates whether this is a terminal element
+/// @param priorityLevel int specifying how to prioritize evaluation for this operator
 ///
-Element::Element(string symbol, bool terminal_status, int priority_level){
-  name = symbol;
-  isterminal = terminal_status;
-  var_args = false;
-  priority = priority_level;
-  label = "nonterminal";
-  shape = "box";
-  style = "bold";
-  type = label;
+Element::Element(string symbol, bool terminalStatus, int priorityLevel){
+	name = symbol;
+	isTerminal = terminalStatus;
+	varArgs = false;
+	priority = priorityLevel;
+	label = "nonterminal";
+	shape = "box";
+	style = "bold";
+	type = label;
 }
+
+
 
 ///
 /// Constructor for types that contain a value
@@ -43,17 +45,17 @@ Element::Element(string symbol, bool terminal_status, int priority_level){
 /// @param terminal_status bool that indicates whether this is a terminal element
 /// @param priority_level int specifying how to priority evaluation for this operator
 ///
-Element::Element(DATATYPE value, bool terminal_status, int priority_level){
-  stringstream ss;
-  ss << value;
-  name = ss.str();
-  isterminal = terminal_status;
-  var_args = false;
-  priority = priority_level;
-  label = "nonterminal";
-  shape = "box";
-  style = "bold";
-  type = label;
+Element::Element(DATATYPE value, bool terminalStatus, int priorityLevel){
+	stringstream ss;
+	ss << value;
+	name = ss.str();
+	isterminal = terminalStatus;
+	var_args = false;
+	priority = priorityLevel;
+	label = "nonterminal";
+	shape = "box";
+	style = "bold";
+	type = label;
 }
 
 
@@ -63,41 +65,45 @@ Element::Element(DATATYPE value, bool terminal_status, int priority_level){
 /// grammar
 /// @return terminal status
 ///
-bool Element::get_isterminal() const{
-  return isterminal;
+bool Element::getIsTerminal() const{
+	return isTerminal;
 }
+
 
 ///
 /// Returns number of elements needed
 /// for this element
 /// @return number of elements
 ///
-int Element::get_num_args() const{
-  return num_args;
+int Element::getNumArgs() const{
+	return numArgs;
 }
+
 
 ///
 /// Sets the number of arguments
 /// @param nargs number of arguments needed by the argument
 ///
-void Element::set_num_args(int nargs){
-  num_args = nargs;
+void Element::set_num_args(int nArgs){
+	numArgs = nArgs;
 }
+
 
 ///
 /// Returns the symbol of the element
 /// @return symbol 
 ///
-string Element::get_name() const{
-  return name;
+string Element::getName() const{
+	return name;
 }
+
 
 ///
 /// Returns priority level for the element
 /// @returns priority
 ///
-int Element::get_priority() const{
-  return priority;
+int Element::getPriority() const{
+	return priority;
 }
 
 
@@ -108,10 +114,11 @@ int Element::get_priority() const{
 ///
 DATATYPE Element::ActivateSigmoid(DATATYPE x)
 {
-        if(x < -709) return -1.0;
-        if(x > 709)  return 1.0;
-        return(1.0 / (1.0 + exp(-x)));
+				if(x < -709) return -1.0;
+				if(x > 709)  return 1.0;
+				return(1.0 / (1.0 + exp(-x)));
 }
+
 
 ///
 /// Adjusts the result if it is infinite 
@@ -121,18 +128,19 @@ DATATYPE Element::ActivateSigmoid(DATATYPE x)
 ///
 DATATYPE Element::AdjustResult(DATATYPE x)
 {
-        if(isinf(x) == 1) {
-                return 1.0;
-        }
-        if(isinf(x) == -1) {
-                return -1.0;
-        }
-        if(isnan(x)) {
-                return 0.0;
-        }
+				if(isinf(x) == 1) {
+								return 1.0;
+				}
+				if(isinf(x) == -1) {
+								return -1.0;
+				}
+				if(isnan(x)) {
+								return 0.0;
+				}
 
-        return x;
+				return x;
 }
+
 
 ///
 /// Overloads output for element
@@ -141,7 +149,7 @@ DATATYPE Element::AdjustResult(DATATYPE x)
 /// @returns output stream
 ///
 ostream & operator << (ostream & os, const Element & el){
-        os << el.name;
-        return os;
+				os << el.name;
+				return os;
 }
 

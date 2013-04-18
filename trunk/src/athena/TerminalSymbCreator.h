@@ -36,32 +36,32 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 using namespace data_manage;
 
 class TerminalSymbCreator{
-    
-  public:
-    TerminalSymbCreator();
-    void create_terminals(int num_genotypes, int num_covariates);
-    TerminalSymbol * create_constant(const std::string& symbol);
-    
-    void terminalsFromConstant(float value, symbVector& opt_symbols);
-    
-    void addGenotypeVariables(int num_variables);
-    void addContinVariables(int num_variables);
-    
-    TerminalSymbol* get_term(std::string& symbol);
-    
-    inline TerminalSymbol* right_paren(){return rparen;}
-    inline TerminalSymbol* left_paren(){return lparen;}
-    inline TerminalSymbol* comma(){return commaptr;}
-    inline TerminalSymbol* concaten(){return concat;}
-    
-    void set_ind(Individual* ind);
-    
-  private:
-   
-    void getStringFromNum(float value, symbVector& opt_symbols);
-    std::map<std::string, TerminalSymbol*> TerminalMap;
-    TerminalSymbol* rparen, *lparen, *commaptr, *concat;
-    optSymbol left_paren_symb, right_paren_symb, concat_symb, period_symb;
+		
+	public:
+		TerminalSymbCreator();
+		void createTerminals(int numGenotypes, int numCovariates);
+		TerminalSymbol * createConstant(const std::string& symbol);
+		
+		void terminalsFromConstant(float value, symbVector& optSymbols);
+		
+		void addGenotypeVariables(int numVariables);
+		void addContinVariables(int numVariables);
+		
+		TerminalSymbol* getTerm(std::string& symbol);
+		
+		inline TerminalSymbol* rightParen(){return rParen;}
+		inline TerminalSymbol* leftParen(){return lParen;}
+		inline TerminalSymbol* comma(){return commaPtr;}
+		inline TerminalSymbol* concaten(){return concat;}
+		
+		void setInd(Individual* ind);
+		
+	private:
+	 
+		void getStringFromNum(float value, symbVector& optSymbols);
+		std::map<std::string, TerminalSymbol*> terminalMap;
+		TerminalSymbol* rParen, *lParen, *commaPtr, *concat;
+		optSymbol leftParenSymb, rightParenSymb, concatSymb, periodSymb;
 
 };
 

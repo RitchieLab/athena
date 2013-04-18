@@ -31,29 +31,29 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 class NNSolutionCreatorIncludeOnce: public NNSolutionCreator{
 
-  public:
-  
-    NNSolutionCreatorIncludeOnce(){vars_set = false;}
-  
-    /// creates solution from vector of strings
-    void establish_solution(vector<string>& symbols, Dataset* set);
-    
-    /// returns fitness score through evaluation of solution
-    float evaluate(Dataset* set);
-    
-    /// passes vector of symbols that must be part of the neural network
-    void required_symbols(vector<string>& symbols, Dataset* set);
-    
-    /// gets list of required symbols
-    void restrict(vector<string>& vars){req_symbols = vars;}
-    
-    
-  private:
-    
-    vector<TerminalSymbol*> req_genos, req_covars;
-    vector<string> req_symbols;
-    bool all_vars_included, vars_set;
-    
+	public:
+	
+		NNSolutionCreatorIncludeOnce(){varsSet = false;}
+	
+		/// creates solution from vector of strings
+		void establishSolution(vector<string>& symbols, Dataset* set);
+		
+		/// returns fitness score through evaluation of solution
+		float evaluate(Dataset* set);
+		
+		/// passes vector of symbols that must be part of the neural network
+		void requiredSymbols(vector<string>& symbols, Dataset* set);
+		
+		/// gets list of required symbols
+		void restrict(vector<string>& vars){reqSymbols = vars;}
+		
+		
+	private:
+		
+		vector<TerminalSymbol*> reqGenos, reqCovars;
+		vector<string> reqSymbols;
+		bool allVarsIncluded, varsSet;
+		
 };
 
 #endif

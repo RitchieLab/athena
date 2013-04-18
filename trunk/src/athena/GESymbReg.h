@@ -34,19 +34,19 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// 
  
 class GESymbReg: public GENNAlg{
-  public:
-  
-    /// Set the parameters for the algorithm
-    void set_params(AlgorithmParams& alg_params, int numExchanges, int numGenos, int numContin);  
-    
-    /// Runs a step of the algorithm
-    virtual int step();
-  
-  private:
-    
-    /// Sets GA for run
-    void set_ga_params();
-  
+	public:
+	
+		/// Set the parameters for the algorithm
+		void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, int numContin);  
+		
+		/// Runs a step of the algorithm
+		virtual int step();
+	
+	private:
+		
+		/// Sets GA for run
+		void setGAParams();
+	
 };
 
 

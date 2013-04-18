@@ -40,93 +40,93 @@ using namespace data_manage;
 /// support vector machines, etc.
 ///
 class Solution{
-    
+		
 public:
  
-    /// default constructor
-    Solution(){solution_name = "";}
-    
-    /// Named constructor
-    Solution(std::string name){set_name(name);}
-    
-    /// Destructor
-    virtual ~Solution(){}
-    
-    /// Clones the current solution
-    virtual Solution* clone();
-    
-    /// return number of symbols
-    unsigned int get_num_symbols(){return symbols.size();}
-    
-    /// operator [] for accessing symbols
-    inline std::string& operator[](unsigned int index){return symbols[index];}
-   
-    /// sets solution namem
-    void set_name(std::string name){solution_name = name;}
-    
-    /// returns solution name (type)
-    std::string get_name(){return solution_name;}
-    
-    /// set symbols
-    void set_symbols(std::vector<std::string>& sym){ symbols=sym;}
-    
-    /// returns symbols
-    std::vector<std::string>& get_symbols(){return symbols;}
-    
-    /// returns fitness
-    float fitness(){return sol_fitness;}
-    
-    /// set fitness
-    void fitness(float fit){sol_fitness = fit;}
-    
-    /// returns test score
-    float testval(){return test_score;}
-    
-    /// sets test score
-    void testval(float val){test_score = val;}
-    
-    /// adjusts output so that 
-    virtual void adjust_dummy_encoding(){};
-    
-    /// outputs as a text file
-    virtual void output_solution(std::ostream& os);
-    
-    /// outputs as a graphviz compatible file
-    virtual void output_graph(std::ostream& os);
+		/// default constructor
+		Solution(){solutionName = "";}
+		
+		/// Named constructor
+		Solution(std::string name){setName(name);}
+		
+		/// Destructor
+		virtual ~Solution(){}
+		
+		/// Clones the current solution
+		virtual Solution* clone();
+		
+		/// return number of symbols
+		unsigned int getNumSymbols(){return symbols.size();}
+		
+		/// operator [] for accessing symbols
+		inline std::string& operator[](unsigned int index){return symbols[index];}
+	 
+		/// sets solution namem
+		void setName(std::string name){solutionName = name;}
+		
+		/// returns solution name (type)
+		std::string getName(){return solutionName;}
+		
+		/// set symbols
+		void setSymbols(std::vector<std::string>& sym){ symbols=sym;}
+		
+		/// returns symbols
+		std::vector<std::string>& getSymbols(){return symbols;}
+		
+		/// returns fitness
+		float fitness(){return solFitness;}
+		
+		/// set fitness
+		void fitness(float fit){solFitness = fit;}
+		
+		/// returns test score
+		float testVal(){return testScore;}
+		
+		/// sets test score
+		void testVal(float val){testScore = val;}
+		
+		/// adjusts output so that 
+		virtual void adjustDummyEncoding(){};
+		
+		/// outputs as a text file
+		virtual void outputSolution(std::ostream& os);
+		
+		/// outputs as a graphviz compatible file
+		virtual void outputGraph(std::ostream& os);
 
-    /// outputs a more human-readable version of the network
-    virtual void output_clean(std::ostream& os, data_manage::Dataholder& data, 
-      bool map_used, bool ott_dummy, bool continmap_used);
+		/// outputs a more human-readable version of the network
+		virtual void outputClean(std::ostream& os, data_manage::Dataholder& data, 
+			bool mapUsed, bool ottDummy, bool continMapUsed);
 
-    void copy(Solution* other);
-    
-    /// returns the genotypes present in the solution
-    virtual std::vector<int> get_genotypes(bool dummy_encoded = true){
-        std::vector<int> blank;
-        return blank;}
-    
-    /// returns covariates present in the solution
-    virtual std::vector<int> get_covariates(){
-        std::vector<int> blank;
-        return blank;}
-    
-    /// Adjusts output of the scores when needed (e.g. meansquared to rsquared)
-    virtual void adjust_score_out(Dataset* train_set, Dataset* test_set){}
-    
-    /// Adjusts output of the scores when needed
-    virtual void adjust_score_out(Dataset* train_set){}
-    
-    /// Adjusts score passed and returns value
-    virtual float adjust_score_out(float score, int nIndsTested, float constant){return score;}  
+		void copy(Solution* other);
+		
+		/// returns the genotypes present in the solution
+		virtual std::vector<int> getGenotypes(bool dummyEncoded = true){
+				std::vector<int> blank;
+				return blank;}
+		
+		/// returns covariates present in the solution
+		virtual std::vector<int> getCovariates(){
+				std::vector<int> blank;
+				return blank;}
+		
+		/// Adjusts output of the scores when needed (e.g. meansquared to rsquared)
+		virtual void adjustScoreOut(Dataset* trainSet, Dataset* testSet){}
+		
+		/// Adjusts output of the scores when needed
+		virtual void adjustScoreOut(Dataset* trainSet){}
+		
+		/// Adjusts score passed and returns value
+		virtual float adjustScoreOut(float score, int nIndsTested, float constant){return score;}  
 
 protected:
-    
-    std::vector<std::string> symbols;
-    float sol_fitness, test_score;
-      
+		
+		std::vector<std::string> symbols;
+		float solFitness, testScore;
+			
 private:
-    
-    std::string solution_name;
+		
+		std::string solutionName;
 };
 
 

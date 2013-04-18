@@ -24,9 +24,9 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "AthenaExcept.h"
 
 struct logModel{
-    float fitness;
-    std::string model;
-    int gen, rank, gram_depth, nn_depth, n_c, n_g;
+		float fitness;
+		std::string model;
+		int gen, rank, gramDepth, nnDepth, n_c, n_g;
 };
 
 bool compareLogModels(logModel first, logModel second);
@@ -38,19 +38,16 @@ bool compareLogModels(logModel first, logModel second);
 ///
 class ModelLogParser{
 
-    public:
-        void compile_files(std::vector<std::string>& filenames, std::string outfilename,
-            float not_valid);
+		public:
+				void compileFiles(std::vector<std::string>& filenames, std::string outFilename,
+						float notValid);
 
-    private:
-        logModel get_model(std::string& line);
-        
-        void parse_file(std::string filename, std::vector<std::vector<logModel> >& models);
+		private:
+				logModel getModel(std::string& line);
+				
+				void parseFile(std::string filename, std::vector<std::vector<logModel> >& models);
 
-        void write_output(std::ostream & os, std::vector<std::vector<logModel> >& models,
-            float not_valid);
+				void writeOutput(std::ostream & os, std::vector<std::vector<logModel> >& models,
+						float notValid);
 
 };
-
-
-

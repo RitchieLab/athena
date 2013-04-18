@@ -25,10 +25,10 @@ namespace data_manage
 
 Dataholder::Dataholder()
 {
-  any_missing = false;
-  ott_encoded = false;
-  max_locus = 0;
-  split_num = -1;
+	anyMissing = false;
+	ottEncoded = false;
+	maxLocus = 0;
+	splitNum = -1;
 }
 
 
@@ -37,9 +37,9 @@ Dataholder::Dataholder()
 ///
 Dataholder::~Dataholder()
 {
-  vector<Individual*>::iterator iter;
-  for(iter = inds.begin(); iter != inds.end(); iter++)
-    delete *iter;
+	vector<Individual*>::iterator iter;
+	for(iter = inds.begin(); iter != inds.end(); iter++)
+		delete *iter;
 }
 
 
@@ -48,10 +48,10 @@ Dataholder::~Dataholder()
 /// Adds individual to set
 /// @param ind Individual to add
 ///
-void Dataholder::add_ind(Individual& ind){
-  Individual* new_ind = new Individual(ind);
-  inds.push_back(new_ind);
-  inds_map[new_ind->get_id()] = new_ind;
+void Dataholder::addInd(Individual& ind){
+	Individual* newInd = new Individual(ind);
+	inds.push_back(newInd);
+	indsMap[newInd->getID()] = newInd;
 }
 
 
@@ -59,30 +59,31 @@ void Dataholder::add_ind(Individual& ind){
 /// Adds individual to set
 /// @param ind Individual to add
 ///
-void Dataholder::add_ind(Individual* ind){
-  inds.push_back(ind);
-  inds_map[ind->get_id()] = ind;
+void Dataholder::addInd(Individual* ind){
+	inds.push_back(ind);
+	indsMap[ind->getID()] = ind;
 }
 
 ///
 /// Adds default snp names to set
 ///
-void Dataholder::add_default_snps(){
-   unsigned int total = num_genos();
-   for(unsigned int i=1; i<=total; i++){
-     add_geno_name(Stringmanip::itos(i));
-   }
+void Dataholder::addDefaultSnps(){
+	 unsigned int total = numGenos();
+	 for(unsigned int i=1; i<=total; i++){
+// 		 addGenoName(Stringmanip::itos(i));
+		 addGenoName(Stringmanip::numberToString(i));
+	 }
 }
 
 ///
 /// Adds default covariate names to holder
 ///
-void Dataholder::add_default_covars(){
-    unsigned int total = inds[0]->num_covariates();
-    for(unsigned int i=1; i<=total; i++){
-      add_covar_name(Stringmanip::itos(i));  
-    }
+void Dataholder::addDefaultCovars(){
+		unsigned int total = inds[0]->numCovariates();
+		for(unsigned int i=1; i<=total; i++){
+// 			addCovarName(Stringmanip::itos(i));
+			addCovarName(Stringmanip::numberToString(i));
+		}
 }
-
 
 }

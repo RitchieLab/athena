@@ -40,65 +40,65 @@ using namespace data_manage;
 
 class ConfigFileReader{
 public:
-    ConfigFileReader(){initialize_keywords();}
-    
-    ConfigFileReader(string configfile);
-    
-    Config read_config(string configfile);
-    
+		ConfigFileReader(){initializeKeywords();}
+		
+		ConfigFileReader(string configFile);
+		
+		Config readConfig(string configFile);
+		
 private:
-    
-    /// Reads parameters for current algorithm and stores as map in Config
-    void read_algo_params(std::map<std::string, std::string> algo_params, std::ifstream & configFile);
-    
-    void initialize_keywords();
-    
-    bool skip_line(std::string line);
-    
-    void read_alg_params(AlgorithmParams& alg_param, std::ifstream& configstream);
-    
-    bool param_true(std::string param);
-    
-    enum configKeyWords{
-        keyNoMatch,
-        keyDataset,
-        keyOut,
-        keyMapFile,
-        keyAlgorithm,
-        keyEnd,
-        keyMissingValue,
-        keyRandSeed,
-        keyDatasetType,
-        keyCV,
-        keyContinFile,
-        keyIDIncluded,
-        keyContinMiss,
-        keyDummyEncode,
-        keyNumExchanges,
-        keyCVOutput,
-        keyStatusChange,
-        keyBestModelIndOutput,
-        keyOutputAllNodeBest,
-        keyTestFile,
-        keyTrainFile,
-        keyContinTestFile,
-        keyContinTrainFile,
-        keyBioFilterFile,
-        keySummaryOnly,
-        keyStatusMissingValue,
-        keyBioFileType,
-        keyBioArchiveFile,
-        keyBioGeneFile,
-        keyLogType,
-        keyContinMapFile,
-        keySplitFile,
-        keyCVStart
-    };
-    
-    std::map<std::string, configKeyWords> keywordMap;
-    
-    std::string output_name, dataset_type;
-    
+		
+		/// Reads parameters for current algorithm and stores as map in Config
+		void readAlgoParams(std::map<std::string, std::string> algoParams, std::ifstream & configFile);
+		
+		void initializeKeywords();
+		
+		bool skipLine(std::string line);
+		
+		void readAlgParams(AlgorithmParams& algParam, std::ifstream& configStream);
+		
+		bool paramTrue(std::string param);
+		
+		enum configKeyWords{
+				keyNoMatch,
+				keyDataset,
+				keyOut,
+				keyMapFile,
+				keyAlgorithm,
+				keyEnd,
+				keyMissingValue,
+				keyRandSeed,
+				keyDatasetType,
+				keyCV,
+				keyContinFile,
+				keyIDIncluded,
+				keyContinMiss,
+				keyDummyEncode,
+				keyNumExchanges,
+				keyCVOutput,
+				keyStatusChange,
+				keyBestModelIndOutput,
+				keyOutputAllNodeBest,
+				keyTestFile,
+				keyTrainFile,
+				keyContinTestFile,
+				keyContinTrainFile,
+				keyBioFilterFile,
+				keySummaryOnly,
+				keyStatusMissingValue,
+				keyBioFileType,
+				keyBioArchiveFile,
+				keyBioGeneFile,
+				keyLogType,
+				keyContinMapFile,
+				keySplitFile,
+				keyCVStart
+		};
+		
+		std::map<std::string, configKeyWords> keywordMap;
+		
+		std::string outputName, datasetType;
+		
 };
 
 #endif	/* _CONFIGFILEREADER_H */

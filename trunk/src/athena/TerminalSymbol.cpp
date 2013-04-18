@@ -26,9 +26,9 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 float TerminalSymbol::ActivateSigmoid(float x)
 {
-        if(x < -709) return -1.0;
-        if(x > 709)  return 1.0;
-        return(1.0 / (1.0 + exp(-x)));
+				if(x < -709) return -1.0;
+				if(x > 709)  return 1.0;
+				return(1.0 / (1.0 + exp(-x)));
 }
 
 ///
@@ -40,16 +40,16 @@ float TerminalSymbol::ActivateSigmoid(float x)
 float TerminalSymbol::AdjustResult(float x)
 {
 
-        if(isinf(x) == 1) {
-                return 1.0;
-        }
-        if(isinf(x) == -1) {
-                return -1.0;
-        }
-        if(isnan(x)) {
-                return 0.0;
-        }
+				if(isinf(x) == 1) {
+								return 1.0;
+				}
+				if(isinf(x) == -1) {
+								return -1.0;
+				}
+				if(isnan(x)) {
+								return 0.0;
+				}
 
-        return x;
+				return x;
 }
 

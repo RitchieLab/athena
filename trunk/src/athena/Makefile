@@ -11,7 +11,7 @@ ANNIEDIR = ../annie
 
 INCLUDEDIR = -I. -I$(STATDIR) -I$(DATADIR) -I$(GADIR) -I$(GEDIR) -I$(ANNIEDIR)
 DFLAGS = -DPARALLEL 
-#DFLAGS = 
+DFLAGS = 
 CCFLAGS = -Wall $(DFLAGS) -O2 $(INCLUDEDIR)
 #CCFLAGS = -Wall $(DFLAGS) -g $(INCLUDEDIR)
 
@@ -31,8 +31,8 @@ SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	SolutionFactory.o Terminals.o TerminalSymbCreator.o TerminalSymbol.o \
 	GENNAlg.o NNSolutionCreatorIncludeAll.o NNSolutionCreatorIncludeOnce.o \
 	ExpressionTree.o NNLog.o Algorithm.o RSquaredCalculator.o BioFilterReader.o \
-	AthenaGrammarSI.o BioFilterModelCollection.o BackProp.o BackPropTree.o \
-	BioFilterBinReader.o genegenemodel.o BackPropSMD.o BackPropAnnie.o \
+	AthenaGrammarSI.o BioFilterModelCollection.o BackProp.o \
+	BioFilterBinReader.o genegenemodel.o BackPropAnnie.o \
 	BackPropAnnieTree.o SymRegressSolutionCreator.o GESymbReg.o NNModelLog.o \
 	ModelLogParser.o
 
@@ -46,17 +46,15 @@ SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	NNSolutionCreatorIncludeAll.h NNSolutionCreatorIncludeOnce.h \
 	ExpressionTree.h Tree.hh AlgorithmLog.h NNLog.h BioFilterReader.h \
 	AthenaGrammarSI.h BioFilterModelCollection.h BackProp.h \
-	BackPropTree.h Structs.h BioFilterBinReader.h BioReader.h \
+	Structs.h BioFilterBinReader.h BioReader.h \
 	genegenemodel.h genegenemodelreader.h region.h snpholder.h \
-	snpsnpmodel.h biomodel.h BackPropSMD.h BackPropAnnie.h BackPropAnnieTree.h \
+	snpsnpmodel.h biomodel.h BackPropAnnie.h BackPropAnnieTree.h \
 	SymRegressSolutionCreator.h GESymbReg.h NNModelLog.h ModelLogParser.h
 
 #ifeq ($(DFLAGS),-DPARALLEL)
 PARALLEL_NEEDED := $(shell echo $(DFLAGS) | cut -f1 -d' ')
 ifeq ($(PARALLEL_NEEDED),-DPARALLEL)
 CC = mpiCC
-SYSOBJS += TransferData.o
-SYSHEADERS += TransferData.h
 EXECUTABLE = athenap
 TEST_NAME = athenap_test
 else

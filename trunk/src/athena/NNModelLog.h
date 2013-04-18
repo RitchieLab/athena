@@ -34,27 +34,27 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 class NNModelLog{
 
 public:
-    NNModelLog(){detailed=false;}
-    
-    ~NNModelLog();
+		NNModelLog(){detailed=false;}
+		
+		~NNModelLog();
 
-    void open_log(std::string filename, std::string fitness_name);
-    
-    void close_log();
-    
-    void write_solution(NNSolution & solution, int generation, int rank);
-    
-    void set_detailed(bool include){detailed=include;}
-    
-    bool get_detailed(){return detailed;}
-    
+		void openLog(std::string filename, std::string fitnessName);
+		
+		void closeLog();
+		
+		void writeSolution(NNSolution & solution, int generation, int rank);
+		
+		void setDetailed(bool include){detailed=include;}
+		
+		bool getDetailed(){return detailed;}
+		
 private:
-    
-    bool detailed;
-    
-    void header(ostream& os, std::string fitness_name);
-    
-    std::ofstream log_stream;
+		
+		bool detailed;
+		
+		void header(ostream& os, std::string fitnessName);
+		
+		std::ofstream logStream;
 
 };
 

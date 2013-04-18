@@ -29,8 +29,8 @@ class ContinMapFileReader
 {
 public:
 
-  /// parses the map file and stores the names in the Dataholder
-  void parse_map_file(std::string mapfile, Dataholder* holder);
+	/// parses the map file and stores the names in the Dataholder
+	void parseMapFile(std::string mapFile, Dataholder* holder);
 
 };
 
