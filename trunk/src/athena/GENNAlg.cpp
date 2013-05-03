@@ -594,7 +594,7 @@ void GENNAlg::fillLog(){
 		}
 		
 		#ifdef PARALLEL
-			geLog->SendReceiveLogs(totalNodes, myRank);
+			geLog->sendReceiveLogs(totalNodes, myRank);
 		#endif
 		
 		// output log information -- appended to existing log files

@@ -264,7 +264,7 @@ int GESymbReg::step(){
 				 GE1DArrayGenome::setMapper(&mapper);
 				 convertNetworks(restrictMapper, mapper);
 			}
-			SendAndReceiveStruct(totalNodes, myRank);
+			sendAndReceiveStruct(totalNodes, myRank);
 
 			if(ngensVarRestrict && restrictStepsDone < ngensVarRestrict){
 				// after transfer construct new grammar and set for use

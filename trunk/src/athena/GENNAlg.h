@@ -117,9 +117,9 @@ public:
 			
 			virtual void setRank(int rank);
 			void updateWithMigration(float* stats, int* codons, int totalNodes, int myRank, int max_length=0);
-			void updateWithMigration(struct_mpi * genomes, int totalNodes, int myRank);
-			void SendAndReceive(int totalNodes, int myRank);
-			void SendAndReceiveStruct(int totalNodes, int myRank);
+			void updateWithMigration(structMPI * genomes, int totalNodes, int myRank);
+			void sendAndReceive(int totalNodes, int myRank);
+			void sendAndReceiveStruct(int totalNodes, int myRank);
 			int nodesCompleted(int complete);
 		#endif
 	

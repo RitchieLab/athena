@@ -153,7 +153,7 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 				rbuf = new float[nprocs*sendBufferSize];
 		}
 		
-		fill_send_buffer(sendBuffer);
+		fillSendBuffer(sendBuffer);
 		
 		MPI_Gather(sendBuffer, sendBufferSize, MPI_FLOAT, rbuf, sendBufferSize, 
 				MPI_FLOAT, 0, MPI_COMM_WORLD);
@@ -183,7 +183,7 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 		delete [] sendSnps;
 		
 		if(myRank==0){
-				fill_master_log(rbuf, sendBufferSize, rbufSnps, totalSize, nprocs);
+				fillMasterLog(rbuf, sendBufferSize, rbufSnps, totalSize, nprocs);
 				delete [] rbuf;
 				delete [] rbufSnps;
 		}
