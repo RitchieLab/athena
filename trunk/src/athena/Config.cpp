@@ -41,6 +41,7 @@ void Config::initialize(){
 		numExchanges = 2;
 		cvOut = false;
 		statusChange = "NONE";
+		continChange = "NONE";
 		indsOutput = false;
 		allNodesOut = false;
 		testFile = "";

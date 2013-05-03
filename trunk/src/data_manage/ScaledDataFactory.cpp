@@ -19,6 +19,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "ScaledDataFactory.h"
 #include "NormalizeContinuous.h"
 #include "ScaleContinuous.h"
+#include "ScaleGroupContinuous.h"
 
 namespace data_manage{
 
@@ -49,6 +50,9 @@ ScaleData* ScaledDataFactory::createScaler(string scaleType){
 		case ScaleContin:
 			newScaler = new ScaleContinuous;
 			break;
+		case ScaleGroupContin:
+			newScaler = new ScaleGroupContinuous;
+			break;
 		case NoScale:
 			newScaler = new ScaleData;
 			break;
@@ -68,6 +72,7 @@ ScaleData* ScaledDataFactory::createScaler(string scaleType){
 void ScaledDataFactory::setScaleMap(){
 	scaleMap["NORMSTDEV"]=ScaleNorm;
 	scaleMap["NORMMAX"]=ScaleContin;
+	scaleMap["GROUPSCALE"]=ScaleGroupContin;
 	scaleMap["NONE"]=NoScale;
 
 }

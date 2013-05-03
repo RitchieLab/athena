@@ -51,7 +51,24 @@ public:
 	unsigned int numInds(){return inds.size();}
 
 	/// Add variable name
-	inline void addCovarName(string varName){covars.push_back(varName);covarsMap[varName]=covars.size()-1; }
+	inline void addCovarName(string varName, string scaleGroup="default"){
+		covars.push_back(varName);
+		covarsMap[varName]=covars.size()-1;
+		if(covarsScaleGroup.find(scaleGroup) == covarsScaleGroup.end()){
+			vector<int> newVector;
+			covarsScaleGroup[scaleGroup]=newVector;
+		}
+		covarsScaleGroup[scaleGroup].push_back(covars.size()-1);
+		covarsGroup[covars.size()-1]=covarsScaleGroup.find(scaleGroup);
+	}
+	
+	/// returns group name based on covariate index
+	inline string getCovarGroupName(unsigned int index){
+		std::map<unsigned int, std::map<std::string, std::vector<int> >::iterator>::iterator iter = covarsGroup.find(index);
+		return iter->second->first;
+	}
+	
+	inline std::map<std::string, std::vector<int> >& getContinGroups(){return covarsScaleGroup;}
 
 	/// Retrieve variable name
 	inline string getCovarName(unsigned int index){return covars[index];}
@@ -140,6 +157,8 @@ private:
 	std::vector<std::string> covars;
 	std::map<std::string, unsigned int> genosMap, covarsMap; //key is geno name, value is index into genos array
 	std::map<std::string, Individual*> indsMap;
+	std::map<std::string, std::vector<int> > covarsScaleGroup;
+	std::map<unsigned int, std::map<std::string, std::vector<int> >::iterator> covarsGroup;
 	unsigned int maxLocus;
 	bool anyMissing, ottEncoded;
 	int missingGenotype, splitNum;

@@ -111,6 +111,9 @@ public:
 		void setStatusAdjust(std::string statChange){statusChange=statChange;}
 		std::string getStatusAdjust(){return statusChange;}
 		
+		void setContinAdjust(std::string cChange){continChange=cChange;}
+		std::string getContinAdjust(){return continChange;}
+		
 		void setIndOutput(bool io){indsOutput = io;}
 		bool getIndOutput(){return indsOutput;}
 		
@@ -217,7 +220,7 @@ private:
 		
 		std::string dataType, outName, mapName, dataFile, continFile, statusChange, 
 			trainFile, testFile, continTest, continTrain, bioFilterFile, biofilterFileType,
-			bioArchiveFile, bioGeneFile, continMap, splitFile;
+			bioArchiveFile, bioGeneFile, continMap, splitFile, continChange;
 		int missValue, nCV, randSeed, numExchanges, startCV;
 		float continMiss, statMissValue;
 		bool idIncluded, ottDummyEncoded, cvOut, indsOutput, allNodesOut;

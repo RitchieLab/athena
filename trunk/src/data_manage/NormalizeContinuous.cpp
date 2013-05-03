@@ -33,6 +33,17 @@ NormalizeContinuous::~NormalizeContinuous()
 {
 }
 
+///
+/// Rescales the continuous variables by taking absolute difference
+/// from the mean and dividing by the standard deviation
+/// @param holder Dataholder with all dat
+///
+void NormalizeContinuous::adjustContin(Dataholder* holder){
+	for(unsigned int c=0; c < holder->numCovariates(); c++){
+		adjustContin(holder, c);
+	}
+}
+
 
 ///
 /// Rescales the continuous variables by taking absolute difference

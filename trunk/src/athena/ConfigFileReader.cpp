@@ -56,6 +56,7 @@ void ConfigFileReader::initializeKeywords(){
 	keywordMap["NUMSTEPS"]= keyNumExchanges;
 	keywordMap["WRITECV"] = keyCVOutput;
 	keywordMap["STATUSADJUST"] = keyStatusChange;
+	keywordMap["CONTINADJUST"] = keyContinChange;
 	keywordMap["INDOUTPUT"] = keyBestModelIndOutput;
 	keywordMap["ALLNODESBEST"] = keyOutputAllNodeBest;
 	keywordMap["TRAINFILE"] = keyTrainFile;
@@ -180,6 +181,10 @@ Config ConfigFileReader::readConfig(string configFile){
 					 case keyStatusChange:
 						 ss >> value;
 						 configuration.setStatusAdjust(Stringmanip::to_upper(value));
+						 break;
+					 case keyContinChange:
+					 	 ss >> value;
+						 configuration.setContinAdjust(Stringmanip::to_upper(value));
 						 break;
 					 case keyCVOutput:
 						 ss >> value;

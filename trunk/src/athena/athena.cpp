@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "4/7/13";
+		string versionDate = "5/1/13";
 		string execName = "ATHENA";
 		string version = "1.0.1";
 		 time_t start,end;
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
 		string configFile = argv[1];
 		ConfigFileReader configRead;
 		Config config;
-		ScaleData* scaler = NULL;
+		ScaleData* scaler = NULL, *continScaler=NULL;
 
 		// read config file
 		try{
@@ -157,9 +157,8 @@ int main(int argc, char** argv) {
 				// alter continuous variables and status value
 				scaler = data_manage::ScaledDataFactory::createScaler(config.getStatusAdjust());
 				scaler->adjustStatus(&data);
-				for(unsigned int c=0; c < data.numCovariates(); c++){
-					scaler->adjustContin(&data, c);
-				}
+				continScaler = data_manage::ScaledDataFactory::createScaler(config.getContinAdjust());
+				continScaler->adjustContin(&data);
 
 		}catch(AthenaExcept he){
 				exitApp(he, myRank);
@@ -330,6 +329,7 @@ int main(int argc, char** argv) {
 		MPI_Finalize();
  #endif
 		delete scaler;
+		delete continScaler;
 
 #ifdef PARALLEL
 		if(myRank==0){

@@ -8,14 +8,14 @@ OBJS = ContinFileReader.o CrossValidator.o CVInterval.o CVSet.o DataExcept.o \
 	MDRFileHandler.o NormalizeContinuous.o OttDummyConvert.o \
 	ScaleContinuous.o ScaleData.o Stringmanip.o OutputSet.o \
 	ScaledDataFactory.o RandomNoReplace.o StephenDummyConvert.o \
-	ContinMapFileReader.o
+	ContinMapFileReader.o ScaleGroupContinuous.o
 	
 HEADERS = ContinFileReader.h CrossValidator.h CVInterval.h CVSet.h DataExcept.h \
 	Dataholder.h Dataset.h FileHandler.h Individual.h MapFileReader.h \
 	MDRFileHandler.h NormalizeContinuous.h OttDummyConvert.h \
 	ScaleContinuous.h ScaleData.h Stringmanip.h OutputSet.h \
 	ScaledDataFactory.h RandomNoReplace.h StephenDummyConvert.h \
-	ContinMapFileReader.h
+	ContinMapFileReader.h ScaleGroupContinuous.h
 
 CC          = g++ -O2
 #CC          = g++ -g

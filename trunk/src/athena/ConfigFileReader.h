@@ -92,7 +92,8 @@ private:
 				keyLogType,
 				keyContinMapFile,
 				keySplitFile,
-				keyCVStart
+				keyCVStart,
+				keyContinChange
 		};
 		
 		std::map<std::string, configKeyWords> keywordMap;

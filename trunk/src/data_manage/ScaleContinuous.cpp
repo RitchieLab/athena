@@ -35,19 +35,28 @@ ScaleContinuous::~ScaleContinuous()
 
 
 ///
+/// For all continuous variables, the values are all
+/// scaled by dividing by the largest value in the variable
+/// @param holder Dataholder with all dat
+///
+void ScaleContinuous::adjustContin(Dataholder* holder){
+	for(unsigned int c=0; c < holder->numCovariates(); c++){
+		adjustContin(holder, c);
+	}
+}
+
+///
 /// For the continuous variable in question, the values are all
 /// scaled by dividing by the largest value in the variable
 /// @param holder Dataholder with all dat
 /// @param varIndex Variable to be scaled
 ///
 void ScaleContinuous::adjustContin(Dataholder* holder, unsigned int varIndex){
-
-
 	unsigned int currInd;
 	Individual* ind;
 
-	float maxValue = holder->getInd(0)->getStatus();
-	float covarMin = holder->getInd(0)->getStatus();
+	float maxValue = -1e30;
+	float covarMin = 1e30;
 	float covarAdjust = 0;
 	
 	for(currInd = 0; currInd < holder->numInds(); currInd++){

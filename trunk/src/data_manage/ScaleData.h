@@ -34,9 +34,13 @@ public:
 	ScaleData();
 	virtual ~ScaleData();
 
+	virtual void adjustContin(Dataholder* holder){return;}
+
 	virtual void adjustContin(Dataholder* holder, unsigned int varIndex){return;}
 	
 	virtual void adjustStatus(Dataholder* holder){return;}
+	
+	virtual void setContinGroups(Dataholder* holder){return;}
 	
 	virtual float getOriginalStatus(float status){return status;}
 

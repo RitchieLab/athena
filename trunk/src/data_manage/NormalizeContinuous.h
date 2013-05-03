@@ -33,6 +33,8 @@ public:
 
 	void adjustContin(Dataholder* holder, unsigned int varIndex);
 	
+	void adjustContin(Dataholder* holder);
+	
 	/// Adjust continuous status values
 	void adjustStatus(Dataholder* holder);
 

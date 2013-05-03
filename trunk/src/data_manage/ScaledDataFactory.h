@@ -36,6 +36,7 @@ class ScaledDataFactory{
 			NoMatch,
 			ScaleNorm,
 			ScaleContin,
+			ScaleGroupContin,
 			NoScale
 		};
 

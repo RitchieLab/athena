@@ -32,6 +32,8 @@ public:
 
 	void adjustContin(Dataholder* holder, unsigned int varIndex);
 	
+	void adjustContin(Dataholder* holder);
+	
 	/// Scales status by dividing all 
 	void adjustStatus(Dataholder* holder);
 
@@ -44,6 +46,7 @@ public:
 private:
 	
 	float statMin, statMax, statAdjust;
+	std::map<std::string, float> maxGroupValues;
 	
 
 };

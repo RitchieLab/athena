@@ -37,7 +37,7 @@ void ContinMapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
 
 	string line;
 
-	string continID;
+	string continID, groupID;
 
 	while(!mapStream.eof()){
 		getline(mapStream, line);
@@ -49,7 +49,10 @@ void ContinMapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
 		stringstream ss(line);
 
 		ss >> continID;
-		dataholder->addCovarName(continID);
+		if(ss >> groupID)
+			dataholder->addCovarName(continID, groupID);
+		else
+			dataholder->addCovarName(continID);
 	}
 
 	mapStream.close();
