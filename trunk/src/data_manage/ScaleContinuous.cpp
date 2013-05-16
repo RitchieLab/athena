@@ -71,17 +71,20 @@ void ScaleContinuous::adjustContin(Dataholder* holder, unsigned int varIndex){
 
 
 	// when minimum is positive number use statMin as zero
-	if(covarMin < 0){
+	// scale from -1 to 1
+//	if(covarMin < 0){
 		covarAdjust = -covarMin;
 		maxValue = maxValue + covarAdjust;
-	}
+//	}
+
+
 
 	// divide all values by largest and set in dataholder
 	for(currInd=0; currInd < holder->numInds(); currInd++){
 		if(holder->getInd(currInd)->getCovariate(varIndex) == holder->getMissingCoValue())
 			continue;
 		ind = holder->getInd(currInd);
-		ind->setCovariate(varIndex, (ind->getCovariate(varIndex)+covarAdjust)/maxValue);
+		ind->setCovariate(varIndex, (ind->getCovariate(varIndex)+covarAdjust)/maxValue*2-1);
 	}
 
 }

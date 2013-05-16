@@ -101,16 +101,17 @@ void ScaleGroupContinuous::adjustContin(Dataholder* holder){
 	for(groupIter=groupMap.begin(); groupIter != groupMap.end(); ++groupIter){
 		string groupName = groupIter->first;
 		groupCovarAdjust[groupName] = 0.0;	
-		if(minGroupValues[groupName] < 0){
-			groupCovarAdjust[groupName]  = -minGroupValues[groupName];
-			maxGroupValues[groupName]=maxGroupValues[groupName]+groupCovarAdjust[groupName] ;
-		}
+// 		if(minGroupValues[groupName] < 0){
+		// scale from -1 to 1
+		groupCovarAdjust[groupName]  = -minGroupValues[groupName];
+		maxGroupValues[groupName]=maxGroupValues[groupName]+groupCovarAdjust[groupName] ;
+// 		}
 	
 		for(unsigned int ind=0; ind < totalInds; ind++){
 			for(continIter=groupIter->second.begin(); continIter != groupIter->second.end(); continIter++){
 				continValue = holder->getInd(ind)->getCovariate(*continIter);
 				if(continValue != missingCoVal){
-					holder->getInd(ind)->setCovariate(*continIter, (continValue+groupCovarAdjust[groupName])/maxGroupValues[groupName]);
+					holder->getInd(ind)->setCovariate(*continIter, (continValue+groupCovarAdjust[groupName])/maxGroupValues[groupName]*2-1);
 				}
 			}
 		}
