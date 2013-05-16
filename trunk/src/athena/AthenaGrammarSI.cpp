@@ -1115,6 +1115,7 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 				}
 				
 				int codonValue;
+				bool ruleFound = getRuleFromProduction(newProduction, leftSide, codonValue);
 				if(codonValue >= 0){
 					// insert at beginning
 					tempTerm.codons.insert(tempTerm.codons.begin(), codonValue);
