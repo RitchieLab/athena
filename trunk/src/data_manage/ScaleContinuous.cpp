@@ -109,9 +109,7 @@ void ScaleContinuous::adjustStatus(Dataholder* holder){
 	// divide all values by max and set status to that
 	for(currInd=0; currInd < holder->numInds(); currInd++){
 		ind=holder->getInd(currInd);
-cout << "status original=" << ind->getStatus();
 		ind->setStatus((ind->getStatus()-statMin)/statDiff);
-cout << " new=" << ind->getStatus() << " min=" << statMin << " max=" << statMax << endl;
 	}  
 }
 
