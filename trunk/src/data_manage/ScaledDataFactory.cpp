@@ -73,6 +73,8 @@ void ScaledDataFactory::setScaleMap(){
 	scaleMap["NORMSTDEV"]=ScaleNorm;
 	scaleMap["NORMMAX"]=ScaleContin;
 	scaleMap["GROUPSCALE"]=ScaleGroupContin;
+	scaleMap["MINMAX"]=ScaleContin;
+	scaleMap["MINMAXGROUP"]=ScaleGroupContin;
 	scaleMap["NONE"]=NoScale;
 
 }

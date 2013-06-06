@@ -38,15 +38,15 @@ public:
 	void adjustStatus(Dataholder* holder);
 
 	/// Returns original value for a scaled status value
-	float getOriginalStatus(float status){return (status*statMax)-statAdjust;}
+	float getOriginalStatus(float status){return status*(statMax-statMin)+statMin;}
 	
 	/// Writes scaling information to ostream
 	string outputScaleInfo();
 	
 private:
 	
-	float statMin, statMax, statAdjust;
-	std::map<std::string, float> maxGroupValues, minGroupValues, groupCovarAdjust;
+	float statMin, statMax;
+	std::map<std::string, float> maxGroupValues, minGroupValues, groupCovarDiff;
 	
 
 };

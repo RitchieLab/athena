@@ -51,7 +51,7 @@ void ScaleGroupContinuous::adjustContin(Dataholder* holder, unsigned int varInde
 		if(holder->getInd(currInd)->getCovariate(varIndex) == holder->getMissingCoValue())
 			continue;
 		ind = holder->getInd(currInd);
-		ind->setCovariate(varIndex, (ind->getCovariate(varIndex)+groupCovarAdjust[groupName] )/maxGroupValues[groupName]);
+		ind->setCovariate(varIndex, (ind->getCovariate(varIndex)-minGroupValues[groupName] )/groupCovarDiff[groupName]);
 	}
 
 }
@@ -72,7 +72,6 @@ void ScaleGroupContinuous::adjustContin(Dataholder* holder){
 	float continValue;
 	
 	// set values to absurdly small size
-//	maxGroupValues.assign(groupMap.size(), -1e30);
 	maxGroupValues.clear();
 	minGroupValues.clear();
 	
@@ -95,23 +94,20 @@ void ScaleGroupContinuous::adjustContin(Dataholder* holder){
 		}
 	}
 	
-	groupCovarAdjust.clear();
+	groupCovarDiff.clear();
 	
 	// iterate through again and reset all continuous values
 	for(groupIter=groupMap.begin(); groupIter != groupMap.end(); ++groupIter){
 		string groupName = groupIter->first;
-		groupCovarAdjust[groupName] = 0.0;	
-// 		if(minGroupValues[groupName] < 0){
-		// scale from -1 to 1
-		groupCovarAdjust[groupName]  = -minGroupValues[groupName];
-		maxGroupValues[groupName]=maxGroupValues[groupName]+groupCovarAdjust[groupName] ;
-// 		}
+		groupCovarDiff[groupName] = maxGroupValues[groupName]-minGroupValues[groupName];
 	
 		for(unsigned int ind=0; ind < totalInds; ind++){
 			for(continIter=groupIter->second.begin(); continIter != groupIter->second.end(); continIter++){
 				continValue = holder->getInd(ind)->getCovariate(*continIter);
 				if(continValue != missingCoVal){
-					holder->getInd(ind)->setCovariate(*continIter, (continValue+groupCovarAdjust[groupName])/maxGroupValues[groupName]*2-1);
+					// scaledValue = (rawValue - min) / (max - min);
+					holder->getInd(ind)->setCovariate(*continIter, 
+						(continValue-minGroupValues[groupName]) / groupCovarDiff[groupName]);
 				}
 			}
 		}
@@ -128,7 +124,6 @@ void ScaleGroupContinuous::adjustContin(Dataholder* holder){
 void ScaleGroupContinuous::adjustStatus(Dataholder* holder){
 	statMax = holder->getInd(0)->getStatus();
 	statMin = holder->getInd(0)->getStatus();
-	statAdjust = 0;
 	
 	unsigned int currInd;
 	Individual* ind;
@@ -143,17 +138,14 @@ void ScaleGroupContinuous::adjustStatus(Dataholder* holder){
 			statMin = status;
 	}
 	
-	// when minimum is positive number use statMin as zero
-	if(statMin < 0){
-		statAdjust = -statMin;
-		statMax = statMax + statAdjust;
-	}
+	float statDiff = statMax-statMin;
 	
 	// divide all values by max and set status to that
 	for(currInd=0; currInd < holder->numInds(); currInd++){
 		ind=holder->getInd(currInd);
-		ind->setStatus((ind->getStatus()+statAdjust)/statMax);
+		ind->setStatus((ind->getStatus()-statMin)/statDiff);
 	}  
+	 
 }
 
 
@@ -165,7 +157,7 @@ string ScaleGroupContinuous::outputScaleInfo(){
 	
 	stringstream ss;
 	
-	ss << "ScaleMax=" << statMax << " StatusAdjust=" << statAdjust << std::endl;
+	ss << "ScaleMax=" << statMax << " StatusMin==" << statMin << std::endl;
 	return ss.str();
 }
 

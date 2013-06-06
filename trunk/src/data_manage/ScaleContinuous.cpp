@@ -57,7 +57,6 @@ void ScaleContinuous::adjustContin(Dataholder* holder, unsigned int varIndex){
 
 	float maxValue = -1e30;
 	float covarMin = 1e30;
-	float covarAdjust = 0;
 	
 	for(currInd = 0; currInd < holder->numInds(); currInd++){
 		if(holder->getInd(currInd)->getCovariate(varIndex) == holder->getMissingCoValue()){
@@ -69,22 +68,15 @@ void ScaleContinuous::adjustContin(Dataholder* holder, unsigned int varIndex){
 			covarMin = holder->getInd(currInd)->getCovariate(varIndex);
 	}
 
+	float covarDiff = maxValue-covarMin;
 
-	// when minimum is positive number use statMin as zero
-	// scale from -1 to 1
-//	if(covarMin < 0){
-		covarAdjust = -covarMin;
-		maxValue = maxValue + covarAdjust;
-//	}
-
-
-
-	// divide all values by largest and set in dataholder
+	// scale from 0 to 1
 	for(currInd=0; currInd < holder->numInds(); currInd++){
 		if(holder->getInd(currInd)->getCovariate(varIndex) == holder->getMissingCoValue())
 			continue;
 		ind = holder->getInd(currInd);
-		ind->setCovariate(varIndex, (ind->getCovariate(varIndex)+covarAdjust)/maxValue*2-1);
+		// scaledValue = (rawValue - min) / (max - min);
+		ind->setCovariate(varIndex, (ind->getCovariate(varIndex)-covarMin)/covarDiff);
 	}
 
 }
@@ -98,7 +90,6 @@ void ScaleContinuous::adjustContin(Dataholder* holder, unsigned int varIndex){
 void ScaleContinuous::adjustStatus(Dataholder* holder){
 	statMax = holder->getInd(0)->getStatus();
 	statMin = holder->getInd(0)->getStatus();
-	statAdjust = 0;
 	
 	unsigned int currInd;
 	Individual* ind;
@@ -112,17 +103,15 @@ void ScaleContinuous::adjustStatus(Dataholder* holder){
 		if(status < statMin)
 			statMin = status;
 	}
-	
-	// when minimum is positive number use statMin as zero
-	if(statMin < 0){
-		statAdjust = -statMin;
-		statMax = statMax + statAdjust;
-	}
+
+	float statDiff = statMax-statMin;
 	
 	// divide all values by max and set status to that
 	for(currInd=0; currInd < holder->numInds(); currInd++){
 		ind=holder->getInd(currInd);
-		ind->setStatus((ind->getStatus()+statAdjust)/statMax);
+cout << "status original=" << ind->getStatus();
+		ind->setStatus((ind->getStatus()-statMin)/statDiff);
+cout << " new=" << ind->getStatus() << " min=" << statMin << " max=" << statMax << endl;
 	}  
 }
 
@@ -134,8 +123,7 @@ void ScaleContinuous::adjustStatus(Dataholder* holder){
 string ScaleContinuous::outputScaleInfo(){
 	
 	stringstream ss;
-	
-	ss << "ScaleMax=" << statMax << " StatusAdjust=" << statAdjust << std::endl;
+	ss << "ScaleMax=" << statMax << " StatusMin=" << statMin << std::endl;
 	return ss.str();
 }
 
