@@ -3,12 +3,12 @@ LIBDIR = ../lib/
 LIB= $(LIBDIR)libstat_calc.a
 CFLAGS=  -Wall -Wno-deprecated
 
-OBJS = Descriptive.o
+OBJS = Descriptive.o AUCcalc.o
 
-HEADERS = Descriptive.h
+HEADERS = Descriptive.h AUCcalc.cpp
 
 CC          = g++ -O2
-#CC          = g++ -g
+CC          = g++ -g
 PRELINK     =
 LD          = g++ -w
 AR          = ar rv
