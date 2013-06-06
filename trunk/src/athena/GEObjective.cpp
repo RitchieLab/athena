@@ -114,6 +114,7 @@ void GEObjective::outputSymbols(GAGenome& g, ostream& os){
 /// Objective function which pass output stream to evaluator so that individual evaluations
 /// can be displayed.
 /// @param g GAGenome which is being evaluated
+/// @param os
 /// @return fitness
 ///
 float GEObjective::GEObjectiveFuncOut(GAGenome& g, ostream& os){
@@ -150,6 +151,38 @@ float GEObjective::GEObjectiveFuncOut(GAGenome& g, ostream& os){
 	 return fitness;
 }
 
+
+///
+/// Objective function which captures fitness scores 
+/// @param g GAGenome to be evaluated
+/// @param results holds the scores and statuses of each individual in set
+///
+void GEObjective::GEObjective::captureEvaluations(GAGenome& g, 
+	vector<stat::TestResult>& results){
+	
+	 GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
+	 
+	//Assign genotype to mapper
+	mapper->setGenotype(genome);
+
+	 Phenotype const *phenotype=mapper->getPhenotype();
+	 
+	 if(phenotype->getValid()){
+			 unsigned int phenoSize=(*phenotype).size();
+			 vector<string> symbols(phenoSize, "");     
+
+			for(unsigned int i=0; i<phenoSize; ++i){
+					symbols[i] = *((*phenotype)[i]);
+			}
+
+			solCreator->establishSolution(symbols, set);
+			solCreator->captureEvaluation(set, results);
+			solCreator->freeSolution();
+			
+			genome.setEffectiveSize(mapper->getGenotype()->getEffectiveSize());
+	 }
+	
+}
 
 
 ///

@@ -77,6 +77,9 @@ public:
 		/// outputs each individual with score of the network 
 		virtual float evaluateWithOutput(Dataset* set, ostream& os);
 		
+		/// stores evaluation results
+		virtual void captureEvaluation(Dataset* set, vector<stat::TestResult>& results);
+		
 		/// writes a dot compatible text file representing the network
 		virtual void graphicalOutput(ostream& os, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapUsed);

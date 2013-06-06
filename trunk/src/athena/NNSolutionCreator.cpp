@@ -472,9 +472,10 @@ void NNSolutionCreator::graphicalOutput(ostream& os, data_manage::Dataholder* ho
 
 /// 
 /// Performs evaluation on the dataset.  Each individual has their result passed
-/// to the outptu stream provided.
+/// to the output stream provided.
 /// @param set Dataset 
 /// @param os ostream 
+/// @param results TestResult vector for holding result values
 ///
 float NNSolutionCreator::evaluateWithOutput(Dataset* set, ostream& os){
 
@@ -498,7 +499,36 @@ float NNSolutionCreator::evaluateWithOutput(Dataset* set, ostream& os){
 				float score = evaluateInd(ind);
 				os << ind->getID() << "\t" << score << "\t" << ind->getStatus() << endl;
 				calculator->addIndScore(score, ind->getStatus());
-		}  
+		}
  
 		return calculator->getScore();
+}
+
+
+///
+/// stores evaluation results as TestResult
+/// @param set Dataset
+/// @param results TestResult vector to contain values
+///
+void NNSolutionCreator::captureEvaluation(Dataset* set, vector<stat::TestResult>& results){
+	results.clear();
+		Individual * ind;
+
+		calculator->reset();
+		stat::TestResult tempResult;
+		
+		// when missing skip that ind
+		for(unsigned int i=0; i < set->numInds(); i++){
+				ind = (*set)[i];
+							 
+				ContinVariable::setInd(ind);
+				GenotypeTerm::setInd(ind);       
+				if(!useInd(ind, set)){
+						continue;
+				}
+				
+				tempResult.score = evaluateInd(ind);;
+				tempResult.status = ind->getStatus();
+				results.push_back(tempResult);
+		}  
 }

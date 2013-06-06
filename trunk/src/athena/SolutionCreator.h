@@ -32,6 +32,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Structs.h"
 #include <Dataset.h>
 #include <set>
+#include <AUCCalc.h>
 
 #include <iostream>
 
@@ -100,6 +101,8 @@ public:
 		virtual void restrict(vector<string>& restrictions)=0;
 		
 		virtual float evaluateWithOutput(Dataset* set, ostream& os)=0;
+		
+		virtual void captureEvaluation(Dataset* set, vector<stat::TestResult>& results)=0;
 		
 		/// writes a graphical or file that can be converted to a graphic representation of the solution
 		virtual void graphicalOutput(ostream& os, data_manage::Dataholder* holder,

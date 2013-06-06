@@ -47,6 +47,10 @@ public:
 		/// Used to output individual evaluations
 		static float GEObjectiveFuncOut(GAGenome& g, ostream& os);
 		
+		/// Capture evaluation scores 
+		static void captureEvaluations(GAGenome& g, 
+			vector<stat::TestResult>& results);
+		
 		/// Outputs symbols from genome to output
 		static void outputSymbols(GAGenome& g, ostream& os);
 		
