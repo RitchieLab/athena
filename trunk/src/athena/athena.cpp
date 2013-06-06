@@ -64,9 +64,9 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "5/17/13";
+		string versionDate = "6/5/13";
 		string execName = "ATHENA";
-		string version = "1.0.1";
+		string version = "1.0.2";
 		 time_t start,end;
 		 
 		if(argc < 2){

@@ -32,7 +32,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Structs.h"
 #include <Dataset.h>
 #include <set>
-#include <AUCCalc.h>
+#include <AUCcalc.h>
 
 #include <iostream>
 
