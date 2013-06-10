@@ -28,8 +28,6 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SolutionCalculator.h"
 
-#include <iostream>
-
 ///
 /// Calculates balanced accuracy
 ///
@@ -51,6 +49,14 @@ public:
 			float(controlRight) /(controlRight + controlWrong));
 		}
 	 bool maxBest(){return true;}
+	 
+	 	virtual std::vector<std::string> getAdditionalOutputNames(){
+			return outputNames;
+		}
+		
+		virtual std::vector<std::string> getAdditionalFinalOutput();
+
+	 	virtual void evaluateAdditionalOutput(std::vector<stat::TestResult>& results);
 	 
 	 /// returns worst score
 	 float getWorst(){return 0.0;}

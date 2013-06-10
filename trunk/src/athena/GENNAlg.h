@@ -107,6 +107,13 @@ public:
 		/// Retrieves the models from the BioFilter archive files and stores information in algorithm
 		void getBioModelsArchive(string genegeneFile, string archiveFile, data_manage::Dataholder* holder);
 		
+		/// Return additional output names used for final models
+		virtual vector<std::string> getAdditionalOutputNames();
+		
+		/// Return formatted output for display for final models;
+		virtual	vector<std::string> getAdditionalFinalOutput(Dataset* set);
+		
+		
 		#ifdef PARALLEL
 			struct genomeMPI{
 				float genomeParams[7];

@@ -27,7 +27,8 @@ using namespace std;
 ///
 /// Sets up new files with appropriate headers for output
 ///
-void OutputManager::setFiles(bool mapFileUsed, string fitnessName){
+void OutputManager::setFiles(bool mapFileUsed, string fitnessName, 
+	std::vector<std::string> additionalHeaders){
 
 	string summaryName = basename + ".athena.sum";
 	int width = 30;
@@ -37,8 +38,13 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName){
 	
 	ofstream outfile;
 	outfile.open(summaryName.c_str(), ios::out);
-		outfile << setw(5) << left << "CV" << setw(width) << "Variables" << " " << setw(20) << fitnessName + " Training"
-						<< " " << setw(10) << "Testing" << endl;	
+// 	outfile << setw(5) << left << "CV" << setw(width) << "Variables" << " " << setw(20) << fitnessName + " Training"
+// 						<< " " << setw(10) << "Testing" << endl;
+		outfile << "CV\tVariables\t"  << fitnessName + " Training\tTesting";
+	for(unsigned int i=0; i<additionalHeaders.size(); i++){
+		outfile << "\tTraining " << additionalHeaders[i] << "\tTesting " << additionalHeaders[i];
+	}
+	outfile << endl;
 	outfile.close();
 }
 
@@ -54,8 +60,9 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName){
 /// original genotype positions
 ///
 void OutputManager::outputSummary(Population& pop, int currPop,
-	data_manage::Dataholder& data,  bool mapFileUsed, bool dummyEncoded,
-	bool continMapUsed, std::string fitnessName){
+	data_manage::Dataholder& data,  std::vector<std::string> extraColumns, bool mapFileUsed, 
+	bool dummyEncoded,
+	bool continMapUsed,  std::string fitnessName){
 
 		string summaryName = basename + ".athena.sum";
 		
@@ -88,12 +95,19 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 						cs << continPrefix << data.getCovarName(covars[c]-1) << " ";
 				}
 				
-				outfile << setw(width) << ss.str() + cs.str() << " ";
-				
-				outfile << setw(20) << bestSolution->fitness() << " ";
-				outfile << setw(10) << bestSolution->testVal();
-				outfile << endl;
-		
+// 				outfile << setw(width) << ss.str() + cs.str() << " ";
+// 				outfile << setw(20) << bestSolution->fitness() << " ";
+// 				outfile << setw(10) << bestSolution->testVal();
+// 				outfile << endl;
+		outfile << currPop+1;
+		outfile << "\t" << ss.str() + cs.str() << "\t" << bestSolution->fitness() <<
+			"\t" << bestSolution->testVal();
+			
+		for(std::vector<string>::iterator iter=extraColumns.begin(); iter != extraColumns.end();
+			++iter){
+			outfile << "\t" << *iter;
+		}
+		outfile << endl;
 		outfile.close();
 		
 }

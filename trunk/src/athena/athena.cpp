@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "6/5/13";
+		string versionDate = "6/10/13";
 		string execName = "ATHENA";
 		string version = "1.0.2";
 		 time_t start,end;
@@ -210,8 +210,9 @@ int main(int argc, char** argv) {
 		OutputManager writer;
 		writer.setBasename(config.getOutputName());
 		int currCV=config.getStartCV()-1;
-	if(currCV==0)
-		writer.setFiles(mapFileUsed, alg->getFitnessName());
+	if(currCV==0){
+		writer.setFiles(mapFileUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
+	}
 	  int originalSeed = config.getRandSeed();
 		for(; currCV < numCV; currCV++){
 			adjustSeed(config, originalSeed,currCV, nproc, myRank);
@@ -261,8 +262,12 @@ int main(int argc, char** argv) {
 			}
 
 		alg->closeLog();
-			if(numCV > 1)
-				alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
+		vector<string> additValues=alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
+		if(numCV > 1){
+			alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
+			vector<string> testingValues = alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()));
+			additValues.insert(additValues.end(), testingValues.begin(), testingValues.end());
+		}
 			
 			// check population values
 	  Population pop = alg->getPopulation();
@@ -306,8 +311,8 @@ int main(int argc, char** argv) {
 			else
 				pop.convertScores(&(cvSet.getInterval(0).getTraining()));
 		}
-		writer.outputSummary(pop, currCV, data, mapFileUsed, config.getOttEncoded(), continMapUsed,
-				alg->getFitnessName());    
+		writer.outputSummary(pop, currCV, data, additValues, mapFileUsed, config.getOttEncoded(), continMapUsed,
+				 alg->getFitnessName());    
 		switch(config.getSummaryOnly()){
 			case Config::False:
 				writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data, 

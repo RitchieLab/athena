@@ -47,10 +47,6 @@ public:
 		/// Used to output individual evaluations
 		static float GEObjectiveFuncOut(GAGenome& g, ostream& os);
 		
-		/// Capture evaluation scores 
-		static void captureEvaluations(GAGenome& g, 
-			vector<stat::TestResult>& results);
-		
 		/// Outputs symbols from genome to output
 		static void outputSymbols(GAGenome& g, ostream& os);
 		
@@ -96,6 +92,13 @@ public:
 			solCreator->freeSolution();
 		}
 
+		/// Return additional column names for output
+		static vector<std::string>  getAdditionalOutputNames(){return solCreator->getAdditionalOutputNames();}
+		
+		/// Return values for final output
+		static vector<std::string> getAdditionalFinalOutput(GAGenome& g);
+		
+		
 		/// Optimizes current model using process provided by SolutionCreator
 		static void optimizeSolution(GAGenome& g);
 		

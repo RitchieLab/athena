@@ -151,15 +151,12 @@ float GEObjective::GEObjectiveFuncOut(GAGenome& g, ostream& os){
 	 return fitness;
 }
 
+///
+/// Return values for final output
+/// @param g GAGenome to analyze
+///
+vector<std::string> GEObjective::getAdditionalFinalOutput(GAGenome& g){
 
-///
-/// Objective function which captures fitness scores 
-/// @param g GAGenome to be evaluated
-/// @param results holds the scores and statuses of each individual in set
-///
-void GEObjective::GEObjective::captureEvaluations(GAGenome& g, 
-	vector<stat::TestResult>& results){
-	
 	 GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
 	 
 	//Assign genotype to mapper
@@ -167,6 +164,8 @@ void GEObjective::GEObjective::captureEvaluations(GAGenome& g,
 
 	 Phenotype const *phenotype=mapper->getPhenotype();
 	 
+	vector<std::string> outputValues;
+
 	 if(phenotype->getValid()){
 			 unsigned int phenoSize=(*phenotype).size();
 			 vector<string> symbols(phenoSize, "");     
@@ -176,12 +175,14 @@ void GEObjective::GEObjective::captureEvaluations(GAGenome& g,
 			}
 
 			solCreator->establishSolution(symbols, set);
-			solCreator->captureEvaluation(set, results);
+			solCreator->evaluateForOutput(set);
 			solCreator->freeSolution();
 			
-			genome.setEffectiveSize(mapper->getGenotype()->getEffectiveSize());
+			genome.setEffectiveSize(mapper->getGenotype()->getEffectiveSize());   
+
 	 }
-	
+
+	 return solCreator->getAdditionalFinalOutput();	
 }
 
 

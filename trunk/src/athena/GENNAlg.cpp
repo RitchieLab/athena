@@ -622,6 +622,23 @@ void GENNAlg::saveLog(){
 }
 
 
+///
+/// Return additional output names (if any such as AUC)
+/// 
+vector<string> GENNAlg::getAdditionalOutputNames(){
+  return GEObjective::getAdditionalOutputNames();
+}
+
+
+///
+/// Calculate and return additional output (like AUC) for best model
+///
+vector<string> GENNAlg::getAdditionalFinalOutput(Dataset* set){
+	GEObjective::setDataset(set);
+	GE1DArrayGenome bestGenome = (GE1DArrayGenome&)ga->statistics().bestIndividual();  
+  return GEObjective::getAdditionalFinalOutput(bestGenome);
+}
+
 
 ///
 /// Close the log files

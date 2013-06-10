@@ -46,10 +46,12 @@ public:
 		void setBasename(std::string base){basename = base;}
 		
 		/// creates new files for writing
-		void setFiles(bool mapFileUsed, std::string fitnessName);
+		void setFiles(bool mapFileUsed, std::string fitnessName, 
+			std::vector<std::string> additionalHeaders);
 		
 		/// outputs summary of best models
 		void outputSummary(Population& pop, int currPop, data_manage::Dataholder& data, 
+			std::vector<std::string> extraColumns,
 			bool mapFileUsed=false, bool dummyEncoded=true, bool continMapUsed=false,
 			std::string fitnessName=" ");
 		

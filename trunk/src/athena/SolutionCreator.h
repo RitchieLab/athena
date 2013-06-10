@@ -32,9 +32,10 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Structs.h"
 #include <Dataset.h>
 #include <set>
+<<<<<<< .mine
+=======
 #include <AUCcalc.h>
-
-#include <iostream>
+>>>>>>> .r2892
 
 using namespace data_manage;
 ///
@@ -57,6 +58,9 @@ public:
 		
 		/// returns fitness score through evaluation of solution
 		virtual float evaluate(Dataset* set)=0;
+		
+		/// evaluate for further output information (such as AUC)
+		virtual void evaluateForOutput(Dataset* set)=0;
 		
 		/// adds a solution calculator for determining fitness
 		virtual void setCalculator(std::string calc_type){
@@ -102,7 +106,9 @@ public:
 		
 		virtual float evaluateWithOutput(Dataset* set, ostream& os)=0;
 		
-		virtual void captureEvaluation(Dataset* set, vector<stat::TestResult>& results)=0;
+		virtual vector<std::string> getAdditionalOutputNames(){return calculator->getAdditionalOutputNames();}
+		
+		virtual vector<std::string> getAdditionalFinalOutput(){return calculator->getAdditionalFinalOutput();}
 		
 		/// writes a graphical or file that can be converted to a graphic representation of the solution
 		virtual void graphicalOutput(ostream& os, data_manage::Dataholder* holder,

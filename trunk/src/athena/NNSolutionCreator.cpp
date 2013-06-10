@@ -510,10 +510,10 @@ float NNSolutionCreator::evaluateWithOutput(Dataset* set, ostream& os){
 /// @param set Dataset
 /// @param results TestResult vector to contain values
 ///
-void NNSolutionCreator::captureEvaluation(Dataset* set, vector<stat::TestResult>& results){
-	results.clear();
+void NNSolutionCreator::evaluateForOutput(Dataset* set){
 		Individual * ind;
-
+		std::vector<stat::TestResult> results;
+		
 		calculator->reset();
 		stat::TestResult tempResult;
 		
@@ -530,5 +530,9 @@ void NNSolutionCreator::captureEvaluation(Dataset* set, vector<stat::TestResult>
 				tempResult.score = evaluateInd(ind);;
 				tempResult.status = ind->getStatus();
 				results.push_back(tempResult);
-		}  
+		}
+		
+		calculator->evaluateAdditionalOutput(results);
 }
+
+

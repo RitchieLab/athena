@@ -26,7 +26,9 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _SOLUTIONCALCULATOR_H
 #define	_SOLUTIONCALCULATOR_H
 
-#include <string>
+#include<string>
+#include<vector>
+#include <AUCCalc.h>
 
 ///
 /// Base class for calculation of solution scores.
@@ -57,10 +59,21 @@ public:
 		/// Used when a sub class needs a constant value for calculations as in RSquared
 		virtual void setConstant(float constant){}
 		
+		virtual std::vector<std::string> getAdditionalOutputNames(){
+			return outputNames;
+		}
+		
+		virtual std::vector<std::string> getAdditionalFinalOutput(){
+			return outputValues;
+		}
+		
+		virtual void evaluateAdditionalOutput(std::vector<stat::TestResult>& results){}
+		
 		std::string getName(){return name;}
 		
 protected:
 		std::string name;
+		std::vector<std::string> outputNames, outputValues;
 		
 };
 

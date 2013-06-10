@@ -123,6 +123,18 @@ public:
 		
 		virtual std::string getFitnessName(){return fitnessName;}
 		
+		/// Get column names for output
+		virtual vector<std::string> getAdditionalOutputNames(){
+			vector<std::string> temp; 
+			return temp;
+		}
+		
+		/// Get final values for best model for reporting (such as AUC)
+		virtual	vector<std::string> getAdditionalFinalOutput(Dataset* set){
+			vector<std::string> temp; 
+			return temp;
+		}
+		
 		virtual void setFitnessName(std::string fname){fitnessName = fname;}
 		
 		#ifdef PARALLEL

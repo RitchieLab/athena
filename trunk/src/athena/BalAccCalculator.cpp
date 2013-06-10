@@ -17,11 +17,13 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BalAccCalculator.h"
+#include<sstream>
 
 
 BalAccCalculator::BalAccCalculator(){
 		reset();
 		name = "Balanced Accuracy";
+		outputNames.push_back("AUC");
 }
 
 
@@ -34,6 +36,26 @@ void BalAccCalculator::reset(){
 }
 
 
+///
+/// Returns vector containing any additional values for output
+///
+std::vector<std::string> BalAccCalculator::getAdditionalFinalOutput(){
+	return outputValues;
+}
+
+
+
+///
+/// Calculates AUC and stores formatted output
+/// @param results stat::TestResult
+///
+void BalAccCalculator::evaluateAdditionalOutput(std::vector<stat::TestResult>& results){
+	outputValues.clear();
+	float auc = stat::AUCCalc::calculateAUC(results);
+	std::stringstream ss;
+	ss << auc;
+	outputValues.push_back(ss.str());
+}
 
 ///
 /// Adds score to running total within object
