@@ -32,10 +32,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Structs.h"
 #include <Dataset.h>
 #include <set>
-<<<<<<< .mine
-=======
 #include <AUCcalc.h>
->>>>>>> .r2892
 
 using namespace data_manage;
 ///

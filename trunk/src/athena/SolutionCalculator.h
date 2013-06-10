@@ -28,7 +28,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include<string>
 #include<vector>
-#include <AUCCalc.h>
+#include <AUCcalc.h>
 
 ///
 /// Base class for calculation of solution scores.
