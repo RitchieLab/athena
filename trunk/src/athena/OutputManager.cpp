@@ -42,8 +42,12 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 // 						<< " " << setw(10) << "Testing" << endl;
 		outfile << "CV\tVariables\t"  << fitnessName + " Training\tTesting";
 	for(unsigned int i=0; i<additionalHeaders.size(); i++){
-		outfile << "\tTraining " << additionalHeaders[i] << "\tTesting " << additionalHeaders[i];
+		outfile << "\tTraining-" << additionalHeaders[i];
 	}
+	for(unsigned int i=0; i<additionalHeaders.size(); i++){
+		outfile <<  "\tTesting-" << additionalHeaders[i];
+	}
+	
 	outfile << endl;
 	outfile.close();
 }

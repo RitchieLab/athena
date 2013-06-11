@@ -517,6 +517,8 @@ void NNSolutionCreator::evaluateForOutput(Dataset* set){
 		calculator->reset();
 		stat::TestResult tempResult;
 		
+		int missingInds=0;
+		
 		// when missing skip that ind
 		for(unsigned int i=0; i < set->numInds(); i++){
 				ind = (*set)[i];
@@ -524,6 +526,7 @@ void NNSolutionCreator::evaluateForOutput(Dataset* set){
 				ContinVariable::setInd(ind);
 				GenotypeTerm::setInd(ind);       
 				if(!useInd(ind, set)){
+						missingInds++;
 						continue;
 				}
 				
@@ -532,6 +535,11 @@ void NNSolutionCreator::evaluateForOutput(Dataset* set){
 				results.push_back(tempResult);
 		}
 		
+		float percentMissing=float(missingInds)/set->numInds() * 100.0;
+		stringstream ss;
+		ss << percentMissing;
+		addOutputValues.clear();
+		addOutputValues.push_back(ss.str() + "%");	
 		calculator->evaluateAdditionalOutput(results);
 }
 

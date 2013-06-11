@@ -33,6 +33,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <Dataset.h>
 #include <set>
 #include <AUCcalc.h>
+#include <sstream>
 
 using namespace data_manage;
 ///
@@ -103,9 +104,19 @@ public:
 		
 		virtual float evaluateWithOutput(Dataset* set, ostream& os)=0;
 		
-		virtual vector<std::string> getAdditionalOutputNames(){return calculator->getAdditionalOutputNames();}
+		virtual vector<std::string> getAdditionalOutputNames(){
+			vector<std::string> outNames;
+			outNames.push_back("missing");
+			vector<std::string> calcNames = calculator->getAdditionalOutputNames();
+			outNames.insert(outNames.end(), calcNames.begin(), calcNames.end());
+			return outNames;
+		}
 		
-		virtual vector<std::string> getAdditionalFinalOutput(){return calculator->getAdditionalFinalOutput();}
+		virtual vector<std::string> getAdditionalFinalOutput(){
+			vector<string> values= calculator->getAdditionalFinalOutput();
+			addOutputValues.insert(addOutputValues.end(), values.begin(), values.end());
+			return addOutputValues;
+		}
 		
 		/// writes a graphical or file that can be converted to a graphic representation of the solution
 		virtual void graphicalOutput(ostream& os, data_manage::Dataholder* holder,
@@ -141,6 +152,7 @@ protected:
 		float solFitness;
 		vector<float> optValues;
 		vector<symbVector> optValSymbols;
+		vector<string> addOutputValues;
 };
 
 
