@@ -51,6 +51,9 @@ SolutionCalculator* CalculatorFactory::createCalculator(string calcName){
 			 case RSquaredType:
 					 newSolution = new RSquaredCalculator;
 					 break;
+			 case AUCType:
+			 		 newSolution = new AUCCalculator;
+			 		 break;
 			 default:
 					 throw AthenaExcept(calcName + " is not a valid calculation");
 					 break;
@@ -67,5 +70,6 @@ SolutionCalculator* CalculatorFactory::createCalculator(string calcName){
 void CalculatorFactory::setCalcMap(){
 		CalcMap["BALANCEDACC"] = BalanceCalcType;
 		CalcMap["RSQUARED"] = MeanSquaredErrType;
+		CalcMap["AUC"] = AUCType;
 }
 

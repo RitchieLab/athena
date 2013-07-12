@@ -61,6 +61,8 @@ void Config::initialize(){
 		dataEncodeMap["OTT"] = OttDummy;
 		dataEncodeMap["STEPHEN"] = StephenDummy;
 		dataEncodeMap["TRUE"] = OttDummy;
+		dataEncodeMap["ADDITIVE"] = StephenDummy;
+		dataEncodeMap["QUAD_ADD"] = OttDummy;
 		logTypeMap["NONE"] = LogNone;
 		logTypeMap["SUMMARY"] = LogSummary;
 		// changed to match Summary as part of log optimization

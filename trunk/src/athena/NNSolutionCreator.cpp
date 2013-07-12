@@ -517,8 +517,7 @@ void NNSolutionCreator::evaluateForOutput(Dataset* set){
 		calculator->reset();
 		stat::TestResult tempResult;
 		
-		int missingInds=0;
-		
+		int missingInds=0;	
 		// when missing skip that ind
 		for(unsigned int i=0; i < set->numInds(); i++){
 				ind = (*set)[i];
@@ -530,11 +529,10 @@ void NNSolutionCreator::evaluateForOutput(Dataset* set){
 						continue;
 				}
 				
-				tempResult.score = evaluateInd(ind);;
+				tempResult.score = evaluateInd(ind);
 				tempResult.status = ind->getStatus();
 				results.push_back(tempResult);
-		}
-		
+		}		
 		float percentMissing=float(missingInds)/set->numInds() * 100.0;
 		stringstream ss;
 		ss << percentMissing;

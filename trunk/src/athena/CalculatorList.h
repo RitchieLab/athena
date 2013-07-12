@@ -29,6 +29,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "BalAccCalculator.h"
 #include "MeanSquaredErrCalculator.h"
 #include "RSquaredCalculator.h"
+#include "AUCCalculator.h"
 
 
 #endif	/* _CALCULATORLIST_H */

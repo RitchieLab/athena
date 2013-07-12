@@ -1,5 +1,5 @@
 /*
-Copyright Marylyn Ritchie 2011
+Copyright Marylyn Ritchie 2013
 
 This file is part of ATHENA.
 
@@ -17,46 +17,43 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 /* 
- * File:   CalculatorFactory.h
+ * File:   AUCCalculator.h
  * Author: dudeksm
  *
- * Created on November 20, 2008, 4:00 PM
  */
 
-#ifndef _CALCULATORFACTORY_H
-#define	_CALCULATORFACTORY_H
+#ifndef _AUCCALCULATOR_H
+#define	_AUCCALCULATOR_H
 
 #include "SolutionCalculator.h"
-#include "AthenaExcept.h"
-#include <map>
-#include <string>
 
 ///
-/// Returns calculator depending on string passed
+/// Calculates balanced accuracy
 ///
-class CalculatorFactory{
-		
+class AUCCalculator: public SolutionCalculator{
+	 
 public:
-				
-		static SolutionCalculator* createCalculator(std::string calcName);
 		
+		AUCCalculator();
+		
+		/// resets calculator for new analysis set
+		void reset();
+		
+		/// adds evaluation score to results
+		void addIndScore(float score, float status);
+		
+		/// returns area under the curve
+		float getScore();
+		
+	 	bool maxBest(){return true;}
+		
+	 /// returns worst score
+	 float getWorst(){return 0.0;}
 private:
-		
-		static void setCalcMap();
-		
-		enum CalcType{
-				NoCalcType,
-				BalanceCalcType,
-				MeanSquaredErrType,
-				RSquaredType,
-				AUCType
-		};
-		
-		static std::map<std::string, CalcType> CalcMap;
-
+		float auc;
+		std::vector<stat::TestResult> results;
 };
 
 
-
-#endif	/* _CALCULATORFACTORY_H */
+#endif	/* _BALACCCALCULATOR_H */
 

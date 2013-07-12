@@ -22,7 +22,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 BalAccCalculator::BalAccCalculator(){
 		reset();
-		name = "Balanced Accuracy";
+		name = "AUC";
 		outputNames.push_back("AUC");
 }
 
