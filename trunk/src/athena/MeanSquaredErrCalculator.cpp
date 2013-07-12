@@ -20,6 +20,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace std;
 
+string const MeanSquaredErrCalculator::calcMatchName = MeanSquaredErrCalculator::registerCalc("RSQUARED");
+
 MeanSquaredErrCalculator::MeanSquaredErrCalculator(){
 		reset();
 		name = "Mean Squared Error";

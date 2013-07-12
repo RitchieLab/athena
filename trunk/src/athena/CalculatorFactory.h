@@ -26,10 +26,12 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _CALCULATORFACTORY_H
 #define	_CALCULATORFACTORY_H
 
-#include "SolutionCalculator.h"
 #include "AthenaExcept.h"
 #include <map>
 #include <string>
+
+class SolutionCalculator;
+typedef SolutionCalculator* (createFunc)();
 
 ///
 /// Returns calculator depending on string passed
@@ -37,23 +39,18 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 class CalculatorFactory{
 		
 public:
-				
-		static SolutionCalculator* createCalculator(std::string calcName);
+	const std::string& registerCalc(const std::string& key, createFunc* ptr);
+	SolutionCalculator* create(const std::string& key);
+
+	static CalculatorFactory& getFactory(){static CalculatorFactory f; return f;}
 		
 private:
-		
-		static void setCalcMap();
-		
-		enum CalcType{
-				NoCalcType,
-				BalanceCalcType,
-				MeanSquaredErrType,
-				RSquaredType,
-				AUCType
-		};
-		
-		static std::map<std::string, CalcType> CalcMap;
 
+		CalculatorFactory(){}
+		CalculatorFactory(const CalculatorFactory&);
+		CalculatorFactory& operator=(const CalculatorFactory&);
+		
+		std::map<const std::string, createFunc*> creation_map;
 };
 
 

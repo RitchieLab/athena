@@ -19,6 +19,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "BalAccCalculator.h"
 #include<sstream>
 
+string const BalAccCalculator::calcMatchName = BalAccCalculator::registerCalc("BALANCEDACC");
+
 
 BalAccCalculator::BalAccCalculator(){
 		reset();

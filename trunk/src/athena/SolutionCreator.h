@@ -27,7 +27,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #define	_SOLUTIONCREATOR_H
 
 #include "Solution.h"
-#include "CalculatorFactory.h"
+// #include "CalculatorFactory.h"
+#include "SolutionCalculator.h"
 #include "AlgorithmLog.h"
 #include "Structs.h"
 #include <Dataset.h>
@@ -64,7 +65,8 @@ public:
 		virtual void setCalculator(std::string calc_type){
 				if(calculator != NULL)
 					delete calculator;
-				calculator = CalculatorFactory::createCalculator(calc_type);
+// 				calculator = CalculatorFactory::createCalculator(calc_type);
+				calculator = CalculatorFactory::getFactory().create(calc_type);
 		}
 		
 		virtual void freeSolution()=0;

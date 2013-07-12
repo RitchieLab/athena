@@ -35,7 +35,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 /// Calculates mean squared error
 ///
-class MeanSquaredErrCalculator: public SolutionCalculator{
+class MeanSquaredErrCalculator: public SolutionCalcImp<MeanSquaredErrCalculator>{
 		
 		public:
 		
@@ -70,6 +70,8 @@ class MeanSquaredErrCalculator: public SolutionCalculator{
 
 		
 private:
+
+		static const string calcMatchName;
 		
 		float squaredErrorTotal, ssTotal;
 		std::vector<float> statTotal;

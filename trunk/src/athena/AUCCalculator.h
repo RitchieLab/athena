@@ -30,7 +30,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 /// Calculates balanced accuracy
 ///
-class AUCCalculator: public SolutionCalculator{
+class AUCCalculator: public SolutionCalcImp<AUCCalculator>{
 	 
 public:
 		
@@ -51,6 +51,7 @@ public:
 	 float getWorst(){return 0.0;}
 private:
 		float auc;
+		static const string calcMatchName;
 		std::vector<stat::TestResult> results;
 };
 

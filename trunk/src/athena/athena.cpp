@@ -200,8 +200,13 @@ int main(int argc, char** argv) {
 		alg->setDummyEncoding(config.getOttEncoded());
 		alg->setLogType(config.getLogType());
 		
-		alg->setParams(algParams[0], config.getNumExchanges(), 
-			data.numGenos(), data.numCovariates());
+		try{
+			alg->setParams(algParams[0], config.getNumExchanges(), 
+				data.numGenos(), data.numCovariates());
+		}
+		catch(AthenaExcept ex){
+			exitApp(ex, myRank);
+		}
 
 		/// store results in a population vector
 		vector<Population> pops;

@@ -31,7 +31,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 /// Calculates balanced accuracy
 ///
-class BalAccCalculator: public SolutionCalculator{
+class BalAccCalculator : public SolutionCalcImp<BalAccCalculator>{
 	 
 public:
 		
@@ -61,6 +61,7 @@ public:
 	 /// returns worst score
 	 float getWorst(){return 0.0;}
 private:
+		static const string calcMatchName;
 		float balancedAcc;
 		unsigned int caseRight, caseWrong, controlRight, controlWrong;
 };

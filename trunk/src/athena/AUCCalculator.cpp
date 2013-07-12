@@ -18,10 +18,12 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "AUCCalculator.h"
 
+
+string const AUCCalculator::calcMatchName = AUCCalculator::registerCalc("AUC");
+
 AUCCalculator::AUCCalculator(){
 		reset();
 		name = "AUC";
-		outputNames.push_back("AUC");
 }
 
 void AUCCalculator::reset(){

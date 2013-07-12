@@ -17,59 +17,21 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "CalculatorFactory.h"
-#include "CalculatorList.h"
+// #include "CalculatorList.h"
 
-#include <iostream>
-using namespace std;
+const std::string& CalculatorFactory::registerCalc(const std::string& key, createFunc* ptr){
+	creation_map[key] = ptr;
+	return key;
+}
 
-std::map<std::string, CalculatorFactory::CalcType> CalculatorFactory::CalcMap;
-
-
-///
-/// Creates and returns calculator
-/// @param calcName
-/// @return calculator
-/// @throws AthenaExcept when no matching calculator to create
-///
-SolutionCalculator* CalculatorFactory::createCalculator(string calcName){
-	 if(CalcMap.empty()){
-			setCalcMap();
-	 }
-	 
-	 SolutionCalculator* newSolution;
-	 
-	 switch(CalcMap[calcName]){
-			 case NoCalcType:
-					 throw AthenaExcept(calcName + " is not a valid calculation");
-					 break;
-			 case MeanSquaredErrType:
-					 newSolution = new MeanSquaredErrCalculator;
-					 break;
-			 case BalanceCalcType:
-					 newSolution = new BalAccCalculator;
-					 break;
-			 case RSquaredType:
-					 newSolution = new RSquaredCalculator;
-					 break;
-			 case AUCType:
-			 		 newSolution = new AUCCalculator;
-			 		 break;
-			 default:
-					 throw AthenaExcept(calcName + " is not a valid calculation");
-					 break;
-	 }
-	 
-	 return newSolution;
+SolutionCalculator* CalculatorFactory::create(const std::string& key){
+	std::map<std::string, createFunc*>::const_iterator it=creation_map.find(key);
+	if(it != creation_map.end()){
+		return (*it).second();
+	}else{
+		throw AthenaExcept(key + " is not a valid fitness type");
+	}
 }
 
 
-
-///
-/// Sets the Calculator map
-///
-void CalculatorFactory::setCalcMap(){
-		CalcMap["BALANCEDACC"] = BalanceCalcType;
-		CalcMap["RSQUARED"] = MeanSquaredErrType;
-		CalcMap["AUC"] = AUCType;
-}
 

@@ -29,6 +29,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include<string>
 #include<vector>
 #include <AUCcalc.h>
+#include "CalculatorFactory.h"
 
 ///
 /// Base class for calculation of solution scores.
@@ -77,6 +78,20 @@ protected:
 		
 };
 
+
+template <class T>
+class SolutionCalcImp : public SolutionCalculator {
+public:
+	static SolutionCalculator* create(){return new T();}
+
+protected:
+	static const std::string& registerCalc(const std::string& key_in);
+};
+
+template<typename T>
+const std::string& SolutionCalcImp<T>::registerCalc(const std::string& keyIn){
+	return CalculatorFactory::getFactory().registerCalc(keyIn, &T::create);
+}
 
 #endif	/* _SOLUTIONCALCULATOR_H */
 

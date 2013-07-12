@@ -30,19 +30,19 @@ SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	NNSolutionCreator.o OutputManager.o Population.o Solution.o \
 	SolutionFactory.o Terminals.o TerminalSymbCreator.o TerminalSymbol.o \
 	GENNAlg.o NNSolutionCreatorIncludeAll.o NNSolutionCreatorIncludeOnce.o \
-	ExpressionTree.o NNLog.o Algorithm.o RSquaredCalculator.o BioFilterReader.o \
+	ExpressionTree.o NNLog.o Algorithm.o BioFilterReader.o \
 	AthenaGrammarSI.o BioFilterModelCollection.o BackProp.o \
 	BioFilterBinReader.o genegenemodel.o BackPropAnnie.o \
 	BackPropAnnieTree.o SymRegressSolutionCreator.o GESymbReg.o NNModelLog.o \
 	ModelLogParser.o AUCCalculator.o
 
 SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
-	CalculatorFactory.h CalculatorList.h ConfigFileReader.h Config.h \
+	CalculatorFactory.h ConfigFileReader.h Config.h \
 	GE1DArrayGenome.h GENNAlg.h GENNGrammarAdjuster.h GEObjective.h \
 	AthenaExcept.h InitGEgenome.h MeanSquaredErrCalculator.h NNSolution.h \
 	NNSolutionCreator.h OutputManager.h Population.h rbtree.h \
 	SolutionCalculator.h SolutionCreator.h SolutionFactory.h Solution.h \
-	Terminals.h TerminalSymbCreator.h TerminalSymbol.h RSquaredCalculator.h \
+	Terminals.h TerminalSymbCreator.h TerminalSymbol.h  \
 	NNSolutionCreatorIncludeAll.h NNSolutionCreatorIncludeOnce.h \
 	ExpressionTree.h Tree.hh AlgorithmLog.h NNLog.h BioFilterReader.h \
 	AthenaGrammarSI.h BioFilterModelCollection.h BackProp.h \

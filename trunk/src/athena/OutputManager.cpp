@@ -103,7 +103,6 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 // 				outfile << setw(20) << bestSolution->fitness() << " ";
 // 				outfile << setw(10) << bestSolution->testVal();
 // 				outfile << endl;
-		outfile << currPop+1;
 		outfile << "\t" << ss.str() + cs.str() << "\t" << bestSolution->fitness() <<
 			"\t" << bestSolution->testVal();
 			
