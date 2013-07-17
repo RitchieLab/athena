@@ -43,16 +43,16 @@ public:
 		else return float(genotype[index+numCovars]);
 	}
 
-	inline int getGenotype(unsigned int index){return genotype[index];}
+	inline float getGenotype(unsigned int index){return genotype[index];}
 	
-	inline void setGenotype(unsigned int index, char value){genotype[index]=value;}
+	inline void setGenotype(unsigned int index, float value){genotype[index]=value;}
 
 	inline void setStatus(float stat){indStatus = stat;}
 
 	inline float getStatus(){return indStatus;}
 
 	/// appends genotype to genotype lsit
-	inline void addGenotype(int geno){genotype.push_back(geno);numLoci++;}
+	inline void addGenotype(float geno){genotype.push_back(geno);numLoci++;}
 
 	/// appends environmental variable to list
 	void addCovariate(float val){covariates.push_back(val);numCovars++;}

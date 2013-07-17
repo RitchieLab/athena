@@ -1,5 +1,7 @@
+//DummyConvert.h
+
 /*
-Copyright Marylyn Ritchie 2011
+Copyright Marylyn Ritchie 2013
 
 This file is part of ATHENA.
 
@@ -16,10 +18,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef _STEPHENDUMMYCONVERT_H_
-#define _STEPHENDUMMYCONVERT_H_
+#ifndef _DUMMYCONVERT_H_
+#define _DUMMYCONVERT_H_
 
-#include "DummyConvert.h"
+#include "Dataholder.h"
 
 namespace data_manage
 {
@@ -29,18 +31,26 @@ namespace data_manage
 /// Converts genotypes in individuals to the ott dummy encoding.
 /// Each single genotype is replaced by a pair of genotypes
 ///
-class StephenDummyConvert: public DummyConvert{
+class DummyConvert
+{
 public:
-	StephenDummyConvert();
-	~StephenDummyConvert();
 
-	/// converts all genotypes to the ott-dummy encoding
-	void convertGenotypes(Dataholder* holder);
+	DummyConvert(){multVars=false;}
+	~DummyConvert(){}
+
+	/// converts all genotypes to the dummy encoding
+	virtual void convertGenotypes(Dataholder* holder){};
+
+	/// are genotypes expanded to 2 variables in converted set?
+	bool getMultipleVars(){return multVars;}
+	
+	void setMultipleVars(bool m){multVars=m;}
 
 private:
+	bool multVars;
 
 };
 
 }
 
-#endif /*_STEPHENDUMMYCONVERT_H_*/
+#endif /*_DUMMYCONVERT_H_*/

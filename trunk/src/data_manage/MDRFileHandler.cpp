@@ -66,6 +66,7 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 	string::size_type lastNumberPos;
 	double indStatus;
 	int geno;
+	char missingGeno = 3;
 
 	getline(dataStream, line);
 
@@ -98,7 +99,7 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 			ind.setStatus(indStatus);
 			while(ss >> geno){
 				if(geno == missingValue){
-					ind.addGenotype(3);
+					ind.addGenotype(missingGeno);
 					anyMissing = true;
 				}
 				else if(geno > 2){
@@ -128,7 +129,7 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 
 	holder->setMaxLocusValue(maxLocusValue);
 	holder->anyMissingGenos(anyMissing);
-	holder->setMissingGenotype(3);
+	holder->setMissingGenotype(missingGeno);
 
 }
 

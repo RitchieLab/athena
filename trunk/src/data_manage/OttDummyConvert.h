@@ -19,7 +19,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef OTTDUMMYCONVERT_H_
 #define OTTDUMMYCONVERT_H_
 
-#include "Dataholder.h"
+#include "DummyConvert.h"
 
 namespace data_manage
 {
@@ -29,7 +29,7 @@ namespace data_manage
 /// Converts genotypes in individuals to the ott dummy encoding.
 /// Each single genotype is replaced by a pair of genotypes
 ///
-class OttDummyConvert
+class OttDummyConvert: public DummyConvert
 {
 public:
 	OttDummyConvert();

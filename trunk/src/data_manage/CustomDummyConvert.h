@@ -1,5 +1,5 @@
 /*
-Copyright Marylyn Ritchie 2011
+Copyright Marylyn Ritchie 2013
 
 This file is part of ATHENA.
 
@@ -16,8 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef _STEPHENDUMMYCONVERT_H_
-#define _STEPHENDUMMYCONVERT_H_
+#ifndef CUSTOMDUMMYCONVERT_H_
+#define CUSTOMDUMMYCONVERT_H_
 
 #include "DummyConvert.h"
 
@@ -29,18 +29,21 @@ namespace data_manage
 /// Converts genotypes in individuals to the ott dummy encoding.
 /// Each single genotype is replaced by a pair of genotypes
 ///
-class StephenDummyConvert: public DummyConvert{
+class CustomDummyConvert: public DummyConvert
+{
 public:
-	StephenDummyConvert();
-	~StephenDummyConvert();
+	CustomDummyConvert();
+	CustomDummyConvert(vector<int>& conv);
+	~CustomDummyConvert();
 
 	/// converts all genotypes to the ott-dummy encoding
-	void convertGenotypes(Dataholder* holder);
+	virtual void convertGenotypes(Dataholder* holder);
 
 private:
+	std::vector<char> convertor;
 
 };
 
 }
 
-#endif /*_STEPHENDUMMYCONVERT_H_*/
+#endif /*CUSTOMDUMMYCONVERT_H_*/

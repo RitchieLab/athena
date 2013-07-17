@@ -53,6 +53,30 @@ string Stringmanip::to_upper(string convert){
 	return convert;
 }
 
+
+///
+/// splits string and stores in vector passed to it
+///
+std::vector<std::string> &Stringmanip::split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+///
+/// Splits string on delim
+/// @param s String to split
+/// @param delim char to split on
+std::vector<std::string> Stringmanip::split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
+
 ///
 /// Checks whether the string passed is true or false or
 /// can be ON for true result

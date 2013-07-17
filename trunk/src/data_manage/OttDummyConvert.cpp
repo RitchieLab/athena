@@ -48,7 +48,6 @@ OttDummyConvert::~OttDummyConvert()
 /// Converts genotypes to ott dummy ones
 ///
 void OttDummyConvert::convertGenotypes(Dataholder* holder){
-
 	Individual* ind;
 	vector<char> newGenos;
 	unsigned int currLoc;
@@ -67,6 +66,7 @@ void OttDummyConvert::convertGenotypes(Dataholder* holder){
 		ind->setAllGenotypes(newGenos);
 	}
 
+	setMultipleVars(true);
 	holder->ottDummyEncoding(true);
 }
 

@@ -1,5 +1,7 @@
+//EncodingFactory.h
+
 /*
-Copyright Marylyn Ritchie 2011
+Copyright Marylyn Ritchie 2013
 
 This file is part of ATHENA.
 
@@ -16,31 +18,38 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef _STEPHENDUMMYCONVERT_H_
-#define _STEPHENDUMMYCONVERT_H_
+#ifndef ENCODINGFACTORY_H_
+#define ENCODINGFACTORY_H_
 
 #include "DummyConvert.h"
+#include "DataExcept.h"
 
-namespace data_manage
-{
+namespace data_manage{
 
+class EncodingFactory{
 
-///
-/// Converts genotypes in individuals to the ott dummy encoding.
-/// Each single genotype is replaced by a pair of genotypes
-///
-class StephenDummyConvert: public DummyConvert{
-public:
-	StephenDummyConvert();
-	~StephenDummyConvert();
+	public:
 
-	/// converts all genotypes to the ott-dummy encoding
-	void convertGenotypes(Dataholder* holder);
+		static DummyConvert* createEncoder(string encodeType);
+		
+	private:
+		
+		enum EncodeType{
+			NoMatch,
+			NoEncode,
+			Custom,
+			Add_quad,
+			Additive
+		};
 
-private:
-
+		static map<string, EncodeType> encodeMap;
+		
+		/// Sets the map
+		static void setEncodeMap();
+		
 };
+
 
 }
 
-#endif /*_STEPHENDUMMYCONVERT_H_*/
+#endif /*ENCODINGFACTORY_H_*/

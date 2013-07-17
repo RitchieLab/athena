@@ -48,6 +48,12 @@ public:
 		}
 
 		static bool check_true_false(std::string value);
+		
+	static std::vector<std::string> &split(const std::string &s, char delim, 
+		std::vector<std::string> &elems);
+
+	static std::vector<std::string> split(const std::string &s, char delim);
+		
 };
 
 }
