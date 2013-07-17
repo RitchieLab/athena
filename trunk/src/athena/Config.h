@@ -157,11 +157,11 @@ public:
 		/// throws an exception if parameters are in error
 		void checkConfig();
 
-		enum DataEncodeType{
-			None,
-			OttDummy,
-			StephenDummy
-		};
+// 		enum DataEncodeType{
+// 			None,
+// 			OttDummy,
+// 			StephenDummy
+// 		};
 		
 		enum SummaryType{
 			True,
@@ -183,19 +183,10 @@ public:
 		SummaryType getSummaryOnly(){return summaryOnly;}
 		
 		inline void setEncodeType(std::string encodeType){
-			std::map<std::string, DataEncodeType>::iterator iter = dataEncodeMap.find(encodeType);
-			
-			if(iter != dataEncodeMap.end())
-				encodeDataType = iter->second;
-			else
-				throw AthenaExcept(encodeType + " is not a valid parameter for data encoding");
-			if(encodeDataType == OttDummy)
-				setOttEncoded(true);
-			else
-				setOttEncoded(false);
+			encodeName = encodeType;
 		}
 		
-		inline DataEncodeType getEncodeType(){return encodeDataType;}
+		inline string getEncodeType(){return encodeName;}
 		
 		
 		inline void setLogType(std::string logType){
@@ -211,16 +202,13 @@ public:
 private:
 		
 		void initialize();
-		
-		DataEncodeType encodeDataType;
-		std::map<std::string, DataEncodeType> dataEncodeMap;
 		std::map<std::string, SummaryType> summaryMap;
 		LogType logTypeSelected;
 		std::map<std::string, LogType> logTypeMap;
 		
 		std::string dataType, outName, mapName, dataFile, continFile, statusChange, 
 			trainFile, testFile, continTest, continTrain, bioFilterFile, biofilterFileType,
-			bioArchiveFile, bioGeneFile, continMap, splitFile, continChange;
+			bioArchiveFile, bioGeneFile, continMap, splitFile, continChange, encodeName;
 		int missValue, nCV, randSeed, numExchanges, startCV;
 		float continMiss, statMissValue;
 		bool idIncluded, ottDummyEncoded, cvOut, indsOutput, allNodesOut;

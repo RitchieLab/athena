@@ -32,14 +32,13 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "MapFileReader.h"
 #include "ContinMapFileReader.h"
 #include "CrossValidator.h"
-#include "OttDummyConvert.h"
 #include "AlgorithmFactory.h"
 #include "OutputManager.h"
 #include <iostream>
 #include <sstream>
 #include "OutputSet.h"
 #include <ScaledDataFactory.h>
-#include <StephenDummyConvert.h>
+#include <EncodingFactory.h>
 #include <time.h>
 
 void exitApp(AthenaExcept& he, int myRank);
@@ -144,14 +143,15 @@ int main(int argc, char** argv) {
 						data.addDefaultCovars();
 				}
 			 
-				// convert data to ott dummy representation if needed
-				if(config.getOttEncoded()){
-					data_manage::OttDummyConvert ott;
-					ott.convertGenotypes(&data);
+				// convert data if needed
+				try{
+					data_manage::DummyConvert * encoder = data_manage::EncodingFactory::createEncoder(config.getEncodeType());
+					encoder->convertGenotypes(&data);
+					config.setOttEncoded(encoder->getMultipleVars());
+					delete encoder;
 				}
-				else if(config.getEncodeType() == Config::StephenDummy){
-					data_manage::StephenDummyConvert st;
-					st.convertGenotypes(&data);
+				catch(DataExcept& de){
+					exitApp(de, myRank);
 				}
 
 				// alter continuous variables and status value
@@ -160,8 +160,8 @@ int main(int argc, char** argv) {
 				continScaler = data_manage::ScaledDataFactory::createScaler(config.getContinAdjust());
 				continScaler->adjustContin(&data);
 
-		}catch(AthenaExcept he){
-				exitApp(he, myRank);
+		}catch(AthenaExcept& ae){
+				exitApp(ae, myRank);
 		}
  
 		// set random seed  before splitting
@@ -388,8 +388,6 @@ void exitApp(AthenaExcept& he, int myRank){
 #endif
 	exit(EXIT_FAILURE);    
 } 
-
-
 
 ///
 /// Outputs message in exception and exits program

@@ -55,14 +55,7 @@ void Config::initialize(){
 		statMissValue = -1.0;
 		biofilterFileType = "TEXT";
 		bioArchiveFile = bioGeneFile = "";
-		encodeDataType = None;
-		dataEncodeMap["FALSE"] = None;
-		dataEncodeMap["NONE"] = None;
-		dataEncodeMap["OTT"] = OttDummy;
-		dataEncodeMap["STEPHEN"] = StephenDummy;
-		dataEncodeMap["TRUE"] = OttDummy;
-		dataEncodeMap["ADDITIVE"] = StephenDummy;
-		dataEncodeMap["QUAD_ADD"] = OttDummy;
+		encodeName = "NONE";
 		logTypeMap["NONE"] = LogNone;
 		logTypeMap["SUMMARY"] = LogSummary;
 		// changed to match Summary as part of log optimization
