@@ -11,9 +11,6 @@ bool TestResultSorter(TestResult const& ltr, TestResult const& rtr){
 }
 
 
-
-
-
 ///
 /// Returns the area under the curve for a ROC curve.
 /// @param results TestResult vector
@@ -33,10 +30,8 @@ float AUCCalc::calculateAUC(std::vector<TestResult>& results){
  	std::vector<TestResult>::iterator endIter=results.end();
  	
  	while(resultIter != endIter){
-//  		cout << resultIter->status << "\t" << resultIter->score << endl;
  		if(fPrev != resultIter->score){
  			area += trapArea(fp,fpPrev,tp,tpPrev);
-//  cout << "total area=" << area << endl;
  			fPrev = resultIter->score;
  			fpPrev = fp;
  			tpPrev = tp;
@@ -49,23 +44,15 @@ float AUCCalc::calculateAUC(std::vector<TestResult>& results){
  		}
  		++resultIter;
  	}
-// cout << "fp=" << fp << "tp=" << tp << endl;
  	area += trapArea(fp,fpPrev, tp,tpPrev);
 
-
-// cout << "area=" << area << endl; 	
- 	
  	// A / (PXN) 
  	// P is number of positive examples (equals tp)
  	// N is numer of negative examples (equals fp)
  	// scale from P x N onto the unit square
  	area = area / (tp*fp); 
-// cout << "final fp=" << fp << " final tp=" << tp << endl;
-//  cout << "final area=" << area << endl;
-// exit(1); 	
  	return area;
  }
-
 
 
 ///
@@ -79,7 +66,6 @@ float AUCCalc::calculateAUC(std::vector<TestResult>& results){
 float AUCCalc::trapArea(int x1, int x2, int y1, int y2){
 	int base = x1-x2;
 	float avgHeight = float(y1+y2)/2;
-// cout << "area=" << base * avgHeight << endl;
 	return base * avgHeight;
 }
 
