@@ -65,6 +65,7 @@ void Config::initialize(){
 		summaryMap["FALSE"] = False;
 		summaryMap["BEST"] = Best;
 		startCV = 1;
+		selectBest=false;
 }
 
 /// /// Checks configuration parameters for errors /// @throws AthenaExcept /// void 

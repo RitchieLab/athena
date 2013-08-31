@@ -70,6 +70,7 @@ void ConfigFileReader::initializeKeywords(){
 	keywordMap["LOG"] = keyLogType;
 	keywordMap["SPLITFILE"] = keySplitFile;
 	keywordMap["CVSTART"]=keyCVStart;
+	keywordMap["BESTSELECT"]=keySelectBestModel;
 }
 
 
@@ -246,6 +247,10 @@ Config ConfigFileReader::readConfig(string configFile){
 					 	  ss >> value;
 					 	  configuration.setStartCV(Stringmanip::stringToNumber<int>(value));
 							break;
+					 case keySelectBestModel:
+					 		ss >> value;
+					 		configuration.setSelectBestModel(Stringmanip::check_true_false(value));
+					 		break;
 					 default:
 							throw AthenaExcept(keyWord + " is not a valid keyWord in configuration file");
 							break;

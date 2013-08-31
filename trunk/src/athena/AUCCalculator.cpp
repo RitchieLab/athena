@@ -17,19 +17,56 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "AUCCalculator.h"
-
+#include<sstream>
+#include<iostream>
 
 string const AUCCalculator::calcMatchName = AUCCalculator::registerCalc("AUC");
 
 AUCCalculator::AUCCalculator(){
 		reset();
 		name = "AUC";
+		outputNames.push_back("BALANCEDACC");
 }
 
 void AUCCalculator::reset(){
 	results.clear();
 	auc = 0.0;
 }
+
+///
+/// Calculates AUC and stores formatted output
+/// @param results stat::TestResult
+///
+void AUCCalculator::evaluateAdditionalOutput(std::vector<stat::TestResult>& results){
+
+	outputValues.clear();
+	unsigned int caseRight=0, caseWrong=0, controlRight=0, controlWrong=0;
+	for(vector<stat::TestResult>::iterator iter=results.begin(); iter !=results.end(); ++iter){
+		unsigned int result = iter->score > 0.5?1:0;
+		unsigned int status = (unsigned int)iter->status;	
+		if(result != status){
+				if(status){
+						caseWrong++;
+				}
+				else{
+						controlWrong++;
+				}
+		}
+		else if(status){
+				caseRight++;
+		}
+		else{
+				controlRight++;
+		}
+	}
+		
+	float balacc= 0.5 * (float(caseRight) / (caseRight + caseWrong) + 
+			float(controlRight) /(controlRight + controlWrong));
+	std::stringstream ss;
+	ss << balacc;
+	outputValues.push_back(ss.str());
+}
+
 
 ///
 /// Calculates AUC and returns score

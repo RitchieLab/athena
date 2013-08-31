@@ -137,6 +137,10 @@ public:
 		
 		virtual void setFitnessName(std::string fname){fitnessName = fname;}
 		
+		/// Select best model from models passed and return
+		virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
+			Dataset* set, Config& configuration)=0;
+		
 		#ifdef PARALLEL
 			virtual void setRank(int rank){myRank = rank;}
 			int getRank(){return myRank;}

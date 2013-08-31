@@ -33,6 +33,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "NNModelLog.h"
 #include "GENNGrammarAdjuster.h"
 #include "BioFilterModelCollection.h"
+#include "Config.h"
 
 #ifdef PARALLEL
 #define MAX_GENOME_SIZE 100000
@@ -113,6 +114,9 @@ public:
 		/// Return formatted output for display for final models;
 		virtual	vector<std::string> getAdditionalFinalOutput(Dataset* set);
 		
+		/// Return single best model
+		virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
+			Dataset* set, Config& config);
 		
 		#ifdef PARALLEL
 			struct genomeMPI{
@@ -128,6 +132,8 @@ public:
 			void sendAndReceive(int totalNodes, int myRank);
 			void sendAndReceiveStruct(int totalNodes, int myRank);
 			int nodesCompleted(int complete);
+			void exchangeBestVariables(int totalNodes, int myRank, vector<int>& genotypes,
+				vector<int>& contins);
 		#endif
 	
 		
@@ -152,6 +158,9 @@ protected:
 		void resetCrossover();
 		
 		void setRestrictedGrammar(bool clearVariables);
+		
+		void setRestrictedGrammar(bool clearVariables, vector<int>& genos,
+		  vector<int>& contins);
 		
 		void runBackPropagation();
 		
@@ -194,7 +203,9 @@ protected:
 				doubleTournD,
 				doubleTournFitFirst,
 				prunePlantFract,
-				fitGoal
+				fitGoal,
+				bestCVThresh,
+				bestCorrThresh
 		};
 		
 		
@@ -222,6 +233,8 @@ protected:
 		std::map<std::string, GENNParams> paramMap;
 		std::map<std::string, BioSelectionType> bioModelSelectionMap;
 		std::map<std::string, GASelectionType> gaSelectorMap;
+		
+		void makeRestrictedGrammar(bool clearVariables, AthenaGrammarSI& useMapper);
 		
 		// BioFilter parameters
 		BioSelectionType biofilterSelectorType;
@@ -251,8 +264,8 @@ protected:
 				snpnameLogFilename;
 		unsigned int popSize, numGenerations, stepSize, ngensVarRestrict, restrictStepsDone,
 			ngensBlockCross;
-		double probCross, probMut, initBioFract, fitnessGoal;
-		int numGenotypes, numContinuous, bpFirstGen, bpFreqGen, bpNextOpt;
+		double probCross, probMut, initBioFract, fitnessGoal, bestCorrThreshold;
+		int numGenotypes, numContinuous, bpFirstGen, bpFreqGen, bpNextOpt, bestCVThreshold;
 		
 		NNLog* geLog;
 		NNModelLog* modelLog;

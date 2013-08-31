@@ -54,7 +54,6 @@ int main(int argc, char** argv) {
  int myRank = 0;
 	 
 #ifdef PARALLEL
- 
 
 	// set up MPI
 	MPI_Init(&argc, &argv);
@@ -63,9 +62,9 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "7/12/13";
+		string versionDate = "8/31/13";
 		string execName = "ATHENA";
-		string version = "1.0.2";
+		string version = "1.0.3";
 		 time_t start,end;
 		 
 		if(argc < 2){
@@ -209,7 +208,8 @@ int main(int argc, char** argv) {
 		}
 
 		/// store results in a population vector
-		vector<Population> pops;
+ 		vector<Population> pops;
+		vector<Solution*> bestSolutions;
 		string cvFileName = "cv";
 
 		OutputManager writer;
@@ -275,7 +275,10 @@ int main(int argc, char** argv) {
 		}
 			
 			// check population values
-	  Population pop = alg->getPopulation();
+// 	  Population pop = alg->getPopulation();
+	  pops.push_back(alg->getPopulation());
+	  Population& pop = pops.back();
+	  bestSolutions.push_back(pop[0]->clone());
 
 		int currProc = 0;
 #ifdef PARALLEL
@@ -333,6 +336,36 @@ int main(int argc, char** argv) {
 } /* end of output */
 #endif
 		}
+		
+	// if chosen run best model selection from list of best models
+	try{
+	if(config.selectBestModel()){
+		Dataset selectSet;
+		if(numCV > 1)
+			selectSet = cvSet.getInterval(0).getTraining() + cvSet.getInterval(0).getTesting();
+		else
+			selectSet = cvSet.getInterval(0).getTraining();
+		alg->selectBestModel(bestSolutions, &data, &selectSet, config);
+#ifdef PARALLEL
+	if(myRank==0){
+#endif
+		Population bestPop = alg->getPopulation();
+		vector<string> additValues=alg->getAdditionalFinalOutput(&selectSet);
+		writer.outputBest(bestPop[0],data,additValues,mapFileUsed,config.getOttEncoded(),continMapUsed,
+			alg->getFitnessName());
+#ifdef PARALLEL
+	}
+#endif
+	}
+	}
+	catch(AthenaExcept ae){
+#ifdef PARALLEL
+	if(myRank==0)
+#endif
+		cout << ae.what() << endl;
+	}
+		
+		
 		
 #ifdef PARALLEL
 		}   /* ends master processing of output */

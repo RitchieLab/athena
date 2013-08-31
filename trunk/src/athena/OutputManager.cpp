@@ -30,6 +30,7 @@ using namespace std;
 void OutputManager::setFiles(bool mapFileUsed, string fitnessName, 
 	std::vector<std::string> additionalHeaders){
 
+	addHeaders = additionalHeaders;
 	string summaryName = basename + ".athena.sum";
 	int width = 30;
 		if(!mapFileUsed){
@@ -76,10 +77,8 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 		Solution* bestSolution;
 		
 		string prefix, continPrefix;
-		int width = 30;
 		if(!mapFileUsed){
 			prefix = "G";
-			width = 20;
 		}
 		if(!continMapUsed){
 			continPrefix = "C";
@@ -99,10 +98,6 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 						cs << continPrefix << data.getCovarName(covars[c]-1) << " ";
 				}
 				
-// 				outfile << setw(width) << ss.str() + cs.str() << " ";
-// 				outfile << setw(20) << bestSolution->fitness() << " ";
-// 				outfile << setw(10) << bestSolution->testVal();
-// 				outfile << endl;
 		outfile << "\t" << ss.str() + cs.str() << "\t" << bestSolution->fitness() <<
 			"\t" << bestSolution->testVal();
 			
@@ -117,12 +112,57 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 
 
 
+void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& data,
+	std::vector<std::string>& extraColumns,
+	bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
+	std::string fitnessName){
+	
+		string filename = basename + ".overall.best";
+		
+		string prefix, continPrefix;
+	 	if(!mapFileUsed){
+			prefix = "G";
+		}
+		if(!continMapUsed){
+			continPrefix = "C";
+		}
+		
+		ofstream outfile;
+		outfile.open(filename.c_str(), ios::out);
+		vector<int> genos = bestSolution->getGenotypes(dummyEncoded);
+		vector<int> covars = bestSolution->getCovariates();
+		
+		stringstream ss;
+		for(unsigned int g=0; g < genos.size(); g++){
+			ss << prefix << data.getGenoName(genos[g]-1) << " ";
+		}
+		stringstream cs;
+		for(unsigned int c=0; c < covars.size(); c++){
+			cs << continPrefix << data.getCovarName(covars[c]-1) << " ";
+		}		
+		
+		outfile << "Variables:\t" << ss.str() + cs.str() << endl;
+		outfile << fitnessName << ":\t" << bestSolution->fitness() << endl;
+		if(!addHeaders.empty()){
+			for(unsigned int i=0; i<addHeaders.size(); i++){
+				outfile << addHeaders[i] << ":\t" << extraColumns[i] << endl;
+			}
+		}
+		
+		outfile << "\nModel:" << endl;
+		bestSolution->outputClean(outfile, data, mapFileUsed, dummyEncoded, continMapUsed);
+		outfile.close();
+	
+}
+
+
+
 ///
 /// outputs a file for each best model
 /// @param pops Population vector
 /// @param nmodels Number of models to output
 /// @param currPop population number matching the cross-validation 
-/// @param scaleInfo Informtion on the scaling done in model
+/// @param scaleInfo Information on the scaling done in model
 /// @param data
 /// @param mapUsed
 ///

@@ -49,6 +49,9 @@ public:
 		
 	 /// returns worst score
 	 float getWorst(){return 0.0;}
+	 
+	 void evaluateAdditionalOutput(std::vector<stat::TestResult>& results);
+	 
 private:
 		float auc;
 		static const string calcMatchName;

@@ -55,6 +55,11 @@ public:
 			bool mapFileUsed=false, bool dummyEncoded=true, bool continMapUsed=false,
 			std::string fitnessName=" ");
 		
+		void outputBest(Solution* bestmodel, data_manage::Dataholder& data,
+			std::vector<std::string>& extraColumns,
+			bool mapFileUsed=false, bool dummyEncoded=true, bool continMapUsed=false,
+			std::string fitnessName=" ");
+		
 		/// outputs a file for each best model
 		void outputBestModels(Population& pop, int nmodels, int currPop, std::string scaleInfo,
 			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed);
@@ -73,6 +78,7 @@ private:
 		
 		std::string basename;
 		std::ofstream logStream;
+		std::vector<std::string> addHeaders;
 		
 };
 

@@ -93,7 +93,8 @@ private:
 				keyContinMapFile,
 				keySplitFile,
 				keyCVStart,
-				keyContinChange
+				keyContinChange,
+				keySelectBestModel
 		};
 		
 		std::map<std::string, configKeyWords> keywordMap;

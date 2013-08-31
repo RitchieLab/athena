@@ -24,7 +24,7 @@ string const BalAccCalculator::calcMatchName = BalAccCalculator::registerCalc("B
 
 BalAccCalculator::BalAccCalculator(){
 		reset();
-		name = "AUC";
+		name = "BALANCEDACC";
 		outputNames.push_back("AUC");
 }
 

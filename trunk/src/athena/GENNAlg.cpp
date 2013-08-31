@@ -23,6 +23,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Terminals.h"
 #include "GENNGrammarAdjuster.h"
 #include "ModelLogParser.h"
+#include "BestModelSelector.h"
 #include <ga/ga.h>
 #include <ctime>
 #include <set>
@@ -191,6 +192,12 @@ void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 						case bpfreq:    
 								bpFreqGen = Stringmanip::stringToNumber<int>(mapIter->second);
 								break;
+						case bestCVThresh:
+						    bestCVThreshold = Stringmanip::stringToNumber<int>(mapIter->second);
+						    break;
+						case bestCorrThresh:
+						    bestCorrThreshold = Stringmanip::stringToNumber<double>(mapIter->second);
+						    break;
 #ifdef ATHENA_BLOAT_CONTROL
 						case prunePlantFract:
 #endif
@@ -245,6 +252,8 @@ void GENNAlg::initializeParams(){
 	 probMut = 0.01;
 	 initBioFract = 0.0;
 	 fitnessGoal = 1.0;
+	 bestCorrThreshold = 0.8;
+	 bestCVThreshold = 2;
 	 
 	 stepSize = 100;
 
@@ -280,6 +289,8 @@ void GENNAlg::initializeParams(){
 	 paramMap["BACKPROPSTART"] = bpstart;
 	 paramMap["GASELECTION"] = gaSelection;
 	 paramMap["FITNESSGOAL"] = fitGoal;
+	 paramMap["BESTCVTHRESH"] = bestCVThresh;
+	 paramMap["BESTCORRTHRESH"] = bestCorrThresh;
 #ifdef ATHENA_BLOAT_CONTROL
 	 paramMap["DOUBTOURNF"] = doubleTournF;
 	 paramMap["DOUBTOURND"] = doubleTournD;
@@ -900,6 +911,7 @@ void GENNAlg::initialize(){
 }
 
 
+
 ///
 /// Runs backpropagation on current population of genomes
 ///
@@ -924,18 +936,75 @@ void GENNAlg::setRestrictedGrammar(bool clearVariables){
 	if(clearVariables)
 		adjuster.clearVariables();
 	fillPopulation();
+	vector<string> variables;
 	for(Solution* sol=pop.best(); sol != NULL; sol=pop.GetNext()){
 		adjuster.addVariables(sol->getSymbols());
 	}
-	adjuster.editOnlyVarIncluded();
-	adjuster.setMapper(restrictMapper, myRank);
-	setMapperPrefs(restrictMapper);
-	restrictMapper.setVariableCodonMap();
-	GEObjective::setMapper(&restrictMapper);
-	GE1DArrayGenome::setMapper(&restrictMapper);
-	convertNetworks(mapper, restrictMapper);
+	
+	makeRestrictedGrammar(clearVariables, restrictMapper);
+	
+	convertNetworks(mapper, restrictMapper);	
+	
+// 	adjuster.editOnlyVarIncluded();
+// 	adjuster.setMapper(restrictMapper, myRank);
+// 	setMapperPrefs(restrictMapper);
+// 	restrictMapper.setVariableCodonMap();
+// 	GEObjective::setMapper(&restrictMapper);
+// 	GE1DArrayGenome::setMapper(&restrictMapper);
+// 	convertNetworks(mapper, restrictMapper);
 }
 
+
+///
+/// Establish restricted grammar based on current population
+/// @param clearVariables when true only variables in current populations will
+/// be included in the new restricted grammar.  When false it will keep existing
+/// variables and add new ones from population.
+///
+void GENNAlg::makeRestrictedGrammar(bool clearVariables,
+  AthenaGrammarSI& useMapper){
+
+// 	adjuster.addVariables(variables);
+	adjuster.editOnlyVarIncluded();
+	adjuster.setMapper(useMapper, myRank);
+	setMapperPrefs(useMapper);
+	useMapper.setVariableCodonMap();
+	GEObjective::setMapper(&useMapper);
+	GE1DArrayGenome::setMapper(&useMapper);
+// 	convertNetworks(mapper, restrictMapper);	 
+}
+
+///
+///
+///
+void GENNAlg::setRestrictedGrammar(bool clearVariables, vector<int>& genos,
+  vector<int>& contins){
+  if(clearVariables)
+		adjuster.clearVariables();
+  vector<string> variables;
+  vector<int>::iterator iter;
+  for(iter=genos.begin(); iter!=genos.end(); iter++){
+    variables.push_back("G" + Stringmanip::numberToString(*iter));
+  }
+  for(iter=contins.begin(); iter!=contins.end(); iter++){
+    variables.push_back("C" + Stringmanip::numberToString(*iter));
+  }
+
+  adjuster.addVariables(variables);
+  makeRestrictedGrammar(clearVariables,mapper);
+  InitGEgenome::setMapper(&mapper);
+// 	fillPopulation();
+// 	for(Solution* sol=pop.best(); sol != NULL; sol=pop.GetNext()){
+// 		adjuster.addVariables(sol->getSymbols());
+// 	}
+// 	adjuster.editOnlyVarIncluded();
+// 	adjuster.setMapper(restrictMapper, myRank);
+// 	setMapperPrefs(restrictMapper);
+// 	restrictMapper.setVariableCodonMap();
+// 	GEObjective::setMapper(&restrictMapper);
+// 	GE1DArrayGenome::setMapper(&restrictMapper);  
+  
+}
 
 
 ///
@@ -959,7 +1028,7 @@ void GENNAlg::convertNetworks(AthenaGrammarSI& currentMapper, AthenaGrammarSI& n
 	      genome.gene(i, *genIt);
 			  genIt++;
 	      i++;
-			}  	
+			}
 		}
 		ga->statistics().setBestIndividual(ga->population());
 }
@@ -1052,6 +1121,62 @@ void GENNAlg::prepareLog(string basename, int cv){
 	#ifdef PARALLEL
 		}
 	#endif
+}
+
+
+///
+/// Process and fill population with best models
+///
+void GENNAlg::selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
+			Dataset* set, Config& config){
+
+  setDataset(set);
+// get list of variables
+// edit grammar file
+// run entire dataset with best variables
+// return single best solution
+  BestModelSelector bestSelector;
+  bestSelector.setCorrThreshold(bestCorrThreshold);
+  bestSelector.setCVThreshold(bestCVThreshold);
+  bestSelector.selectBestVariables(solutions, holder);
+  ofstream corrfile((config.getOutputName() + ".correlation.txt").c_str());
+  corrfile << bestSelector;
+  corrfile.close();
+  
+  vector<int> bestGenos, bestContin;
+  if(myRank==0){
+  	bestGenos = bestSelector.getIncludedGenos();
+	  bestContin = bestSelector.getIncludedContins();
+	}
+
+#ifdef PARALLEL
+  exchangeBestVariables(totalNodes, myRank, bestGenos, bestContin);
+#endif
+	
+	if(bestGenos.empty() && bestContin.empty()){
+	  throw  AthenaExcept("\nNo genotypes or continuous variables meet criteria for best model selection");
+	}
+	
+	for_each (bestGenos.begin(), bestGenos.end(), data_manage::Utility::increment);
+	for_each (bestContin.begin(), bestContin.end(), data_manage::Utility::increment);
+	
+	// edit grammar
+  setRestrictedGrammar(true, bestGenos, bestContin);
+
+  // set up run with this restricted grammar for same number of generations
+  // as in the original run
+  startLog(set->numGenos());
+  prepareLog(config.getOutputName(), 0);
+	initialize();
+	// don't restrict variables as that has already been done
+	ngensVarRestrict=0;
+	for(int i=0; i < config.getNumExchanges(); i++){
+	  if(step()){
+		  break; // can complete early
+			}
+	}
+  closeLog();
+
 }
 
 
@@ -1227,6 +1352,46 @@ void GENNAlg::sendAndReceiveStruct(int totalNodes, int myRank){
 	delete [] recv;
 	
 }
+
+///
+/// Broadcast best genotypes and continuous variables to all other nodes
+///
+void GENNAlg::exchangeBestVariables(int totalNodes, int myRank, vector<int>& genotypes,
+  vector<int>& contins){
+
+  int nVars = 1000;
+  variables = new int[nVars];
+
+  vector<int>::iterator iter;
+  if(myRank==0){
+    int currVar=0;
+    variables[currVar++]=int(genotypes.size());
+    for(iter=genotypes.begin(); iter!=genotypes.end(); iter++){
+      variables[currVar++]=*iter;
+    }
+    variables[currVar++]=int(contins.size());
+    for(iter=contins.begin(); iter!=contins.end(); iter++){
+      variables[currVar++]=*iter;
+    }    
+  }
+
+  MPI_Bcast(variables, nVars, MPI_INT, 0, MPI_COMM_WORLD);
+  
+  genotypes.clear();
+  contins.clear();
+  
+  currVar=0;
+  int n = variables[currVar++];
+  for(int i=0; i<n; i++){
+    genotypes.push_back(variables[currVar++];
+  }
+  n=variables[currVar++];
+  for(int i=0; i<n; i++){
+    contins.push_back(variables[currVar++];
+  }
+  
+}
+
 
 
 ///

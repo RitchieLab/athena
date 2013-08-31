@@ -147,6 +147,9 @@ public:
 		void setContinMapName(std::string filename){continMap=filename;}
 		std::string getContinMapName(){return continMap;}
 
+		void setSelectBestModel(bool tf){selectBest=tf;}
+		bool selectBestModel(){return selectBest;}
+
 
 		void setSplitFile(std::string filename){splitFile = filename;}
 		std::string getSplitFile(){return splitFile;}
@@ -211,7 +214,7 @@ private:
 			bioArchiveFile, bioGeneFile, continMap, splitFile, continChange, encodeName;
 		int missValue, nCV, randSeed, numExchanges, startCV;
 		float continMiss, statMissValue;
-		bool idIncluded, ottDummyEncoded, cvOut, indsOutput, allNodesOut;
+		bool idIncluded, ottDummyEncoded, cvOut, indsOutput, allNodesOut, selectBest;
 		std::vector<AlgorithmParams> algParams;
 		SummaryType summaryOnly;
 		
