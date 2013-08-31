@@ -92,4 +92,20 @@ void Dataset::calcSSTotal(){
 }
 
 
+///
+/// Combines two datasets into one new one
+///
+Dataset Dataset::operator+(Dataset& d){
+	Dataset newSet;
+	newSet = *this;
+
+	for(unsigned int i=0; i<d.numInds(); i++){
+		newSet.addInd(d.getInd(i));
+	}
+
+	newSet.calcSSTotal();
+	return newSet;
+}
+
+
 }

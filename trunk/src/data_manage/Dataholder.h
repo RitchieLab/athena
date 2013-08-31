@@ -48,7 +48,7 @@ public:
 	inline Individual* operator[] (unsigned int indIndex){return inds[indIndex];}
 
 	/// Returns number of individuals in set
-	unsigned int numInds(){return inds.size();}
+	inline unsigned int numInds(){return inds.size();}
 
 	/// Add variable name
 	inline void addCovarName(string varName, string scaleGroup="default"){

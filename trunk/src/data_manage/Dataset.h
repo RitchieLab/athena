@@ -74,6 +74,8 @@ public:
 	/// Calculates SStotal
 	void calcSSTotal();
 	
+	Dataset operator+(Dataset& d);
+	
 private:
 	std::vector<Individual*> inds;
 	float missingCoValue, ssTotal;

@@ -17,7 +17,7 @@ HEADERS = ContinFileReader.h CrossValidator.h CVInterval.h CVSet.h DataExcept.h 
 	ScaleContinuous.h ScaleData.h Stringmanip.h OutputSet.h \
 	ScaledDataFactory.h RandomNoReplace.h StephenDummyConvert.h \
 	ContinMapFileReader.h ScaleGroupContinuous.h DummyConvert.h \
-	CustomDummyConvert.h EncodingFactory.h
+	CustomDummyConvert.h EncodingFactory.h Utility.h
 
 CC          = g++ -O2
 #CC          = g++ -g
