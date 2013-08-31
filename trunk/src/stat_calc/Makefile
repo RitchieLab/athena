@@ -8,7 +8,7 @@ OBJS = Descriptive.o AUCcalc.o Spearman.o
 HEADERS = Descriptive.h AUCcalc.h Spearman.h
 
 CC          = g++ -O2
-CC          = g++ -g
+#CC          = g++ -g
 PRELINK     =
 LD          = g++ -w
 AR          = ar rv

@@ -13,7 +13,6 @@ namespace stat
 /// @return coefficient
 ///
 float Spearman::calculate(vector<PairedValues>& pairs){
- 
 	// rank the two vectors by value and assign rank values
 	rank(pairs,0);
 	rank(pairs,1);
@@ -24,8 +23,7 @@ float Spearman::calculate(vector<PairedValues>& pairs){
 	
 	for(vector<PairedValues>::iterator iter=pairs.begin(); iter != pairs.end(); iter++){
 		xi = iter->ranks[0];
-		yi = iter->ranks[1];	
-		
+		yi = iter->ranks[1];			
 		xiSum += xi;
 		yiSum += yi;
 	}
@@ -64,7 +62,7 @@ void Spearman::rank(vector<PairedValues>& pairs, int index){
 		float rankTotal = rank;
 		rankNum=1;
 		startIter = iter;		
-		while(iter != pairs.end() && iter->values[index] == (iter+1)->values[index]){
+		while(iter != pairs.end() && iter+1 != pairs.end() && iter->values[index] == (iter+1)->values[index]){
 			rank++;
 			rankTotal += rank;
 			iter++;
