@@ -27,6 +27,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <ga/ga.h>
 #include <ctime>
 #include <set>
+#include <algorithm>
 
 ///
 /// Constructor
@@ -1360,7 +1361,7 @@ void GENNAlg::exchangeBestVariables(int totalNodes, int myRank, vector<int>& gen
   vector<int>& contins){
 
   int nVars = 1000;
-  variables = new int[nVars];
+  int * variables = new int[nVars];
 
   vector<int>::iterator iter;
   if(myRank==0){
@@ -1374,22 +1375,20 @@ void GENNAlg::exchangeBestVariables(int totalNodes, int myRank, vector<int>& gen
       variables[currVar++]=*iter;
     }    
   }
-
   MPI_Bcast(variables, nVars, MPI_INT, 0, MPI_COMM_WORLD);
   
   genotypes.clear();
   contins.clear();
   
-  currVar=0;
+  int currVar=0;
   int n = variables[currVar++];
   for(int i=0; i<n; i++){
-    genotypes.push_back(variables[currVar++];
+    genotypes.push_back(variables[currVar++]);
   }
   n=variables[currVar++];
   for(int i=0; i<n; i++){
-    contins.push_back(variables[currVar++];
+    contins.push_back(variables[currVar++]);
   }
-  
 }
 
 

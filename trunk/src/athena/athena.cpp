@@ -335,8 +335,10 @@ int main(int argc, char** argv) {
 #ifdef PARALLEL
 } /* end of output */
 #endif
+#ifdef PARALLEL
+		}   /* ends master processing of output */
+#endif
 		}
-		
 	// if chosen run best model selection from list of best models
 	try{
 	if(config.selectBestModel()){
@@ -362,13 +364,12 @@ int main(int argc, char** argv) {
 #ifdef PARALLEL
 	if(myRank==0)
 #endif
-		cout << ae.what() << endl;
+		cout << "myrank=" << myRank << " " << ae.what() << endl;
 	}
 		
 		
 		
 #ifdef PARALLEL
-		}   /* ends master processing of output */
 		MPI_Finalize();
  #endif
 		delete scaler;

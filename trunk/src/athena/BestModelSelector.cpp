@@ -1,6 +1,7 @@
 //BestModelSelector.cpp
 #include "BestModelSelector.h"
 #include<cmath>
+#include<algorithm>
 
 using namespace stat;
 
