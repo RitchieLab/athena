@@ -117,6 +117,8 @@ public:
 		/// Return single best model
 		virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
 			Dataset* set, Config& config);
+			
+		virtual void setConfigDefaults(Config& configuration, AlgorithmParams& algParam);
 		
 		#ifdef PARALLEL
 			struct genomeMPI{

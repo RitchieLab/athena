@@ -227,6 +227,18 @@ void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 
 
 ///
+/// Sets values in main configuration to defaults needed by 
+/// GENN Algorithm
+/// @param configuration Config
+///
+void GENNAlg::setConfigDefaults(Config& configuration, AlgorithmParams& algParam){
+  if(algParam.params["CALCTYPE"].compare("RSQUARED")==0){
+    configuration.setStatusAdjust("MINMAX");
+  }
+}
+
+
+///
 /// Initializes parameters for basic run of algorithm.  These
 /// can be modified using the set_params function
 ///

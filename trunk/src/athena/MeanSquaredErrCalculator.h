@@ -47,7 +47,7 @@ class MeanSquaredErrCalculator: public SolutionCalcImp<MeanSquaredErrCalculator>
 		/// adds evaluation score to results
 		void addIndScore(float score, float status);
 		
-		/// returns balanced accuracy
+		/// returns mean squared error
 		float getScore(){
 				if(totalIndsTested == 0)
 					return getWorst();
@@ -61,7 +61,7 @@ class MeanSquaredErrCalculator: public SolutionCalcImp<MeanSquaredErrCalculator>
 		/// returns worst score
 		float getWorst(){return 1000000;}
 		/// sets the sstotal for use in calculating rsquared
-		void setConstand(float constant){ssTotal = constant;}
+		void setConstant(float constant){ssTotal = constant;}
 		/// returns the sstotal for use in calculating rsquared
 		float getConstant();
 

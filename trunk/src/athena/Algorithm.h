@@ -137,6 +137,8 @@ public:
 		
 		virtual void setFitnessName(std::string fname){fitnessName = fname;}
 		
+		virtual void setConfigDefaults(Config& configuration,AlgorithmParams& algParam)=0;
+		
 		/// Select best model from models passed and return
 		virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
 			Dataset* set, Config& configuration)=0;

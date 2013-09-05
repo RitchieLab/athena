@@ -95,6 +95,10 @@ int main(int argc, char** argv) {
 				exitApp(he, myRank);
 		}
 		
+		vector<AlgorithmParams> algParams= config.getAlgorithmParams();
+		Algorithm* alg = AlgorithmFactory::createAlgorithm(algParams[0].name);
+		alg->setConfigDefaults(config,algParams[0]);
+		
 		// fill dataholder with data
 		data_manage::Dataholder data;
 
@@ -189,8 +193,8 @@ int main(int argc, char** argv) {
 		int numCV = cvSet.numIntervals();
 			 
 		// create algorithm
-		vector<AlgorithmParams> algParams= config.getAlgorithmParams();
-		Algorithm* alg = AlgorithmFactory::createAlgorithm(algParams[0].name);
+// 		vector<AlgorithmParams> algParams= config.getAlgorithmParams();
+// 		Algorithm* alg = AlgorithmFactory::createAlgorithm(algParams[0].name);
 #ifdef PARALLEL
 		alg->setRank(myRank);
 		alg->setTotalNodes(nproc);
@@ -351,6 +355,7 @@ int main(int argc, char** argv) {
 #ifdef PARALLEL
 	if(myRank==0){
 #endif
+
 		Population bestPop = alg->getPopulation();
 		vector<string> additValues=alg->getAdditionalFinalOutput(&selectSet);
 		writer.outputBest(bestPop[0],data,additValues,mapFileUsed,config.getOttEncoded(),continMapUsed,
@@ -366,7 +371,6 @@ int main(int argc, char** argv) {
 #endif
 		cout << "myrank=" << myRank << " " << ae.what() << endl;
 	}
-		
 		
 		
 #ifdef PARALLEL
