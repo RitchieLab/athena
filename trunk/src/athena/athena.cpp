@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "8/31/13";
+		string versionDate = "9/19/13";
 		string execName = "ATHENA";
 		string version = "1.0.3";
 		 time_t start,end;
@@ -87,6 +87,7 @@ int main(int argc, char** argv) {
 		ConfigFileReader configRead;
 		Config config;
 		ScaleData* scaler = NULL, *continScaler=NULL;
+		stringstream performanceStream;
 
 		// read config file
 		try{
@@ -157,15 +158,15 @@ int main(int argc, char** argv) {
 					exitApp(de, myRank);
 				}
 
-				// alter continuous variables and status value
-				scaler = data_manage::ScaledDataFactory::createScaler(config.getStatusAdjust());
-				scaler->adjustStatus(&data);
-				continScaler = data_manage::ScaledDataFactory::createScaler(config.getContinAdjust());
-				continScaler->adjustContin(&data);
+
 
 		}catch(AthenaExcept& ae){
 				exitApp(ae, myRank);
 		}
+		catch(DataExcept& de){
+			exitApp(de, myRank);
+		}
+
  
 		// set random seed  before splitting
 		srand(config.getRandSeed());
@@ -188,6 +189,13 @@ int main(int argc, char** argv) {
 				exitApp(de, myRank);
 		}
 	}
+	
+					// alter continuous variables and status value
+				scaler = data_manage::ScaledDataFactory::createScaler(config.getStatusAdjust());
+				scaler->adjustStatus(&data);
+				continScaler = data_manage::ScaledDataFactory::createScaler(config.getContinAdjust());
+				continScaler->adjustContin(&data);
+	
 	
 		// run crossvalidations and store the populations
 		int numCV = cvSet.numIntervals();
@@ -293,14 +301,23 @@ int main(int argc, char** argv) {
 		for(currProc=0; currProc < lastProc; currProc++){
 #endif
 			if(config.getIndOutput()){
-				stringstream ss;
-				ss << config.getOutputName() << "." << currCV+1 << "." << currProc+1 << ".ind_results.txt";
-				ostream & os = writer.getStream(ss.str());
-				os << "Ind ID\tPredicted\tOriginal\n";
-				alg->outputIndEvals(&(cvSet.getInterval(currCV).getTraining()), os, currProc);
-				if(numCV > 1)
-					alg->outputIndEvals(&(cvSet.getInterval(currCV).getTesting()), os, currProc);
-				writer.closeStream();
+// 				stringstream ss;
+// 				ss << config.getOutputName() << "." << currCV+1 << "." << currProc+1 << ".ind_results.txt";
+// 				ostream & os = writer.getStream(ss.str());
+// 				os << "Ind ID\tPredicted\tOriginal\n";
+// 				alg->outputIndEvals(&(cvSet.getInterval(currCV).getTraining()), os, currProc);
+// 				if(numCV > 1)
+// 					alg->outputIndEvals(&(cvSet.getInterval(currCV).getTesting()), os, currProc);
+// 				writer.closeStream();
+				
+				performanceStream << "CV " << Stringmanip::numberToString(currCV+1) << endl;
+				performanceStream << "Training" << endl;
+				alg->outputIndEvals(&(cvSet.getInterval(currCV).getTraining()), performanceStream, currProc);
+				if(numCV > 1){
+					performanceStream << "Testing" << endl;
+					alg->outputIndEvals(&(cvSet.getInterval(currCV).getTesting()), performanceStream, currProc);
+				}
+				
 			}
 #ifdef PARALLEL
 	}
@@ -335,7 +352,7 @@ int main(int argc, char** argv) {
 			default:
 				;
 		}
-		
+
 #ifdef PARALLEL
 } /* end of output */
 #endif
@@ -360,6 +377,10 @@ int main(int argc, char** argv) {
 		vector<string> additValues=alg->getAdditionalFinalOutput(&selectSet);
 		writer.outputBest(bestPop[0],data,additValues,mapFileUsed,config.getOttEncoded(),continMapUsed,
 			alg->getFitnessName());
+			if(config.getIndOutput()){
+				performanceStream << "CV Best" << endl;
+				alg->outputIndEvals(&selectSet, performanceStream, 0);
+			}
 #ifdef PARALLEL
 	}
 #endif
@@ -369,13 +390,17 @@ int main(int argc, char** argv) {
 #ifdef PARALLEL
 	if(myRank==0)
 #endif
-		cout << "myrank=" << myRank << " " << ae.what() << endl;
+		cout << ae.what() << endl;
 	}
-		
-		
+	
+#ifdef PARALLEL
+		if(myRank==0)
+#endif
+	if(config.getIndOutput())
+			writer.outputInds(performanceStream, config.getOutputName());
 #ifdef PARALLEL
 		MPI_Finalize();
- #endif
+#endif
 		delete scaler;
 		delete continScaler;
 

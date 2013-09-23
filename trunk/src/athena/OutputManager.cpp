@@ -18,6 +18,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "OutputManager.h"
 #include <Stringmanip.h>
+#include <set>
+#include <cmath>
 #include <iomanip>
 #include <sstream>
 
@@ -240,3 +242,166 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 }
 
 
+///
+/// outputs list of individuals with scores for best model
+/// divided into training and testing sets
+/// @param is istream 
+/// @param base base portion of output file name
+///
+void OutputManager::outputInds(std::istream &is, std::string base){
+	
+	 std::multiset<indOutScores,scoreComp> empty;
+	 
+	vector<multiset<indOutScores,scoreComp> > trainingSet;
+	vector<multiset<indOutScores,scoreComp> > testingSet;
+	multiset<indOutScores,scoreComp> bestSet;
+	int currTrain=0, currTest=0;
+	
+	string line;
+	string temp, id, scoreStr, finalScore, diffStr;
+	int cv;
+	bool useTrain=true, useTest=false;
+	double score, obs, diff, missDiffValue=-1000.0;
+	
+	while(getline(is, line)){
+		stringstream ss(line);
+		if(line.find("CV") != string::npos){
+			if(line.find("Best") == string::npos){
+				ss >> temp >> cv;
+				currTrain = cv-1;
+				currTest=cv-1;
+			}
+			else{
+				useTrain=false;
+				useTest=false;
+			}
+		}
+		else if(line.find("Train") != string::npos){
+			useTrain=true;
+			useTest=false;
+			trainingSet.push_back(empty);
+		}
+		else if(line.find("Test") != string::npos){
+			useTest=true;
+			useTrain=false;
+			testingSet.push_back(empty);
+		}
+		else{
+			ss >> id >> scoreStr >> obs;
+			if(scoreStr.find("data") != string::npos){
+				diffStr = "NA";
+				diff = missDiffValue;
+			}
+			else{
+				stringstream ss(scoreStr);
+				ss >> score;
+				diff = abs(score-obs);
+				diffStr = Stringmanip::numberToString(diff);
+			}
+			
+			indOutScores newOutput;
+			newOutput.output = id + "\t" + scoreStr + "\t" + Stringmanip::numberToString(obs);
+			newOutput.diff = diff;
+			
+			if(useTrain){	
+					trainingSet[currTrain].insert(newOutput);
+			}	
+			else if(useTest){
+					testingSet[currTest].insert(newOutput);
+			}
+			else{
+					bestSet.insert(newOutput);
+			}
+		}
+	}
+	
+	vector<string> best, emptyVec;
+	vector<vector<string> > training, testing;
+	std::multiset<indOutScores,scoreComp>::iterator setIter;
+	for(size_t i=0; i<trainingSet.size(); i++){
+		training.push_back(emptyVec);
+		for(setIter = trainingSet[i].begin(); setIter != trainingSet[i].end(); ++setIter){
+			training[i].push_back(setIter->output);
+		}
+	}
+	for(size_t i=0; i<testingSet.size(); i++){
+		testing.push_back(emptyVec);
+		for(setIter = testingSet[i].begin(); setIter != testingSet[i].end(); ++setIter){
+// cout << "diff=" << setIter->diff << " output=" << setIter->output << endl;
+			testing[i].push_back(setIter->output);
+		}
+	}
+	for(setIter=bestSet.begin(); setIter!=bestSet.end(); ++setIter){
+		best.push_back(setIter->output);
+	}
+	// write to output file
+	string currFileName = base + ".indscores.txt";
+	ofstream of(currFileName.c_str());
+
+	cout << "Writing individual output file: " << currFileName << endl;
+
+	if(best.empty()){
+	
+		of << "Training\t\t\tTesting";
+		for(int j=1; j<cv; j++){
+			of << "\t\t\tTraining\t\t\tTesting";
+		}
+		of << endl;
+		of << "CV#1-ID\tPred\tObs\tCV#1-ID\tPred\tObs";
+		for(int j=1; j<cv; j++){
+			of << "\tCV#" << j+1 << "-ID\tPred\tObs\tCV#" << j+1 << "-ID\tPred\tObs";
+		}
+		of << endl;
+	
+		for(unsigned int i=0; i<training[0].size(); i++){
+			for(int j=0; j<cv; j++){
+					if(i < training[j].size()){
+						of << training[j][i] << "\t";
+					}
+					else{
+						of << "\t\t";
+					}
+					if(i < testing[j].size()){
+						of << testing[j][i] << "\t";
+					}
+					else{
+						of << "\t\t\t";
+					}
+				}
+			of << endl;	
+			}
+	}
+	else{
+	
+		of << "Entire Set";
+		for(int j=1; j<cv+1; j++){
+			of << "\t\t\tTraining\t\t\tTesting";
+		}
+		of << endl;
+		of << "Best-ID\tPred\tObs";
+		for(int j=0; j<cv; j++){
+			of << "\tCV#" << j+1 << "-ID\tPred\tObs\tCV#" << j+1 << "-ID\tPred\tObs";
+		}
+		of << endl;	
+	
+		for(unsigned int i=0; i<best.size(); i++){
+			of << best[i] << "\t";
+			for(int j=0; j<cv; j++){
+				if(i < training[j].size()){
+					of << training[j][i] << "\t";
+				}
+				else{
+					of << "\t\t\t";
+				}
+				if(i < testing[j].size()){
+					of << testing[j][i] << "\t";
+				}
+				else{
+					of << "\t\t\t";
+				}
+			}
+			of << endl;
+		}
+	}	
+	of.close();
+}

@@ -70,6 +70,8 @@ public:
 		/// closes the provided stream
 		void closeStream(){if(logStream.is_open()){ logStream.close();}}
 		
+		void outputInds(std::istream &is, std::string base);
+		
 		/// output graphical representation as defined in algorithm
 		void outputGraphic(Algorithm* alg,  Population& pop, int currPop, std::string basename, int numModels,
 			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed);
@@ -79,6 +81,17 @@ private:
 		std::string basename;
 		std::ofstream logStream;
 		std::vector<std::string> addHeaders;
+	
+		
+		struct indOutScores{
+			std::string output;
+			double diff;
+		};
+		
+		struct scoreComp {
+		  bool operator() (const indOutScores& lhs, const indOutScores& rhs) const
+		  {return lhs.diff>rhs.diff;}
+		};
 		
 };
 

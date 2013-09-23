@@ -301,7 +301,7 @@ pSub::pSub(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "doublecircle";
 		style = "bold";
-		label = "PSUB";    
+		label = "PSUB";
 		type = label;
 }
 
