@@ -78,7 +78,8 @@ void ContinFileReader::readContinFile(string filename, Dataholder* holder,
 			 ind = holder->getIndByID(indID);
 		 }
 		 catch(DataExcept& de){
-			 cout << "Skipping individual " << indID << " while reading " << filename << endl;  
+			 cout << "Skipping individual " << indID << " while reading " << filename << endl; 
+			 currInd++; 
 			 continue;
 		 }
 			
@@ -95,8 +96,15 @@ void ContinFileReader::readContinFile(string filename, Dataholder* holder,
 			}
 			currInd++;
 		}
-
 		cStream.close();
+
+		// make sure that total number of individuals in the continuous input file
+		// matches the number in the Dataholder
+		if(currInd != holder->numInds()){
+			throw DataExcept("Total number (" + Stringmanip::numberToString(currInd) + ") of individuals in the file " +
+				filename + " does not match total from dataset file (" + Stringmanip::numberToString(holder->numInds()) +
+				")"); 
+		}
 		
 }
 

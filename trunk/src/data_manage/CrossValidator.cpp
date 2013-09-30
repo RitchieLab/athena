@@ -176,7 +176,6 @@ void CrossValidator::statusBin(Dataholder* holder, vector<Individual*>& affected
 		else
 			unaffected.push_back(ind);
 	}
-
 }
 
 

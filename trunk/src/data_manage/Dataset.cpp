@@ -53,6 +53,7 @@ ostream& operator<<(ostream& os, Dataset& d){
 	Individual * ind;
 	for(unsigned int i=0; i<d.numInds(); i++){
 		ind = d[i];
+		os << ind->getID() << " ";
 		os << ind->getStatus();
 		for(unsigned int loc=0; loc < d.numGenos(); loc++){
 			os << " " << ind->getGenotype(loc);

@@ -36,7 +36,7 @@ class DummyConvert
 public:
 
 	DummyConvert(){multVars=false;}
-	~DummyConvert(){}
+	virtual ~DummyConvert(){}
 
 	/// converts all genotypes to the dummy encoding
 	virtual void convertGenotypes(Dataholder* holder){};
