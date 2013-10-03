@@ -70,10 +70,14 @@ public:
 		/// closes the provided stream
 		void closeStream(){if(logStream.is_open()){ logStream.close();}}
 		
-		void outputInds(std::istream &is, std::string base);
+		void outputInds(std::istream &is, std::string base, string fitnessName);
 		
 		/// output graphical representation as defined in algorithm
 		void outputGraphic(Algorithm* alg,  Population& pop, int currPop, std::string basename, int numModels,
+			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed);
+		
+		/// output equations	
+		void outputEquations(Algorithm* alg, vector<Solution*>& bestSolutions, 
 			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed);
 		
 private:
@@ -92,6 +96,8 @@ private:
 		  bool operator() (const indOutScores& lhs, const indOutScores& rhs) const
 		  {return lhs.diff>rhs.diff;}
 		};
+		
+		int scoreConversion(float score);
 		
 };
 

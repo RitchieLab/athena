@@ -374,7 +374,6 @@ int GE1DArrayGenome::prune_and_plant(GAGenome* startGenome,
 #endif
 
 
-
 ///
 /// Crosses over at same nonterminal point to and then swap the codons
 /// for each genome at that block.  
@@ -386,7 +385,6 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 	// when one or the other is invalid (perform effCrossover instead)
 	const GE1DArrayGenome &mom = DYN_CAST(const GE1DArrayGenome &, p1);
 	const GE1DArrayGenome &dad = DYN_CAST(const GE1DArrayGenome &, p2);		       
-
 	// when neither is valid use standard effective crossover
 	if(!mom.isValid() && !dad.isValid()){
 		return effCrossover(p1,p2,c1,c2);
@@ -560,9 +558,7 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 						sis.copy(*startParent,startsite+otherBlockLen, startsite+startBlockLen, endpoint);
 					}
 				}
-							
 		  }
-		
 			nc = 1;
 		}
 	return nc;
@@ -582,7 +578,6 @@ int GE1DArrayGenome::codonMutator(GAGenome & g, float pmut){
 	register int i,n;
 	
 	int length = genome.length()-1;
-	
 	// when total is less than one have to check each codon
 	if(nmut < 1.0){
 		for(i=length; i>=0; i--){

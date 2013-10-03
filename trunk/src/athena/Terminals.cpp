@@ -83,7 +83,6 @@ float BiasTerm::evaluate(deque<float> & args){
 
 Individual* GenotypeTerm::ind = NULL;
 
-
 GenotypeTerm::GenotypeTerm(string gname, int varIndex)
 	:TerminalSymbol(gname, 0, TerminalSymbol::Genotype){
 		numArgs = 0;
@@ -358,8 +357,8 @@ float pDiv::evaluate(deque<float> & args){
 	for(unsigned int i=1; i<args.size(); i++){
 		if(args[i] == 0){
 //      result = 1.1;
-			result = 10000000;
-			break;
+// 			result = 10000000;
+			return ActivateSigmoid(1000);
 		}
 		result /= args[i];
 	}

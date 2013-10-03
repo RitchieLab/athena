@@ -469,6 +469,15 @@ void NNSolutionCreator::graphicalOutput(ostream& os, data_manage::Dataholder* ho
 	extree.clearConstants();
 }
 
+void NNSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, bool continMapUsed){
+			
+	ExpressionTree extree;
+	extree.convertPostFix(postFixStack);
+	extree.outputEquation(os,holder,mapUsed,ottDummy,continMapUsed);
+	extree.clearConstants();
+}
+
 
 /// 
 /// Performs evaluation on the dataset.  Each individual has their result passed

@@ -73,6 +73,10 @@ public:
 		
 		/// Writes output to stream
 		void writeGraphical(ostream& os, Solution* sol, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, bool continMapUsed);\
+			
+		/// Writes model as equation to stream
+		void writeEquation(ostream& os, Solution* sol, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapUsed);
 		
 		/// Returns extension for graphical representation

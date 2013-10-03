@@ -33,6 +33,7 @@ class ExpressionTree{
 
 	public:
 	
+		ExpressionTree();
 		~ExpressionTree();
 	
 		/// returns prefix stack after conversion from the post fix stack
@@ -65,16 +66,27 @@ class ExpressionTree{
 		/// returns number of children for current iterator
 		inline int numberOfChildren(tree<ElementNode>::iterator& iter){
 			return expressTree.number_of_children(iter);}
+		
+		void outputEquation(ostream& out, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, bool continMapused);
 			
+		
 	private:
 		unsigned int incrementDepth(tree<ElementNode>::iterator baseIter, 
 				unsigned int currDepth);
 	
+		void setOperators(string& label, string& op, string& prefix);
+	
+		void outputEquationTree(ostream& out, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, bool continMapused, tree<ElementNode>::iterator baseIter);
+	
 		std::string alterLabel(data_manage::Dataholder* holder,
-			bool mapUsed, bool ottDummy, std::string label, bool continMapUsed);
+			bool mapUsed, bool ottDummy, std::string label, bool continMapUsed, bool equationOut);
 			
 		void compressOperator(std::vector<TerminalSymbol*> & postFixStack,
 			std::vector<TerminalSymbol*>& newStack);
+	
+		std::map<std::string, std::string> operatorMap, prefixMap;
 	
 		tree<ElementNode> expressTree;
 		tree<ElementNode>::iterator extreeIter;

@@ -123,6 +123,11 @@ public:
 		/// writes a graphical or file that can be converted to a graphic representation of the solution
 		virtual void graphicalOutput(ostream& os, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapUsed)=0;
+			
+		/// writes solution out as an equation
+ 		virtual void equationOutput(ostream& os, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, bool continMapUsed)=0;
+			
 		
 		virtual std::string graphicExt(){return graphicExtension;}
 		

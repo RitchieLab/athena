@@ -521,6 +521,7 @@ int GENNAlg::step(){
 				 
 				 // check for need to change crossovers
 				 if(ngensBlockCross && restrictStepsDone == ngensBlockCross){
+				 cout << "reset crossover" << endl;
 						resetCrossover();
 				 }
  
@@ -732,7 +733,7 @@ NNSolution* GENNAlg::convertGenome(GAGenome& ind){
 	for(unsigned int i=0; i<phenoSize; ++i){
 		symbols[i] = *((*phenotype)[i]);
 	}
-			
+
 	sol->setSymbols(symbols);
 	sol->fitness(genome.score());
 	sol->testVal(genome.getTestValue());
@@ -1231,7 +1232,15 @@ void GENNAlg::writeGraphical(ostream& os, Solution* sol, data_manage::Dataholder
 	GEObjective::outputModel(os, sol, holder, mapUsed, ottDummy, continMapUsed);
 }
 
-
+///
+/// Writes model represented as an equation to stream
+/// @param os
+/// @param sol Solution to output to stream
+///
+void GENNAlg::writeEquation(ostream& os, Solution* sol, data_manage::Dataholder* holder,
+	bool mapUsed, bool ottDummy, bool continMapUsed){
+	GEObjective::outputEquation(os, sol, holder, mapUsed, ottDummy, continMapUsed);
+}
 
 ///
 /// Returns graphical file extension appropriate to solution

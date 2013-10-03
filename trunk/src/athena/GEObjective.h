@@ -91,6 +91,13 @@ public:
 			solCreator->graphicalOutput(os, data, mapUsed, ottDummy, continMapUsed);
 			solCreator->freeSolution();
 		}
+		
+		static void outputEquation(ostream& os, Solution* sol, data_manage::Dataholder* data,
+			bool mapUsed, bool ottDummy, bool continMapUsed){
+			solCreator->establishSolution(sol->getSymbols());
+			solCreator->equationOutput(os, data, mapUsed, ottDummy, continMapUsed);
+			solCreator->freeSolution();
+		}
 
 		/// Return additional column names for output
 		static vector<std::string>  getAdditionalOutputNames(){return solCreator->getAdditionalOutputNames();}

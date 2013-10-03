@@ -22,7 +22,22 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "TerminalSymbol.h"
 #include <map>
 #include <sstream>
+#include <Stringmanip.h>
 
+
+ExpressionTree::ExpressionTree(){
+	operatorMap["PADD"]="+";
+	operatorMap["PDIV"]=",";
+	operatorMap["PMULT"]="*";
+	operatorMap["PSUB"]="-";
+	operatorMap["W"]="*";
+	
+	prefixMap["PADD"]="Activate";
+	prefixMap["PDIV"]="DIV";
+	prefixMap["PMULT"]="Activate";
+	prefixMap["PSUB"]="Activate";
+	prefixMap["W"]="";
+}
 
 ///
 /// returns expression tree created from the postfix stack passed to it
@@ -148,17 +163,23 @@ void ExpressionTree::compressOperator(vector<TerminalSymbol*> & postFixStack,
 /// Adjust label for genotypes based on map file contents
 ///
 string ExpressionTree::alterLabel(data_manage::Dataholder* holder,
-			bool mapUsed, bool ottDummy, string label, bool continMapUsed){
+			bool mapUsed, bool ottDummy, string label, bool continMapUsed, bool equationOut){
 			
 	if(mapUsed && label[0] == 'G'){
 		 stringstream ss(label.substr(1,label.length()-1));
-		 int num;
-		 ss >> num;
+		 int num, numOrig;
+		 ss >> numOrig;
 		 if(ottDummy)
-				num = (num-1)/2;
+				num = (numOrig-1)/2;
 			else
-				num -= 1;
+				num = numOrig-1;
 			label = holder->getGenoName(num);
+			// indicate which of the two variables was used
+			if(equationOut){
+				string enc;
+				numOrig % 2 ? enc = "1" : enc = "2";
+				label += "_enc" + enc;
+			}
 	}
 	else if(continMapUsed && label[0] == 'C'){
 		stringstream ss(label.substr(1,label.length()-1));
@@ -170,13 +191,18 @@ string ExpressionTree::alterLabel(data_manage::Dataholder* holder,
 	else{
 		if(label[0]=='G'){
 	  stringstream ss(label.substr(1,label.length()-1));
-			int num;
-			ss >> num;
+			int num,numOrig;
+			ss >> numOrig;
 			if(ottDummy)
-				num = (num-1)/2;
+				num = (numOrig-1)/2;
 			else
-				num -= 1;
+				num = numOrig-1;
 			label = "G" + holder->getGenoName(num);
+			if(equationOut){
+				string enc;
+				numOrig % 2 ? enc = "1" : enc = "2";
+				label += "_enc" + enc;// + "_orig" + Stringmanip::numberToString(numOrig);
+			}
 		 }
 	}
 		 
@@ -235,6 +261,77 @@ unsigned int ExpressionTree::incrementDepth(tree<ElementNode>::iterator baseIter
 		return maxDepth;
 }
 
+///
+/// Depending on the type of operator different operators and possibly prefixes
+/// will be returned.
+///
+void ExpressionTree::setOperators(string& label, string& op, string& prefix){
+	op = operatorMap[label];
+	prefix = prefixMap[label];
+}
+
+
+///
+/// Output as mathematical expression.  Can't be a simple equation because of the 
+/// presence of the Activation.  (also the division operator is a function that 
+/// needs to be taken into account - also boolean operators don't work well in this)
+/// 
+///
+void ExpressionTree::outputEquation(ostream& out, data_manage::Dataholder* holder,
+	bool mapUsed, bool ottDummy, bool continMapUsed){
+	
+	tree<ElementNode>::iterator iter = expressTree.begin();
+	outputEquationTree(out, holder, mapUsed, ottDummy, continMapUsed, iter);
+}
+
+
+///
+/// Output as mathematical expression.  Can't be a simple equation because of the 
+/// presence of the Activation.  (also the division operator is a function that 
+/// needs to be taken into account - also boolean operators don't work well in this)
+/// 
+///
+void ExpressionTree::outputEquationTree(ostream& out, data_manage::Dataholder* holder,
+	bool mapUsed, bool ottDummy, bool continMapUsed, tree<ElementNode>::iterator baseIter){
+	
+	int numChildren = expressTree.number_of_children(baseIter);
+	
+	string label = baseIter->el->getLabel();
+	
+	if(numChildren > 0){
+		// if it is a node (PADD, PSUB, PDIV or PMULT) have add activate sigmoid to output
+		
+		string op, prefix="";
+		
+		setOperators(label, op, prefix);
+		
+		// every one gets a start paren
+		out << prefix << "(";
+		
+		int endIndex = numChildren-1;
+		tree<ElementNode>::iterator childIter;
+		int child;
+		for(child=0; child < endIndex; child++){
+			childIter = expressTree.child(baseIter, child);
+			outputEquationTree(out, holder, mapUsed, ottDummy, continMapUsed, childIter);
+			out << op;
+		}
+		childIter = expressTree.child(baseIter, child);
+		outputEquationTree(out, holder, mapUsed, ottDummy, continMapUsed, childIter);
+		
+		// after all children do end paren
+		out << ")";
+	}
+	else{
+		label = alterLabel(holder, mapUsed, ottDummy, label, continMapUsed, true);
+		out << label;
+	}
+
+}
+
+
+// void ExpressionTree::outputChildren(ostream& out, data_manage::Dataholder* holder,
+	
 
 ///
 /// Output expression tree in dot language for use by Graphviz to
@@ -275,7 +372,7 @@ void ExpressionTree::outputDot(ostream & out, data_manage::Dataholder* holder,
  
 	string label = iter->el->getLabel();
 
-	label = alterLabel(holder, mapUsed, ottDummy, label, continMapUsed);
+	label = alterLabel(holder, mapUsed, ottDummy, label, continMapUsed,false);
 
 	out << "\t" <<  iter->id << " [shape=\"" << iter->el->getShape() << "\" style=\"" << 
 		iter->el->getStyle() << "\" label=\"" << label << "\"];" << endl;
@@ -286,7 +383,7 @@ void ExpressionTree::outputDot(ostream & out, data_manage::Dataholder* holder,
 		out << "\t" << iter->id << "->" << parent->id << ";" << endl;
  
 		string label = iter->el->getLabel();
-		label = alterLabel(holder, mapUsed, ottDummy, label, continMapUsed);
+		label = alterLabel(holder, mapUsed, ottDummy, label, continMapUsed,false);
  
 		out << "\t" << iter->id << " [shape=\"" << iter->el->getShape() << "\" style=\"" << 
 			iter->el->getStyle() << "\" label=\"" << label << "\"];" << endl;  

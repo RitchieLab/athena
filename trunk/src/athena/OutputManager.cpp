@@ -171,7 +171,7 @@ void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& 
 void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
 	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed){
 	
-		Solution* bestSolution;   
+		Solution* bestSolution;
 			for(int mod=0; mod < nmodels; mod++){
 				ofstream outfile;
 				
@@ -213,9 +213,34 @@ std::ostream& OutputManager::getStream(std::string filename){
 	
 }
 
-
 ///
 /// returns a stream for writing
+/// @param filename
+/// @return ostream to write to 
+///
+void OutputManager::outputEquations(Algorithm* alg, vector<Solution*>& bestSolutions, 
+	data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed){	
+	string summaryName = basename + ".athena.sum";
+		
+	ofstream outfile;
+	outfile.open(summaryName.c_str(), ios::app);
+	outfile << "\nCV\tEquation\n";
+	
+	for(unsigned int cv=0; cv < bestSolutions.size(); cv++){
+		outfile << cv+1 << "\t";
+		alg->writeEquation(outfile, bestSolutions[cv], &data,
+			mapUsed, ottDummy, continMapUsed);
+		outfile << endl;
+	}
+	
+	outfile.close();
+	
+}
+
+
+
+///
+/// Outputs graphical representation of model
 /// @param filename
 /// @return ostream to write to 
 ///
@@ -243,22 +268,36 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 
 
 ///
+/// Converts scores for results using balanced accuracy
+/// @param score original output score
+/// @return status as 1 or 0
+///
+int OutputManager::scoreConversion(float score){
+	return score > 0.5?1:0;
+}
+
+
+///
 /// outputs list of individuals with scores for best model
 /// divided into training and testing sets
 /// @param is istream 
 /// @param base base portion of output file name
 ///
-void OutputManager::outputInds(std::istream &is, std::string base){
+void OutputManager::outputInds(std::istream &is, std::string base, string fitnessName){
 	
-	 std::multiset<indOutScores,scoreComp> empty;
+	std::multiset<indOutScores,scoreComp> empty;
 	 
 	vector<multiset<indOutScores,scoreComp> > trainingSet;
 	vector<multiset<indOutScores,scoreComp> > testingSet;
 	multiset<indOutScores,scoreComp> bestSet;
 	int currTrain=0, currTest=0;
+
+	bool balacc=false;
+	if(fitnessName.find("BALANCEDACC") != string::npos)
+		balacc = true;
 	
 	string line;
-	string temp, id, scoreStr, finalScore, diffStr;
+	string temp, id, scoreStr, finalScore, diffStr, predStatus="";
 	int cv;
 	bool useTrain=true, useTest=false;
 	double score, obs, diff, missDiffValue=-1000.0;
@@ -288,19 +327,27 @@ void OutputManager::outputInds(std::istream &is, std::string base){
 		}
 		else{
 			ss >> id >> scoreStr >> obs;
-			if(scoreStr.find("data") != string::npos){
+			if(scoreStr.find("Missing") != string::npos){
 				diffStr = "NA";
 				diff = missDiffValue;
+				if(balacc)
+					predStatus="\tMissing";
 			}
 			else{
 				stringstream ss(scoreStr);
 				ss >> score;
-				diff = abs(score-obs);
+				if(!balacc)
+					diff = abs(score-obs);
+				else
+					diff = int(abs(scoreConversion(score)-obs));
 				diffStr = Stringmanip::numberToString(diff);
+				if(balacc)
+					predStatus = "\t" + Stringmanip::numberToString(scoreConversion(score));
 			}
 			
 			indOutScores newOutput;
-			newOutput.output = id + "\t" + scoreStr + "\t" + Stringmanip::numberToString(obs);
+			newOutput.output = id + "\t" + scoreStr + predStatus + "\t" + Stringmanip::numberToString(obs);
+
 			newOutput.diff = diff;
 			
 			if(useTrain){	
@@ -327,13 +374,19 @@ void OutputManager::outputInds(std::istream &is, std::string base){
 	for(size_t i=0; i<testingSet.size(); i++){
 		testing.push_back(emptyVec);
 		for(setIter = testingSet[i].begin(); setIter != testingSet[i].end(); ++setIter){
-// cout << "diff=" << setIter->diff << " output=" << setIter->output << endl;
 			testing[i].push_back(setIter->output);
 		}
 	}
 	for(setIter=bestSet.begin(); setIter!=bestSet.end(); ++setIter){
 		best.push_back(setIter->output);
 	}
+	
+	string addHeader="", trainTestHeader="";
+	if(balacc){
+		addHeader="\tPred-Status";
+		trainTestHeader="\t";
+	}
+	
 	// write to output file
 	string currFileName = base + ".indscores.txt";
 	ofstream of(currFileName.c_str());
@@ -342,14 +395,15 @@ void OutputManager::outputInds(std::istream &is, std::string base){
 
 	if(best.empty()){
 	
-		of << "Training\t\t\tTesting";
+		of << "Training\t\t\t" + trainTestHeader + "Testing";
 		for(int j=1; j<cv; j++){
-			of << "\t\t\tTraining\t\t\tTesting";
+			of << "\t\t\t" + trainTestHeader + "Training\t\t\t" + trainTestHeader+ "Testing";
 		}
 		of << endl;
-		of << "CV#1-ID\tPred\tObs\tCV#1-ID\tPred\tObs";
+		of << "CV#1-ID\tPred" + addHeader + "\tObs\tCV#1-ID\tPred" + addHeader + "\tObs";
 		for(int j=1; j<cv; j++){
-			of << "\tCV#" << j+1 << "-ID\tPred\tObs\tCV#" << j+1 << "-ID\tPred\tObs";
+			of << "\tCV#" << j+1 << "-ID\tPred" + addHeader + "\tObs\tCV#" << j+1 << "-ID\tPred" 
+				+ addHeader + "\tObs";
 		}
 		of << endl;
 	
@@ -360,12 +414,16 @@ void OutputManager::outputInds(std::istream &is, std::string base){
 					}
 					else{
 						of << "\t\t";
+						if(balacc)
+							of << "\t";
 					}
 					if(i < testing[j].size()){
 						of << testing[j][i] << "\t";
 					}
 					else{
 						of << "\t\t\t";
+						if(balacc)
+							of << "\t";
 					}
 				}
 			of << endl;	
@@ -375,12 +433,12 @@ void OutputManager::outputInds(std::istream &is, std::string base){
 	
 		of << "Entire Set";
 		for(int j=1; j<cv+1; j++){
-			of << "\t\t\tTraining\t\t\tTesting";
+			of << "\t\t\tTraining\t\t\t" + trainTestHeader + "Testing";
 		}
 		of << endl;
-		of << "Best-ID\tPred\tObs";
+		of << "Best-ID\tPred" + addHeader + "\tObs";
 		for(int j=0; j<cv; j++){
-			of << "\tCV#" << j+1 << "-ID\tPred\tObs\tCV#" << j+1 << "-ID\tPred\tObs";
+			of << "\tCV#" << j+1 << "-ID\tPred" + addHeader + "\tObs\tCV#" << j+1 << "-ID\tPred" + addHeader + "\tObs";
 		}
 		of << endl;	
 	
@@ -392,12 +450,16 @@ void OutputManager::outputInds(std::istream &is, std::string base){
 				}
 				else{
 					of << "\t\t\t";
+					if(balacc)
+						of << "\t";
 				}
 				if(i < testing[j].size()){
 					of << testing[j][i] << "\t";
 				}
 				else{
 					of << "\t\t\t";
+					if(balacc)
+						of << "\t";
 				}
 			}
 			of << endl;

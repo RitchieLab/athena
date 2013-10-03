@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "9/19/13";
+		string versionDate = "10/01/13";
 		string execName = "ATHENA";
 		string version = "1.0.3";
 		 time_t start,end;
@@ -360,6 +360,17 @@ int main(int argc, char** argv) {
 		}   /* ends master processing of output */
 #endif
 		}
+		
+	// add equation output to summary	
+#ifdef PARALLEL
+if(myRank==0){
+#endif		
+	writer.outputEquations(alg, bestSolutions, data, mapFileUsed, config.getOttEncoded(), 
+		continMapUsed);
+#ifdef PARALLEL
+}
+#endif
+		
 	// if chosen run best model selection from list of best models
 	try{
 	if(config.selectBestModel()){
@@ -397,7 +408,7 @@ int main(int argc, char** argv) {
 		if(myRank==0)
 #endif
 	if(config.getIndOutput())
-			writer.outputInds(performanceStream, config.getOutputName());
+			writer.outputInds(performanceStream, config.getOutputName(), alg->getFitnessName());
 #ifdef PARALLEL
 		MPI_Finalize();
 #endif
