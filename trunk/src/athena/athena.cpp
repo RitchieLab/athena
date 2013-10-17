@@ -251,7 +251,8 @@ int main(int argc, char** argv) {
 			// output cv interval when requested
 			if(config.getCVOutput()){
 				OutputSet oSet;
-				oSet.outputCV(cvFileName, cvSet.getInterval(currCV).getTraining(), currCV+1);
+				oSet.outputCV(cvFileName+ ".train", cvSet.getInterval(currCV).getTraining(), currCV+1);
+				oSet.outputCV(cvFileName+ ".test", cvSet.getInterval(currCV).getTesting(), currCV+1);
 			}
 #ifdef PARALLEL
 	} /* end check for master writing CV splits */
