@@ -60,6 +60,7 @@ void Config::initialize(){
 		logTypeMap["SUMMARY"] = LogSummary;
 		// changed to match Summary as part of log optimization
 		logTypeMap["DETAILED"] = LogDetailed;
+		logTypeMap["VARIABLES"] = LogVariables;
 		logTypeSelected = LogNone;
 		summaryMap["TRUE"] = True;
 		summaryMap["FALSE"] = False;

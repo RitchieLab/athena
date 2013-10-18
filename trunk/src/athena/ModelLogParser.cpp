@@ -21,6 +21,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <fstream>
 #include <algorithm>
 #include <sstream>
+#include <deque>
+#include <stdio.h>
 
 using namespace std;
 
@@ -43,6 +45,89 @@ logModel ModelLogParser::getModel(string& line){
 		return mod;
 }
 
+
+void ModelLogParser::compileVariableFiles(std::vector<std::string>& filenames, std::string outFilename){
+		// when only a single file 
+		// only need to change name of the filename to match the output name
+		if(filenames.size()==1){
+				string command = "mv " + filenames[0] + " " + outFilename;
+				system(command.c_str());
+				return;
+		}
+		
+		// compile all files into a single file
+		// open filehandle for each and then read each 
+		deque<ifstream*> inputFH;
+		
+		vector<string>::iterator iter;
+		for(iter=filenames.begin(); iter != filenames.end(); iter++){
+			ifstream * newStream = new ifstream;
+			newStream->open(iter->c_str(), ios::in);
+			inputFH.push_back(newStream);
+		}
+		
+		ofstream outStream(outFilename.c_str(), ios::out);
+		
+		bool done=false;
+		vector<string> lines;
+		string nextGen, gen = "";
+		while(!done){
+			lines.clear();
+			for(deque<ifstream*>::iterator iter=inputFH.begin(); iter != inputFH.end(); iter++){
+				done=getNextGen(*iter, lines, nextGen);
+			}
+			if(gen.length() > 0)
+			outputVariables(outStream, lines, gen);	
+			gen = nextGen;
+		}
+
+		for(deque<ifstream*>::iterator iter=inputFH.begin(); iter != inputFH.end(); iter++){
+			(*iter)->close();
+			delete *iter;
+		}
+		outStream.close();
+		
+		
+		//delete temporary files
+		for(iter=filenames.begin(); iter != filenames.end(); iter++){
+			remove(iter->c_str());
+		}
+		
+}
+
+
+void ModelLogParser::outputVariables(ofstream& outStream, vector<string>& lines, string& gen){
+	
+	outStream << gen << "\n";
+	for(vector<string>::iterator iter=lines.begin(); iter != lines.end(); iter++){
+		outStream << *iter << "\n";
+	}
+	
+}
+
+
+bool ModelLogParser::getNextGen(ifstream* in, vector<string>& lines, string& nextGen){
+	
+	string line;
+	bool endGen = false;
+	
+	while(!endGen){
+		getline(*in, line);
+		if(in->eof() || line.find("Gen")!=string::npos){
+			nextGen=line;
+			endGen=true;
+		}
+		else{
+			lines.push_back(line);
+		}
+		
+	}
+	
+	if(in->eof())
+		return true;
+	else
+		return false;
+}
 
 
 void ModelLogParser::compileFiles(vector<string>& filenames, string outFilename, float notValid){
@@ -124,8 +209,6 @@ void ModelLogParser::writeOutput(ostream & os, vector<vector<logModel> >& models
 				}
 				gen++;
 		}
-		
-
 }
 
 

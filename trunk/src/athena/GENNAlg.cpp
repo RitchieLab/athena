@@ -580,6 +580,11 @@ void GENNAlg::fillLog(){
 			return;
 		}
 
+
+		// add to detailed log files
+		fillPopulation();
+
+
 		unsigned int numInds = ga->population().size();
 		
 		float worstScore = GEObjective::getWorstScore();
@@ -608,16 +613,6 @@ void GENNAlg::fillLog(){
 		}
 		geLog->completeGen();
 		
-		
-		// add to detailed log files
-		fillPopulation();
-		NNSolution * solution;
-		int nSolutions = pop.numSolutions();
-		for(int i=0; i<nSolutions; i++){
-				solution = (NNSolution*)pop[i];
-				modelLog->writeSolution(*solution, geLog->getCurrentGen(), i+1);
-		}
-		
 		#ifdef PARALLEL
 			geLog->sendReceiveLogs(totalNodes, myRank);
 		#endif
@@ -625,6 +620,24 @@ void GENNAlg::fillLog(){
 		// output log information -- appended to existing log files
 		if(myRank==0){
 				writeLog();
+		}
+
+		if(logTypeSelected==LogVariables){
+			NNSolution * solution;
+			int nSolutions = pop.numSolutions();
+			modelLog->addGeneration(geLog->getCurrentGen());
+			for(int i=0; i<nSolutions; i++){
+				solution = (NNSolution*)pop[i];
+				modelLog->writeVariables(*solution, dummyEncoded);
+			}
+			return;
+		}
+
+		NNSolution * solution;
+		int nSolutions = pop.numSolutions();
+		for(int i=0; i<nSolutions; i++){
+				solution = (NNSolution*)pop[i];
+				modelLog->writeSolution(*solution, geLog->getCurrentGen(), i+1);
 		}
 		
 }
@@ -1081,7 +1094,10 @@ void GENNAlg::finishLog(string basename, int cv){
 				string outName = basename + ".cv." + 
 								Stringmanip::numberToString<int>(cv) + ".models.log"; 
 				ModelLogParser parser;
-				parser.compileFiles(filenames, outName, GEObjective::getWorstScore());
+				if(logTypeSelected != LogVariables)
+					parser.compileFiles(filenames, outName, GEObjective::getWorstScore());
+				else
+					parser.compileVariableFiles(filenames, outName);
 		}
 }
 
@@ -1107,7 +1123,7 @@ void GENNAlg::prepareLog(string basename, int cv){
 				Stringmanip::numberToString<int>(cv) + ".models.log";
 	
 	if(logTypeSelected != LogNone){
-		modelLog->openLog(modelLogName, GEObjective::calculatorName());
+		modelLog->openLog(modelLogName, GEObjective::calculatorName(), logTypeSelected==LogVariables);
 		if(logTypeSelected == LogDetailed)
 				modelLog->setDetailed(true);
 	}
@@ -1118,7 +1134,8 @@ void GENNAlg::prepareLog(string basename, int cv){
 	
 	ofstream outFile;
 	switch(logTypeSelected){
-		case LogDetailed:    
+		case LogDetailed:   
+		case LogVariables:	 
 		case LogSummary:
 			outFile.open(mainLogFilename.c_str(), ios::out);
 				if(!outFile.is_open()){
@@ -1126,7 +1143,6 @@ void GENNAlg::prepareLog(string basename, int cv){
 				}  
 			geLog->outputMainHeaders(outFile); 
 			outFile.close();
-				 
 		case LogNone:
 		break;
 	}

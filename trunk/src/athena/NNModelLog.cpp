@@ -38,12 +38,17 @@ void NNModelLog::header(ostream& os, std::string fitnessName){
 	os << "\n";
 }
 
-void NNModelLog::openLog(std::string filename, std::string fitnessName){
+void NNModelLog::openLog(std::string filename, std::string fitnessName, bool varsOnly){
 	logStream.open(filename.c_str(), ios::out);
 	if(!logStream.is_open()){
 		throw AthenaExcept(filename + " unable to open for writing results");
 	}
-	header(logStream, fitnessName);
+	if(!varsOnly)
+		header(logStream, fitnessName);
+}
+
+void NNModelLog::addGeneration(int generation){
+	logStream << "Gen: " << generation << "\n";
 }
 
 ///
@@ -52,7 +57,39 @@ void NNModelLog::openLog(std::string filename, std::string fitnessName){
 void NNModelLog::closeLog(){
 		logStream.close();
 }
-		
+
+///
+/// Writes variables to log 
+/// @param solution to write
+/// @param whether solution has genotypes converted to Ott representation 
+/// @param data for converting to variable names
+///
+void NNModelLog::writeVariables(NNSolution& solution, bool ottDummyConverted){
+	vector<int> genotypes=solution.getGenotypes(ottDummyConverted);
+	vector<int> covariates=solution.getCovariates();
+	
+	vector<int>::iterator iter;
+	
+	iter=genotypes.begin();
+	if(iter != genotypes.end()){
+		logStream << "G" << *iter;
+		++iter;
+	}
+	for(; iter != genotypes.end(); iter++){
+		logStream << " G" << *iter;
+	}
+	iter=covariates.begin();
+	if(iter != covariates.end()){
+		logStream << "C" << *iter;
+		++iter;
+	}	
+	for(iter=covariates.begin(); iter != covariates.end(); iter++){
+		logStream << " C"<< *iter;
+	}
+	if(!genotypes.empty() || !covariates.empty())
+		logStream << "\n";	
+}
+
 ///
 /// Add solution to log file
 ///

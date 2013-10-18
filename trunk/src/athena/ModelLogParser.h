@@ -41,6 +41,8 @@ class ModelLogParser{
 		public:
 				void compileFiles(std::vector<std::string>& filenames, std::string outFilename,
 						float notValid);
+						
+				void compileVariableFiles(std::vector<std::string>& filenames, std::string outFilename);
 
 		private:
 				logModel getModel(std::string& line);
@@ -49,5 +51,9 @@ class ModelLogParser{
 
 				void writeOutput(std::ostream & os, std::vector<std::vector<logModel> >& models,
 						float notValid);
+
+				bool getNextGen(ifstream* in, vector<string>& lines, string& nextGen);
+				
+				void outputVariables(ofstream& outStream, vector<string>& lines, string& gen);
 
 };

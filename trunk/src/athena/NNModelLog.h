@@ -38,7 +38,7 @@ public:
 		
 		~NNModelLog();
 
-		void openLog(std::string filename, std::string fitnessName);
+		void openLog(std::string filename, std::string fitnessName, bool varsOnly);
 		
 		void closeLog();
 		
@@ -47,6 +47,10 @@ public:
 		void setDetailed(bool include){detailed=include;}
 		
 		bool getDetailed(){return detailed;}
+		
+		void addGeneration(int generation);
+		
+		void writeVariables(NNSolution& solution, bool ottDummyEncoded);
 		
 private:
 		
