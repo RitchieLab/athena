@@ -417,7 +417,7 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 						if(balacc)
 							of << "\t";
 					}
-					if(i < testing[j].size()){
+					if(!testing.empty() && i < testing[j].size()){
 						of << testing[j][i] << "\t";
 					}
 					else{
@@ -453,7 +453,7 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 					if(balacc)
 						of << "\t";
 				}
-				if(i < testing[j].size()){
+				if(!testing.empty() && i < testing[j].size()){
 					of << testing[j][i] << "\t";
 				}
 				else{

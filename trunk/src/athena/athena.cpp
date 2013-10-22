@@ -252,6 +252,7 @@ int main(int argc, char** argv) {
 			if(config.getCVOutput()){
 				OutputSet oSet;
 				oSet.outputCV(config.getOutputName() + ".train.cv", cvSet.getInterval(currCV).getTraining(), currCV+1);
+				if(numCV > 1)
 				oSet.outputCV(config.getOutputName() + ".test.cv", cvSet.getInterval(currCV).getTesting(), currCV+1);
 			}
 #ifdef PARALLEL
