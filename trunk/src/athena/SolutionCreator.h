@@ -134,6 +134,7 @@ public:
 		virtual unsigned int getNumGenes()=0;
 		
 		virtual unsigned int getNumCovars()=0;
+		virtual unsigned int getNumNodes()=0;
 		
 		virtual vector<int> getGeneIndexes()=0;
 		virtual vector<int> getCovarIndexes()=0;

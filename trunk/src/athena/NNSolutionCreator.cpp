@@ -57,6 +57,7 @@ void NNSolutionCreator::initialize(){
 	
 	leftOptBound = '(';
 	rightOptBound = ')';
+	numNodes=0;
 }
 
 
@@ -175,6 +176,7 @@ void NNSolutionCreator::establishSolution(vector<string>& symbols){
 	// for missing data
 	genos.clear();
 	covars.clear();
+	numNodes=0;
  
 	for(unsigned int i=0; i<postFixStack.size(); i++){
 
@@ -183,6 +185,9 @@ void NNSolutionCreator::establishSolution(vector<string>& symbols){
 			}
 			else if (postFixStack[i]->getTermType() == TerminalSymbol::Covariate){
 				 covars[postFixStack[i]]++;
+			}
+			else if (postFixStack[i]->getTermType() == TerminalSymbol::Neuron){
+				 numNodes++;
 			}
 	}
 }

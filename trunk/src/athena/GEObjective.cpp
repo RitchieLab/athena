@@ -70,6 +70,7 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 			genome.addGenos(solCreator->getGeneIndexes());
 			genome.addCovars(solCreator->getCovarIndexes());
 			genome.setNumIndsEvaluated(solCreator->getNumIndsEvaluated());
+			genome.setNumNodes(solCreator->getNumNodes());
 			
 			// when set 
 			if(genome.getNumIndsEvaluated() != int(set->numInds())){
@@ -88,6 +89,68 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 	return fitness;
 }
 
+
+///
+/// Performs basic tasks (except evaluation) on genome
+///  Necessary for conducting certain types of crossover
+/// @param g GAGenome which is being evaluated
+/// @return none
+///
+void GEObjective::GEObjectiveInit(GAGenome& g){
+
+	 GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
+
+	//Assign genotype to mapper
+	mapper->setGenotype(genome); 
+	 Phenotype const *phenotype=mapper->getPhenotype();
+	 
+	 float fitness;
+	 genome.setValid(phenotype->getValid());
+	
+	
+	 if(phenotype->getValid()){
+// 			 unsigned int phenoSize=(*phenotype).size();
+// 			 vector<string> symbols(phenoSize, "");     
+// 			 
+// 			for(unsigned int i=0; i<phenoSize; ++i){
+// 					symbols[i] = *((*phenotype)[i]);
+// 			}
+// 
+// 			solCreator->establishSolution(symbols, set);
+
+// 			fitness = solCreator->evaluate(set);
+// 		 
+// 			if(additionalLogging){
+// 				solCreator->detailedLogging();
+// 				genome.setDepth(solCreator->getDetailedLog());
+// 				genome.setGramDepth(mapper->buildDerivationTree());
+// 			}
+			
+// 			solCreator->freeSolution();
+
+			genome.setEffectiveSize(mapper->getGenotype()->getEffectiveSize());   
+// 			genome.setNumCovars(solCreator->getNumCovars());
+// 			genome.setNumGenes(solCreator->getNumGenes());
+// 			genome.addGenos(solCreator->getGeneIndexes());
+// 			genome.addCovars(solCreator->getCovarIndexes());
+// 			genome.setNumIndsEvaluated(solCreator->getNumIndsEvaluated());
+// 			genome.setNumNodes(solCreator->getNumNodes());
+			
+			// when set 
+// 			if(genome.getNumIndsEvaluated() != int(set->numInds())){
+// 				genome.setSSTotal(solCreator->getCalculatorConstant());
+// 			}
+// 			else{
+// 				genome.setSSTotal(set->getSSTotal());
+// 			}
+	 }
+	 else{
+				// set fitness to worst score initially
+		 fitness = solCreator->getWorst();
+		 genome.clearScores();
+	 }	
+
+}
 
 
 ///

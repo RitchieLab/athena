@@ -155,6 +155,28 @@ my $result = $firstnode + $secondnode;
 }
 
 
+# Variables:      GENO6 CONTIN17 CONTIN17 CONTIN17 CONTIN10 CONTIN10
+# AUC:    0.655
+# missing:        0%
+# BALANCEDACC:    0.5
+# Model:
+# PA( W(9.64, PA( W(5,CONTIN17), W(6.85,GENO6), W(0.84,CONTIN17),3)), W((7-1.4),CONTIN17), W((3.1/(5.01-40.96)),CONTIN10), W(9.8,CONTIN10),4)
+sub evaluate_ind{
+	my @ind_array=@_;
+	# includes 10 genos before contins so add 10 to each contin
+	my $inner1 = 5 * $ind_array[27];
+	my $inner2 = 6.85 * $ind_array[6];
+	my $inner3 = 0.84 * $ind_arry[27];
+	my $inner = ($inner1+$inner2+$inner3)*9.64;
+	#W((7-1.4),CONTIN17), W((3.1/(5.01-40.96)),CONTIN10), W(9.8,CONTIN10),4
+	my $firstnode = 5.6 * $ind_array[27];
+	my $secondnode = 3.1/(5.01-40.96) * $ind_array[20];
+	my $thirdnode = 9.8 * $ind_array[10];
+	
+	
+}
+
+
 
 #PA ( W ( 2.05 , V22 ) , W ( 60.75 , PD ( W ( 26.58 , V30 ) , W ( ( 41.14 / 74.8 ) , V31 ) , W ( ( 62.19 + ( 62.01 / 35.61 ) ) , V12 ) , W ( ( 56.27 + 74.25 ) , V2 ) , 4 ) ) , 2 )
 #sub evaluate_ind{

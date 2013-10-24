@@ -28,6 +28,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 class GE1DArrayGenome:public GA1DArrayGenome<int>{
 public:
 
+	typedef void (*Establishinator)(GAGenome &);
+
 	GE1DArrayGenome(unsigned int len);
 	GE1DArrayGenome(const GE1DArrayGenome& source);
 	virtual ~GE1DArrayGenome();
@@ -47,10 +49,10 @@ public:
 	int getEffectiveSize() const;
 	void setEffectiveSize(const int newEffSize);
 	
-	unsigned int getNumGenes()const;
+	unsigned int getNumGenes()const{return numGenes;} 
 	void setNumGenes(const unsigned int numGenes);
 	
-	unsigned int getNumCovars()const;
+	unsigned int getNumCovars()const{return numCovars;} 
 	void setNumCovars(const unsigned int numCovars);
 	
 	unsigned int getDepth() const;
@@ -98,6 +100,12 @@ public:
 	
 	inline void setSSTotal(float s){ssTotal = s;}
 	inline float getSSTotal(){return ssTotal;}
+	unsigned int getNumNodes()const;
+	void setNumNodes(const unsigned int nNodes);
+	
+	Establishinator establishinator() const {return estab;}
+  Establishinator establishinator(Establishinator f) { return(estab=f); }
+  void establish();
 	
 	void clearScores();
 	
@@ -110,13 +118,13 @@ private:
 	void helpCopy(const GE1DArrayGenome& source);
 	int helpCompare(const GE1DArrayGenome& source) const;
 		
+	bool validnn;	
 	float ssTotal, testVal;
 	unsigned int effSize, numGenes, numCovars, netDepth, gramDepth;
-	int genomeID, numEpochsTrained, numIndsEvaluated;
-	bool validnn;
-
-	std::vector<int> genos, covars;
+	int genomeID, numEpochsTrained, numIndsEvaluated, numNodes;
 	
+	std::vector<int> genos, covars;
+	Establishinator estab;		// establishes newly initialized genomes that don't need full evaulation function
 	static AthenaGrammarSI* mapper;
 	
 };

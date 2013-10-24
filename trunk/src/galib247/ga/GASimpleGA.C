@@ -112,6 +112,7 @@ GASimpleGA::population(const GAPopulation& p) {
   }
 
   GAGeneticAlgorithm::population(p);
+// this was the cause of a leak 
 //   oldPop->copy(*pop->clone());
   oldPop->copy(*pop);
   oldPop->geneticAlgorithm(*this);

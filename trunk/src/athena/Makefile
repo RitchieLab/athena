@@ -11,7 +11,7 @@ ANNIEDIR = ../annie
 
 INCLUDEDIR = -I. -I$(STATDIR) -I$(DATADIR) -I$(GADIR) -I$(GEDIR) -I$(ANNIEDIR)
 DFLAGS = -DPARALLEL 
-#DFLAGS = 
+DFLAGS = 
 CCFLAGS = -Wall $(DFLAGS) -O2 $(INCLUDEDIR)
 #CCFLAGS = -Wall $(DFLAGS) -g $(INCLUDEDIR)
 
@@ -34,7 +34,8 @@ SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	AthenaGrammarSI.o BioFilterModelCollection.o BackProp.o \
 	BioFilterBinReader.o genegenemodel.o BackPropAnnie.o \
 	BackPropAnnieTree.o SymRegressSolutionCreator.o GESymbReg.o NNModelLog.o \
-	ModelLogParser.o AUCCalculator.o BestModelSelector.o
+	ModelLogParser.o AUCCalculator.o BestModelSelector.o GAParetoSelector.o \
+	GAParetoRankSelector.o
 
 SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	CalculatorFactory.h ConfigFileReader.h Config.h \
@@ -50,7 +51,7 @@ SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	genegenemodel.h genegenemodelreader.h region.h snpholder.h \
 	snpsnpmodel.h biomodel.h BackPropAnnie.h BackPropAnnieTree.h \
 	SymRegressSolutionCreator.h GESymbReg.h NNModelLog.h ModelLogParser.h \
-	AUCCalculator.h BestModelSelector.h
+	AUCCalculator.h BestModelSelector.h GAParetoSelector.h GAParetoRankSelector.h
 
 #ifeq ($(DFLAGS),-DPARALLEL)
 PARALLEL_NEEDED := $(shell echo $(DFLAGS) | cut -f1 -d' ')

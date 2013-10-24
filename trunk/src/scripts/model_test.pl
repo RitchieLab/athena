@@ -156,50 +156,73 @@ sub read_data{
 
 # PM( W(0.88,G12), W(((0.1/63.97)*(8.4+((7+((8.3-62.55)/(4.8-(3*24.45))))-(1.7*0.74)))),G2),2)
 # PA( W(8.22,G1), W(((0.02/(((((0.02/0.24)/83.49)+((98.57-(0/2))/0.43))-((0*9.2)*(6.9-(3.5-0.3))))+4.2))*3),G23),2)
+# sub evaluate_ind{
+# 
+#   my @ind_array = @_;
+# 
+# #   my $firstnode = 8.22 * $ind_array[1];
+# #   my $secondw =((0.02/(((((0.02/0.24)/83.49)+((98.57-(0/2))/0.43))-((0*9.2)*(6.9-(3.5-0.3))))+4.2))*3);
+# #   my $secondnode = $secondw * $ind_array[23];arejus
+# 
+# 
+# #   my $node1 = -0.7484 * $ind_array[2];
+# #   my $node2 = 4.22 * $ind_array[1];
+# #   my $node3 = -26.0346 * $ind_array[2];
+# #   my $node4 = 17.3286 * $ind_array[1];
+# 
+#   my $node1 = 0.40 * $ind_array[2];
+#   my $node2 = 3.75 * $ind_array[1];
+#   my $node3 = -37.1872 * $ind_array[2];
+#   my $node4 = 27.94 * $ind_array[1];  
+# 
+# #  print "score  = ";
+# #  print $firstnode - $secondnode;
+# #  print "status = $ind_array[0]\n";
+#  
+#   my $score = ActivateSigmoid($node1 + $node2 + $node3 + $node4);
+# 
+# print "G1=$ind_array[1] G2=$ind_array[2]=>$score\n";
+#  
+# #   if($secondnode == 0){
+# #     $score = ActivateSigmoid($firstnode/1);
+# #   }
+# #   else{
+# #     $score = ActivateSigmoid($firstnode/$secondnode);
+# #   }
+#  
+# #   print "$firstnode-$secondnode score  = $score"; 
+# #  print $firstnode - $secondnode;
+# #   print " status = $ind_array[0] predicted=";
+#   my $val = (($score > 0.5)?1:0);
+# #   print "$val";
+#  
+# #   print " genotypes are $ind_array[23] $ind_array[1] ";
+# #   print "\n";
+#  
+#   return (($score > 0.5)?1:0);
+# }
+
+
+# Variables:      GENO6 CONTIN17 CONTIN17 CONTIN17 CONTIN10 CONTIN10
+# AUC:    0.655
+# missing:        0%
+# BALANCEDACC:    0.5
+# Model:
+# PA( W(9.64, PA( W(5,CONTIN17), W(6.85,GENO6), W(0.84,CONTIN17),3)), W((7-1.4),CONTIN17), W((3.1/(5.01-40.96)),CONTIN10), W(9.8,CONTIN10),4)
 sub evaluate_ind{
-
-  my @ind_array = @_;
-
-#   my $firstnode = 8.22 * $ind_array[1];
-#   my $secondw =((0.02/(((((0.02/0.24)/83.49)+((98.57-(0/2))/0.43))-((0*9.2)*(6.9-(3.5-0.3))))+4.2))*3);
-#   my $secondnode = $secondw * $ind_array[23];arejus
-
-
-#   my $node1 = -0.7484 * $ind_array[2];
-#   my $node2 = 4.22 * $ind_array[1];
-#   my $node3 = -26.0346 * $ind_array[2];
-#   my $node4 = 17.3286 * $ind_array[1];
-
-  my $node1 = 0.40 * $ind_array[2];
-  my $node2 = 3.75 * $ind_array[1];
-  my $node3 = -37.1872 * $ind_array[2];
-  my $node4 = 27.94 * $ind_array[1];  
-
-#  print "score  = ";
-#  print $firstnode - $secondnode;
-#  print "status = $ind_array[0]\n";
- 
-  my $score = ActivateSigmoid($node1 + $node2 + $node3 + $node4);
-
-print "G1=$ind_array[1] G2=$ind_array[2]=>$score\n";
- 
-#   if($secondnode == 0){
-#     $score = ActivateSigmoid($firstnode/1);
-#   }
-#   else{
-#     $score = ActivateSigmoid($firstnode/$secondnode);
-#   }
- 
-#   print "$firstnode-$secondnode score  = $score"; 
-#  print $firstnode - $secondnode;
-#   print " status = $ind_array[0] predicted=";
-  my $val = (($score > 0.5)?1:0);
-#   print "$val";
- 
-#   print " genotypes are $ind_array[23] $ind_array[1] ";
-#   print "\n";
- 
-  return (($score > 0.5)?1:0);
+	my @ind_array=@_;
+	# includes 10 genos before contins so add 10 to each contin
+	my $inner1 = 5 * $ind_array[27];
+	my $inner2 = 6.85 * $ind_array[6];
+	my $inner3 = 0.84 * $ind_array[27];
+	my $inner = ($inner1+$inner2+$inner3)*9.64;
+	#W((7-1.4),CONTIN17), W((3.1/(5.01-40.96)),CONTIN10), W(9.8,CONTIN10),4
+	my $firstnode = 5.6 * $ind_array[27];
+	my $secondnode = 3.1/(5.01-40.96) * $ind_array[20];
+	my $thirdnode = 9.8 * $ind_array[10];
+	my $result = $inner + $firstnode + $secondnode + $thirdnode;
+	
+	return (($result > 0.5)?1:0);
 }
 
 

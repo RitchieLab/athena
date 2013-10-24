@@ -126,7 +126,7 @@ public:
 		
 		#ifdef PARALLEL
 			struct genomeMPI{
-				float genomeParams[7];
+				float genomeParams[8];
 				int codons[MAX_GENOME_SIZE];
 			};
 		
@@ -226,7 +226,9 @@ protected:
 			#ifdef ATHENA_BLOAT_CONTROL
 			DoubleTournamentSelection,
 			#endif
-			RouletteWheelSelection
+			RouletteWheelSelection,
+			ParetoFrontSelection,
+			ParetoRankSelection
 		};
 	
 		

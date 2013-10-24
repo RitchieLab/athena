@@ -394,7 +394,6 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 	cout << "Writing individual output file: " << currFileName << endl;
 
 	if(best.empty()){
-	
 		of << "Training\t\t\t" + trainTestHeader + "Testing";
 		for(int j=1; j<cv; j++){
 			of << "\t\t\t" + trainTestHeader + "Training\t\t\t" + trainTestHeader+ "Testing";

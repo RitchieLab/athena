@@ -203,7 +203,6 @@ void NNSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet){
 void NNSolution::adjustScoreOut(Dataset* trainSet){
 	float ssTotal;
 	int totalInds = calcInds(trainSet, ssTotal);
-
 	solFitness = alterScore(solFitness, totalInds, ssTotal);
 }
 

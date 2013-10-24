@@ -98,6 +98,8 @@ public:
 			solCreator->equationOutput(os, data, mapUsed, ottDummy, continMapUsed);
 			solCreator->freeSolution();
 		}
+		
+		static void GEObjectiveInit(GAGenome& g);
 
 		/// Return additional column names for output
 		static vector<std::string>  getAdditionalOutputNames(){return solCreator->getAdditionalOutputNames();}

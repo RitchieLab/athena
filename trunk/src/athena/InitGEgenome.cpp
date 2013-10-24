@@ -35,9 +35,8 @@ void InitGEgenome::initFuncRandom(GAGenome &g){
 	int n=GARandomInt(minSize,maxSize);
 	genome.resize(n);
 	for(int i=0; i<n; i++){
-		genome.gene(i, GARandomInt(0,255));
+		genome.gene(i, GARandomInt(0,2147483647));
 	}
-	
 }
 
 

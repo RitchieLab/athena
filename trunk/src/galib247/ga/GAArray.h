@@ -64,7 +64,7 @@ public:
   int size() const {return sz;}
   int size(unsigned int n){
     if(n == sz) return sz;
-    T * tmp = (n ? new T[n] : 0);    
+    T * tmp = (n ? new T[n] : 0);  
     for(unsigned int j=n-1; j >= sz; j--) tmp[j] = 0; 
     for(int i=((n < sz) ? n-1 : sz-1); i>=0; i--) tmp[i] = a[i];
     delete [] a;

@@ -29,8 +29,8 @@ AthenaGrammarSI* GE1DArrayGenome::mapper = NULL;
 
 
 GE1DArrayGenome::GE1DArrayGenome(unsigned int len)
-	: GA1DArrayGenome<int>(len), ssTotal(0.0), testVal(0), effSize(0), numGenes(0), numCovars(0),
-		netDepth(0), gramDepth(0), numEpochsTrained(0), numIndsEvaluated(0), validnn(false)
+	: GA1DArrayGenome<int>(len),  validnn(false), ssTotal(0.0), testVal(0), effSize(0), numGenes(0), numCovars(0),
+		netDepth(0), gramDepth(0), numEpochsTrained(0),  numIndsEvaluated(0), numNodes(0), estab(0)
 {
 }
 
@@ -106,11 +106,13 @@ void GE1DArrayGenome::helpCopy(const GE1DArrayGenome& source)
 	numCovars = source.numCovars;
 	netDepth = source.netDepth;
 	gramDepth = source.gramDepth;
+	numNodes = source.numNodes;
 	genos = source.genos;
 	covars = source.covars;
 	numEpochsTrained = source.numEpochsTrained;
 	numIndsEvaluated = source.numIndsEvaluated;
 	ssTotal = source.ssTotal;
+	estab=source.estab;
 }
 
 int GE1DArrayGenome::helpCompare(const GE1DArrayGenome& source) const
@@ -166,16 +168,16 @@ vector<int>& GE1DArrayGenome::getCovars()
 {return covars;}
 
 
-unsigned int GE1DArrayGenome::getNumGenes()const{
-	return numGenes;
-}
-
 void GE1DArrayGenome::setNumGenes(const unsigned int nGenes){
 	numGenes = nGenes;
 }
 
-unsigned int GE1DArrayGenome::getNumCovars()const{
-	return numCovars;
+unsigned int GE1DArrayGenome::getNumNodes()const{
+	return numNodes;
+}
+
+void GE1DArrayGenome::setNumNodes(const unsigned int nNodes){
+	numNodes = nNodes;
 }
 
 void GE1DArrayGenome::setNumCovars(const unsigned int nCovars){
@@ -307,6 +309,14 @@ int GE1DArrayGenome::effCrossover(const GAGenome &p1,
 	}
 	
 	return nc;
+}
+
+
+ 
+void GE1DArrayGenome::establish(){
+  	if(estab){
+  		(*estab)(*this);
+  	}
 }
 
 
@@ -608,6 +618,7 @@ void GE1DArrayGenome::clearScores(){
 		std::vector<int> temp;
 		setNumCovars(0);
 		setNumGenes(0);
+		setNumNodes(0);
 		addGenos(temp);
 		addCovars(temp);
 		setNumIndsEvaluated(0);

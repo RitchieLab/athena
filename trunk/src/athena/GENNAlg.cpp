@@ -24,6 +24,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "GENNGrammarAdjuster.h"
 #include "ModelLogParser.h"
 #include "BestModelSelector.h"
+#include "GAParetoSelector.h"
+#include "GAParetoRankSelector.h"
 #include <ga/ga.h>
 #include <ctime>
 #include <set>
@@ -64,6 +66,7 @@ void GENNAlg::freeMemory(){
 /// 
 void GENNAlg::setDataset(Dataset* newSet){
 	 set = newSet;
+	 set->calcSSTotal();
 	 GEObjective::setDataset(set);
 }
 
@@ -318,6 +321,8 @@ void GENNAlg::initializeParams(){
 	 gaSelectorMap["DOUBLE"] = DoubleTournamentSelection;
 #endif
 	 gaSelectorMap["ROULETTE"] = RouletteWheelSelection;
+	 gaSelectorMap["PARETO"] = ParetoFrontSelection;
+	 gaSelectorMap["PARETORANK"] = ParetoRankSelection;
 	 
 	 biofilterSelectorType = orderedSelect;
 #ifdef ATHENA_BLOAT_CONTROL
@@ -505,12 +510,12 @@ int GENNAlg::step(){
 		int completed =0;
 		GE1DArrayGenome::myRank = myRank;
 		for(unsigned int i=0; i < stepSize; i++){
+// cout << "step" << endl;
 				if(!ga->done()){
 						if(logTypeSelected!=LogNone){
 								geLog->addGeneration();
 						}
 				 ga->step();
-
 				 restrictStepsDone++;
 					if(ngensVarRestrict && restrictStepsDone == ngensVarRestrict){
 					 // have to convert the networks back to original mapping
@@ -521,7 +526,6 @@ int GENNAlg::step(){
 				 
 				 // check for need to change crossovers
 				 if(ngensBlockCross && restrictStepsDone == ngensBlockCross){
-				 cout << "reset crossover" << endl;
 						resetCrossover();
 				 }
  
@@ -589,9 +593,8 @@ void GENNAlg::fillLog(){
 		
 		float worstScore = GEObjective::getWorstScore();
 		for(unsigned int currInd =0; currInd < numInds; currInd++){
-	
-			GE1DArrayGenome& genome = (GE1DArrayGenome&)(ga->population().individual(currInd));
 
+			GE1DArrayGenome& genome = (GE1DArrayGenome&)(ga->population().individual(currInd));
 			if(worstScore != genome.score()){
 				geLog->addNetwork();
 				geLog->addNNSize(genome.getEffectiveSize());
@@ -621,7 +624,7 @@ void GENNAlg::fillLog(){
 		if(myRank==0){
 				writeLog();
 		}
-
+	
 		if(logTypeSelected==LogVariables){
 			NNSolution * solution;
 			int nSolutions = pop.numSolutions();
@@ -639,7 +642,7 @@ void GENNAlg::fillLog(){
 				solution = (NNSolution*)pop[i];
 				modelLog->writeSolution(*solution, geLog->getCurrentGen(), i+1);
 		}
-		
+	
 }
 
 
@@ -844,6 +847,8 @@ void GENNAlg::initialize(){
 
 		// need to add objective function
 		genome.evaluator(GEObjective::GEObjectiveFunc);
+		// set function for establishing basic values without full evaluation
+		genome.establishinator(GEObjective::GEObjectiveInit);
 		
 		if(sensibleInit){
 				genome.initializer(InitGEgenome::initFuncSI);
@@ -884,6 +889,12 @@ void GENNAlg::initialize(){
 			case RouletteWheelSelection:
 				selector = new GARouletteWheelSelector;
 				break;
+			case ParetoFrontSelection:
+ 			  selector = new GAParetoSelector;
+			  break;
+			case ParetoRankSelection:
+ 			  selector = new GAParetoRankSelector;
+			  break;			  
 #ifdef ATHENA_BLOAT_CONTROL
 			case DoubleTournamentSelection:
 				selector = new GADoubleTournamentSelector(doubleTourneyD, doubleTourneyF, fitFirst);
@@ -1373,6 +1384,7 @@ void GENNAlg::sendAndReceiveStruct(int totalNodes, int myRank){
 	send->genomeParams[4] = genome.getNumCovars();
 	send->genomeParams[5] = genome.getNumIndsEvaluated();
 	send->genomeParams[6] = genome.getSSTotal();
+	send->genomeParams[7] = genome.getNumNodes();
 	
 	// package codons
 	for(int i=0; i<genome.length(); i++){
@@ -1453,6 +1465,7 @@ void GENNAlg::updateWithMigration(structMPI* mpiGenomes, int totalNodes, int myR
 		genome.setNumCovars(mpiGenomes[node].genomeParams[4]);
 		genome.setNumIndsEvaluated(mpiGenomes[node].genomeParams[5]);
 		genome.setSSTotal(mpiGenomes[node].genomeParams[6]);
+		genome.setNumNodes(mpiGenomes[node].genomeParams[7]);
 		for(int i=0; i<len; i++){
 			genome.gene(i, mpiGenomes[node].codons[i]);
 		}

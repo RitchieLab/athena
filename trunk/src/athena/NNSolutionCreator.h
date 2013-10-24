@@ -97,6 +97,8 @@ public:
 		inline unsigned int getNumGenes(){return getGeneIndexes().size();}
 		
 		inline unsigned int getNumCovars(){return getCovarIndexes().size();}
+		
+		inline unsigned int getNumNodes(){return numNodes;}
 
 		inline int getNumIndsEvaluated(){return nIndsEvaluated;}
 
@@ -130,7 +132,7 @@ protected:
 		
 		float optimizedScore;
 		bool terminalsSet;
-		unsigned int nnTerminalSize, nnDepth;
+		unsigned int nnTerminalSize, nnDepth, numNodes;
 		vector<TerminalSymbol *> postFixStack;
 		int nIndsEvaluated;
 		string startOpt;
