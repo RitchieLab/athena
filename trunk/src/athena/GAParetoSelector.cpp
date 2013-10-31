@@ -11,7 +11,6 @@
 
 void GAParetoSelector::update(){
 	n = pop->size();
-	
 	inds.clear();
 	complexitySet.clear();
 	
@@ -27,26 +26,13 @@ void GAParetoSelector::update(){
 	int totalValidInds=0;
 	
 	nComplexities=0;
-	
-	// iterate through population
-	// establish the initial deques containing 
-	// the different complexity sizes
-	// skip any solutions that are invalid
-	if(pop->order() == GAPopulation::HIGH_IS_BEST){
-		for(int i=n-1; i>=0; --i){
-			if(!addInd(i))
-				break;
-			totalValidInds++;
-		}
+
+	for(int i=0; i<n; ++i){
+		if(!addInd(i))
+			break;
+		totalValidInds++;
 	}
-	else{
-		for(int i=0; i<n; ++i){
-			if(!addInd(i))
-				break;
-			totalValidInds++;
-		}
-	}
-	
+
 	// determine number that will be selected from these (at most 1/2)
 	// any beyond this number will be random networks 
 	if(totalValidInds < n/2){
@@ -130,7 +116,7 @@ bool GAParetoSelector::addInd(int i){
 	if(!genome.isValid()){
 		return false;
 	}
-	int complexity = genome.getNumNodes() + genome.getNumGenes() + genome.getNumCovars();
+	int complexity = genome.getComplexity();
 	std::map<int, std::deque<int> >::iterator iter = inds.find(complexity);
 	
 	std::pair<std::map<int,deque<int> >::iterator, bool> ret;
@@ -154,13 +140,13 @@ GAParetoSelector::select() const {
 	
 	if(*currSelectedInd >= selectedInds.size()){
 		// return new genome
- 		(*currInd)++;
-		pop->individual(*currInd, (which == SCALED ? 
+ 		int individual = (*currInd)++;
+		pop->individual(individual, (which == SCALED ? 
 			  GAPopulation::SCALED : GAPopulation::RAW)).initialize();
-		GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(pop->individual(*currInd, (which == SCALED ? 
+		GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(pop->individual(individual, (which == SCALED ? 
 			  GAPopulation::SCALED : GAPopulation::RAW)));
 		genome.establish();  
-		return pop->individual(*currInd, (which == SCALED ? 
+		return pop->individual(individual, (which == SCALED ? 
 			  GAPopulation::SCALED : GAPopulation::RAW));
 	}
 	else{

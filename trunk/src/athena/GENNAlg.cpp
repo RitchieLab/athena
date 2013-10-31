@@ -510,7 +510,7 @@ int GENNAlg::step(){
 		int completed =0;
 		GE1DArrayGenome::myRank = myRank;
 		for(unsigned int i=0; i < stepSize; i++){
-// cout << "step" << endl;
+// cout << "STEP=" << i << endl;
 				if(!ga->done()){
 						if(logTypeSelected!=LogNone){
 								geLog->addGeneration();
@@ -754,7 +754,10 @@ NNSolution* GENNAlg::convertGenome(GAGenome& ind){
 	sol->fitness(genome.score());
 	sol->testVal(genome.getTestValue());
 	sol->setGramDepth(genome.getGramDepth());
-	sol->setNNDepth(genome.getDepth());  
+	sol->setNNDepth(genome.getDepth());
+// cout << "setting complexity=" << genome.getComplexity();
+	sol->setComplexity(genome.getComplexity());
+// cout << " solution=" << sol->getComplexity() << "\n";
 	return sol;
 }
 
@@ -785,8 +788,10 @@ void GENNAlg::testSolution(Dataset* testSet, int nproc){
 	 // use first dataset
 	 set = testSet;
 	 GEObjective::setDataset(set);
+  int n = ga->population().size();
  
-	for(int i=0; i < nproc; i++){
+// 	for(int i=0; i < nproc; i++){
+  for(int i=0; i<n; i++){
 		GE1DArrayGenome bestGenome = (GE1DArrayGenome&)ga->population().best(i);
 		float testScore = GEObjective::GEObjectiveFunc(bestGenome);
 		((GE1DArrayGenome&)ga->population().best(i)).setTestValue(testScore);

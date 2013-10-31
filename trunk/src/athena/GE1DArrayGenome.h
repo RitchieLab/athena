@@ -103,6 +103,8 @@ public:
 	unsigned int getNumNodes()const;
 	void setNumNodes(const unsigned int nNodes);
 	
+	int getComplexity(){return numNodes + numGenes + numCovars;}
+	
 	Establishinator establishinator() const {return estab;}
   Establishinator establishinator(Establishinator f) { return(estab=f); }
   void establish();

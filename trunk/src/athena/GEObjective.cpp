@@ -37,25 +37,31 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 
 	 GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
 
+// cout << "genome.size()="<< genome.size() << endl;
 	//Assign genotype to mapper
 	mapper->setGenotype(genome); 
 	 Phenotype const *phenotype=mapper->getPhenotype();
 	 
 	 float fitness;
 	 genome.setValid(phenotype->getValid());
-
+// cout << "valid?=" << phenotype->getValid() << endl;
 	 if(phenotype->getValid()){
+	 
 			 unsigned int phenoSize=(*phenotype).size();
+// cout << "phenoSize=" << phenoSize << endl;
 			 vector<string> symbols(phenoSize, "");     
 			 
 			for(unsigned int i=0; i<phenoSize; ++i){
 					symbols[i] = *((*phenotype)[i]);
+// cout << "i=" << i << " " << symbols[i] << "\n";
+// cout << symbols[i] << " ";
 			}
+// cout << endl;
 
 			solCreator->establishSolution(symbols, set);
 
 			fitness = solCreator->evaluate(set);
-		 
+// cout << "fitness=" << fitness << endl;	 
 			if(additionalLogging){
 				solCreator->detailedLogging();
 				genome.setDepth(solCreator->getDetailedLog());
@@ -85,7 +91,6 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 		 fitness = solCreator->getWorst();
 		 genome.clearScores();
 	 }
-
 	return fitness;
 }
 

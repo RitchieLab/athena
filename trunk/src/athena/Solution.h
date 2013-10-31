@@ -118,11 +118,18 @@ public:
 		
 		/// Adjusts score passed and returns value
 		virtual float adjustScoreOut(float score, int nIndsTested, float constant){return score;}  
+		
+		/// returns complexity
+		int getComplexity(){return complexity;}
+		
+		/// set complexity
+		void setComplexity(int c){complexity=c;}
 
 protected:
 		
 		std::vector<std::string> symbols;
 		float solFitness, testScore;
+		int complexity;
 			
 private:
 		

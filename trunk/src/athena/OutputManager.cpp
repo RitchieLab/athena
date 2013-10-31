@@ -22,6 +22,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+// #include <deque>
 
 using namespace std;
 
@@ -110,6 +111,59 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 		outfile << endl;
 		outfile.close();
 		
+}
+
+///
+/// outputs pareto front of population by reporting best model for each complexity in
+/// the population
+/// @param pop Population containing best model
+/// @param data Dataholder that can translate the snps back to original IDs
+/// @param mapFileUsed true when an actual map file was used and there are original
+/// names to output
+/// @param dummyEncoded when true genotypes need to be adjusted back to reflect
+/// original genotype positions
+///
+void OutputManager::outputPareto(Population& pop, int currPop, data_manage::Dataholder& data,
+			std::vector<std::string> extraColumns, Algorithm* alg,
+			bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
+			std::string fitnessName){
+			
+			// complexity 
+			string filename = basename + ".cv." + Stringmanip::numberToString(currPop+1) + ".pareto.txt";
+// cout << "start outputPareto" << endl;			
+			// output complexity -- then scores (including missing info)
+			std::map<int, Solution*> solutionMap;
+			std::set<int> complexitySizes;
+			Solution* nn = pop.GetFirst();
+			while(nn != NULL){
+				int complexity = nn->getComplexity();
+// cout << "in OUTPUT complexity=" << complexity << " score=" << nn->fitness() << endl;
+				if(complexity != 0 && solutionMap.find(complexity)==solutionMap.end()){
+// cout << "complexity=" << complexity << " score=" << nn->fitness() << endl;
+// cout << "STORED" << endl;
+					solutionMap[complexity]=nn;
+					complexitySizes.insert(complexity);
+				}
+				nn = pop.GetNext();
+		  }
+
+			ofstream outfile;
+			outfile.open(filename.c_str(), ios::out);
+			
+			outfile << "Complexity\tTraining\tTestVal\tEquation\n";
+			
+			std::map<int, Solution*>::iterator solIter;
+			for(std::set<int>::iterator iter=complexitySizes.begin(); iter != complexitySizes.end();
+				++iter){
+				solIter = solutionMap.find(*iter);
+		  	outfile << solIter->first << "\t" << solIter->second->fitness() << "\t" << solIter->second->testVal()
+		  		<< "\t";
+		  	
+		  	alg->writeEquation(outfile, solIter->second, &data,
+					mapFileUsed, dummyEncoded, continMapUsed);
+				outfile << "\n";
+			}
+			outfile.close();
 }
 
 
@@ -219,7 +273,9 @@ std::ostream& OutputManager::getStream(std::string filename){
 /// @return ostream to write to 
 ///
 void OutputManager::outputEquations(Algorithm* alg, vector<Solution*>& bestSolutions, 
-	data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed){	
+			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+			bool continMapUsed){
+	
 	string summaryName = basename + ".athena.sum";
 		
 	ofstream outfile;
@@ -258,7 +314,7 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 			outfile.open(currFileName.c_str(), ios::out);
 			if(!outfile.is_open()){
 					throw AthenaExcept(currFileName + " unable to open for writing best model");
-			}  
+			}
 			
 			currSolution = pop[mod];
 			alg->writeGraphical(outfile, currSolution, &data, mapUsed, ottDummy, continMapUsed);

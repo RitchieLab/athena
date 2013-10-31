@@ -343,7 +343,11 @@ int main(int argc, char** argv) {
 				pop.convertScores(&(cvSet.getInterval(0).getTraining()));
 		}
 		writer.outputSummary(pop, currCV, data, additValues, mapFileUsed, config.getOttEncoded(), continMapUsed,
-				 alg->getFitnessName());    
+				 alg->getFitnessName());
+// cout << "output pareto" << endl;
+// cout << "first complexity=" << pop[0]->getComplexity() << "\n";
+// 		writer.outputPareto(pop, currCV, data, additValues, alg, mapFileUsed, config.getOttEncoded(),
+// 			continMapUsed, alg->getFitnessName());
 		switch(config.getSummaryOnly()){
 			case Config::False:
 				writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data, 

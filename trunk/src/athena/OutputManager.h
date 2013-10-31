@@ -64,6 +64,12 @@ public:
 		void outputBestModels(Population& pop, int nmodels, int currPop, std::string scaleInfo,
 			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed);
 		
+		/// outputs pareto front
+		void outputPareto(Population& pop, int currPop, data_manage::Dataholder& data,
+			std::vector<std::string> extraColumns, Algorithm* alg,
+			bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
+			std::string fitnessName);
+		
 		/// returns a stream for writing
 		std::ostream& getStream(std::string filename);
 		
@@ -78,7 +84,8 @@ public:
 		
 		/// output equations	
 		void outputEquations(Algorithm* alg, vector<Solution*>& bestSolutions, 
-			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed);
+			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+			bool continMapUsed);
 		
 private:
 		

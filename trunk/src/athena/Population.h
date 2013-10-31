@@ -76,6 +76,12 @@ public:
 			return currentNode->GetData();
 		}
 		
+		
+		Solution* GetFirst(){
+			currNode = solutions.GetFirst();
+			return currNode->GetData();
+		}
+		
 		/// returns NULL when no more to get and then resets the iterator to first position
 		Solution* GetNext(){
 			if(currNode == solutions.GetLast()){

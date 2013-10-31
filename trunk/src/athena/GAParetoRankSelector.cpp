@@ -94,7 +94,7 @@ bool GAParetoRankSelector::addInd(int i){
 	if(!genome.isValid()){
 		return false;
 	}	
-	int complexity = genome.getNumNodes() + genome.getNumGenes() + genome.getNumCovars();
+	int complexity = genome.getComplexity();
 	std::map<int, std::deque<int> >::iterator iter = inds.find(complexity);
 	
 	std::pair<std::map<int,deque<int> >::iterator, bool> ret;

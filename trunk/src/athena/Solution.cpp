@@ -53,7 +53,8 @@ void Solution::copy(Solution* other){
 		symbols = other->symbols;
 		solutionName = other->solutionName;
 		solFitness = other->solFitness;
-		testScore = other->testScore;   
+		testScore = other->testScore;
+		complexity = other->complexity;
 }
 
 
