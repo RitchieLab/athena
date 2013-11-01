@@ -546,7 +546,7 @@ void NNSolutionCreator::evaluateForOutput(Dataset* set){
 				tempResult.score = evaluateInd(ind);
 				tempResult.status = ind->getStatus();
 				results.push_back(tempResult);
-		}		
+		}
 		float percentMissing=float(missingInds)/set->numInds() * 100.0;
 		stringstream ss;
 		ss << percentMissing;

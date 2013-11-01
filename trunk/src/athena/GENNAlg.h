@@ -113,10 +113,10 @@ public:
 		void getBioModelsArchive(string genegeneFile, string archiveFile, data_manage::Dataholder* holder);
 		
 		/// Return additional output names used for final models
-		virtual vector<std::string> getAdditionalOutputNames();
+		virtual vector<std::string>  getAdditionalOutputNames();
 		
 		/// Return formatted output for display for final models;
-		virtual	vector<std::string> getAdditionalFinalOutput(Dataset* set);
+		virtual	void getAdditionalFinalOutput(Dataset* set);
 		
 		/// Return single best model
 		virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,

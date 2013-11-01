@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "10/22/13";
+		string versionDate = "10/31/13";
 		string execName = "ATHENA";
 		string version = "1.0.3";
 		 time_t start,end;
@@ -281,11 +281,12 @@ int main(int argc, char** argv) {
 			}
 
 		alg->closeLog();
-		vector<string> additValues=alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
+// 		vector<string> additValues=alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
+		alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
 		if(numCV > 1){
 			alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
-			vector<string> testingValues = alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()));
-			additValues.insert(additValues.end(), testingValues.begin(), testingValues.end());
+			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()));
+// 			additValues.insert(additValues.end(), testingValues.begin(), testingValues.end());
 		}
 			
 			// check population values
@@ -342,12 +343,10 @@ int main(int argc, char** argv) {
 			else
 				pop.convertScores(&(cvSet.getInterval(0).getTraining()));
 		}
-		writer.outputSummary(pop, currCV, data, additValues, mapFileUsed, config.getOttEncoded(), continMapUsed,
+		writer.outputSummary(pop, currCV, data, mapFileUsed, config.getOttEncoded(), continMapUsed,
 				 alg->getFitnessName());
-// cout << "output pareto" << endl;
-// cout << "first complexity=" << pop[0]->getComplexity() << "\n";
-// 		writer.outputPareto(pop, currCV, data, additValues, alg, mapFileUsed, config.getOttEncoded(),
-// 			continMapUsed, alg->getFitnessName());
+		writer.outputPareto(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(),
+			continMapUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
 		switch(config.getSummaryOnly()){
 			case Config::False:
 				writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data, 
@@ -391,8 +390,8 @@ if(myRank==0){
 #endif
 
 		Population bestPop = alg->getPopulation();
-		vector<string> additValues=alg->getAdditionalFinalOutput(&selectSet);
-		writer.outputBest(bestPop[0],data,additValues,mapFileUsed,config.getOttEncoded(),continMapUsed,
+		alg->getAdditionalFinalOutput(&selectSet);
+		writer.outputBest(bestPop[0],data,mapFileUsed,config.getOttEncoded(),continMapUsed,
 			alg->getFitnessName());
 			if(config.getIndOutput()){
 				performanceStream << "CV Best" << endl;

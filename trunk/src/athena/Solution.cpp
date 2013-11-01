@@ -55,6 +55,7 @@ void Solution::copy(Solution* other){
 		solFitness = other->solFitness;
 		testScore = other->testScore;
 		complexity = other->complexity;
+		addOut = other->addOut;
 }
 
 

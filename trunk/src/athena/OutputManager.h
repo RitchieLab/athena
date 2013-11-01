@@ -51,12 +51,10 @@ public:
 		
 		/// outputs summary of best models
 		void outputSummary(Population& pop, int currPop, data_manage::Dataholder& data, 
-			std::vector<std::string> extraColumns,
 			bool mapFileUsed=false, bool dummyEncoded=true, bool continMapUsed=false,
 			std::string fitnessName=" ");
 		
 		void outputBest(Solution* bestmodel, data_manage::Dataholder& data,
-			std::vector<std::string>& extraColumns,
 			bool mapFileUsed=false, bool dummyEncoded=true, bool continMapUsed=false,
 			std::string fitnessName=" ");
 		
@@ -66,9 +64,8 @@ public:
 		
 		/// outputs pareto front
 		void outputPareto(Population& pop, int currPop, data_manage::Dataholder& data,
-			std::vector<std::string> extraColumns, Algorithm* alg,
-			bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
-			std::string fitnessName);
+			Algorithm* alg, bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
+			std::string fitnessName, std::vector<std::string> additionalHeaders);
 		
 		/// returns a stream for writing
 		std::ostream& getStream(std::string filename);

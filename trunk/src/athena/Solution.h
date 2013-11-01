@@ -124,10 +124,19 @@ public:
 		
 		/// set complexity
 		void setComplexity(int c){complexity=c;}
-
+		
+		/// sets additional output
+		inline void setAdditionalOutput(std::vector<std::string> output){ 
+			addOut.insert(addOut.end(), output.begin(), output.end()); 
+		}
+		
+		/// returns additional output
+		inline std::vector<std::string>& getAdditionalOutput(){return addOut;}
+		
+		
 protected:
 		
-		std::vector<std::string> symbols;
+		std::vector<std::string> symbols, addOut;
 		float solFitness, testScore;
 		int complexity;
 			

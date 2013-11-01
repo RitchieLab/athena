@@ -674,10 +674,20 @@ vector<string> GENNAlg::getAdditionalOutputNames(){
 ///
 /// Calculate and return additional output (like AUC) for best model
 ///
-vector<string> GENNAlg::getAdditionalFinalOutput(Dataset* set){
+void GENNAlg::getAdditionalFinalOutput(Dataset* set){
 	GEObjective::setDataset(set);
-	GE1DArrayGenome bestGenome = (GE1DArrayGenome&)ga->statistics().bestIndividual();  
-  return GEObjective::getAdditionalFinalOutput(bestGenome);
+	unsigned int numInds = ga->population().size();
+  for(unsigned int currInd = 0; currInd < numInds; currInd++){
+  
+// vector<string> output = GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd));
+// for(unsigned int i=0; i<output.size(); i++){
+// cout << output[i] << " ";
+// }
+// cout << endl;
+// exit(1);
+		pop[currInd]->setAdditionalOutput(GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd)));
+	}
+	
 }
 
 

@@ -68,7 +68,7 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 /// original genotype positions
 ///
 void OutputManager::outputSummary(Population& pop, int currPop,
-	data_manage::Dataholder& data,  std::vector<std::string> extraColumns, bool mapFileUsed, 
+	data_manage::Dataholder& data, bool mapFileUsed, 
 	bool dummyEncoded,
 	bool continMapUsed,  std::string fitnessName){
 
@@ -104,7 +104,8 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 		outfile << "\t" << ss.str() + cs.str() << "\t" << bestSolution->fitness() <<
 			"\t" << bestSolution->testVal();
 			
-		for(std::vector<string>::iterator iter=extraColumns.begin(); iter != extraColumns.end();
+		for(std::vector<string>::iterator iter=bestSolution->getAdditionalOutput().begin(); 
+			iter != bestSolution->getAdditionalOutput().end();
 			++iter){
 			outfile << "\t" << *iter;
 		}
@@ -124,23 +125,18 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 /// original genotype positions
 ///
 void OutputManager::outputPareto(Population& pop, int currPop, data_manage::Dataholder& data,
-			std::vector<std::string> extraColumns, Algorithm* alg,
-			bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
-			std::string fitnessName){
+			Algorithm* alg, bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
+			std::string fitnessName, std::vector<std::string> additionalHeaders){
 			
 			// complexity 
-			string filename = basename + ".cv." + Stringmanip::numberToString(currPop+1) + ".pareto.txt";
-// cout << "start outputPareto" << endl;			
+			string filename = basename + ".cv." + Stringmanip::numberToString(currPop+1) + ".pareto.txt";	
 			// output complexity -- then scores (including missing info)
 			std::map<int, Solution*> solutionMap;
 			std::set<int> complexitySizes;
 			Solution* nn = pop.GetFirst();
 			while(nn != NULL){
 				int complexity = nn->getComplexity();
-// cout << "in OUTPUT complexity=" << complexity << " score=" << nn->fitness() << endl;
 				if(complexity != 0 && solutionMap.find(complexity)==solutionMap.end()){
-// cout << "complexity=" << complexity << " score=" << nn->fitness() << endl;
-// cout << "STORED" << endl;
 					solutionMap[complexity]=nn;
 					complexitySizes.insert(complexity);
 				}
@@ -150,7 +146,14 @@ void OutputManager::outputPareto(Population& pop, int currPop, data_manage::Data
 			ofstream outfile;
 			outfile.open(filename.c_str(), ios::out);
 			
-			outfile << "Complexity\tTraining\tTestVal\tEquation\n";
+			outfile << "Complexity\t" + fitnessName + " Training\tTesting";
+			for(unsigned int i=0; i<additionalHeaders.size(); i++){
+				outfile << "\tTraining-" << additionalHeaders[i];
+			}
+			for(unsigned int i=0; i<additionalHeaders.size(); i++){
+				outfile <<  "\tTesting-" << additionalHeaders[i];
+			}
+			outfile << "\tEquation\n";
 			
 			std::map<int, Solution*>::iterator solIter;
 			for(std::set<int>::iterator iter=complexitySizes.begin(); iter != complexitySizes.end();
@@ -158,7 +161,14 @@ void OutputManager::outputPareto(Population& pop, int currPop, data_manage::Data
 				solIter = solutionMap.find(*iter);
 		  	outfile << solIter->first << "\t" << solIter->second->fitness() << "\t" << solIter->second->testVal()
 		  		<< "\t";
+	
+				for(std::vector<string>::iterator iter=solIter->second->getAdditionalOutput().begin(); 
+					iter != solIter->second->getAdditionalOutput().end();
+					++iter){
+					outfile << "\t" << *iter;
+				}
 		  	
+		  	outfile << "\t";
 		  	alg->writeEquation(outfile, solIter->second, &data,
 					mapFileUsed, dummyEncoded, continMapUsed);
 				outfile << "\n";
@@ -169,7 +179,6 @@ void OutputManager::outputPareto(Population& pop, int currPop, data_manage::Data
 
 
 void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& data,
-	std::vector<std::string>& extraColumns,
 	bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
 	std::string fitnessName){
 	
@@ -201,7 +210,7 @@ void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& 
 		outfile << fitnessName << ":\t" << bestSolution->fitness() << endl;
 		if(!addHeaders.empty()){
 			for(unsigned int i=0; i<addHeaders.size(); i++){
-				outfile << addHeaders[i] << ":\t" << extraColumns[i] << endl;
+				outfile << addHeaders[i] << ":\t" << bestSolution->getAdditionalOutput()[i] << endl;
 			}
 		}
 		

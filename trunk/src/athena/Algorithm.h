@@ -133,10 +133,7 @@ public:
 		}
 		
 		/// Get final values for best model for reporting (such as AUC)
-		virtual	vector<std::string> getAdditionalFinalOutput(Dataset* set){
-			vector<std::string> temp; 
-			return temp;
-		}
+		virtual	void getAdditionalFinalOutput(Dataset* set){}
 		
 		virtual void setFitnessName(std::string fname){fitnessName = fname;}
 		
