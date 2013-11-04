@@ -42,10 +42,18 @@ class SymRegressSolutionCreator: public NNSolutionCreator{
 		virtual void graphical_output(ostream& os, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy){}
 		
+		/// writes output as an equation	
+		virtual void equationOutput(ostream& os, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, bool continMapUsed);	
+		
+		virtual void establishSolutionEquation(std::vector<std::string>& symbols);
+		
 	protected:
 	
 		 /// evaluates single individual and returns value for that individual
 		float evaluateInd(Individual* ind);
+		
+		vector<std::string> equationStack;
 		
 };
 

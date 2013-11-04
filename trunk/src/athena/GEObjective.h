@@ -94,7 +94,7 @@ public:
 		
 		static void outputEquation(ostream& os, Solution* sol, data_manage::Dataholder* data,
 			bool mapUsed, bool ottDummy, bool continMapUsed){
-			solCreator->establishSolution(sol->getSymbols());
+			solCreator->establishSolutionEquation(sol->getSymbols());
 			solCreator->equationOutput(os, data, mapUsed, ottDummy, continMapUsed);
 			solCreator->freeSolution();
 		}

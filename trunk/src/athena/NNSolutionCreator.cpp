@@ -73,6 +73,15 @@ void NNSolutionCreator::establishSolution(vector<string>& symbols, Dataset* set)
 		establishSolution(symbols);
 }
 
+///
+/// Creates neural network for output as equation
+/// sets up a postfix stack for evaluation of the neural network
+/// @param pheno Phenotype from libGE that can be turned into a neural network
+/// @param set Dataset
+///
+void NNSolutionCreator::establishSolutionEquation(vector<string>& symbols){
+	establishSolution(symbols);
+}
 
 ///
 /// Creates neural network for evaluation

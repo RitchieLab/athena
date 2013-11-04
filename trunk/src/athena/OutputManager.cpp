@@ -161,7 +161,6 @@ void OutputManager::outputPareto(Population& pop, int currPop, data_manage::Data
 				solIter = solutionMap.find(*iter);
 		  	outfile << solIter->first << "\t" << solIter->second->fitness() << "\t" << solIter->second->testVal()
 		  		<< "\t";
-	
 				for(std::vector<string>::iterator iter=solIter->second->getAdditionalOutput().begin(); 
 					iter != solIter->second->getAdditionalOutput().end();
 					++iter){
@@ -315,6 +314,7 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 	Solution* currSolution;
 
 	string ext = alg->getGraphicalFileExt();
+	if(ext.length() > 0){
 		for(int mod=0; mod < nmodels; mod++){
 			ofstream outfile;
 			string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
@@ -329,6 +329,7 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 			alg->writeGraphical(outfile, currSolution, &data, mapUsed, ottDummy, continMapUsed);
 			outfile.close();
 		}
+	}
 }
 
 

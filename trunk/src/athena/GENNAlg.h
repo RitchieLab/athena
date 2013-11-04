@@ -80,7 +80,7 @@ public:
 			bool mapUsed, bool ottDummy, bool continMapUsed);
 		
 		/// Returns extension for graphical representation
-		std::string getGraphicalFileExt();
+		virtual std::string getGraphicalFileExt();
 		
 		/// Saves the log
 		void saveLog();

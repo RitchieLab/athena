@@ -48,7 +48,15 @@ void ExpressionTree::convertPostFix(vector<TerminalSymbol*> & postFixStack){
 	tree<ElementNode> argTree;
 	vector<TerminalSymbol*> newStack;
 
+cout << "postFixStack=" << postFixStack.size() << endl;
+for(unsigned int i=0; i<postFixStack.size(); i++){
+cout << postFixStack[i]->getName() << " ";
+}
+cout << endl;
 	compressOperator(postFixStack, newStack);
+cout << "newStack=" << newStack.size() << endl;	
+cout << newStack[0]->getName() << " ";
+return;
 	
 	vector<tree<ElementNode> > stack;
 	tree<ElementNode>::iterator top;

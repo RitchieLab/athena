@@ -41,6 +41,9 @@ class GESymbReg: public GENNAlg{
 		
 		/// Runs a step of the algorithm
 		virtual int step();
+		
+		/// Returns extension for graphical representation
+		virtual std::string getGraphicalFileExt(){std::string empty; return empty;}
 	
 	private:
 		

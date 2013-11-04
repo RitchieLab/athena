@@ -50,6 +50,8 @@ public:
  
 		 /// creates solution from vector of strings
 		virtual void establishSolution(vector<string>& symbols);
+		
+		virtual void establishSolutionEquation(std::vector<std::string>& symbols);
  
 		/// returns fitness score through evaluation of solution
 		virtual float evaluate(Dataset* set);

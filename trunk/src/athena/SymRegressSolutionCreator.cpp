@@ -19,6 +19,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "SymRegressSolutionCreator.h"
 #include "TerminalSymbol.h"
 #include "Terminals.h"
+#include "ExpressionTree.h"
 
 ///
 /// sets up a postfix stack for evaluation of the symbolic regression equation
@@ -144,3 +145,46 @@ void SymRegressSolutionCreator::establishSolution(vector<string>& symbols){
 float SymRegressSolutionCreator::evaluateInd(Individual* ind){
 	return TerminalSymbol::ActivateSigmoid(NNSolutionCreator::evaluateInd(ind));
 }
+
+
+
+///
+/// Creates neural network for output as equation
+/// sets up a postfix stack for evaluation of the neural network
+/// @param pheno Phenotype from libGE that can be turned into a neural network
+/// @param set Dataset
+///
+void SymRegressSolutionCreator::establishSolutionEquation(vector<string>& symbols){
+	equationStack.clear();
+	for(vector<string>::iterator iter=symbols.begin(); iter != symbols.end(); ++iter){
+		if(iter->compare("Concat")==0){
+			// first will be "("
+			iter+=2;
+			vector<string> constTerms;
+			while(iter->compare(")")!=0){
+				constTerms.push_back(*iter);
+				++iter;
+			}
+			string constantTerm;
+			for(unsigned int i=0; i<constTerms.size()-1;i++){	
+				constantTerm += constTerms[i];
+			}
+			equationStack.push_back(constantTerm);
+		}
+		else{
+			equationStack.push_back(*iter);
+		}
+	}
+}
+
+
+///
+/// writes output as an equation	
+///
+void SymRegressSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, bool continMapUsed){		
+	for(vector<string>::iterator iter=equationStack.begin(); iter != equationStack.end(); ++iter){
+		os << *iter;
+	}
+}
+
