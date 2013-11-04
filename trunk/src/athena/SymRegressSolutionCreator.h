@@ -50,6 +50,9 @@ class SymRegressSolutionCreator: public NNSolutionCreator{
 		
 	protected:
 	
+		std::string alterLabel(data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, string label, bool continMapUsed, bool equationOut);
+	
 		 /// evaluates single individual and returns value for that individual
 		float evaluateInd(Individual* ind);
 		

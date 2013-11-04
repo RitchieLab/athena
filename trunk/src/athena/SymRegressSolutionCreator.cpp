@@ -147,7 +147,6 @@ float SymRegressSolutionCreator::evaluateInd(Individual* ind){
 }
 
 
-
 ///
 /// Creates neural network for output as equation
 /// sets up a postfix stack for evaluation of the neural network
@@ -184,7 +183,57 @@ void SymRegressSolutionCreator::establishSolutionEquation(vector<string>& symbol
 void SymRegressSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapUsed){		
 	for(vector<string>::iterator iter=equationStack.begin(); iter != equationStack.end(); ++iter){
-		os << *iter;
+		os << alterLabel(holder, mapUsed, ottDummy, *iter, continMapUsed, true);
 	}
+}
+
+///
+/// Adjust label for genotypes based on map file contents
+///
+string SymRegressSolutionCreator::alterLabel(data_manage::Dataholder* holder,
+			bool mapUsed, bool ottDummy, string label, bool continMapUsed, bool equationOut){
+			
+	if(mapUsed && label[0] == 'G'){
+		 stringstream ss(label.substr(1,label.length()-1));
+		 int num, numOrig;
+		 ss >> numOrig;
+		 if(ottDummy)
+				num = (numOrig-1)/2;
+			else
+				num = numOrig-1;
+			label = holder->getGenoName(num);
+			// indicate which of the two variables was used
+			if(equationOut){
+				string enc;
+				numOrig % 2 ? enc = "1" : enc = "2";
+				label += "_enc" + enc;
+			}
+	}
+	else if(continMapUsed && label[0] == 'C'){
+		stringstream ss(label.substr(1,label.length()-1));
+		int num;
+		ss >> num;
+		num -= 1;
+		label = holder->getCovarName(num);
+	}        
+	else{
+		if(label[0]=='G'){
+	  stringstream ss(label.substr(1,label.length()-1));
+			int num,numOrig;
+			ss >> numOrig;
+			if(ottDummy)
+				num = (numOrig-1)/2;
+			else
+				num = numOrig-1;
+			label = "G" + holder->getGenoName(num);
+			if(equationOut){
+				string enc;
+				numOrig % 2 ? enc = "1" : enc = "2";
+				label += "_enc" + enc;// + "_orig" + Stringmanip::numberToString(numOrig);
+			}
+		 }
+	}
+		 
+	return label;
 }
 
