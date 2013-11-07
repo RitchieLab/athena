@@ -37,9 +37,10 @@ class Dataset
 
 public:
 	Dataset();
-	Dataset(float coMissing, unsigned int genoMissing){
+	Dataset(float coMissing, unsigned int genoMissing, bool caseControlStatus){
 			missingCoValue = coMissing;
 			missingGenotype = genoMissing;
+			binaryStatusOnly = caseControlStatus;
 			ssTotal = 0;
 	}
 	~Dataset();
@@ -74,12 +75,19 @@ public:
 	/// Calculates SStotal
 	void calcSSTotal();
 	
+	/// Returns whether set is case/control
+	bool isCaseControl(){return binaryStatusOnly;}
+	
+	/// Sets case/control status
+	void setCaseControlStatus(bool tf){binaryStatusOnly=tf;}
+	
 	Dataset operator+(Dataset& d);
 	
 private:
 	std::vector<Individual*> inds;
 	float missingCoValue, ssTotal;
 	int missingGenotype;
+	bool binaryStatusOnly;
 
 };
 

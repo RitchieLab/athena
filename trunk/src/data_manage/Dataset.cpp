@@ -26,6 +26,7 @@ namespace data_manage
 Dataset::Dataset()
 {
 	ssTotal = 0;
+	binaryStatusOnly = false;
 }
 
 Dataset::~Dataset()

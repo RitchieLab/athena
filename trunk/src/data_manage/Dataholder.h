@@ -114,6 +114,12 @@ public:
 
 	/// Returns pointer to ind
 	inline Individual* getInd(unsigned int index){return inds[index];}
+	
+	/// Returns whether data matches case/control set
+	inline bool isCaseControl(){return binaryStatusOnly;}
+	
+	/// Sets whether data is case/control only
+	inline void setCasecontrol(bool tf){binaryStatusOnly=tf;}
 
 	/// Returns individual based on id
 	Individual* getIndByID(string id){
@@ -160,7 +166,7 @@ private:
 	std::map<std::string, std::vector<int> > covarsScaleGroup;
 	std::map<unsigned int, std::map<std::string, std::vector<int> >::iterator> covarsGroup;
 	unsigned int maxLocus;
-	bool anyMissing, ottEncoded;
+	bool anyMissing, ottEncoded, binaryStatusOnly;
 	int missingGenotype, splitNum;
 	float missingCoValue;
 

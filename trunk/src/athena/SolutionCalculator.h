@@ -57,6 +57,8 @@ public:
 		
 		virtual float getConstant(){return 0.0;}
 		
+		virtual bool requiresCaseControl(){return false;}
+		
 		/// Used when a sub class needs a constant value for calculations as in RSquared
 		virtual void setConstant(float constant){}
 		

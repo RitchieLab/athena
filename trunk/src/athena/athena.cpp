@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "10/31/13";
+		string versionDate = "11/4/13";
 		string execName = "ATHENA";
 		string version = "1.0.3";
 		 time_t start,end;
@@ -243,7 +243,11 @@ int main(int argc, char** argv) {
 	}
 #endif
 
-			alg->setDataset(&(cvSet.getInterval(currCV).getTraining()));
+			try{
+				alg->setDataset(&(cvSet.getInterval(currCV).getTraining()));
+			}catch(AthenaExcept& ae){
+				exitApp(ae, myRank);
+			}
 
 #ifdef PARALLEL
 		if(myRank==0){  // only have master output cv when desired
@@ -461,7 +465,7 @@ std::string timeDiff(double dif){
 ///
 void exitApp(AthenaExcept& he, int myRank){
 		if(myRank==0)
-			cout << he.what() << endl << endl;;
+			cout << "\nERROR: " << he.what() << endl << endl;;
 #ifdef PARALLEL
 	MPI_Finalize();
 #endif
@@ -474,7 +478,7 @@ void exitApp(AthenaExcept& he, int myRank){
 ///
 void exitApp(DataExcept& de, int myRank){
 		if(myRank==0)
-			cout << de.what() << endl << endl;;
+			cout << "\nERROR: " << de.what() << endl << endl;;
 #ifdef PARALLEL
 	MPI_Finalize();
 #endif

@@ -59,10 +59,7 @@ public:
 		}
 		
 		/// sets the Dataset for objective function to work with
-		static void setDataset(data_manage::Dataset* ds){
-			set = ds; 
-			solCreator->setCalculatorConstant(ds->getSSTotal());
-		}
+		static void setDataset(data_manage::Dataset* ds);
 		
 		/// sets Solution type for objective function
 		static void setSolutionType(std::string solutionName, std::string calculatorName){

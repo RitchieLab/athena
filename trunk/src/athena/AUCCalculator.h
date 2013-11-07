@@ -52,6 +52,8 @@ public:
 	 
 	 void evaluateAdditionalOutput(std::vector<stat::TestResult>& results);
 	 
+	 virtual bool requiresCaseControl(){return true;}
+	 
 private:
 		float auc;
 		static const string calcMatchName;

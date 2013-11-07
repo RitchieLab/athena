@@ -329,5 +329,14 @@ void GEObjective::optimizeSolution(GAGenome& g){
 
 }
 
-
+///
+/// sets the Dataset for objective function to work with
+///
+void GEObjective::setDataset(data_manage::Dataset* ds){
+	set = ds; 
+	if(!set->isCaseControl() && solCreator->getCalculator()->requiresCaseControl()){
+		throw AthenaExcept(solCreator->getCalculator()->getName() + " requires a case-control dataset");
+	}
+	solCreator->setCalculatorConstant(ds->getSSTotal());
+}
 

@@ -72,8 +72,8 @@ CVSet CrossValidator::createSet(unsigned int numCrossVal, Dataholder* holder){
 		unsigned int group;
 		// using the splits stored in vector construct the CV Intervals and fill the set
 		for(unsigned int currCV=0; currCV < numCrossVal; currCV++){
-			Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype()), 
-				testing(holder->getMissingCoValue(), holder->getMissingGenotype());
+			Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl()), 
+				testing(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl());
 			for(group=0; group < numCrossVal; group++){
 				if(group != currCV)
 					training.addInds(splits[group]);
@@ -90,7 +90,8 @@ CVSet CrossValidator::createSet(unsigned int numCrossVal, Dataholder* holder){
 	}
 	else{ // only one interval so don't split data
 		CVInterval interval;
-		Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype());
+		Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype(), 
+			holder->isCaseControl());
 		training.addInds(splits[0]);
 		training.calcSSTotal();
 		interval.addSet(training);
@@ -110,8 +111,8 @@ CVSet CrossValidator::splitByNum(Dataholder* holder){
 	int splitIndex = holder->getTestSplit();
 	CVSet set;
 
-	Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype()), 
-		testing(holder->getMissingCoValue(), holder->getMissingGenotype());
+	Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl()), 
+		testing(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl());
 	
 	vector<Individual*> testSet, trainSet;
 	

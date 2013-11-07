@@ -57,6 +57,8 @@ public:
 		virtual std::vector<std::string> getAdditionalFinalOutput();
 
 	 	virtual void evaluateAdditionalOutput(std::vector<stat::TestResult>& results);
+	 	
+	 	virtual bool requiresCaseControl(){return true;}
 	 
 	 /// returns worst score
 	 float getWorst(){return 0.0;}

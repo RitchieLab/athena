@@ -27,6 +27,7 @@ Dataholder::Dataholder()
 {
 	anyMissing = false;
 	ottEncoded = false;
+	binaryStatusOnly = false;
 	maxLocus = 0;
 	splitNum = -1;
 }

@@ -72,6 +72,8 @@ public:
 				calculator = CalculatorFactory::getFactory().create(calc_type);
 		}
 		
+		virtual SolutionCalculator* getCalculator(){return calculator;}
+		
 		virtual void freeSolution()=0;
 		
 		/// returns solution

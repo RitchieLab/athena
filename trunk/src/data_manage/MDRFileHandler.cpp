@@ -72,6 +72,8 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 
 	// format is staus followed by genotypes separated by white space
 	bool anyMissing = false;
+	// assume case/control until find an individual that isn't
+	holder->setCasecontrol(true);
 
 	do{
 		if(line.find_first_of("0123456789") == string::npos || line.find("#")==0){
@@ -95,7 +97,11 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 		
 		// check to see if ind should be skipped because status is missing
 		if(fabs(indStatus - statusMissingValue) > DBL_EPSILON){
-		
+			
+			if(fabs(indStatus-0) > DBL_EPSILON && fabs(indStatus-1) > DBL_EPSILON){
+				holder->setCasecontrol(false);
+			}
+			
 			ind.setStatus(indStatus);
 			while(ss >> geno){
 				if(geno == missingValue){
@@ -118,8 +124,8 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 			holder->addInd(ind);
 		}
 		else{
-	cout << "Skipping individual " << indID << " with status " << indStatus << 
-	  " (STATUSMISSINGVALUE is set to " << statusMissingValue << ")" << endl;
+			cout << "Skipping individual " << indID << " with status " << indStatus << 
+	  		" (STATUSMISSINGVALUE is set to " << statusMissingValue << ")" << endl;
 		}
 
 		getline(dataStream, line);
@@ -130,7 +136,6 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 	holder->setMaxLocusValue(maxLocusValue);
 	holder->anyMissingGenos(anyMissing);
 	holder->setMissingGenotype(missingGeno);
-
 }
 
 
