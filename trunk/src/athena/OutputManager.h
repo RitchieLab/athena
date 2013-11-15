@@ -77,7 +77,8 @@ public:
 		
 		/// output graphical representation as defined in algorithm
 		void outputGraphic(Algorithm* alg,  Population& pop, int currPop, std::string basename, int numModels,
-			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed);
+			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed, 
+			std::string imgWriter);
 		
 		/// output equations	
 		void outputEquations(Algorithm* alg, vector<Solution*>& bestSolutions, 

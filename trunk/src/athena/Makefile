@@ -21,8 +21,8 @@ GELIBLIB = ../libGE-0.26
 LIBDIR = -L$(GALIBLIB) -L$(GELIBLIB) -L../lib 
 LIBS = -lm -lga -lGE -ldata_manage -lstat_calc -lannie
 PROG_NAME = athena
-EXECUTABLE = athena
-TEST_NAME = athena_test
+EXECUTABLE = athena-constant
+TEST_NAME = athena-test-constant
 
 SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	ConfigFileReader.o GE1DArrayGenome.o GENNGrammarAdjuster.o GEObjective.o \
@@ -35,7 +35,8 @@ SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	BioFilterBinReader.o genegenemodel.o BackPropAnnie.o \
 	BackPropAnnieTree.o SymRegressSolutionCreator.o GESymbReg.o NNModelLog.o \
 	ModelLogParser.o AUCCalculator.o BestModelSelector.o GAParetoSelector.o \
-	GAParetoRankSelector.o
+	GAParetoRankSelector.o OptGrammarFactory.o SimpleOptGrammar.o \
+	ComplexOptGrammar.o
 
 SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	CalculatorFactory.h ConfigFileReader.h Config.h \
@@ -51,14 +52,16 @@ SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	genegenemodel.h genegenemodelreader.h region.h snpholder.h \
 	snpsnpmodel.h biomodel.h BackPropAnnie.h BackPropAnnieTree.h \
 	SymRegressSolutionCreator.h GESymbReg.h NNModelLog.h ModelLogParser.h \
-	AUCCalculator.h BestModelSelector.h GAParetoSelector.h GAParetoRankSelector.h
+	AUCCalculator.h BestModelSelector.h GAParetoSelector.h GAParetoRankSelector.h \
+	OptGrammarFactory.h SimpleOptGrammar.h ComplexOptGrammar.h \
+	OptGrammar.h
 
 #ifeq ($(DFLAGS),-DPARALLEL)
 PARALLEL_NEEDED := $(shell echo $(DFLAGS) | cut -f1 -d' ')
 ifeq ($(PARALLEL_NEEDED),-DPARALLEL)
 CC = mpiCC
-EXECUTABLE = athenap
-TEST_NAME = athenap_test
+EXECUTABLE = athenap-constant
+TEST_NAME = athenap-test-constant
 else
 CC = g++
 endif

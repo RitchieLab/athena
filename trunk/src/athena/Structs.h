@@ -36,7 +36,8 @@ enum LogType{
 	LogNone,
 	LogSummary,
 	LogDetailed,
-	LogVariables
+	LogVariables,
+	LogOverview
 };
 
 #endif

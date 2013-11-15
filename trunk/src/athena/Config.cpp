@@ -61,10 +61,12 @@ void Config::initialize(){
 		// changed to match Summary as part of log optimization
 		logTypeMap["DETAILED"] = LogDetailed;
 		logTypeMap["VARIABLES"] = LogVariables;
+		logTypeMap["OVERVIEW"] = LogOverview;
 		logTypeSelected = LogNone;
 		summaryMap["TRUE"] = True;
 		summaryMap["FALSE"] = False;
 		summaryMap["BEST"] = Best;
+		imgWriter="";
 		startCV = 1;
 		selectBest=false;
 }

@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "11/4/13";
+		string versionDate = "11/14/13";
 		string execName = "ATHENA";
 		string version = "1.0.3";
 		 time_t start,end;
@@ -157,8 +157,6 @@ int main(int argc, char** argv) {
 				catch(DataExcept& de){
 					exitApp(de, myRank);
 				}
-
-
 
 		}catch(AthenaExcept& ae){
 				exitApp(ae, myRank);
@@ -354,7 +352,7 @@ int main(int argc, char** argv) {
 		switch(config.getSummaryOnly()){
 			case Config::False:
 				writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data, 
-					mapFileUsed, config.getOttEncoded(), continMapUsed);
+					mapFileUsed, config.getOttEncoded(), continMapUsed, config.getImgWriter());
 			case Config::Best:
 				writer.outputBestModels(pop, nModels, currCV,scaler->outputScaleInfo(), data, 
 					mapFileUsed, config.getOttEncoded(), continMapUsed); 
@@ -465,7 +463,7 @@ std::string timeDiff(double dif){
 ///
 void exitApp(AthenaExcept& he, int myRank){
 		if(myRank==0)
-			cout << "\nERROR: " << he.what() << endl << endl;;
+			cout << "\n" << he.what() << endl << endl;;
 #ifdef PARALLEL
 	MPI_Finalize();
 #endif

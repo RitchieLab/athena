@@ -83,13 +83,14 @@ void GENNAlg::setDataset(Dataset* newSet){
 void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, int numContin){
 		
 		map<string, string>::iterator mapIter;
+		vector<string> tokens;
 		
 		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end(); 
 			mapIter++){     
 				switch(paramMap[mapIter->first]){
 						case noMatchParam:
 								throw AthenaExcept("No match for parameter " + mapIter->first +
-												"in Algorithm GENN");
+												" in Algorithm GENN");
 								break;
 						case minSizeParam:
 								minSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
@@ -202,6 +203,13 @@ void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 						case bestCorrThresh:
 						    bestCorrThreshold = Stringmanip::stringToNumber<double>(mapIter->second);
 						    break;
+						case constantSpan:
+								tokens = Stringmanip::split(mapIter->second, ':');
+								minConstant = Stringmanip::stringToNumber<float>(tokens[0]);
+								maxConstant = Stringmanip::stringToNumber<float>(tokens[1]);
+								constantInterval = Stringmanip::stringToNumber<float>(tokens[2]);
+								simpleConstants=true;
+								break;
 #ifdef ATHENA_BLOAT_CONTROL
 						case prunePlantFract:
 #endif
@@ -307,6 +315,7 @@ void GENNAlg::initializeParams(){
 	 paramMap["FITNESSGOAL"] = fitGoal;
 	 paramMap["BESTCVTHRESH"] = bestCVThresh;
 	 paramMap["BESTCORRTHRESH"] = bestCorrThresh;
+	 paramMap["CONSTANTS"]=constantSpan;
 #ifdef ATHENA_BLOAT_CONTROL
 	 paramMap["DOUBTOURNF"] = doubleTournF;
 	 paramMap["DOUBTOURND"] = doubleTournD;
@@ -344,6 +353,11 @@ void GENNAlg::initializeParams(){
 	 geLog = NULL;
 	 
 	 maxBest = true;
+	 
+	 minConstant = -1.0;
+	 maxConstant = 1.0;
+	 constantInterval = 0.01;
+	 simpleConstants = false;
 	 
 	 // these control when first backpropagation occurs and how often thereafter
 	 bpFirstGen = -1;
@@ -403,6 +417,11 @@ void GENNAlg::setGAParams(){
 			if(dummyEncoded)
 				adjuster.doubleGenotypeGrammar();
 		 }
+		 
+		// set constants
+		if(simpleConstants)
+			adjuster.setConstants(minConstant, maxConstant, constantInterval); 
+		 
 		adjuster.setMapper(mapper);
 
 		setMapperPrefs(mapper);
@@ -417,6 +436,9 @@ void GENNAlg::setGAParams(){
 			vector<string> varStrings = adjuster.getVariables();
 			GEObjective::setSolutionType("NNONCE", calculatorName, varStrings);
 		}
+
+	if(simpleConstants)
+		GEObjective::addConstants(adjuster.getIncludedConstants());
 
 	 if(calculatorName.compare("RSQUARED")==0){
 		 pop.setConvertScores(true);
@@ -510,7 +532,6 @@ int GENNAlg::step(){
 		int completed =0;
 		GE1DArrayGenome::myRank = myRank;
 		for(unsigned int i=0; i < stepSize; i++){
-// cout << "STEP=" << i << endl;
 				if(!ga->done()){
 						if(logTypeSelected!=LogNone){
 								geLog->addGeneration();
@@ -636,11 +657,13 @@ void GENNAlg::fillLog(){
 			return;
 		}
 
-		NNSolution * solution;
-		int nSolutions = pop.numSolutions();
-		for(int i=0; i<nSolutions; i++){
+		if(logTypeSelected != LogOverview){
+			NNSolution * solution;
+			int nSolutions = pop.numSolutions();
+			for(int i=0; i<nSolutions; i++){
 				solution = (NNSolution*)pop[i];
 				modelLog->writeSolution(*solution, geLog->getCurrentGen(), i+1);
+			}
 		}
 	
 }
@@ -944,7 +967,7 @@ void GENNAlg::initialize(){
 		mapper.setVariableCodonMap();
 		GE1DArrayGenome::setMapper(&mapper);
 		ga->initialize();
-
+		
 		// when restricted variables are requested 
 		// fill new mapper with grammar with variables from original mapper
 		if(ngensVarRestrict > 0){
@@ -1120,10 +1143,10 @@ void GENNAlg::finishLog(string basename, int cv){
 				string outName = basename + ".cv." + 
 								Stringmanip::numberToString<int>(cv) + ".models.log"; 
 				ModelLogParser parser;
-				if(logTypeSelected != LogVariables)
-					parser.compileFiles(filenames, outName, GEObjective::getWorstScore());
-				else
+				if(logTypeSelected == LogVariables)
 					parser.compileVariableFiles(filenames, outName);
+				else if(logTypeSelected != LogOverview)
+					parser.compileFiles(filenames, outName, GEObjective::getWorstScore());					
 		}
 }
 
@@ -1148,7 +1171,7 @@ void GENNAlg::prepareLog(string basename, int cv){
 		string modelLogName = basename + ".rank." + Stringmanip::numberToString<int>(myRank) + ".cv." + 
 				Stringmanip::numberToString<int>(cv) + ".models.log";
 	
-	if(logTypeSelected != LogNone){
+	if(logTypeSelected != LogNone && logTypeSelected != LogOverview){
 		modelLog->openLog(modelLogName, GEObjective::calculatorName(), logTypeSelected==LogVariables);
 		if(logTypeSelected == LogDetailed)
 				modelLog->setDetailed(true);
@@ -1161,7 +1184,8 @@ void GENNAlg::prepareLog(string basename, int cv){
 	ofstream outFile;
 	switch(logTypeSelected){
 		case LogDetailed:   
-		case LogVariables:	 
+		case LogVariables:
+		case LogOverview: 
 		case LogSummary:
 			outFile.open(mainLogFilename.c_str(), ios::out);
 				if(!outFile.is_open()){
@@ -1273,6 +1297,17 @@ void GENNAlg::writeGraphical(ostream& os, Solution* sol, data_manage::Dataholder
 	bool mapUsed, bool ottDummy, bool continMapUsed){
 	GEObjective::outputModel(os, sol, holder, mapUsed, ottDummy, continMapUsed);
 }
+
+
+///
+/// Produce graphical representation from writer specified
+///
+void GENNAlg::produceGraphic(std::string inputGraphic, std::string outputGraphic, 
+			std::string imgWriter){
+	string command = imgWriter + " -Tpng " + inputGraphic + " -o " + outputGraphic + ".png";
+	system(command.c_str());
+}
+
 
 ///
 /// Writes model represented as an equation to stream

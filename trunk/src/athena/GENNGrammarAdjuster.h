@@ -67,6 +67,12 @@ public:
 		
 		/// Creates new variable lines using only those in variables_included set
 		void editOnlyVarIncluded();
+		
+		/// Create and include constants in the grammar
+		void setConstants(float min, float max, float interval);
+		
+		/// Returns constants included in grammar
+		std::vector<std::string> getIncludedConstants(){return constantsIncluded;}
 	 
 private:
 		
@@ -80,6 +86,7 @@ private:
 		/// contains the grammar
 		vector<std::string> lines;
 		std::set<std::string> variablesIncluded;
+		std::vector<std::string> constantsIncluded;
 };
 
 

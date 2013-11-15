@@ -309,7 +309,8 @@ void OutputManager::outputEquations(Algorithm* alg, vector<Solution*>& bestSolut
 /// @return ostream to write to 
 ///
 void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, std::string basename,
-	int nmodels, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed){
+	int nmodels, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+	bool continMapUsed, std::string imgWriter){
 
 	Solution* currSolution;
 
@@ -317,8 +318,11 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 	if(ext.length() > 0){
 		for(int mod=0; mod < nmodels; mod++){
 			ofstream outfile;
-			string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
-					Stringmanip::numberToString(mod+1) + ext;
+// 			string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
+// 					Stringmanip::numberToString(mod+1) + ext;
+			string imgFileBaseName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
+					Stringmanip::numberToString(mod+1);
+			string currFileName = imgFileBaseName + ext;
 			cout << "Writing file " << currFileName << endl;         
 			outfile.open(currFileName.c_str(), ios::out);
 			if(!outfile.is_open()){
@@ -328,6 +332,8 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 			currSolution = pop[mod];
 			alg->writeGraphical(outfile, currSolution, &data, mapUsed, ottDummy, continMapUsed);
 			outfile.close();
+			if(imgWriter.length() > 1)
+				alg->produceGraphic(currFileName, imgFileBaseName, imgWriter);
 		}
 	}
 }

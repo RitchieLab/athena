@@ -19,6 +19,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "GENNGrammarAdjuster.h"
 #include <sstream>
 #include <map>
+#include <Stringmanip.h>
 
 
 ///
@@ -37,7 +38,9 @@ void GENNGrammarAdjuster::readGrammarFile(string filename){
 	string line;
 	while(!file.eof()){
 		file.getline(buffer, 2048);
-		lines.push_back(buffer);
+		string newline(buffer);
+// 		if(newline.find_first_of("01234567890abcdedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ<>,")!=string::npos)
+			lines.push_back(buffer);
 	}
 	file.close();
 }
@@ -500,4 +503,63 @@ void GENNGrammarAdjuster::addVariables(vector<string>& terminals){
 			}
 		}
 	} 
+}
+
+
+///
+/// Create and include constants in the grammar.  Append them to the existing grammar
+/// and remove the original Constant lines.
+/// @param min constant value
+/// @param max constant value
+/// @param interval between each constant value
+///
+void GENNGrammarAdjuster::setConstants(float min, float max, float interval){
+
+	float center = (max+min)/2.0;
+
+	vector<string> constantLines;
+	lines.push_back("<Constant> ::= " + data_manage::Stringmanip::numberToString(center));
+
+	float increasingValue=center, decreasingValue=center;
+	increasingValue += interval;
+	decreasingValue -= interval;
+	char buffer[20];
+	constantsIncluded.clear();
+	
+	while(increasingValue <= max){
+// 		constantLines.push_back("           | " + data_manage::Stringmanip::numberToString(increasingValue));
+// 		constantLines.push_back("           | " + data_manage::Stringmanip::numberToString(decreasingValue));
+		sprintf(buffer, "%.3f",increasingValue);
+		constantLines.push_back("           | " + string(buffer));
+		constantsIncluded.push_back(buffer);
+		sprintf(buffer, "%.3f",decreasingValue);
+		constantLines.push_back("           | " + string(buffer));
+		constantsIncluded.push_back(buffer);
+		increasingValue += interval;
+		decreasingValue -= interval;
+	}
+	
+	vector<string>::iterator start, last, iter;
+	// delete the original constant lines
+	for(iter=lines.begin(); iter != lines.end(); ++iter){
+		if(iter->find("<Constant>")==0){
+			start=iter;
+			break;
+		}
+	}
+	for(last=start+1;last!= lines.end(); ++last){
+		if(last->find("::=") != string::npos){
+			break;
+		}
+	}
+	
+	lines.erase(start, last);
+	
+	// append the new ones
+	lines.insert(lines.end(), constantLines.begin(), constantLines.end());
+
+// for(iter=lines.begin(); iter!= lines.end(); ++iter){
+// cout << *iter << "\n";
+// }
+	
 }

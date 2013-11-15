@@ -115,6 +115,8 @@ public:
 		static float getWorstScore(){return solCreator->getWorst();}
 		
 		static void addLogging(bool val){additionalLogging=val;}
+		
+		static void addConstants(std::vector<std::string> constants);
 
 		static void setrank(int r){rank=r;}
 		static int rank;
@@ -128,4 +130,3 @@ private:
 };
 
 #endif	/* _GEOBJECTIVE_H */
-

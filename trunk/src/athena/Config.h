@@ -157,6 +157,9 @@ public:
 		void setStartCV(int cv){startCV=cv;}
 		int getStartCV(){return startCV;}
 
+		inline std::string getImgWriter(){return imgWriter;}
+		inline void setImgWriter(std::string executable){imgWriter=executable;}
+
 		/// throws an exception if parameters are in error
 		void checkConfig();
 
@@ -211,7 +214,7 @@ private:
 		
 		std::string dataType, outName, mapName, dataFile, continFile, statusChange, 
 			trainFile, testFile, continTest, continTrain, bioFilterFile, biofilterFileType,
-			bioArchiveFile, bioGeneFile, continMap, splitFile, continChange, encodeName;
+			bioArchiveFile, bioGeneFile, continMap, splitFile, continChange, encodeName, imgWriter;
 		int missValue, nCV, randSeed, numExchanges, startCV;
 		float continMiss, statMissValue;
 		bool idIncluded, ottDummyEncoded, cvOut, indsOutput, allNodesOut, selectBest;

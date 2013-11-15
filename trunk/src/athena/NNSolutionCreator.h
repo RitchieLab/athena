@@ -115,6 +115,8 @@ public:
 
 		void detailedLogging();
 		unsigned int getDetailedLog();
+		
+		void addConstants(std::vector<std::string>& constants);
 
 protected:
 		

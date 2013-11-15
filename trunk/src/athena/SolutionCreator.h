@@ -158,6 +158,8 @@ public:
 		
 		std::string calculatorName(){return calculator->getName();}
 		
+		virtual void addConstants(std::vector<std::string>& constants)=0;
+		
 protected:
 		Solution* sol;
 		SolutionCalculator * calculator;

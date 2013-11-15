@@ -94,7 +94,8 @@ private:
 				keySplitFile,
 				keyCVStart,
 				keyContinChange,
-				keySelectBestModel
+				keySelectBestModel,
+				keyImgWriter
 		};
 		
 		std::map<std::string, configKeyWords> keywordMap;

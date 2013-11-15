@@ -74,6 +74,10 @@ public:
 		/// Writes output to stream
 		void writeGraphical(ostream& os, Solution* sol, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapUsed);\
+		
+		/// Produce graphical file
+		virtual void produceGraphic(std::string inputGraphic, std::string outputGraphic, 
+			std::string imgWriter);
 			
 		/// Writes model as equation to stream
 		void writeEquation(ostream& os, Solution* sol, data_manage::Dataholder* holder,
@@ -211,7 +215,8 @@ protected:
 				prunePlantFract,
 				fitGoal,
 				bestCVThresh,
-				bestCorrThresh
+				bestCorrThresh,
+				constantSpan
 		};
 		
 		
@@ -266,13 +271,14 @@ protected:
 		
 		//General algorithm parameters
 		bool effectiveXO, useAllVars, useAllCovars, requireAllVars, requireAllVarsOnce, maxBest,
-			resetRestrictedAtMigration;
+			resetRestrictedAtMigration, simpleConstants;
 		unsigned int wrapEvents, randSeed;
 		std::string grammarFile, calculatorName, mainLogFilename, fitnessLogFilename, 
 				snpnameLogFilename;
 		unsigned int popSize, numGenerations, stepSize, ngensVarRestrict, restrictStepsDone,
 			ngensBlockCross;
 		double probCross, probMut, initBioFract, fitnessGoal, bestCorrThreshold;
+		float minConstant, maxConstant, constantInterval;
 		int numGenotypes, numContinuous, bpFirstGen, bpFreqGen, bpNextOpt, bestCVThreshold;
 		
 		NNLog* geLog;

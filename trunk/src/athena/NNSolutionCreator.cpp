@@ -565,3 +565,17 @@ void NNSolutionCreator::evaluateForOutput(Dataset* set){
 }
 
 
+///
+/// Add constants
+/// @param constants
+///
+void NNSolutionCreator::addConstants(std::vector<std::string>& constants){
+	optSymbols.clear();
+	startOpt = "<Constant>";
+	optSymbols.insert("<Constant>");
+	termHolder.setGrammerOptimization("SIMPLE");
+	for(vector<string>::iterator iter=constants.begin(); iter != constants.end(); ++iter){
+		termHolder.addConstant(*iter);
+		optSymbols.insert(*iter);
+	}
+}

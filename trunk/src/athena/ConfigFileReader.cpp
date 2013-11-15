@@ -71,6 +71,7 @@ void ConfigFileReader::initializeKeywords(){
 	keywordMap["SPLITFILE"] = keySplitFile;
 	keywordMap["CVSTART"]=keyCVStart;
 	keywordMap["BESTSELECT"]=keySelectBestModel;
+	keywordMap["IMAGEWRITER"]=keyImgWriter;
 }
 
 
@@ -88,7 +89,6 @@ Config ConfigFileReader::readConfig(string configFile){
 		 throw AthenaExcept("Failed in attempt to open file " + configFile 
 				+ "\n");
 	 }
-	 
 	 
 	 string line, keyWord, dataName,  DataType, outputName, mapName,
 					 continFile, idIncluded, value;
@@ -250,6 +250,10 @@ Config ConfigFileReader::readConfig(string configFile){
 					 case keySelectBestModel:
 					 		ss >> value;
 					 		configuration.setSelectBestModel(Stringmanip::check_true_false(value));
+					 		break;
+					 case keyImgWriter:
+					 		ss >> value;
+					 		configuration.setImgWriter(value);
 					 		break;
 					 default:
 							throw AthenaExcept(keyWord + " is not a valid keyWord in configuration file");
