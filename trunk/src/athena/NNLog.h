@@ -71,17 +71,22 @@ class NNLog: public AlgorithmLog{
 
 		inline void addNetwork(){gens[genIndex].numValidNN++;}
 
-		inline void addFitness(float fitness, std::vector<int> snps){
+		inline void addFitness(float fitness, std::vector<int> snps,
+			std::vector<int> contins){
 			gens[genIndex].totalFitness += fitness;
 			if(fitness > gens[genIndex].maxFitness){
 				gens[genIndex].maxFitness = fitness;
-				if(maxBest)
+				if(maxBest){
 					gens[genIndex].bestModelSnps = snps;
+					gens[genIndex].bestContin = contins;
+				}
 			}
 			if(fitness < gens[genIndex].minFitness){
 				gens[genIndex].minFitness = fitness;
-				if(!maxBest)
+				if(!maxBest){
 					gens[genIndex].bestModelSnps = snps;
+					gens[genIndex].bestContin = contins;
+				}
 			}
 			addSnps(snps);
 			gens[genIndex].allFitness.push_back(fitness);
@@ -190,7 +195,7 @@ class NNLog: public AlgorithmLog{
 				maxEpochs, totalDepth, generationNumber;
 			float avgGenos, avgCovars, avgFitness, avgSize, totalFitness, maxFitness, minFitness,
 				avgEpochs, avgDepth;
-			std::vector<int> snpTotals, bestModelSnps;
+			std::vector<int> snpTotals, bestModelSnps, bestContin;
 			std::vector<std::vector<int> > allModels;
 			std::vector<float> allFitness;
 		};

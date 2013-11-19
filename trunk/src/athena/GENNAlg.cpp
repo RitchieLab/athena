@@ -621,11 +621,11 @@ void GENNAlg::fillLog(){
 				geLog->addNNSize(genome.getEffectiveSize());
 				geLog->addNNDepth(genome.getDepth());
 				if(!pop.getConvertScores()){
-					geLog->addFitness(genome.score(), genome.getGenos());
+					geLog->addFitness(genome.score(), genome.getGenos(), genome.getCovars());
 				}
 				else{  // add converted score to log file
 					geLog->addFitness(pop[0]->adjustScoreOut(genome.score(), genome.getNumIndsEvaluated(),
-						genome.getSSTotal()), genome.getGenos());
+						genome.getSSTotal()), genome.getGenos(), genome.getCovars());
 				}
 				geLog->addNumGenos(genome.getNumGenes());
 				geLog->addNumCovars(genome.getNumCovars());

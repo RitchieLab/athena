@@ -46,16 +46,22 @@ void NNLog::outputLog(ostream& os){
 			<< setw(11) << gens[gen].avgEpochs << setw(10) << gens[gen].maxEpochs <<  " ";
 		
 		if(!gens[gen].bestModelSnps.empty()){  
-				os << gens[gen].bestModelSnps[0];
+				os << "G" << gens[gen].bestModelSnps[0];
 				for(unsigned int snp=1; snp < gens[gen].bestModelSnps.size(); snp++){
-					os << "_" << gens[gen].bestModelSnps[snp];
+					os << "_G" << gens[gen].bestModelSnps[snp];
 				}
 				os << " ";
 		}
+		if(!gens[gen].bestContin.empty()){
+				os << "C" << gens[gen].bestContin[0];
+				for(unsigned int c=1; c < gens[gen].bestContin.size(); c++){
+					os << "_C" << gens[gen].bestContin[c];
+				}			
+		}
 		
-		for(int snp=0; snp < totalSnps; snp++){
-			os << gens[gen].snpTotals[snp] << " ";
-		}  
+// 		for(int snp=0; snp < totalSnps; snp++){
+// 			os << gens[gen].snpTotals[snp] << " ";
+// 		}  
 		os << endl;
 	}
 }
@@ -71,9 +77,9 @@ void NNLog::outputMainHeaders(ostream& os){
 		<< setw(11) << "AvgEpochs" << setw(10) << "MaxEpoch"
 		<< setw(15) << "Bestmod";
  
-	for(int snp=0; snp < totalSnps; snp++){
-		os << snp << " ";
-	}
+// 	for(int snp=0; snp < totalSnps; snp++){
+// 		os << snp << " ";
+// 	}
 	os << endl;
 }
 
@@ -145,8 +151,8 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 	///
 	void NNLog::sendReceiveLogs(int nprocs, int myRank){
 		float* rbuf=NULL;
-		int bestModelSize = 256;
-		int sendBufferSize = 12 + bestModelSize;
+		int bestModelSize = 1024;
+		int sendBufferSize = 13 + bestModelSize;
 		
 		float* sendBuffer = new float[sendBufferSize];
 		if(myRank == 0){
@@ -161,31 +167,33 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 		delete [] sendBuffer;
 		
 		// receive snp totals
-		int sendSize = gens[0].snpTotals.size();
-		int totalSize = gens.size() * sendSize;
-		int * sendSnps = new int[totalSize];
-		float* rbufSnps=NULL;
+// 		int sendSize = gens[0].snpTotals.size();
+// 		int totalSize = gens.size() * sendSize;
+// 		int * sendSnps = new int[totalSize];
+// 		float* rbufSnps=NULL;
+// 		
+// 		if(myRank==0){
+// 				rbufSnps = new float[totalSize * nprocs];        
+// 		}
+// 		
+// 		for(unsigned int i=0; i < gens.size(); i++){
+// 			int base = i * sendSize;
+// 			for(unsigned int j=0; j < gens[i].snpTotals.size(); j++){
+// 				sendSnps[base+j] = gens[i].snpTotals[j];
+// 			}
+// 		}
+// 		
+// 		MPI_Gather(sendSnps, totalSize, MPI_INT, rbufSnps, totalSize, MPI_INT,
+// 				0, MPI_COMM_WORLD);
+// 		
+// 		delete [] sendSnps;
 		
 		if(myRank==0){
-				rbufSnps = new float[totalSize * nprocs];        
-		}
-		
-		for(unsigned int i=0; i < gens.size(); i++){
-			int base = i * sendSize;
-			for(unsigned int j=0; j < gens[i].snpTotals.size(); j++){
-				sendSnps[base+j] = gens[i].snpTotals[j];
-			}
-		}
-		
-		MPI_Gather(sendSnps, totalSize, MPI_INT, rbufSnps, totalSize, MPI_INT,
-				0, MPI_COMM_WORLD);
-		
-		delete [] sendSnps;
-		
-		if(myRank==0){
+				float * rbufSnps;
+				int totalSize=0;
 				fillMasterLog(rbuf, sendBufferSize, rbufSnps, totalSize, nprocs);
 				delete [] rbuf;
-				delete [] rbufSnps;
+// 				delete [] rbufSnps;
 		}
 		
 	}
@@ -212,14 +220,20 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 				gens[i].totalEpochs += recData[currIndex++];
 				gens[i].totalDepth += recData[currIndex++];
 				int modSize = recData[currIndex++];
+				int modContinSize = recData[currIndex++];
 				vector<int> snps(modSize,0);
 				for(int j=0; j < modSize; j++){
 					snps[j] = recData[currIndex++];
+				}
+				vector<int> contins(modContinSize,0);
+				for(int j=0; j < modContinSize; j++){
+					contins[j] = recData[currIndex++];
 				}
 				
 				if(maxFit > gens[i].maxFitness){
 					gens[i].maxFitness = maxFit;
 					gens[i].bestModelSnps = snps;
+					gens[i].bestContin = contins;
 				}
 				if(minFit < gens[i].minFitness){
 					gens[i].minFitness = minFit;
@@ -236,12 +250,12 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 		gens[i].avgScores();        
 		
 		// add snp totals to logging information
-		for(int proc=1; proc < nprocs; proc++){
-				currIndex = proc * snpSize;
-				for(int snp=0; snp<snpSize; snp++){
-						gens[i].snpTotals[snp] += snps[currIndex++];
-				}
-		}
+// 		for(int proc=1; proc < nprocs; proc++){
+// 				currIndex = proc * snpSize;
+// 				for(int snp=0; snp<snpSize; snp++){
+// 						gens[i].snpTotals[snp] += snps[currIndex++];
+// 				}
+// 		}
 	}
 
 
@@ -263,8 +277,12 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 			sendData[currIndex++] = gens[i].totalDepth;
 			
 			sendData[currIndex++] = gens[i].bestModelSnps.size();
+			sendData[currIndex++] = gens[i].bestContin.size();
 			for(unsigned int j=0; j<gens[i].bestModelSnps.size(); j++){
 				sendData[currIndex++] = gens[i].bestModelSnps[j];
+			}
+			for(unsigned int j=0; j<gens[i].bestContin.size(); j++){
+				sendData[currIndex++] = gens[i].bestContin[j];
 			}
 			sendData[currIndex] = -1000;
 		}
