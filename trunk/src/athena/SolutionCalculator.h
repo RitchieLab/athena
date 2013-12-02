@@ -53,6 +53,8 @@ public:
 		
 		virtual bool maxBest()=0;
 		
+		virtual bool logMaxBest()=0;
+		
 		virtual float getWorst()=0;
 		
 		virtual float getConstant(){return 0.0;}

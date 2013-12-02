@@ -21,8 +21,8 @@ GELIBLIB = ../libGE-0.26
 LIBDIR = -L$(GALIBLIB) -L$(GELIBLIB) -L../lib 
 LIBS = -lm -lga -lGE -ldata_manage -lstat_calc -lannie
 PROG_NAME = athena
-EXECUTABLE = athena-constant
-TEST_NAME = athena-test-constant
+EXECUTABLE = athena
+TEST_NAME = athena-test
 
 SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	ConfigFileReader.o GE1DArrayGenome.o GENNGrammarAdjuster.o GEObjective.o \
@@ -60,8 +60,8 @@ SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 PARALLEL_NEEDED := $(shell echo $(DFLAGS) | cut -f1 -d' ')
 ifeq ($(PARALLEL_NEEDED),-DPARALLEL)
 CC = mpiCC
-EXECUTABLE = athenap-constant
-TEST_NAME = athenap-test-constant
+EXECUTABLE = athenap
+TEST_NAME = athenap-test
 else
 CC = g++
 endif

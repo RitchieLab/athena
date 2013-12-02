@@ -105,6 +105,8 @@ public:
 		
 		virtual bool maxBest(){return calculator->maxBest();}
 		
+		virtual bool logMaxBest(){return calculator->logMaxBest();}
+		
 		virtual float getWorst(){return calculator->getWorst();}
 		
 		virtual void restrict(vector<string>& restrictions)=0;

@@ -71,8 +71,8 @@ class NNLog: public AlgorithmLog{
 
 		inline void addNetwork(){gens[genIndex].numValidNN++;}
 
-		inline void addFitness(float fitness, std::vector<int> snps,
-			std::vector<int> contins){
+		inline void addFitness(float fitness, std::vector<int>& snps,
+			std::vector<int>& contins){
 			gens[genIndex].totalFitness += fitness;
 			if(fitness > gens[genIndex].maxFitness){
 				gens[genIndex].maxFitness = fitness;

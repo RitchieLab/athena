@@ -58,6 +58,8 @@ class MeanSquaredErrCalculator: public SolutionCalcImp<MeanSquaredErrCalculator>
 		/// returns false so that the best is the smallest
 		bool maxBest(){return false;}
 		
+		bool logMaxBest(){return true;}
+		
 		/// returns worst score
 		float getWorst(){return 1000000;}
 		/// sets the sstotal for use in calculating rsquared

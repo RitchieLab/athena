@@ -35,8 +35,9 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Constructor
 ///
 GENNAlg::GENNAlg(){
-		initializeParams();
+	initializeParams();
 }
+
 
 ///
 /// Destructor
@@ -610,9 +611,9 @@ void GENNAlg::fillLog(){
 		fillPopulation();
 
 
-		unsigned int numInds = ga->population().size();
-		
+		unsigned int numInds = ga->population().size();	
 		float worstScore = GEObjective::getWorstScore();
+		
 		for(unsigned int currInd =0; currInd < numInds; currInd++){
 
 			GE1DArrayGenome& genome = (GE1DArrayGenome&)(ga->population().individual(currInd));
@@ -630,13 +631,12 @@ void GENNAlg::fillLog(){
 				geLog->addNumGenos(genome.getNumGenes());
 				geLog->addNumCovars(genome.getNumCovars());
 				geLog->addEpochs(genome.getNumEpochsTrained());
-				// zero out epochs
+				// zero out epochs`
 				genome.setNumEpochsTrained(0);
 			}
-
 		}
 		geLog->completeGen();
-		
+
 		#ifdef PARALLEL
 			geLog->sendReceiveLogs(totalNodes, myRank);
 		#endif
@@ -645,7 +645,7 @@ void GENNAlg::fillLog(){
 		if(myRank==0){
 				writeLog();
 		}
-	
+
 		if(logTypeSelected==LogVariables){
 			NNSolution * solution;
 			int nSolutions = pop.numSolutions();
@@ -701,13 +701,6 @@ void GENNAlg::getAdditionalFinalOutput(Dataset* set){
 	GEObjective::setDataset(set);
 	unsigned int numInds = ga->population().size();
   for(unsigned int currInd = 0; currInd < numInds; currInd++){
-  
-// vector<string> output = GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd));
-// for(unsigned int i=0; i<output.size(); i++){
-// cout << output[i] << " ";
-// }
-// cout << endl;
-// exit(1);
 		pop[currInd]->setAdditionalOutput(GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd)));
 	}
 	
@@ -736,7 +729,7 @@ void GENNAlg::startLog(int numSnps){
 		modelLog=NULL;
 	}
 	geLog = new NNLog(numSnps);
-	geLog->setMaxBest(maxBest);
+	geLog->setMaxBest(GEObjective::logMaxBest());
 }
 
 
@@ -775,10 +768,8 @@ NNSolution* GENNAlg::convertGenome(GAGenome& ind){
 	NNSolution* sol = (NNSolution*)GEObjective::getBlankSolution();
 	mapper.setGenotype(genome);
 	Phenotype const *phenotype=mapper.getPhenotype();
-			
 	unsigned int phenoSize=(*phenotype).size();
-	vector<string> symbols(phenoSize, "");
-			
+	vector<string> symbols(phenoSize, "");			
 	for(unsigned int i=0; i<phenoSize; ++i){
 		symbols[i] = *((*phenotype)[i]);
 	}
@@ -788,9 +779,7 @@ NNSolution* GENNAlg::convertGenome(GAGenome& ind){
 	sol->testVal(genome.getTestValue());
 	sol->setGramDepth(genome.getGramDepth());
 	sol->setNNDepth(genome.getDepth());
-// cout << "setting complexity=" << genome.getComplexity();
 	sol->setComplexity(genome.getComplexity());
-// cout << " solution=" << sol->getComplexity() << "\n";
 	return sol;
 }
 
@@ -823,7 +812,6 @@ void GENNAlg::testSolution(Dataset* testSet, int nproc){
 	 GEObjective::setDataset(set);
   int n = ga->population().size();
  
-// 	for(int i=0; i < nproc; i++){
   for(int i=0; i<n; i++){
 		GE1DArrayGenome bestGenome = (GE1DArrayGenome&)ga->population().best(i);
 		float testScore = GEObjective::GEObjectiveFunc(bestGenome);
@@ -959,7 +947,7 @@ void GENNAlg::initialize(){
 			ga->minimize();
 			pop.sortAscending();
 			maxBest = false;
-			geLog->setMaxBest(maxBest);
+			geLog->setMaxBest(GEObjective::logMaxBest());
 		}
 	 
 		mapper.resetGrammarModels();
@@ -1425,6 +1413,7 @@ int GENNAlg::nodesCompleted(int complete){
 void GENNAlg::sendAndReceiveStruct(int totalNodes, int myRank){
 
 	structMPI * send = new structMPI;
+	
 	GE1DArrayGenome& genome = (GE1DArrayGenome&)ga->statistics().bestIndividual();
 	// package genome Info
 	send->genomeParams[0] = genome.length();

@@ -100,7 +100,7 @@ void GAParetoSelector::update(){
 			paretoProbs.clear();
 		}
 	}	
-	*currInd=0;
+	*currInd=1;
 	*currSelectedInd=0;
 }
 

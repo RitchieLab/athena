@@ -80,6 +80,8 @@ public:
 		
 		static bool maxBest(){return solCreator->maxBest();}
 		
+		static bool logMaxBest(){return solCreator->logMaxBest();}
+		
 		static std::string getGraphicalExt(){return solCreator->graphicExt();}
 		
 		static void outputModel(ostream& os, Solution* sol, data_manage::Dataholder* data,

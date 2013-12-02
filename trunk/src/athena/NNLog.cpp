@@ -229,7 +229,7 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 				for(int j=0; j < modContinSize; j++){
 					contins[j] = recData[currIndex++];
 				}
-				
+// cout << "master received maxFit=" << maxFit << " from " << proc << endl;				
 				if(maxFit > gens[i].maxFitness){
 					gens[i].maxFitness = maxFit;
 					gens[i].bestModelSnps = snps;
@@ -269,6 +269,7 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 			sendData[currIndex++] = gens[i].totalFitness;
 			sendData[currIndex++] = gens[i].totalSize;
 			sendData[currIndex++] = gens[i].maxFitness;
+// cout << "sending maxFit=" << sendData[currIndex-1] << endl;
 			sendData[currIndex++] = gens[i].minFitness; 
 			
 			sendData[currIndex++] = gens[i].minEpochs;

@@ -46,6 +46,8 @@ public:
 		float getScore();
 		
 	 	bool maxBest(){return true;}
+	 	
+	 	bool logMaxBest(){return true;}
 		
 	 /// returns worst score
 	 float getWorst(){return 0.0;}

@@ -50,6 +50,8 @@ public:
 		}
 	 bool maxBest(){return true;}
 	 
+	 bool logMaxBest(){return true;}
+	 
 	 	virtual std::vector<std::string> getAdditionalOutputNames(){
 			return outputNames;
 		}
