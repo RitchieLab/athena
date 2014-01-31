@@ -22,6 +22,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "AthenaExcept.h"
 #include <sstream>
 #include <iostream>
+#include <Stringmanip.h>
 
 using namespace std;
 
@@ -61,10 +62,12 @@ int BioFilterReader::getModels(std::vector<BioModel>& models, string filename, u
 	models.clear();
 	
 	// assume 2 locus models for now
-	string id, line;
+	string id, line, impindex;
+	std::size_t pos;
+	
 	while(!reader.eof() && (models.size() < maximumReads)){
 		getline(reader, line);
-		if(line.find_first_of("0123456789") == string::npos)
+		if(line.find_first_of("0123456789") == string::npos || line[0] == '#')
 			continue;
 		stringstream ss(line);
 		BioModel mod;
@@ -72,7 +75,11 @@ int BioFilterReader::getModels(std::vector<BioModel>& models, string filename, u
 		mod.idString.push_back(id);
 		ss >> id;
 		mod.idString.push_back(id);
-		ss >> mod.implicationIndex;
+		ss >> impindex;
+		if((pos = impindex.find("-"))!= string::npos){
+			impindex = impindex.substr(0, pos);			
+		}
+		mod.implicationIndex = data_manage::Stringmanip::stringToNumber<float>(impindex);
 		models.push_back(mod);
 	}
 

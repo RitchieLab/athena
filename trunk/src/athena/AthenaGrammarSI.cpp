@@ -61,7 +61,7 @@ void AthenaGrammarSI::setModelCodons(bool dummyEncoded){
 	map<string, int> genoLocMap;
 	for(unsigned int i=0; i<restrictRulePtr->size(); i++){
 		genoLocMap[*((*restrictRulePtr)[i][0])] = i;
-	}  
+	}
 	
 	map<string, int>::iterator mapiter;
 	
@@ -84,7 +84,8 @@ void AthenaGrammarSI::setModelCodons(bool dummyEncoded){
 			// now find codon for it by searching for match in productions of the restricted rule
 			if((mapiter=genoLocMap.find(ss.str())) == genoLocMap.end()){
 				throw AthenaExcept(ss.str() + " is not a valid genotype in grammar for initialization");
-			}
+			}	
+			
 			iter->codonValues.push_back(mapiter->second);
 		}
 		
@@ -838,10 +839,7 @@ bool AthenaGrammarSI::genotype2PhenotypeOpt(vector<AthenaGrammarSI::codonBlocks>
 
 	// Start with the start symbol
 	nonTerminals.push(getStartSymbol());
-// cout << "startOptSymbol=" << *startOptSymbol << endl;
 	const Symbol* startOptSymbol = startOptRulePtr->lhs.front();
-
-
 
 	int startOptSite=0;
 	bool inOpt=false;
@@ -1061,7 +1059,6 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 	stack<GramElement> terms;
 	stack<GramElement> workingStack;
 	GramElement tempGram;
-// cout << "in translateOptValue" << endl;	
 	// set up stack of terminal characters
 	for(vector<optSymbol>::reverse_iterator symbIter = optimizedSymb.rbegin(); 
 		symbIter != optimizedSymb.rend(); ++symbIter){
@@ -1070,8 +1067,7 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 			tempGram.noNT = symbIter->noNT;
 			terms.push(tempGram);
 	}
-// cout << "terms size()=" << terms.size() << endl;	
-// cout << "rightOptBound=" << rightOptBound << " leftOptBound=" << leftOptBound << endl;	
+
 	// have left marker and right marker set already (left_opt_bound, right_opt_bound)
 	GramElement currTerm;
 	GramElement tempTerm;
@@ -1081,7 +1077,6 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 	
 	while(terms.size()){
 		currTerm = terms.top();
-// cout << "^^currTerm=" << currTerm.symbol << " noNT=" << currTerm.noNT << endl;
 		terms.pop();
 		// when no nonterminal for this element
 		if(currTerm.noNT){
@@ -1098,18 +1093,15 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 				workingStack.pop();
 				
 				do{
-// cout << "workingItem=" << workingItem << endl;
 					newProduction = workingItem + newProduction;
 					workingGram = workingStack.top();
 					workingStack.pop();
 					workingItem = workingGram.symbol;
 					// carry over codons 
 					tempTerm.codons.insert(tempTerm.codons.begin(), workingGram.codons.begin(), workingGram.codons.end());
-				}while(workingItem[0] != leftOptBound || workingItem.size() > 1);
-// cout << "newProduction=" << newProduction << endl;				
+				}while(workingItem[0] != leftOptBound || workingItem.size() > 1);			
 				// now check for the rule made out of these parameters
-				string leftSide;
-				
+				string leftSide;			
 				// check to see if it needs another element from working stack
 				if(isArg.find(newProduction) != isArg.end()){
 					workingGram = workingStack.top();
@@ -1117,8 +1109,7 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 					workingItem = workingGram.symbol;
 					tempTerm.codons.insert(tempTerm.codons.begin(), workingGram.codons.begin(), workingGram.codons.end());
 					newProduction = workingItem + newProduction;
-				}
-// cout << "newProduction=" << newProduction << endl;				
+				}				
 				int codonValue;
 				bool ruleFound = getRuleFromProduction(newProduction, leftSide, codonValue);
 				if(codonValue >= 0){
@@ -1133,7 +1124,6 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 					
 				// push onto terms so it will be evaluated next time through the loop
 				tempTerm.noNT = false;
-// cout << "upper push on terms " << tempTerm.symbol << endl;
 				terms.push(tempTerm);
 			}
 			else{
@@ -1144,8 +1134,7 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 		}
 		else{
 			// may have a non-terminal
-			string leftSide, current=currTerm.symbol;
-// cout << "noNT symbol=" << currTerm.symbol << endl;			
+			string leftSide, current=currTerm.symbol;	
 			// if the element is an argument to another element -- (<num>) for Concat -- take that element 
 			// from the working stack and check the new combined element to see if it can be 
 			// defined by a rule
@@ -1158,7 +1147,6 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 			
 			int codonValue;
 			bool rule_found = getRuleFromProduction(current, leftSide, codonValue);
-// cout << "rule_found=" << rule_found << " rule is " << leftSide << endl;
 			// repeat this loop as long as the path can be followed up the rules
 			while(rule_found){
 				if(codonValue >=0)
@@ -1183,7 +1171,6 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 		workingStack.pop();
 	}
 	tempTerm.noNT = false;
-// cout << "lower push on terms " << tempTerm.symbol << endl;
 	terms.push(tempTerm);
 	// continue running until the only terminal is the starting one for the optimized portion
 	// of the grammar

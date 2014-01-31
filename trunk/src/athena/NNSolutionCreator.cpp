@@ -446,7 +446,7 @@ float NNSolutionCreator::evaluate(Dataset* set){
 				
 				calculator->addIndScore(evaluateInd(ind), ind->getStatus());
 		}
-		return calculator->getScore();  
+		return calculator->getScore(); 
 }
 
 

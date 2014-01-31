@@ -138,7 +138,7 @@ void BioFilterModelCollection::fillTree(std::string filename, int nModels, strin
 
 ///
 /// Returns total of all implication scores in the tree
-/// @returnn implication total
+/// @return implication total
 ///
 float BioFilterModelCollection::getImplicationTotal(){
 	 float impTotal=0.0;

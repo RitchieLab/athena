@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "12/2/13";
+		string versionDate = "1/31/14";
 		string execName = "ATHENA";
 		string version = "1.0.3";
 		 time_t start,end;
