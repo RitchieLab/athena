@@ -27,6 +27,7 @@ Dataset::Dataset()
 {
 	ssTotal = 0;
 	binaryStatusOnly = false;
+	constantValue=0.0;
 }
 
 Dataset::~Dataset()

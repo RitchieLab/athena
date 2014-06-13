@@ -75,6 +75,12 @@ public:
 	/// Calculates SStotal
 	void calcSSTotal();
 	
+	/// Sets constant value used in converting scores
+	void setConstant(double c){constantValue = c;}
+	
+	/// Returns constant value 
+	double getConstant(){return constantValue;}
+	
 	/// Returns whether set is case/control
 	bool isCaseControl(){return binaryStatusOnly;}
 	
@@ -88,6 +94,7 @@ private:
 	float missingCoValue, ssTotal;
 	int missingGenotype;
 	bool binaryStatusOnly;
+	double constantValue;
 
 };
 
