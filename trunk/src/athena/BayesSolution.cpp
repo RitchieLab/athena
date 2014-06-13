@@ -185,13 +185,9 @@ void BayesSolution::outputClean(std::ostream& os, data_manage::Dataholder& data,
 /// @param tes
 ///
 void BayesSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet){
-	float ssTotal;
-	int totalInds = calcInds(trainSet, ssTotal);
-	solFitness = alterScore(solFitness, totalInds, ssTotal);
 
-	totalInds = calcInds(testSet, ssTotal);
-
-	testScore = alterScore(testScore, totalInds, ssTotal);
+	solFitness = alterScore(solFitness, trainSet->getConstant());
+	testScore = alterScore(testScore, testSet->getConstant());
 }
 
 
@@ -201,9 +197,7 @@ void BayesSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet){
 /// @param trainSet Dataset
 ///
 void BayesSolution::adjustScoreOut(Dataset* trainSet){
-	float ssTotal;
-	int totalInds = calcInds(trainSet, ssTotal);
-	solFitness = alterScore(solFitness, totalInds, ssTotal);
+	solFitness = alterScore(solFitness, trainSet->getConstant());
 }
 
 
@@ -216,21 +210,18 @@ void BayesSolution::adjustScoreOut(Dataset* trainSet){
 /// @return R-squared value
 ///
 float BayesSolution::adjustScoreOut(float score, int nIndsTested, float ssTotal){
-	return alterScore(score, nIndsTested, ssTotal);
+	return score;
 }
 
 
 ///
-/// Converts mean squared error 
-/// @param set Dataset for this score
-/// @param mse mean squared error
-/// @param totalInds Total inds evaluated
-/// @param ssTotal
+/// Converts difference in network to total score
+/// @param score
+/// @param c value of unconnected network
 /// @return R squared score for the set
 ///
-float BayesSolution::alterScore(float mse, int totalInds, float ssTotal){
-	 float rSquared = 1-((mse * totalInds) / ssTotal);
-	return rSquared;
+float BayesSolution::alterScore(float score, double c){
+	return c + score;
 }
 
 
@@ -241,65 +232,65 @@ float BayesSolution::alterScore(float mse, int totalInds, float ssTotal){
 /// @param ssTotal sets the ssTotal
 /// @return number of individuals
 ///
-int BayesSolution::calcInds(Dataset* set, float& ssTotal){
-
-	// iterate through the symbols and look for anything with a 'G' or 'C'
-	std::vector<std::string>::iterator iter;
-	
-	vector<int> genos, covars;
-	int num;
-	
-	for(iter = symbols.begin(); iter != symbols.end(); iter++){
-		string sym = *iter;
-		if(sym[0] == 'G'){
-			stringstream ss(sym.substr(1, sym.length()-1));
-			ss >> num;
-			genos.push_back(num-1);
-		}
-		else if(sym[0] == 'C' && sym.find_first_of("0123456789") != string::npos){
-			stringstream ss(sym.substr(1, sym.length()-1));
-			ss >> num;
-			covars.push_back(num-1);
-		}
-	}
-
-	int totalInds = 0;
-	Individual* ind;
-	bool anyMissing;
-	
-	float diff=0.0, meanVal, statTotal=0.0;
-	vector<float> statusUsed;
-	
-	for(unsigned int currind=0; currind < set->numInds(); currind++){
-		ind = (*set)[currind];
-		
-		anyMissing = false;
-		for(unsigned int g=0; g < genos.size(); g++){
-			if(ind->getGenotype(genos[g]) == set->getMissingGenotype()){
-				anyMissing = true;
-				break;
-			}
-		}
-		for(unsigned int c=0; c < covars.size(); c++){
-			if(ind->getCovariate(covars[c]) == set->getMissingCoValue()){
-				anyMissing = true;
-				break;
-			}
-		}
-		
-		if(!anyMissing){
-			totalInds++;
-			statTotal += ind->getStatus();
-			statusUsed.push_back(ind->getStatus());
-		}
-	}
-	
-	meanVal = statTotal / totalInds;
-	for(vector<float>::iterator iter=statusUsed.begin(); iter != statusUsed.end();
-		++iter){
-		diff = diff + (*iter-meanVal) * (*iter-meanVal);
-	}
-	ssTotal=diff;
-	
-	return totalInds;
-}
+// int BayesSolution::calcInds(Dataset* set, float& ssTotal){
+// 
+// 	// iterate through the symbols and look for anything with a 'G' or 'C'
+// 	std::vector<std::string>::iterator iter;
+// 	
+// 	vector<int> genos, covars;
+// 	int num;
+// 	
+// 	for(iter = symbols.begin(); iter != symbols.end(); iter++){
+// 		string sym = *iter;
+// 		if(sym[0] == 'G'){
+// 			stringstream ss(sym.substr(1, sym.length()-1));
+// 			ss >> num;
+// 			genos.push_back(num-1);
+// 		}
+// 		else if(sym[0] == 'C' && sym.find_first_of("0123456789") != string::npos){
+// 			stringstream ss(sym.substr(1, sym.length()-1));
+// 			ss >> num;
+// 			covars.push_back(num-1);
+// 		}
+// 	}
+// 
+// 	int totalInds = 0;
+// 	Individual* ind;
+// 	bool anyMissing;
+// 	
+// 	float diff=0.0, meanVal, statTotal=0.0;
+// 	vector<float> statusUsed;
+// 	
+// 	for(unsigned int currind=0; currind < set->numInds(); currind++){
+// 		ind = (*set)[currind];
+// 		
+// 		anyMissing = false;
+// 		for(unsigned int g=0; g < genos.size(); g++){
+// 			if(ind->getGenotype(genos[g]) == set->getMissingGenotype()){
+// 				anyMissing = true;
+// 				break;
+// 			}
+// 		}
+// 		for(unsigned int c=0; c < covars.size(); c++){
+// 			if(ind->getCovariate(covars[c]) == set->getMissingCoValue()){
+// 				anyMissing = true;
+// 				break;
+// 			}
+// 		}
+// 		
+// 		if(!anyMissing){
+// 			totalInds++;
+// 			statTotal += ind->getStatus();
+// 			statusUsed.push_back(ind->getStatus());
+// 		}
+// 	}
+// 	
+// 	meanVal = statTotal / totalInds;
+// 	for(vector<float>::iterator iter=statusUsed.begin(); iter != statusUsed.end();
+// 		++iter){
+// 		diff = diff + (*iter-meanVal) * (*iter-meanVal);
+// 	}
+// 	ssTotal=diff;
+// 	
+// 	return totalInds;
+// }

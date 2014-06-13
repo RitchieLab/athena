@@ -631,7 +631,7 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		throw AthenaExcept("Data set includes " + Stringmanip::numberToString(newSet->numCovariates()) + 
 			"  continuous variables and GEBN requires that all values be in the data file.");
 	}
-	
+	double total=0.0;	
 	unsigned int numGenos = newSet->numGenos();
 	parentScore.clear();
 	
@@ -647,6 +647,7 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		calculator->addIndScore(parentScore[term], nParams);
 		// store with penalty - will be stored as the negative value (actual score)
 		parentScore[term] = -calculator->getScore();
+		total += parentScore[term];
 	}
 	
 	term = termHolder.phenotype();
@@ -656,6 +657,10 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 	parentParams[term] = nParams;
 	calculator->addIndScore(parentScore[term], nParams);
 	parentScore[term] = -calculator->getScore();
+	total += parentScore[term];
+	
+	cout << "dataset total score=" << total << endl;
+	newSet->setConstant(total);
 	// base score will be stored as negative of the K2 (so it will be a positive number)
 }
 

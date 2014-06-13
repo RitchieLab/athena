@@ -299,6 +299,10 @@ void GEBayes::setGAParams(){
 			
 		GEObjective::setSolutionType("BAYES", calculatorName);
 
+	 if(calculatorName.find("K2") != string::npos){
+		 pop.setConvertScores(true);
+	 }
+
 	 // add mapper to objective function
 	 GEObjective::setMapper(&mapper);
 	 if(logTypeSelected == LogNone)

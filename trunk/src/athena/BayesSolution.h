@@ -69,9 +69,9 @@ private:
 		/// adjusts indexes back to original values if dummy-encoded
 		int adjustDummyEncoding(int genotype);
 		
-		float alterScore(float mse, int totalInds, float ssTotal);
+		float alterScore(float mse, double c);
 		
-		int calcInds(Dataset* set, float& ssTotal);
+// 		int calcInds(Dataset* set, float& ssTotal);
 		
 		int nnDepth, gramDepth;
 		
