@@ -659,7 +659,6 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 	parentScore[term] = -calculator->getScore();
 	total += parentScore[term];
 	
-	cout << "dataset total score=" << total << endl;
 	newSet->setConstant(total);
 	// base score will be stored as negative of the K2 (so it will be a positive number)
 }
