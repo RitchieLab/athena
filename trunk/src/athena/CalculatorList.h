@@ -30,6 +30,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "MeanSquaredErrCalculator.h"
 #include "RSquaredCalculator.h"
 #include "AUCCalculator.h"
+#include "K2Calculator.h"
 
 
 #endif	/* _CALCULATORLIST_H */

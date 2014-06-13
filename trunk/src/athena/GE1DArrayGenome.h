@@ -103,7 +103,8 @@ public:
 	unsigned int getNumNodes()const;
 	void setNumNodes(const unsigned int nNodes);
 	
-	int getComplexity(){return numNodes + numGenes + numCovars;}
+	void setComplexity(const int c);
+	int getComplexity(){return complexity;}
 	
 	Establishinator establishinator() const {return estab;}
   Establishinator establishinator(Establishinator f) { return(estab=f); }
@@ -123,7 +124,7 @@ private:
 	bool validnn;	
 	float ssTotal, testVal;
 	unsigned int effSize, numGenes, numCovars, netDepth, gramDepth;
-	int genomeID, numEpochsTrained, numIndsEvaluated, numNodes;
+	int genomeID, numEpochsTrained, numIndsEvaluated, numNodes, complexity;
 	
 	std::vector<int> genos, covars;
 	Establishinator estab;		// establishes newly initialized genomes that don't need full evaulation function

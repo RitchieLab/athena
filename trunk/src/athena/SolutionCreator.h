@@ -30,11 +30,15 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 // #include "CalculatorFactory.h"
 #include "SolutionCalculator.h"
 #include "AlgorithmLog.h"
+// #include "AthenaGrammarSI.h"
+#include "TerminalSymbCreator.h"
 #include "Structs.h"
 #include <Dataset.h>
 #include <set>
 #include <AUCcalc.h>
 #include <sstream>
+
+class AthenaGrammarSI;
 
 using namespace data_manage;
 ///
@@ -100,7 +104,8 @@ public:
 		/// returns a blank solution of appropriate type
 		virtual Solution* createNewSolution()=0;
 		
-		virtual void setCalculatorConstant(float constant){calculator->setConstant(constant);}
+// 		virtual void setCalculatorConstant(float constant){calculator->setConstant(constant);}
+		virtual void setCalculatorConstant(Dataset* ds){calculator->setConstant(ds);}
 		virtual float getCalculatorConstant(){return calculator->getConstant();}
 		
 		virtual bool maxBest(){return calculator->maxBest();}
@@ -142,6 +147,7 @@ public:
 		
 		virtual unsigned int getNumCovars()=0;
 		virtual unsigned int getNumNodes()=0;
+	  virtual unsigned int getComplexity()=0;
 		
 		virtual vector<int> getGeneIndexes()=0;
 		virtual vector<int> getCovarIndexes()=0;
@@ -160,7 +166,35 @@ public:
 		
 		std::string calculatorName(){return calculator->getName();}
 		
-		virtual void addConstants(std::vector<std::string>& constants)=0;
+		virtual void addConstants(std::vector<std::string>& constants){}
+		
+	 	virtual void setMapper(AthenaGrammarSI* m){mapper = m;}
+		
+		struct TerminalInfo{
+			TerminalInfo(TerminalSymbol* t, int i){
+				term = t;
+			 	phenoIndex = i; // index in original phenotype string
+			 	newValue=-1;
+			}
+			
+			TerminalInfo(TerminalSymbol* t, int i, int v){
+				term = t;
+			 	phenoIndex = i; // index in original phenotype string
+			 	newValue=v;
+			}
+			
+			TerminalInfo(){
+				term=NULL;
+				phenoIndex=-1;
+				newValue=-1;
+			}
+			TerminalSymbol* term;
+			int phenoIndex, newValue;
+		};
+		
+		map<int, TerminalInfo> getChangedVariables(){return changedVariables;}
+		
+		inline bool anyChangedVariables(){return !changedVariables.empty();}
 		
 protected:
 		Solution* sol;
@@ -170,6 +204,8 @@ protected:
 		vector<float> optValues;
 		vector<symbVector> optValSymbols;
 		vector<string> addOutputValues;
+		AthenaGrammarSI* mapper;
+		map<int, TerminalInfo> changedVariables;
 };
 
 

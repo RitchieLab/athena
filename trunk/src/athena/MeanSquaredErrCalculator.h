@@ -63,7 +63,7 @@ class MeanSquaredErrCalculator: public SolutionCalcImp<MeanSquaredErrCalculator>
 		/// returns worst score
 		float getWorst(){return 1000000;}
 		/// sets the sstotal for use in calculating rsquared
-		void setConstant(float constant){ssTotal = constant;}
+		void setConstant(data_manage::Dataset* ds){ssTotal = ds->getSSTotal();}
 		/// returns the sstotal for use in calculating rsquared
 		float getConstant();
 

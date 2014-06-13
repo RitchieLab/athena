@@ -68,24 +68,25 @@ class BiasTerm :public TerminalSymbol{
 };
 
 
-
 ///
-/// TerminalSymbol that contains an index for referencing 
-/// genotypes in the dataset
+/// TerminalSymbol base class for all terminals depending on 
+/// having knowledge of which individual is being looked at from
+/// dataset
 ///
-class GenotypeTerm :public TerminalSymbol{
+class IndividualTerm :public TerminalSymbol{
 	
 	public:
-		GenotypeTerm(std::string name, int variableIndex);
+		IndividualTerm(std::string name, int variableIndex, TerminalType tType=NotVariable);
 		
-		virtual ~GenotypeTerm(){}
+		virtual ~IndividualTerm(){}
 		
-		virtual float evaluate(std::deque<float> & TerminalSymbols);
+		virtual float evaluate(std::deque<float> & TerminalSymbols){return 0.0;}
 		
 		inline int getIndex(){return indexValue;}
 		
 		static void setInd(Individual* ind);
-		private:
+		
+		protected:
 			int indexValue;
 			
 			static Individual* ind;
@@ -96,7 +97,52 @@ class GenotypeTerm :public TerminalSymbol{
 /// TerminalSymbol that contains an index for referencing 
 /// genotypes in the dataset
 ///
-class ContinVariable :public TerminalSymbol{
+class PhenotypeTerm :public IndividualTerm{
+	
+	public:
+		PhenotypeTerm(std::string name, int variableIndex=1);
+		
+		virtual ~PhenotypeTerm(){}
+		
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
+		
+// 		inline int getIndex(){return indexValue;}
+// 		
+// 		static void setInd(Individual* ind);
+		private:
+// 			int indexValue;
+// 			
+// 			static Individual* ind;
+};
+
+///
+/// TerminalSymbol that contains an index for referencing 
+/// genotypes in the dataset
+///
+class GenotypeTerm :public IndividualTerm{
+	
+	public:
+		GenotypeTerm(std::string name, int variableIndex);
+		
+		virtual ~GenotypeTerm(){}
+		
+		virtual float evaluate(std::deque<float> & TerminalSymbols);
+		
+// 		inline int getIndex(){return indexValue;}
+// 		
+// 		static void setInd(Individual* ind);
+		private:
+// 			int indexValue;
+// 			
+// 			static Individual* ind;
+};
+
+
+///
+/// TerminalSymbol that contains an index for referencing 
+/// genotypes in the dataset
+///
+class ContinVariable :public IndividualTerm{
 	
 	public:
 		ContinVariable(std::string name, int variableIndex);
@@ -104,12 +150,12 @@ class ContinVariable :public TerminalSymbol{
 		virtual ~ContinVariable(){}
 		
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
-		static void setInd(Individual* ind);
+// 		static void setInd(Individual* ind);
 		
-		inline int getIndex(){return indexValue;}
+// 		inline int getIndex(){return indexValue;}
 		private:
-			int indexValue;
-			static Individual* ind;
+// 			int indexValue;
+// 			static Individual* ind;
 };
 
 

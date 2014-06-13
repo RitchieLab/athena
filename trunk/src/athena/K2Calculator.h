@@ -1,5 +1,5 @@
 /*
-Copyright Marylyn Ritchie 2013
+Copyright Marylyn Ritchie 2014
 
 This file is part of ATHENA.
 
@@ -17,24 +17,25 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 /* 
- * File:   AUCCalculator.h
+ * File:   K2Calculator.h
  * Author: dudeksm
  *
+ * Created on May, 7 2014, 11:10 AM
  */
 
-#ifndef _AUCCALCULATOR_H
-#define	_AUCCALCULATOR_H
+#ifndef _K2CALCULATOR_H
+#define	_K2CALCULATOR_H
 
 #include "SolutionCalculator.h"
 
 ///
 /// Calculates balanced accuracy
 ///
-class AUCCalculator: public SolutionCalcImp<AUCCalculator>{
+class K2Calculator : public SolutionCalcImp<K2Calculator>{
 	 
 public:
 		
-		AUCCalculator();
+		K2Calculator();
 		
 		/// resets calculator for new analysis set
 		void reset();
@@ -42,28 +43,35 @@ public:
 		/// adds evaluation score to results
 		void addIndScore(float score, float status);
 		
-		/// returns area under the curve
-		float getScore();
+		/// returns balanced accuracy
+		float getScore(){
+			return -k2Score;
+		}
 		
-	 	bool maxBest(){return true;}
+	 /// scores are converted to positive values so max is best
+	 bool maxBest(){return true;}
+	 
+	 bool logMaxBest(){return true;}
+	 
+	 	virtual std::vector<std::string> getAdditionalOutputNames(){
+			return outputNames;
+		}
+		
+		virtual std::vector<std::string> getAdditionalFinalOutput();
+
+	 	virtual void evaluateAdditionalOutput(std::vector<stat::TestResult>& results);
 	 	
-	 	bool logMaxBest(){return true;}
-		
+	 	virtual bool requiresCaseControl(){return false;}
+	 	
+	 	void setConstant(data_manage::Dataset* ds){}
+	 
 	 /// returns worst score
 	 float getWorst(){return 0.0;}
-	 
-	 void evaluateAdditionalOutput(std::vector<stat::TestResult>& results);
-	 
-	 virtual bool requiresCaseControl(){return true;}
-	 
-	 void setConstant(data_manage::Dataset* ds){}
-	 
 private:
-		float auc;
 		static const string calcMatchName;
-		std::vector<stat::TestResult> results;
+		double k2Score;
 };
 
 
-#endif	/* _BALACCCALCULATOR_H */
+#endif	/* _K2CALCULATOR_H */
 

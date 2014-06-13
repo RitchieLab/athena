@@ -77,6 +77,11 @@ class TerminalSymbCreator{
 		inline TerminalSymbol* leftParen(){return lParen;}
 		inline TerminalSymbol* comma(){return commaPtr;}
 		inline TerminalSymbol* concaten(){return concat;}
+		inline TerminalSymbol* connector(){return connect;}
+		inline TerminalSymbol* phenotype(){return phenoPtr;}
+		
+		std::string getGenoName(int varIndex);
+		std::string getContinName(int varIndex);
 		
 		void setInd(Individual* ind);
 		
@@ -88,7 +93,7 @@ class TerminalSymbCreator{
 	 
 // 		void getStringFromNum(float value, symbVector& optSymbols);
 		std::map<std::string, TerminalSymbol*> terminalMap;
-		TerminalSymbol* rParen, *lParen, *commaPtr, *concat;
+		TerminalSymbol* rParen, *lParen, *commaPtr, *concat, *connect, *phenoPtr;
 // 		optSymbol leftParenSymb, rightParenSymb, concatSymb, periodSymb;
 // 		std::set<ConstantPointer> constantSet;
 		OptGrammar* grammarOptimizer;

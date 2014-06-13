@@ -17,34 +17,33 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 /* 
- * File:   NNSolutionCreator.h
+ * File:   BayesSolutionCreator.h
  * Author: dudeksm
  *
- * Created on December 1, 2008, 4:18 PM
+ * Created on March 4, 2014, 5:18 PM
  */
 
-#ifndef _NNSOLUTIONCREATOR_H
-#define	_NNSOLUTIONCREATOR_H
+#ifndef _BAYESSOLUTIONCREATOR_H
+#define	_BAYESSOLUTIONCREATOR_H
 
 #include "SolutionCreator.h"
-#include "TerminalSymbCreator.h"
 #include "SolutionCalculator.h"
-#include "NNSolution.h"
-#include "NNLog.h"
+#include "BayesSolution.h"
 #include <set>
+#include "DAGraph.h"
 
-class NNSolutionCreator: public SolutionCreator{
+class BayesSolutionCreator: public SolutionCreator{
 		
 public:
 	 
 		/// Constructor
-		NNSolutionCreator();
+		BayesSolutionCreator();
 		
 		/// Alternative constructor
-		NNSolutionCreator(vector<string>& symbols);
+		BayesSolutionCreator(vector<string>& symbols);
 		
 		void initialize();
-		
+
 		/// creates solution from vector of strings
 		virtual void establishSolution(vector<string>& symbols, Dataset* set);
  
@@ -52,6 +51,8 @@ public:
 		virtual void establishSolution(vector<string>& symbols);
 		
 		virtual void establishSolutionEquation(std::vector<std::string>& symbols);
+ 
+		void establishSolutionOrig(vector<string>& symbols);
  
 		/// returns fitness score through evaluation of solution
 		virtual float evaluate(Dataset* set);
@@ -63,15 +64,12 @@ public:
 		float getOptimizedScore(){return optimizedScore;}
 			 
 		 virtual Solution* createNewSolution(){
-				 NNSolution* sol = new NNSolution;
+				BayesSolution* sol = new BayesSolution;
 				return sol;}
 		
 		/// frees memory associated with constants
 		void freeSolution(){
-			for(unsigned int i=0; i<constants.size(); i++){
-				delete constants[i];
-			}
-			constants.clear();
+// 			network.clearNodes();
 		}
 		
 		virtual void restrict(vector<string>& vars){}
@@ -100,11 +98,11 @@ public:
 		
 		inline unsigned int getNumCovars(){return getCovarIndexes().size();}
 		
-		inline unsigned int getNumNodes(){return numNodes;}
+		inline unsigned int getNumNodes(){return network.numNodes();}
+		
+		inline unsigned int getComplexity(){return getNumNodes();};
 
 		inline int getNumIndsEvaluated(){return nIndsEvaluated;}
-		
-		inline unsigned int getComplexity(){return getNumGenes() + getNumCovars() + getNumNodes();}
 
 		/// Returns symbol that corresponds to start of optimization symbols  
 		string getStartOptSymbol(){return startOpt;}
@@ -118,14 +116,9 @@ public:
 		void detailedLogging();
 		unsigned int getDetailedLog();
 		
-		void addConstants(std::vector<std::string>& constants);
-		
-		
+		virtual void setMapper(AthenaGrammarSI* m);
 
 protected:
-		
-		void compressOperator(vector<TerminalSymbol*> & postFixStack,
-			vector<TerminalSymbol*>& newStack);
 		
 		/// evaluates single individual and returns value for that individual
 		virtual float evaluateInd(Individual* ind);
@@ -136,12 +129,28 @@ protected:
 		/// returns true when ind has complete data for solution
 		bool useInd(Individual* ind, Dataset* set);
 		
+		void setParentScores(Dataset* set);
+		
+		int configParentData(std::vector<int>& parentValues, 
+			std::vector<IndividualTerm*> &parents);
+		
+		double k2calcNoParent(unsigned int gIndex, double& nP);
+		double k2calcPhenoNoParent(double& nP);
+		double k2calcWithParent(IndividualTerm* node, std::vector<IndividualTerm*> &parents,
+			double& nP);
+		
+		std::string getLabel(GraphNodeIter& node, Dataholder* holder);
+		
 		TerminalSymbCreator termHolder;
 		
+		DAGraph network;
+		
 		float optimizedScore;
-		bool terminalsSet;
+		bool terminalsSet, parentScoresSet;
 		unsigned int nnTerminalSize, nnDepth, numNodes;
-		vector<TerminalSymbol *> postFixStack;
+		std::map<TerminalSymbol*, double> parentScore, parentParams;
+		Dataset* currentSet;
+// 		vector<TerminalSymbol *> postFixStack;
 		int nIndsEvaluated;
 		string startOpt;
 		std::set<string> optSymbols, optArgSymbols;
@@ -153,9 +162,9 @@ protected:
 		// when needed
 		map<TerminalSymbol*, int> covars, genos;
 		
-		// vector holds pointers to constants that can be destroyed after all evaluations
-		vector<TerminalSymbol* > constants;
+// vector holds pointers to constants that can be destroyed after all evaluations
+// 		vector<TerminalSymbol* > constants;
 };
 
 
-#endif	/* _NNSOLUTIONCREATOR_H */
+#endif	/* _BAYESSOLUTIONCREATOR_H */

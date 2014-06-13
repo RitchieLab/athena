@@ -25,8 +25,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 struct logModel{
 		float fitness;
-		std::string model;
-		int gen, rank, gramDepth, nnDepth, n_c, n_g;
+		std::string remainder;
+		int gen, rank; // gramDepth, nnDepth, n_c, n_g;
 };
 
 bool compareLogModels(logModel first, logModel second);
@@ -55,5 +55,7 @@ class ModelLogParser{
 				bool getNextGen(ifstream* in, vector<string>& lines, string& nextGen);
 				
 				void outputVariables(ofstream& outStream, vector<string>& lines, string& gen);
+			
+				string headerLine;
 
 };

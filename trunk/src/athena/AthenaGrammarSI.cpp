@@ -1347,4 +1347,220 @@ int AthenaGrammarSI::getMax(DerivationTree& tree){
 		return maxDepth;
 }
 
+///
+/// Return a new variable by selecting a random variable using the variable rule pointer
+/// @param Stores the new codon value
+///
+std::string AthenaGrammarSI::getNewVariable(int& newCodon){
+  // return the string associated with this codon
+  newCodon = GARandomInt(0,RAND_MAX);
+  Rule::iterator prodIt=varRulePtr->begin()+newCodon%(varRulePtr->size());
+  return (*(*prodIt)[0]);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Updates the contents of the phenotype structure, based on the current
+// genotype and the current grammar, and according to the standard GE
+// mapping process. Returns true upon a successful mapping, and false
+// otherwise, and also updates the valid field of the phenotype.
+// With argument set to true, also updates derivationTree.
+void AthenaGrammarSI::changeVariables(GA1DArrayGenome<int>& genome, map<int, SolutionCreator::TerminalInfo> variableMap){
+
+	bool returnValue=true;
+	unsigned int newEffectiveSize=0;
+
+	phenotype.clear();
+
+	// Wraps counter and nonterminals stack
+	unsigned int wraps=0;
+	stack<const Symbol*> nonterminals;
+
+	// Iterators
+	iterator ruleIt;
+	Rule::iterator prodIt;
+	int genoIt=0;
+	
+	// Start with the start symbol
+	nonterminals.push(getStartSymbol());
+
+	bool gotToUseWrap=false;
+	// Get rid of all non-terminal symbols
+	while((!nonterminals.empty())&&(wraps<=getMaxWraps())){
+		// Do a mapping step
+		switch(genotype2PhenotypeStepReplaceVar(nonterminals,genoIt,genome, variableMap)){
+			case -1:returnValue=false;
+				break;
+			case 0:	;
+				break;
+			case 1:	genoIt++;
+				newEffectiveSize++;
+				if(gotToUseWrap){
+					wraps++;
+					gotToUseWrap=false;
+				}
+				// Check if wrap is needed
+				if(genoIt >= genome.length()){
+					//newEffectiveSize+=genotype.size();
+					genoIt=0;
+					gotToUseWrap=true;
+				}
+				break;
+			default:cerr << "Internal error in genotype2Phenotype().\n";
+				cerr << "Execution aborted.\n";
+				exit(0);
+		}
+	}
+
+
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Performs one step of the mapping process, that is, maps the next
+// non-terminal symbol on the nonterminals stack passed as argument, using the
+// codon at the position pointed by genoIt.
+// Returns number of codons consumed, -1 if not successful
+int AthenaGrammarSI::genotype2PhenotypeStepReplaceVar(stack<const Symbol*> &nonterminals,
+		int& genoIt, GA1DArrayGenome<int>& genome, map<int, SolutionCreator::TerminalInfo>& variableMap){
+
+	Rule::iterator prodIt;
+	int returnValue;
+
+	// Find the rule for the current non-terminal
+	Rule *rulePtr=findRule(*(nonterminals.top()));
+
+	if(!rulePtr){// Undefined symbol - could be an extension symbol
+		if(((*(nonterminals.top())).substr(0,strlen("<GECodonValue"))==
+			"<GECodonValue")&&(genoIt<genome.length())){
+			// Insert codon value
+			// Extract range for value from non-terminal specification
+			int low=0,high=-1,pointer=strlen("<GECodonValue");
+			// currentChar is the first character after "<GECodonValue"
+			char currentChar=((*(nonterminals.top())).substr(pointer,1))[0];
+			// Look for range definitions
+			while(currentChar!='>'){
+				if(currentChar=='-'){
+					// Low range specification
+					currentChar=((*(nonterminals.top())).substr(++pointer,1))[0];
+					while((currentChar>='0')&&(currentChar<='9')){
+						low=(low*10)+(currentChar-'0');
+						currentChar=((*(nonterminals.top())).substr(++pointer,1))[0];
+					}
+				}
+				else if(currentChar=='+'){
+					// High range specification
+					currentChar=((*(nonterminals.top())).substr(++pointer,1))[0];
+					while((currentChar>='0')&&(currentChar<='9')){
+						if(high==-1){
+							high=0;
+						}
+						high=(high*10)+(currentChar-'0');
+						currentChar=((*(nonterminals.top())).substr(++pointer,1))[0];
+					}
+				}
+				else{// Ignore errors
+					currentChar=((*(nonterminals.top())).substr(++pointer,1))[0];
+				}
+			}
+			// High range was not specified, so set it to maximum
+			if(high==-1){
+				high=genotype.getMaxCodonValue();
+			}
+			// Remove non-terminal
+			nonterminals.pop();
+			// Print value onto "codon"
+			ostringstream codon;
+			if(high==low){
+				// Catch division by zero
+				codon << low;
+			}
+			else{
+				codon << (genome.gene(genoIt)%(high-low+1))+low;;
+			}
+			// Insert symbol with value onto phenotype
+			phenotype.push_back(new Symbol(codon.str()));
+			int phenoIndex = int(phenotype.size())-1;
+			if(variableMap.find(phenoIndex)!=variableMap.end()){
+			  // change genotype
+				genome.gene(genoIt, variableMap[phenoIndex].newValue);
+			}
+			returnValue=1;
+		}
+		else{
+			// Unknown symbol or special symbol that requires non-empty genotype
+			// Include symbol on phenotype
+			phenotype.push_back(nonterminals.top());
+			// Remove non-terminal
+			nonterminals.pop();
+			// Invalidate mapping
+			returnValue=-1;
+		}
+	}
+	//else if(rulePtr->getMinimumDepth()>=INT_MAX>>1){// Stuck on recursive rule
+	// Allow recursive rules, but only if they consume a codon
+	else if((rulePtr->getMinimumDepth()>=INT_MAX>>1)// Stuck on recursive rule
+		&&(rulePtr->size()<=1)){// No codon will be consumed
+		// Include symbol on phenotype
+		phenotype.push_back(nonterminals.top());
+		// Remove non-terminal
+		nonterminals.pop();
+		// Invalidate mapping
+		returnValue=-1;
+	}
+	else{
+		// Remove non-terminal
+		nonterminals.pop();
+		// Choose production
+		if(genoIt == genome.length()&&(rulePtr->size()>1)){
+			// Empty genotype, but symbol requires choice
+			// Include symbol on phenotype
+			phenotype.push_back(*(rulePtr->lhs.begin()));
+			// Invalidate mapping
+			returnValue=-1;
+		}
+		else{
+			if(genoIt>genome.length()){//Empty genotype
+				prodIt=rulePtr->begin();
+			}
+			else{
+				prodIt=rulePtr->begin()+(genome.gene(genoIt))%(rulePtr->size());
+			}
+			// Place production on productions vector
+			// Put all terminal symbols at start of production onto phenotype
+			int s_start=0;
+			int s_stop=(*prodIt).size();
+			while((s_start<s_stop)&&((*prodIt)[s_start]->getType()==TSymbol)){
+				phenotype.push_back((*prodIt)[s_start]);
+				// check to see if need to convert this genotype
+				int phenoIndex = int(phenotype.size())-1;
+				if(variableMap.find(phenoIndex)!=variableMap.end()){
+				  // change genotype
+				  genome.gene(genoIt, variableMap[phenoIndex].newValue);
+				}
+				
+				s_start++;
+			}
+			// Push all remaining symbols from production onto nonterminals queue, backwards
+			for(;s_stop>s_start;s_stop--){
+				nonterminals.push((*prodIt)[s_stop-1]);
+			}
+			// 0 or 1 choice for current rule, didn't consume genotype codon
+			if(rulePtr->size()<=1){
+				returnValue=0;
+			}
+			else{
+				returnValue=1;
+			}
+		}
+	}
+	// Finally, pop all terminal symbols on top of stack and insert onto phenotype
+	while((!nonterminals.empty()) && (nonterminals.top()->getType()==TSymbol)){
+		phenotype.push_back(nonterminals.top());
+		nonterminals.pop();
+	}
+	return returnValue;
+}
 

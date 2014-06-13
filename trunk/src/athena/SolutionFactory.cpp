@@ -21,6 +21,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "NNSolutionCreatorIncludeAll.h"
 #include "NNSolutionCreatorIncludeOnce.h"
 #include "SymRegressSolutionCreator.h"
+#include "BayesSolutionCreator.h"
 
 #include <iostream>
 
@@ -55,6 +56,9 @@ SolutionCreator* SolutionFactory::createSolution(string solutionName){
 			case NNSolutionOnceType:
 					newSolution = new NNSolutionCreatorIncludeOnce;
 					break;
+			case BayesSolutionType:
+					newSolution = new BayesSolutionCreator;
+					break;
 			default:
 					throw AthenaExcept("No solution matching " + solutionName); 
 	}
@@ -86,5 +90,6 @@ void SolutionFactory::setSolutionMap(){
 	solutionMap["NNALL"]=NNSolutionAllType;
 	solutionMap["NNONCE"] = NNSolutionOnceType;
 	solutionMap["SYMBREG"]=SymRegressSolutionType;
+	solutionMap["BAYES"]=BayesSolutionType;
 }
 

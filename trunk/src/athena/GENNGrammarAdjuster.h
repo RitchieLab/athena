@@ -56,6 +56,10 @@ public:
 		///  Expands shorthand for continuous variables and genotypes into useable format
 		void expandVariables();
 		
+		/// Sets parent and child grammar to restrict allowed sizes
+		void setBayesianSize(unsigned int minP, unsigned int maxP, unsigned int minC,
+			unsigned int maxC);
+		
 		/// Returns variables
 		vector<string> getVariables();
 	 

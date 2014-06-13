@@ -1,5 +1,5 @@
 /*
-Copyright Marylyn Ritchie 2011
+Copyright Marylyn Ritchie 2014
 
 This file is part of ATHENA.
 
@@ -16,30 +16,29 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-//Structs.h
+/*
+ * File:   SumFileReader.h
+ * Author: dudeksm
+ *
+ * Created on Wed Jun  4 09:22:49 CDT 2014
+ */
 
-#ifndef _STRUCTS_H
-#define	_STRUCTS_H
+#ifndef _SUMFILEREADER_H
+#define	_SUMFILEREADER_H
 
-#include <vector>
-#include <set>
+#include "Population.h"
 
-struct optSymbol{
-	string symbol;
-	bool noNT;
+class SumFileReader{
+
+  public:
+    void readSumFile(std::string filename);
+
+    vector<Solution*>& getModelPopulation(){return modelPop;}
+
+  private:
+    vector<Solution*> modelPop;
+
 };
 
-
-typedef vector<optSymbol> symbVector;
-
-enum LogType{
-	LogNone,
-	LogSummary,
-	LogDetailed,
-	LogVariables,
-	LogOverview
-};
-
-#define MAX_GENOME_SIZE 100000
 
 #endif

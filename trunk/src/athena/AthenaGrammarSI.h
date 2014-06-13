@@ -23,8 +23,10 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <GE/GEGrammarSI.h>
 #include "Structs.h"
+#include "SolutionCreator.h"
 #include <map>
 #include <set>
+
 
 ///
 /// Adds functionality for incorporating biofilter models into
@@ -84,6 +86,12 @@ class AthenaGrammarSI: public GEGrammarSI{
 			startOptRulePtr = findRule(searchSymbol);
 		}
 		
+		/// Sets symbol for variable search
+		inline void setVariableSymbol(std::string varSymb){
+		  Symbol searchSymbol(varSymb, NTSymbol);
+		  varRulePtr = findRule(searchSymbol);
+		}
+		
 		/// Sets the set of symbols that define the optimization parameters in grammar
 		inline void setOptSymbolSet(std::set<string> optSet){optSymbols = optSet;}
 		
@@ -113,11 +121,20 @@ class AthenaGrammarSI: public GEGrammarSI{
 		int buildDerivationTree();
 		
 		
-	private:
+		/// Return a new variable
+		std::string getNewVariable(int& newCodon);
+		
+		/// change genome variables as specified in variableMap
+    void changeVariables(GA1DArrayGenome<int>& genome, map<int, SolutionCreator::TerminalInfo> variableMap);
+		
+	protected:
 		struct GrammarModel{
 			vector<int> datasetIndexes; //location in original array (corresponds to V1,V2, etc. in grammar)
 			vector<int> codonValues; // contains codon values to replace the existing ones in genome with
 		};
+	
+    int genotype2PhenotypeStepReplaceVar(stack<const Symbol*> &nonterminals,
+		  int& genoIt, GA1DArrayGenome<int>& genome, map<int, SolutionCreator::TerminalInfo>& variableMap);
 	
 		int getMax(DerivationTree& tree);
 	
@@ -139,7 +156,7 @@ class AthenaGrammarSI: public GEGrammarSI{
 		vector<GrammarModel>::iterator currGramModel;
 		int currModelIndex, currVarIndex;
 		unsigned int currModelCodonIndex;
-		Rule *restrictRulePtr, *startOptRulePtr;
+		Rule *restrictRulePtr, *startOptRulePtr, *varRulePtr;
 		char leftOptBound, rightOptBound;
 		
 		struct reverseRule{
@@ -174,6 +191,7 @@ class AthenaGrammarSI: public GEGrammarSI{
 		
 		std::multimap<std::string, int>  codonMap;
 		std::vector<std::string> codonVector;
+	
 
 };
 

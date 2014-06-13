@@ -37,30 +37,36 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 
 	 GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
 
-// cout << "genome.size()="<< genome.size() << endl;
 	//Assign genotype to mapper
 	mapper->setGenotype(genome); 
 	 Phenotype const *phenotype=mapper->getPhenotype();
 	 
 	 float fitness;
 	 genome.setValid(phenotype->getValid());
-// cout << "valid?=" << phenotype->getValid() << endl;
 	 if(phenotype->getValid()){
 	 
 			 unsigned int phenoSize=(*phenotype).size();
-// cout << "phenoSize=" << phenoSize << endl;
 			 vector<string> symbols(phenoSize, "");     
 			 
 			for(unsigned int i=0; i<phenoSize; ++i){
 					symbols[i] = *((*phenotype)[i]);
-// cout << "i=" << i << " " << symbols[i] << "\n";
-// cout << symbols[i] << " ";
 			}
-// cout << endl;
 
-			solCreator->establishSolution(symbols, set);
+			try{
+				solCreator->establishSolution(symbols, set);
+				}catch(AthenaExcept& ae){
+					fitness = solCreator->getWorst();
+	  			 genome.clearScores();
+	  			 return fitness;
+				}
 
-			fitness = solCreator->evaluate(set); 
+			// alter genome to match any variable changes
+			if(solCreator->anyChangedVariables()){
+				// change them in the mapper
+					mapper->changeVariables(genome, solCreator->getChangedVariables());		
+			}
+
+			fitness = solCreator->evaluate(set);
 			if(additionalLogging){
 				solCreator->detailedLogging();
 				genome.setDepth(solCreator->getDetailedLog());
@@ -76,6 +82,7 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 			genome.addCovars(solCreator->getCovarIndexes());
 			genome.setNumIndsEvaluated(solCreator->getNumIndsEvaluated());
 			genome.setNumNodes(solCreator->getNumNodes());
+			genome.setComplexity(solCreator->getComplexity());
 			
 			// when set 
 			if(genome.getNumIndsEvaluated() != int(set->numInds())){
@@ -114,40 +121,7 @@ void GEObjective::GEObjectiveInit(GAGenome& g){
 	
 	
 	 if(phenotype->getValid()){
-// 			 unsigned int phenoSize=(*phenotype).size();
-// 			 vector<string> symbols(phenoSize, "");     
-// 			 
-// 			for(unsigned int i=0; i<phenoSize; ++i){
-// 					symbols[i] = *((*phenotype)[i]);
-// 			}
-// 
-// 			solCreator->establishSolution(symbols, set);
-
-// 			fitness = solCreator->evaluate(set);
-// 		 
-// 			if(additionalLogging){
-// 				solCreator->detailedLogging();
-// 				genome.setDepth(solCreator->getDetailedLog());
-// 				genome.setGramDepth(mapper->buildDerivationTree());
-// 			}
-			
-// 			solCreator->freeSolution();
-
-			genome.setEffectiveSize(mapper->getGenotype()->getEffectiveSize());   
-// 			genome.setNumCovars(solCreator->getNumCovars());
-// 			genome.setNumGenes(solCreator->getNumGenes());
-// 			genome.addGenos(solCreator->getGeneIndexes());
-// 			genome.addCovars(solCreator->getCovarIndexes());
-// 			genome.setNumIndsEvaluated(solCreator->getNumIndsEvaluated());
-// 			genome.setNumNodes(solCreator->getNumNodes());
-			
-			// when set 
-// 			if(genome.getNumIndsEvaluated() != int(set->numInds())){
-// 				genome.setSSTotal(solCreator->getCalculatorConstant());
-// 			}
-// 			else{
-// 				genome.setSSTotal(set->getSSTotal());
-// 			}
+			genome.setEffectiveSize(mapper->getGenotype()->getEffectiveSize());
 	 }
 	 else{
 				// set fitness to worst score initially
@@ -220,6 +194,34 @@ float GEObjective::GEObjectiveFuncOut(GAGenome& g, ostream& os){
 }
 
 ///
+/// Calculates fitness on model supplied
+/// 
+///
+void GEObjective::calcFitness(Solution* sol){
+
+	solCreator->establishSolution(sol->getSymbols(), set);
+	double fitness = solCreator->evaluate(set); 
+	sol->fitness(fitness);
+
+	solCreator->freeSolution();
+}
+
+///
+/// Return values for final output
+/// @param g GAGenome to analyze
+///
+vector<std::string> GEObjective::calcAdditionalFinalOutput(Solution* sol){ 
+
+		solCreator->establishSolution(sol->getSymbols(), set);
+		solCreator->evaluateForOutput(set);
+		solCreator->freeSolution();
+		
+	 return solCreator->getAdditionalFinalOutput();	
+}
+
+
+
+///
 /// Return values for final output
 /// @param g GAGenome to analyze
 ///
@@ -262,7 +264,7 @@ void GEObjective::setDataset(data_manage::Dataset* ds){
 	if(!set->isCaseControl() && solCreator->getCalculator()->requiresCaseControl()){
 		throw AthenaExcept(solCreator->getCalculator()->getName() + " requires a case-control dataset");
 	}
-	solCreator->setCalculatorConstant(ds->getSSTotal());
+	solCreator->setCalculatorConstant(ds);
 }
 
 ///
@@ -272,18 +274,11 @@ void GEObjective::setDataset(data_manage::Dataset* ds){
 void GEObjective::optimizeSolution(GAGenome& g){
 
 	float oldScore, optScore;
-// cout << "start optimize solution" << endl;
 
 	GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
 	//Assign genotype to mapper
-// cout << "call setGenotypeOpt" << endl;
-// cout << "solCreator->getStartOptSymbol())=" << solCreator->getStartOptSymbol() << endl;
 	vector<AthenaGrammarSI::codonBlocks> blocks = mapper->setGenotypeOpt(genome, 
 	  solCreator->getOptIncluded(), solCreator->getStartOptSymbol());
-// cout << "blocks size=" << blocks.size() << endl;
-// for(unsigned int i=0; i<blocks.size(); i++){
-// 	cout << "block " << i << "start=" << blocks[i].start << " end=" << blocks[i].end << "\n";
-// }
 	Phenotype const *phenotype=mapper->getPhenotype();	
 	
 	// run optimization on the model if it is a valid solution
@@ -295,19 +290,16 @@ void GEObjective::optimizeSolution(GAGenome& g){
 
 		for(unsigned int i=0; i<phenoSize; ++i){
 		 symbols[i] = *((*phenotype)[i]);
-// cout << symbols[i] << " ";
 		}
-// cout << endl;
 
 		int numEpochsTrained = solCreator->optimizeSolution(symbols, set);
 	 
 		// after optimization, get the new constant list
 		vector<symbVector> newWeights = solCreator->getOptimizedSymbols();
 		optScore = solCreator->getOptimizedScore();
-// cout << "genome.score() " << genome.score() << " optScore= " << optScore << endl;
+
 		// skip the optimization if it isn't improving 
 		if(optScore < genome.score()){
-// cout << "****** WORKED ****** " << endl;
 		// go through original list and copy to new genome 
 		// use vector to create new genome list
 			vector<int> newCodons;
@@ -319,11 +311,6 @@ void GEObjective::optimizeSolution(GAGenome& g){
 				// set i to be equal to end of original block so that copying will continue
 				// from the correct position
 					i=blocks[currBlock].end;
-// cout << "translate opt value " << newWeights[currBlock].size() << endl;
-// for(unsigned int i=0; i<newWeights[currBlock].size(); i++){
-// 	cout << newWeights[currBlock][i].symbol << " ";
-// }
-// cout << endl;
 					vector<int> tempCodons = mapper->translateOptValue(newWeights[currBlock]);
 				// in mapper have function that returns codon list for a specified value
 					newCodons.insert(newCodons.end(), tempCodons.begin(), tempCodons.end());

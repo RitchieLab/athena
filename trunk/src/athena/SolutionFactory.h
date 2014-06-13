@@ -54,7 +54,9 @@ private:
 				/// For neural network restricting the networks to only one occurrence of each variable
 				NNSolutionOnceType,
 				/// For Symbolic Regression 
-				SymRegressSolutionType
+				SymRegressSolutionType,
+				/// For Bayes Network
+				BayesSolutionType
 		};
 		
 		static map<string, SolutionType> solutionMap;

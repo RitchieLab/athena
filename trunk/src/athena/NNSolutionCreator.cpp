@@ -399,7 +399,6 @@ bool NNSolutionCreator::useInd(Individual* ind, Dataset* set){
 		deque<float> args;
 		
 		map<TerminalSymbol*, int>::iterator iter;
- 
 		for(iter=covars.begin(); iter != covars.end(); iter++){
 			if(iter->first->evaluate(args) == set->getMissingCoValue()){
 				return false;

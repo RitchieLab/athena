@@ -72,6 +72,7 @@ void ConfigFileReader::initializeKeywords(){
 	keywordMap["CVSTART"]=keyCVStart;
 	keywordMap["BESTSELECT"]=keySelectBestModel;
 	keywordMap["IMAGEWRITER"]=keyImgWriter;
+	keywordMap["VALIDATIONSUMFILE"] = keyValidationSumFile;
 }
 
 
@@ -255,6 +256,10 @@ Config ConfigFileReader::readConfig(string configFile){
 					 		ss >> value;
 					 		configuration.setImgWriter(value);
 					 		break;
+					case keyValidationSumFile:
+							ss >> value;
+							configuration.setValidationSumFile(value);
+							break;
 					 default:
 							throw AthenaExcept(keyWord + " is not a valid keyWord in configuration file");
 							break;

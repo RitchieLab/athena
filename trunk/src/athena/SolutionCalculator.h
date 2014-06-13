@@ -30,6 +30,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include<vector>
 #include <AUCcalc.h>
 #include "CalculatorFactory.h"
+#include <Dataset.h>
+
 
 ///
 /// Base class for calculation of solution scores.
@@ -62,7 +64,7 @@ public:
 		virtual bool requiresCaseControl(){return false;}
 		
 		/// Used when a sub class needs a constant value for calculations as in RSquared
-		virtual void setConstant(float constant){}
+		virtual void setConstant(data_manage::Dataset* ds)=0;
 		
 		virtual std::vector<std::string> getAdditionalOutputNames(){
 			return outputNames;

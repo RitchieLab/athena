@@ -78,21 +78,60 @@ float BiasTerm::evaluate(deque<float> & args){
 }
 
 //////////////////////////////////////
-// Genotype class
+// IndividualTerm class
 //////////////////////////////////////
+Individual* IndividualTerm::ind = NULL;
 
-Individual* GenotypeTerm::ind = NULL;
-
-GenotypeTerm::GenotypeTerm(string gname, int varIndex)
-	:TerminalSymbol(gname, 0, TerminalSymbol::Genotype){
+IndividualTerm::IndividualTerm(string gname, int varIndex, TerminalType tType)
+	:TerminalSymbol(gname, 0, tType){
 		numArgs = 0;
 		name = gname;
 		// must convert symbol into value
-		indexValue = varIndex-1;
+		indexValue = varIndex;
 		label = gname;
 		style = "filled";
 		shape = "box";
 		type = label;
+}
+
+///
+/// Returns value for the individual at the indicated location
+/// @param args deque not used in this evaluation
+/// @return value of the variable
+/// @throws AthenaExcept when missing variable data at the indicated
+/// locus for the indicated individual
+///
+// float GenotypeTerm::evaluate(deque<float> & args){ 
+// 	return ind->getGenotype(indexValue);
+// } 
+
+
+///
+/// Set Individual pointer for class
+/// @param i Individual*
+///
+void IndividualTerm::setInd(Individual* i){
+		ind = i;
+}
+
+//////////////////////////////////////
+// Genotype class
+//////////////////////////////////////
+
+// Individual* GenotypeTerm::ind = NULL;
+
+// GenotypeTerm::GenotypeTerm(string gname, int varIndex)
+// 	:TerminalSymbol(gname, 0, TerminalSymbol::Genotype){
+GenotypeTerm::GenotypeTerm(string gname, int varIndex)
+	:IndividualTerm(gname,varIndex, TerminalSymbol::Genotype){
+// 		numArgs = 0;
+// 		name = gname;
+// 		// must convert symbol into value
+// 		indexValue = varIndex-1;
+// 		label = gname;
+// 		style = "filled";
+// 		shape = "box";
+// 		type = label;
 }
 
 ///
@@ -111,28 +150,27 @@ float GenotypeTerm::evaluate(deque<float> & args){
 /// Set Individual pointer for class
 /// @param i Individual*
 ///
-void GenotypeTerm::setInd(Individual* i){
-		ind = i;
-}
+// void GenotypeTerm::setInd(Individual* i){
+// 		ind = i;
+// }
 
 //////////////////////////////////////
 // Continuous variable (covariate) class
 //////////////////////////////////////
-
-Individual* ContinVariable::ind = NULL;
-
+// ContinVariable::ContinVariable(string gname, int varIndex)
+// 	:TerminalSymbol(gname, 0, TerminalSymbol::Covariate){
 ContinVariable::ContinVariable(string gname, int varIndex)
-	:TerminalSymbol(gname, 0, TerminalSymbol::Covariate){
-		numArgs = 0;
-		name = gname;
-		// must convert symbol into value
-		label = gname;
-		indexValue = varIndex-1;
-		style = "filled";
-		shape = "box";
-		type = label;
-		
+	:IndividualTerm(gname,varIndex,TerminalSymbol::Covariate){
+// 		numArgs = 0;
+// 		name = gname;
+// 		// must convert symbol into value
+// 		label = gname;
+// 		indexValue = varIndex-1;
+// 		style = "filled";
+// 		shape = "box";
+// 		type = label;
 }
+
 
 ///
 /// Returns value for the individual at the indicated location
@@ -143,6 +181,41 @@ ContinVariable::ContinVariable(string gname, int varIndex)
 ///
 float ContinVariable::evaluate(deque<float> & args){ 
 	return ind->getCovariate(indexValue);
+}
+
+
+///
+/// Set Individual pointer for class
+/// @param i Individual*
+///
+// void ContinVariable::setInd(Individual* i){
+// 		ind = i;
+// }
+
+//////////////////////////////////////
+// Phenotype class
+//////////////////////////////////////
+
+PhenotypeTerm::PhenotypeTerm(string gname, int varIndex)
+	:IndividualTerm(gname, 0, TerminalSymbol::Phenotype){
+		numArgs = 0;
+		name = gname;
+		// must convert symbol into value
+		label = gname;
+		indexValue = varIndex;
+		style = "filled";
+		shape = "circle";
+		type = label;
+}
+
+
+///
+/// Returns phenotype (status )value for the individual at the indicated location
+/// @param args deque not used in this evaluation
+/// @return value of the variable
+///
+float PhenotypeTerm::evaluate(deque<float> & args){ 
+	return ind->status();
 } 
 
 
@@ -150,10 +223,9 @@ float ContinVariable::evaluate(deque<float> & args){
 /// Set Individual pointer for class
 /// @param i Individual*
 ///
-void ContinVariable::setInd(Individual* i){
-		ind = i;
-}
-
+// void ContinVariable::setInd(Individual* i){
+// 		ind = i;
+// }
 
 //////////////////////////////////////
 // Addition class

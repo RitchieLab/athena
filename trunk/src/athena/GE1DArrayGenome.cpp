@@ -30,7 +30,7 @@ AthenaGrammarSI* GE1DArrayGenome::mapper = NULL;
 
 GE1DArrayGenome::GE1DArrayGenome(unsigned int len)
 	: GA1DArrayGenome<int>(len),  validnn(false), ssTotal(0.0), testVal(0), effSize(0), numGenes(0), numCovars(0),
-		netDepth(0), gramDepth(0), numEpochsTrained(0),  numIndsEvaluated(0), numNodes(0), estab(0)
+		netDepth(0), gramDepth(0), numEpochsTrained(0),  numIndsEvaluated(0), numNodes(0),  complexity(0), estab(0)
 {
 }
 
@@ -107,6 +107,7 @@ void GE1DArrayGenome::helpCopy(const GE1DArrayGenome& source)
 	netDepth = source.netDepth;
 	gramDepth = source.gramDepth;
 	numNodes = source.numNodes;
+	complexity = source.complexity;
 	genos = source.genos;
 	covars = source.covars;
 	numEpochsTrained = source.numEpochsTrained;
@@ -178,6 +179,10 @@ unsigned int GE1DArrayGenome::getNumNodes()const{
 
 void GE1DArrayGenome::setNumNodes(const unsigned int nNodes){
 	numNodes = nNodes;
+}
+
+void GE1DArrayGenome::setComplexity(const int c){
+	complexity = c;
 }
 
 void GE1DArrayGenome::setNumCovars(const unsigned int nCovars){
@@ -399,7 +404,7 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 	if(!mom.isValid() && !dad.isValid()){
 		return effCrossover(p1,p2,c1,c2);
 	}
-	
+// cout << "block cross" << endl;	
 	int nc=0;
 	int momsite;
 	int dadsite;
@@ -439,15 +444,34 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 				bro.copy(mom, dsite, momsite, momlen);
 				return nc = 2;
 			}
-		
+			
+// mapper->setGenotype(mom);
+// cout << "MOM: ";
+// Phenotype const *phenotype=mapper->getPhenotype();
+// unsigned int phenoSize=(*phenotype).size();
+// 			for(unsigned int i=0; i<phenoSize; ++i){
+// cout << *((*phenotype)[i]) << "|";
+// 			}
+// cout << endl;			
+// mapper->setGenotype(dad);
+// Phenotype const *phenotype2=mapper->getPhenotype();
+// phenoSize=(*phenotype2).size(); 
+// cout << "DAD: ";
+// 			for(unsigned int i=0; i<phenoSize; ++i){
+// cout <<*((*phenotype2)[i]) << "|";
+// 			}
+// cout << endl;		
+
+			
+// cout << "VALID CXROSS" << endl;
 			// select random site on the mother chromosome
 			momsite = GARandomInt(0, mom.getEffectiveSize()-1);
 			
 			// determine the non-terminal at that location
 			mapper->establishCodons(mom);
 			int momBlockLen = mapper->determineBlockLength(momsite);
-
-			// if not complete block copy original over (or can do effCrossover with these?)
+// cout << "momBlockLen=" << momBlockLen << endl;
+			// if not complete block copy original over (or can do effCrossover with these)
 			if(momBlockLen < 0){
 				unsigned int moml = mom.length();
 				unsigned int dadl = dad.length();
@@ -456,7 +480,7 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 			}
 			else{
 				string ruleString = mapper->getRuleString(momsite);
-
+// cout << "ruleString=" << ruleString << endl;
 				// have valid block from mom so find corresponding block in dad
 				mapper->establishCodons(dad);
 				dadsite = mapper->getMatchingCodon(ruleString);
@@ -464,7 +488,7 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 				int dadBlockLen = -1;
 				if(dadsite >= 0)
 					dadBlockLen = mapper->determineBlockLength(dadsite);
-				
+// cout << "dadBLockLen=" << dadBlockLen << endl;		
 				if(dadBlockLen < 0){
 					unsigned int moml = mom.length();
 					unsigned int dadl = dad.length();
@@ -489,6 +513,26 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 					bro.copy(mom,dadsite,momsite,mBlockLen);
 					endpoint = dad.length()-(dadsite+dadBlockLen);
 					bro.copy(dad, dadsite+momBlockLen, dadsite+dadBlockLen, endpoint);          
+
+// mapper->setGenotype(sis);
+// cout << "SIS: ";
+// Phenotype const *phenotype3=mapper->getPhenotype();
+// phenoSize=(*phenotype3).size(); 
+// 			for(unsigned int i=0; i<phenoSize; ++i){
+// cout << *((*phenotype3)[i]) << "|";
+// 			}
+// cout << endl;			
+// mapper->setGenotype(bro);
+// Phenotype const *phenotype4=mapper->getPhenotype();
+// phenoSize=(*phenotype4).size();
+// cout << "BRO: ";
+// 			for(unsigned int i=0; i<phenoSize; ++i){
+// cout << *((*phenotype4)[i])<< "|";
+// 			}
+// cout << endl;
+
+
+
 				}
 				
 			}
@@ -619,6 +663,7 @@ void GE1DArrayGenome::clearScores(){
 		setNumCovars(0);
 		setNumGenes(0);
 		setNumNodes(0);
+		setComplexity(0);
 		addGenos(temp);
 		addCovars(temp);
 		setNumIndsEvaluated(0);

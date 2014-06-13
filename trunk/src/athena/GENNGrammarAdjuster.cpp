@@ -481,6 +481,91 @@ void GENNGrammarAdjuster::editOnlyVarIncluded(){
 }
 
 
+///
+/// Sets parent and child grammar to restrict allowed sizes
+/// @param minP minimum number of parents in Bayesian network for a node
+/// @param maxP maximum number of parents in Bayesian network for a node
+/// @param minC minimum number of children in Bayesian network for a node
+/// @param maxC maximum number of children in Bayesian network for a node
+///
+void GENNGrammarAdjuster::setBayesianSize(unsigned int minP, unsigned int maxP, unsigned int minC,
+	unsigned int maxC){
+	
+	vector<string>::iterator lineIter = lines.begin(), startIter, endIter;
+	for(;lineIter != lines.end(); ++lineIter){
+		if(lineIter->find("<parents>")==0){
+			startIter=lineIter;
+			break;
+		}
+	}
+	for(endIter=startIter+1; endIter != lines.end(); ++endIter){
+		if(endIter->find("<")==0){
+			break;
+		}
+	}
+	
+	// delete extra lines
+	if(endIter != startIter){
+		endIter = lines.erase(startIter, endIter);
+	}
+	else{
+		endIter = lines.erase(startIter);
+	}
+	
+	vector<string> newLines;
+	unsigned int i = minP;
+	newLines.push_back("<parents>  ::= ");
+	for(unsigned int j=1; j<=i; j++){
+		newLines.back() += "<v>";
+	}
+	for(i=minP+1; i<=maxP; i++){
+		newLines.push_back("           | ");
+		for(unsigned int j=1; j<=i; j++){
+			newLines.back() += "<v>";
+		}
+	}
+	
+	// insert new lines before the endIter
+	lines.insert(endIter, newLines.begin(), newLines.end());
+	
+	for(lineIter = lines.begin();lineIter != lines.end(); ++lineIter){
+		if(lineIter->find("<children>")==0){
+			startIter=lineIter;
+			break;
+		}
+	}
+	for(endIter=startIter+1; endIter != lines.end(); ++endIter){
+		if(endIter->find("<")==0){
+			break;
+		}
+	}
+	
+	// delete extra lines
+	if(endIter != startIter){
+		endIter = lines.erase(startIter, endIter);
+	}
+	else{
+		endIter = lines.erase(startIter);
+	}
+	
+	newLines.clear();
+	i=minC;
+	newLines.push_back("<children>  ::= ");
+	for(unsigned int j=1; j<=i; j++){
+		newLines.back() += "<child>";
+	}
+	for(i=minC+1; i<=maxC; i++){
+		newLines.push_back("           | ");
+		for(unsigned int j=1; j<=i; j++){
+			newLines.back() += "<child>";
+		}
+	}	
+	
+	// insert new lines before the endIter
+	lines.insert(endIter, newLines.begin(), newLines.end());
+	
+}
+
 
 ///
 /// Extracts variables from string vector and keeps set of
@@ -557,9 +642,5 @@ void GENNGrammarAdjuster::setConstants(float min, float max, float interval){
 	
 	// append the new ones
 	lines.insert(lines.end(), constantLines.begin(), constantLines.end());
-
-// for(iter=lines.begin(); iter!= lines.end(); ++iter){
-// cout << *iter << "\n";
-// }
 	
 }

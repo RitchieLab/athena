@@ -33,7 +33,6 @@ int InitGEgenome::rank = 0;
 void InitGEgenome::initFuncRandom(GAGenome &g){
 	GA1DArrayGenome<unsigned int>& genome = static_cast<GA1DArrayGenome<unsigned int> &>(g);
 	int n=GARandomInt(minSize,maxSize);
-// cout << "resize is " << n << endl;
 	genome.resize(n);
 	for(int i=0; i<n; i++){
 		genome.gene(i, GARandomInt(0,2560000));

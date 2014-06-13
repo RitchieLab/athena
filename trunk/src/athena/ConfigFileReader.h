@@ -95,7 +95,8 @@ private:
 				keyCVStart,
 				keyContinChange,
 				keySelectBestModel,
-				keyImgWriter
+				keyImgWriter,
+				keyValidationSumFile
 		};
 		
 		std::map<std::string, configKeyWords> keywordMap;

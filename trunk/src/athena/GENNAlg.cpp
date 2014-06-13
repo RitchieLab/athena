@@ -19,13 +19,13 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "GEObjective.h"
 #include "GENNAlg.h"
-#include "GEObjective.h"
 #include "Terminals.h"
 #include "GENNGrammarAdjuster.h"
 #include "ModelLogParser.h"
 #include "BestModelSelector.h"
 #include "GAParetoSelector.h"
 #include "GAParetoRankSelector.h"
+#include "SumFileReader.h"
 #include <ga/ga.h>
 #include <ctime>
 #include <set>
@@ -54,12 +54,12 @@ GENNAlg::~GENNAlg(){
 ///
 /// Frees memory
 ///
-void GENNAlg::freeMemory(){
-		if(ga != NULL){
-				delete ga;
-				ga = NULL;
-		}
-}
+// void GENNAlg::freeMemory(){
+// 		if(ga != NULL){
+// 				delete ga;
+// 				ga = NULL;
+// 		}
+// }
 
 ///
 /// Set current Dataset for running algorithm
@@ -83,6 +83,9 @@ void GENNAlg::setDataset(Dataset* newSet){
 /// 
 void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, int numContin){
 		
+		
+		Algorithm::setParams(algParam, numExchanges, numGenos, numContin);
+		
 		map<string, string>::iterator mapIter;
 		vector<string> tokens;
 		
@@ -90,61 +93,9 @@ void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 			mapIter++){     
 				switch(paramMap[mapIter->first]){
 						case noMatchParam:
+						  if(paramMap.find(mapIter->first) == paramMap.end())
 								throw AthenaExcept("No match for parameter " + mapIter->first +
 												" in Algorithm GENN");
-								break;
-						case minSizeParam:
-								minSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case maxSizeParam:
-								maxSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								#ifdef PARALLEL
-									if(maxSize > MAX_GENOME_SIZE)
-										throw AthenaExcept(mapIter->first + " can be no more than " + 
-											Stringmanip::numberToString<int>(MAX_GENOME_SIZE));
-								#endif
-								break;
-						case tailRatioParam:
-								tailRatio = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case growRateParam:
-								growRate = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case maxDepthParam:
-								maxDepth = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case tailSizeParam:
-								tailSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case sensibleInitParam:
-								sensibleInit = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case popSizeParam:
-								popSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case probCrossParam:
-								probCross = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case probMutParam:
-								probMut = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case gramFileParam:
-								grammarFile = mapIter->second;
-								break;
-						case stepSizeParam:
-								stepSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case calcType:
-								calculatorName = Stringmanip::to_upper(mapIter->second);
-								break;        
-						case useEffectiveXO:
-								effectiveXO = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case useAllSnps:
-								useAllVars = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case useAllCovariates:
-								useAllCovars = Stringmanip::check_true_false(mapIter->second);
 								break;
 						case requireAll:
 								requireAllVars = Stringmanip::check_true_false(mapIter->second);
@@ -158,9 +109,6 @@ void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 						case restrictVarGens:
 								ngensVarRestrict = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
 								break;
-						case fitGoal:
-								fitnessGoal = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
 						case bioModelSelection:
 								if(bioModelSelectionMap.find(Stringmanip::to_upper(mapIter->second)) == 
 										bioModelSelectionMap.end())
@@ -168,24 +116,6 @@ void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 								else
 									biofilterSelectorType = bioModelSelectionMap[Stringmanip::to_upper(mapIter->second)];
 								break;
-						case gaSelection:
-								if(gaSelectorMap.find(Stringmanip::to_upper(mapIter->second)) ==
-									gaSelectorMap.end())
-									throw AthenaExcept("No match for GA selection type " + mapIter->second);
-								else
-									gaSelector = gaSelectorMap[Stringmanip::to_upper(mapIter->second)];
-									break;
-#ifdef ATHENA_BLOAT_CONTROL
-						case doubleTournF:
-								doubleTourneyF = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case doubleTournD:
-								doubleTourneyD = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case doubleTournFitFirst:
-								fitFirst = Stringmanip::check_true_false(mapIter->second);
-								break;
-#endif
 						case blockCrossGens:
 								ngensBlockCross = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
 								break;
@@ -215,20 +145,11 @@ void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 						case prunePlantFract:
 #endif
 						default:
+						  if(paramMap.find(mapIter->first) == paramMap.end())
 								throw AthenaExcept("No match for parameter " + mapIter->first +
 												" in Algorithm GENN");               
 				}
 		}
-		
-		if(stepSize > numGenerations){
-				stepSize = numGenerations;
-		}
-		
-		numGenerations = stepSize * numExchanges;
-		numGenotypes = numGenos;
-		numContinuous = numContin;
-		
-		setFitnessName(calculatorName);
 		
 		// first optimization of backpropagation 
 		bpNextOpt = bpFirstGen;
@@ -256,104 +177,35 @@ void GENNAlg::setConfigDefaults(Config& configuration, AlgorithmParams& algParam
 ///
 void GENNAlg::initializeParams(){
 	 
-	 myRank = 0;
-	 totalNodes = 1;
-	 minSize = 50; // Minimum size for Random Initialization
-	 maxSize = 200; // Maximum size for Random Initialization
-
-	 tailRatio = 0.0;
-	 growRate = 0.5;
-
-	 sensibleInit = false;
-	 maxDepth = 10;
-	 tailSize = 0;
-
-	 grammarFile = "";
-	 wrapEvents = 0;
-
-	 popSize = 100;
-	 numGenerations = 100;
-	 probCross = 0.9;
-	 probMut = 0.01;
 	 initBioFract = 0.0;
-	 fitnessGoal = 1.0;
-	 bestCorrThreshold = 0.8;
-	 bestCVThreshold = 2;
-	 
-	 stepSize = 100;
-
-	 effectiveXO = false;
-	 randSeed = 7;
  
 	 calculatorName = "BALANCEDACC";
 	 
 	 // establish map for parameters
-	 paramMap["MINSIZE"] = minSizeParam;
-	 paramMap["MAXSIZE"] = maxSizeParam;
-	 paramMap["TAILRATIO"] = tailRatioParam;
-	 paramMap["GROWRATE"] = growRateParam;
-	 paramMap["MAXDEPTH"] = maxDepthParam;
-	 paramMap["TAILSIZE"] = tailSizeParam;
-	 paramMap["SENSIBLEINIT"] = sensibleInitParam;
-	 paramMap["POPSIZE"] = popSizeParam;
-	 paramMap["PROBCROSS"] = probCrossParam;
-	 paramMap["PROBMUT"] = probMutParam;
-	 paramMap["GRAMMARFILE"] = gramFileParam;
-	 paramMap["GENSPERSTEP"] = stepSizeParam;
-	 paramMap["CALCTYPE"] = calcType;
-	 paramMap["EFFECTIVEXO"] = useEffectiveXO;
-	 paramMap["INCLUDEALLSNPS"] = useAllSnps;
 	 paramMap["REQUIREALLVARS"] = requireAll;
 	 paramMap["REQUIREALLONCE"] = requireAllOnce;
 	 paramMap["BIOFILTERFRACT"] = bioInitFract;
 	 paramMap["NUMGENSRESTRICTVARS"] = restrictVarGens;
-	 paramMap["BIOMODELSELECTION"] = bioModelSelection;
-	 paramMap["BLOCKCROSSGENS"] = blockCrossGens;
+
 	 paramMap["RESETVARSMIGRATION"] = resetVarsAtMigration;
 	 paramMap["BACKPROPFREQ"] = bpfreq;
 	 paramMap["BACKPROPSTART"] = bpstart;
-	 paramMap["GASELECTION"] = gaSelection;
-	 paramMap["FITNESSGOAL"] = fitGoal;
-	 paramMap["BESTCVTHRESH"] = bestCVThresh;
-	 paramMap["BESTCORRTHRESH"] = bestCorrThresh;
 	 paramMap["CONSTANTS"]=constantSpan;
-#ifdef ATHENA_BLOAT_CONTROL
-	 paramMap["DOUBTOURNF"] = doubleTournF;
-	 paramMap["DOUBTOURND"] = doubleTournD;
-	 paramMap["DOUBTOURNFITFIRST"] = doubleTournFitFirst;
-	 paramMap["PRUNEPLANT"] = prunePlantFract;
-#endif
 	 
 	 bioModelSelectionMap["ROULETTE"] = rouletteSelect;
 	 bioModelSelectionMap["ORDERED"] = orderedSelect;
 	 
-#ifdef ATHENA_BLOAT_CONTROL
-	 gaSelectorMap["DOUBLE"] = DoubleTournamentSelection;
-#endif
-	 gaSelectorMap["ROULETTE"] = RouletteWheelSelection;
-	 gaSelectorMap["PARETO"] = ParetoFrontSelection;
-	 gaSelectorMap["PARETORANK"] = ParetoRankSelection;
-	 
 	 biofilterSelectorType = orderedSelect;
-#ifdef ATHENA_BLOAT_CONTROL
-	 pruneAndPlantFract = 0.0;
-#endif
 
-	 parametersSet = false;
 	 useAllVars = false;
 	 requireAllVars = false;
 	 requireAllVarsOnce = false;
-	 numGenotypes = 0;
-	 numContinuous = 0;
 	 ngensVarRestrict = 0;
 	 // default is to add any additional variables to migration instead of replacing
 	 resetRestrictedAtMigration = false;
 	 ngensBlockCross = 0;
 	 
-	 ga = NULL;
 	 geLog = NULL;
-	 
-	 maxBest = true;
 	 
 	 minConstant = -1.0;
 	 maxConstant = 1.0;
@@ -366,18 +218,6 @@ void GENNAlg::initializeParams(){
 	 bpNextOpt = -1;
 	 
 	 logTypeSelected = LogNone;
-	 gaSelector = RouletteWheelSelection;
-#ifdef ATHENA_BLOAT_CONTROL
-	 fitFirst = false;
-	 doubleTourneyF = 7;
-	 doubleTourneyD = 1.4;
-#endif
-	 
-	 #ifdef PARALLEL
-		 genomeInfo = 112;
-		 genomeArray=113;
-	 #endif
-	 
 }
 
 
@@ -398,6 +238,7 @@ void GENNAlg::setRand(unsigned int seed){
 /// @throws AthenaExcept on error
 ///
 void GENNAlg::setGAParams(){   
+    
 		GARandomSeed(randSeed);
 		srand(randSeed);   
 		// first free ga memory if already run
@@ -406,20 +247,9 @@ void GENNAlg::setGAParams(){
 		//Initialize the GE mapper
 	 //Set maximum number of wrapping events per mapping
 	 mapper.setMaxWraps(wrapEvents);
-	 
-		// adjust grammar when ott dummy encoding has been used
-		// or for shorthand ways of specifying variables
-		adjuster.readGrammarFile(grammarFile);
-		if(useAllVars){
-			adjuster.includeAllVars(numGenotypes, numContinuous);
-		}
-		else{
-			adjuster.expandVariables();
-			if(dummyEncoded)
-				adjuster.doubleGenotypeGrammar();
-		 }
+	 expandVariables();
 		 
-		// set constants
+	  // set constants
 		if(simpleConstants)
 			adjuster.setConstants(minConstant, maxConstant, constantInterval); 
 		 
@@ -451,10 +281,8 @@ void GENNAlg::setGAParams(){
 		 GEObjective::addLogging(false);
 	 else
 		 GEObjective::addLogging(true);
-
-	 InitGEgenome::setMinSize(minSize);
-	 InitGEgenome::setMaxSize(maxSize);
-	 InitGEgenome::setMapper(&mapper);
+		 
+    setInitParams();
 }
 
 
@@ -463,25 +291,25 @@ void GENNAlg::setGAParams(){
 /// sets mapper preferences
 /// @param athenaMapper AthenaGrammarSI
 ///
-void GENNAlg::setMapperPrefs(AthenaGrammarSI& athenaMapper){
-		// Mapper settings.
-	  athenaMapper.setGenotypeMaxCodonValue(INT_MAX);
-	  athenaMapper.setPopSize(popSize);
-	  athenaMapper.setGrow(growRate);
-	  athenaMapper.setMaxDepth(maxDepth);
-	  
-	  if(tailSize){
-		  athenaMapper.setTailSize(tailSize);
-	  }
-	  else{
-		  athenaMapper.setTailRatio(tailRatio);
-	  }
-	  athenaMapper.setRestrictRule("<v>");
-	  
-	  // set up reverse grammar that can be used with resetting genome based
-	  // on optimization (such as backpropagation)
-		athenaMapper.constructReverseGrammar();
-}
+// void GENNAlg::setMapperPrefs(AthenaGrammarSI& athenaMapper){
+// 		// Mapper settings.
+// 	  athenaMapper.setGenotypeMaxCodonValue(INT_MAX);
+// 	  athenaMapper.setPopSize(popSize);
+// 	  athenaMapper.setGrow(growRate);
+// 	  athenaMapper.setMaxDepth(maxDepth);
+// 	  
+// 	  if(tailSize){
+// 		  athenaMapper.setTailSize(tailSize);
+// 	  }
+// 	  else{
+// 		  athenaMapper.setTailRatio(tailRatio);
+// 	  }
+// 	  athenaMapper.setRestrictRule("<v>");
+// 	  
+// 	  // set up reverse grammar that can be used with resetting genome based
+// 	  // on optimization (such as backpropagation)
+// 		athenaMapper.constructReverseGrammar();
+// }
 
 
 
@@ -560,7 +388,7 @@ int GENNAlg::step(){
 				 // stop analysis when best model reaches or exceeds the fitness goal
 				 completed = reachedGoal();
 					#ifdef PARALLEL
-							completed = nodesCompleted(completed);
+							completed = popMigrator.nodesCompleted(completed);
 					#endif
 					if(completed){
 						break;
@@ -580,7 +408,7 @@ int GENNAlg::step(){
 				 convertNetworks(restrictMapper, mapper);
 			} 
 
-			sendAndReceiveStruct(totalNodes, myRank);
+			popMigrator.sendAndReceiveStruct(totalNodes, myRank, ga);
 
 			// when running in parallel transfer around populations
 			if(ngensVarRestrict && restrictStepsDone < ngensVarRestrict){
@@ -594,6 +422,22 @@ int GENNAlg::step(){
 		return completed;
 }
 
+
+///
+/// Run dataset against models contained in previously generated summary file
+/// @param sumFile ATHENA summary file
+///
+vector<Solution*> GENNAlg::runValidation(std::string sumFile){
+	SumFileReader reader;
+	reader.readSumFile(sumFile);
+	vector<Solution*> models = reader.getModelPopulation();
+	for(size_t i=0; i<models.size(); i++){
+		GEObjective::calcFitness(models[i]);
+		models[i]->setAdditionalOutput(GEObjective::calcAdditionalFinalOutput(models[i]));
+		models[i]->testVal(0);
+	}
+	return models;
+}
 
 
 ///
@@ -955,7 +799,7 @@ void GENNAlg::initialize(){
 		mapper.setVariableCodonMap();
 		GE1DArrayGenome::setMapper(&mapper);
 		ga->initialize();
-		
+
 		// when restricted variables are requested 
 		// fill new mapper with grammar with variables from original mapper
 		if(ngensVarRestrict > 0){
@@ -1218,7 +1062,8 @@ void GENNAlg::selectBestModel(std::vector<Solution*>& solutions, data_manage::Da
 	}
 
 #ifdef PARALLEL
-  exchangeBestVariables(totalNodes, myRank, bestGenos, bestContin);
+//   exchangeBestVariables(totalNodes, myRank, bestGenos, bestContin);
+  popMigrator.exchangeBestVariables(totalNodes, myRank, bestGenos, bestContin);
 #endif
 	
 	if(bestGenos.empty() && bestContin.empty()){
@@ -1324,10 +1169,10 @@ std::string GENNAlg::getGraphicalFileExt(){
 /// @param holder Dataholder that contains map file info to convert model names
 /// into indexes in the 
 ///
-void GENNAlg::getBioModels(std::string filename, std::string bioFileType, data_manage::Dataholder* holder){
-	BioFilterModelCollection collection(filename, 100000, bioFileType);
-	setBioModels(collection, holder);
-}
+// void GENNAlg::getBioModels(std::string filename, std::string bioFileType, data_manage::Dataholder* holder){
+// 	BioFilterModelCollection collection(filename, 100000, bioFileType);
+// 	setBioModels(collection, holder);
+// }
 
 
 
@@ -1338,58 +1183,59 @@ void GENNAlg::getBioModels(std::string filename, std::string bioFileType, data_m
 /// @param holder Dataholder that contains map file info to convert model names
 /// into indexes
 ///
-void GENNAlg::getBioModelsArchive(string genegeneFile, string archiveFile, data_manage::Dataholder* holder){
-	BioFilterModelCollection collection(genegeneFile, archiveFile, 10000);
-	setBioModels(collection, holder);
-}
+// void GENNAlg::getBioModelsArchive(string genegeneFile, string archiveFile, data_manage::Dataholder* holder){
+// 	BioFilterModelCollection collection(genegeneFile, archiveFile, 10000);
+// 	setBioModels(collection, holder);
+// }
 
 
 
 ///
 /// Sets the bio models based on collection passed
 ///
-void GENNAlg::setBioModels(BioFilterModelCollection& collection, data_manage::Dataholder* holder){
-
-	vector<BioModel> bioModels;
-	int numModelsNeeded = (unsigned int)(initBioFract * popSize);
-
-	if(biofilterSelectorType == rouletteSelect){  
-		for(int i=0; i<numModelsNeeded; i++){
-			bioModels.push_back(collection.getRandomModel());
-		}
-	}
-	else{
-		// set starting point for this algorithm -- in parallel mode this will give each 
-		// node a different set
-		collection.setStartModel(myRank * numModelsNeeded);
-		for(int i=0; i<numModelsNeeded; i++){
-			bioModels.push_back(collection.getNextModel());
-		}
-	}
-
-	mapper.clearModels();
-
-	// from models find the variables to use and store in mapper for use in initializing dataset
-	for(vector<BioModel>::iterator iter=bioModels.begin(); iter != bioModels.end(); iter++){
-		vector<int> indexes;
-		int index;
-		for(unsigned int i=0; i<iter->idString.size(); i++){
-			index = holder->getGenoIndex(iter->idString[i]);
-			indexes.push_back(index);
-		}
-		mapper.addModel(indexes);
-	}
-	  mapper.setModelCodons(dummyEncoded);
-}
+// void GENNAlg::setBioModels(BioFilterModelCollection& collection, data_manage::Dataholder* holder){
+// 
+// 	vector<BioModel> bioModels;
+// 	int numModelsNeeded = (unsigned int)(initBioFract * popSize);
+// 
+// 	if(biofilterSelectorType == rouletteSelect){  
+// 		for(int i=0; i<numModelsNeeded; i++){
+// 			bioModels.push_back(collection.getRandomModel());
+// 		}
+// 	}
+// 	else{
+// 		// set starting point for this algorithm -- in parallel mode this will give each 
+// 		// node a different set
+// 		collection.setStartModel(myRank * numModelsNeeded);
+// 		for(int i=0; i<numModelsNeeded; i++){
+// 			bioModels.push_back(collection.getNextModel());
+// 		}
+// 	}
+// 
+// 	mapper.clearModels();
+// 
+// 	// from models find the variables to use and store in mapper for use in initializing dataset
+// 	for(vector<BioModel>::iterator iter=bioModels.begin(); iter != bioModels.end(); iter++){
+// 		vector<int> indexes;
+// 		int index;
+// 		for(unsigned int i=0; i<iter->idString.size(); i++){
+// 			index = holder->getGenoIndex(iter->idString[i]);
+// 			indexes.push_back(index);
+// 		}
+// 		mapper.addModel(indexes);
+// 	}
+// 	  mapper.setModelCodons(dummyEncoded);
+// }
 
 
 
 #ifdef PARALLEL
 
 void GENNAlg::setRank(int rank){
-				Algorithm::setRank(rank); 
-				InitGEgenome::setrank(rank);
-				GEObjective::setrank(rank);
+  popMigrator.setRank(rank);
+ 			Algorithm::setRank(rank); 
+// 				InitGEgenome::setrank(rank);
+// 				GEObjective::setrank(rank);
 }
 
 
@@ -1399,85 +1245,85 @@ void GENNAlg::setRank(int rank){
 /// @param rank
 /// @param complete
 ///
-int GENNAlg::nodesCompleted(int complete){
-	int sum_completed=0;
-	MPI_Allreduce(&complete, &sum_completed, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-	return sum_completed;
-}
+// int GENNAlg::nodesCompleted(int complete){
+// 	int sum_completed=0;
+// 	MPI_Allreduce(&complete, &sum_completed, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+// 	return sum_completed;
+// }
 
 ///
 /// Alternate MPI messaging taking advantage of MPI_Allgather functionality using struct
 /// @param totalNodes
 /// @param myRank
 ///
-void GENNAlg::sendAndReceiveStruct(int totalNodes, int myRank){
-
-	structMPI * send = new structMPI;
-	
-	GE1DArrayGenome& genome = (GE1DArrayGenome&)ga->statistics().bestIndividual();
-	// package genome Info
-	send->genomeParams[0] = genome.length();
-	send->genomeParams[1] = genome.score();;
-	send->genomeParams[2] = genome.getEffectiveSize();
-	send->genomeParams[3] = genome.getNumGenes();
-	send->genomeParams[4] = genome.getNumCovars();
-	send->genomeParams[5] = genome.getNumIndsEvaluated();
-	send->genomeParams[6] = genome.getSSTotal();
-	send->genomeParams[7] = genome.getNumNodes();
-	
-	// package codons
-	for(int i=0; i<genome.length(); i++){
-		send->codons[i] = genome.gene(i);
-	}
-	
-	// prepare receiving array
-	structMPI * recv = new structMPI[totalNodes];
-	
-	MPI_Allgather (send, sizeof(*send), MPI_BYTE, recv, sizeof(*send), MPI_BYTE, MPI_COMM_WORLD);
-	
-	updateWithMigration(recv, totalNodes, myRank);
-	
-	delete send;
-	delete [] recv;
-	
-}
+// void GENNAlg::sendAndReceiveStruct(int totalNodes, int myRank){
+// 
+// 	structMPI * send = new structMPI;
+// 	
+// 	GE1DArrayGenome& genome = (GE1DArrayGenome&)ga->statistics().bestIndividual();
+// 	// package genome Info
+// 	send->genomeParams[0] = genome.length();
+// 	send->genomeParams[1] = genome.score();;
+// 	send->genomeParams[2] = genome.getEffectiveSize();
+// 	send->genomeParams[3] = genome.getNumGenes();
+// 	send->genomeParams[4] = genome.getNumCovars();
+// 	send->genomeParams[5] = genome.getNumIndsEvaluated();
+// 	send->genomeParams[6] = genome.getSSTotal();
+// 	send->genomeParams[7] = genome.getNumNodes();
+// 	
+// 	// package codons
+// 	for(int i=0; i<genome.length(); i++){
+// 		send->codons[i] = genome.gene(i);
+// 	}
+// 	
+// 	// prepare receiving array
+// 	structMPI * recv = new structMPI[totalNodes];
+// 	
+// 	MPI_Allgather (send, sizeof(*send), MPI_BYTE, recv, sizeof(*send), MPI_BYTE, MPI_COMM_WORLD);
+// 	
+// 	updateWithMigration(recv, totalNodes, myRank);
+// 	
+// 	delete send;
+// 	delete [] recv;
+// 	
+// }
 
 ///
 /// Broadcast best genotypes and continuous variables to all other nodes
 ///
-void GENNAlg::exchangeBestVariables(int totalNodes, int myRank, vector<int>& genotypes,
-  vector<int>& contins){
-
-  int nVars = 1000;
-  int * variables = new int[nVars];
-
-  vector<int>::iterator iter;
-  if(myRank==0){
-    int currVar=0;
-    variables[currVar++]=int(genotypes.size());
-    for(iter=genotypes.begin(); iter!=genotypes.end(); iter++){
-      variables[currVar++]=*iter;
-    }
-    variables[currVar++]=int(contins.size());
-    for(iter=contins.begin(); iter!=contins.end(); iter++){
-      variables[currVar++]=*iter;
-    }    
-  }
-  MPI_Bcast(variables, nVars, MPI_INT, 0, MPI_COMM_WORLD);
-  
-  genotypes.clear();
-  contins.clear();
-  
-  int currVar=0;
-  int n = variables[currVar++];
-  for(int i=0; i<n; i++){
-    genotypes.push_back(variables[currVar++]);
-  }
-  n=variables[currVar++];
-  for(int i=0; i<n; i++){
-    contins.push_back(variables[currVar++]);
-  }
-}
+// void GENNAlg::exchangeBestVariables(int totalNodes, int myRank, vector<int>& genotypes,
+//   vector<int>& contins){
+// 
+//   int nVars = 1000;
+//   int * variables = new int[nVars];
+// 
+//   vector<int>::iterator iter;
+//   if(myRank==0){
+//     int currVar=0;
+//     variables[currVar++]=int(genotypes.size());
+//     for(iter=genotypes.begin(); iter!=genotypes.end(); iter++){
+//       variables[currVar++]=*iter;
+//     }
+//     variables[currVar++]=int(contins.size());
+//     for(iter=contins.begin(); iter!=contins.end(); iter++){
+//       variables[currVar++]=*iter;
+//     }    
+//   }
+//   MPI_Bcast(variables, nVars, MPI_INT, 0, MPI_COMM_WORLD);
+//   
+//   genotypes.clear();
+//   contins.clear();
+//   
+//   int currVar=0;
+//   int n = variables[currVar++];
+//   for(int i=0; i<n; i++){
+//     genotypes.push_back(variables[currVar++]);
+//   }
+//   n=variables[currVar++];
+//   for(int i=0; i<n; i++){
+//     contins.push_back(variables[currVar++]);
+//   }
+// }
 
 
 
@@ -1487,41 +1333,41 @@ void GENNAlg::exchangeBestVariables(int totalNodes, int myRank, vector<int>& gen
 /// @param totalNodes
 /// @param myRank
 ///
-void GENNAlg::updateWithMigration(structMPI* mpiGenomes, int totalNodes, int myRank){
-	GAPopulation pop(ga->population());
-	
-	for(int node=0; node < totalNodes; node++){
-		if(myRank==node){
-			continue;
-		}
-		
-		GAGenome *tmpInd = ga->population().individual(0).clone();
-		GE1DArrayGenome& genome = (GE1DArrayGenome&)*tmpInd;
-		int len = mpiGenomes[node].genomeParams[0];
-		genome.length(len);
-		genome.setEffectiveSize(mpiGenomes[node].genomeParams[2]);
-		genome.setNumGenes(mpiGenomes[node].genomeParams[3]);
-		genome.setNumCovars(mpiGenomes[node].genomeParams[4]);
-		genome.setNumIndsEvaluated(mpiGenomes[node].genomeParams[5]);
-		genome.setSSTotal(mpiGenomes[node].genomeParams[6]);
-		genome.setNumNodes(mpiGenomes[node].genomeParams[7]);
-		for(int i=0; i<len; i++){
-			genome.gene(i, mpiGenomes[node].codons[i]);
-		}
-		genome.score(mpiGenomes[node].genomeParams[1]);
-
-		pop.add(genome);
-		
-		delete tmpInd;
-	}
-
-	// remove worst individuals from population
-	for(int i=0; i < totalNodes-1; i++)
-		pop.destroy();
-		
-	ga->population(pop);
-
-}
+// void GENNAlg::updateWithMigration(structMPI* mpiGenomes, int totalNodes, int myRank){
+// 	GAPopulation pop(ga->population());
+// 	
+// 	for(int node=0; node < totalNodes; node++){
+// 		if(myRank==node){
+// 			continue;
+// 		}
+// 		
+// 		GAGenome *tmpInd = ga->population().individual(0).clone();
+// 		GE1DArrayGenome& genome = (GE1DArrayGenome&)*tmpInd;
+// 		int len = mpiGenomes[node].genomeParams[0];
+// 		genome.length(len);
+// 		genome.setEffectiveSize(mpiGenomes[node].genomeParams[2]);
+// 		genome.setNumGenes(mpiGenomes[node].genomeParams[3]);
+// 		genome.setNumCovars(mpiGenomes[node].genomeParams[4]);
+// 		genome.setNumIndsEvaluated(mpiGenomes[node].genomeParams[5]);
+// 		genome.setSSTotal(mpiGenomes[node].genomeParams[6]);
+// 		genome.setNumNodes(mpiGenomes[node].genomeParams[7]);
+// 		for(int i=0; i<len; i++){
+// 			genome.gene(i, mpiGenomes[node].codons[i]);
+// 		}
+// 		genome.score(mpiGenomes[node].genomeParams[1]);
+// 
+// 		pop.add(genome);
+// 		
+// 		delete tmpInd;
+// 	}
+// 
+// 	// remove worst individuals from population
+// 	for(int i=0; i < totalNodes-1; i++)
+// 		pop.destroy();
+// 		
+// 	ga->population(pop);
+// 
+// }
 
 
 #endif

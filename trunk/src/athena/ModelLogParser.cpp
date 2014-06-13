@@ -39,9 +39,9 @@ logModel ModelLogParser::getModel(string& line){
 
 		logModel mod;    
 		stringstream is(line);
-		is >> mod.gen >> mod.rank >> mod.fitness >> mod.gramDepth >> mod.nnDepth 
-				>> mod.n_g >> mod.n_c;
-		getline(is, mod.model);
+		is >> mod.gen >> mod.rank >> mod.fitness;// >> mod.gramDepth >> mod.nnDepth 
+//				>> mod.n_g >> mod.n_c;
+		getline(is, mod.remainder);
 		return mod;
 }
 
@@ -171,9 +171,9 @@ void ModelLogParser::parseFile(string filename, vector<vector<logModel> >& model
 		 if(!logStream.is_open()){
 				throw AthenaExcept("Error:  Unable to open " + filename + "\n");
 		 }
-		 // skip the header line
+		 // read the header line
 		 string header;
-		 getline(logStream, header);
+		 getline(logStream, headerLine);
 		 vector<logModel> temp;
 		 
 		 // get all the models
@@ -191,7 +191,8 @@ void ModelLogParser::parseFile(string filename, vector<vector<logModel> >& model
 
 void ModelLogParser::writeOutput(ostream & os, vector<vector<logModel> >& models,
 		float notValid){
-		os << "GEN\tRANK\tFITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C\tMODEL\n";
+//		os << "GEN\tRANK\tFITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C\tMODEL\n";
+		os << headerLine << "\n";
 		int gen=0;
 
 		for(vector<vector<logModel> >::iterator iter=models.begin(); iter != models.end(); ++iter){
@@ -202,9 +203,10 @@ void ModelLogParser::writeOutput(ostream & os, vector<vector<logModel> >& models
 								os << "NA";
 						else
 								os << modIter->fitness;
-						os << "\t" << modIter->gramDepth <<
-							"\t" << modIter->nnDepth << "\t" << modIter->n_g << "\t" << modIter->n_c << "\t" 
-							<< modIter->model << endl;
+						os << modIter->remainder << "\n";
+// 						os << "\t" << modIter->gramDepth <<
+// 							"\t" << modIter->nnDepth << "\t" << modIter->n_g << "\t" << modIter->n_c << "\t" 
+// 							<< modIter->model << endl;
 						rank++;
 				}
 				gen++;

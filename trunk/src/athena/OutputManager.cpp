@@ -153,7 +153,7 @@ void OutputManager::outputPareto(Population& pop, int currPop, data_manage::Data
 			for(unsigned int i=0; i<additionalHeaders.size(); i++){
 				outfile <<  "\tTesting-" << additionalHeaders[i];
 			}
-			outfile << "\tEquation\n";
+			outfile << "\tModel\n";
 			
 			std::map<int, Solution*>::iterator solIter;
 			for(std::set<int>::iterator iter=complexitySizes.begin(); iter != complexitySizes.end();
@@ -275,6 +275,88 @@ std::ostream& OutputManager::getStream(std::string filename){
 	
 }
 
+
+///
+/// Output validation result files
+///
+void OutputManager::writeValidation(string fitnessName, std::vector<std::string> additionalHeaders,
+	vector<Solution*> models, data_manage::Dataholder& data, bool mapUsed, bool dummyEncoded,
+	bool continMapUsed, Algorithm* alg){
+
+	int width = 30;
+	if(!mapUsed){
+		width = 20;
+	}
+		
+	string filename = basename + ".validation";
+	ofstream outfile;
+	outfile.open(filename.c_str(), ios::out);
+		
+	outfile << "Model\tVariables\t"  << fitnessName + " Training\tTesting";
+	for(unsigned int i=0; i<additionalHeaders.size(); i++){
+		outfile << "\tTraining-" << additionalHeaders[i];
+	}
+	for(unsigned int i=0; i<additionalHeaders.size(); i++){
+		outfile <<  "\tTesting-" << additionalHeaders[i];
+	}
+	outfile << "\n";
+	
+	string prefix, continPrefix;
+	if(!mapUsed){
+		prefix = "G";
+	}
+	if(!continMapUsed){
+		continPrefix = "C";
+	}
+	
+	Solution* bestSolution;
+	for(size_t i=0; i<models.size(); i++){
+		bestSolution = models[i];
+
+		vector<int> genos = bestSolution->getGenotypes(dummyEncoded);
+		vector<int> covars = bestSolution->getCovariates();
+
+		outfile << setw(5) << left << i+1;
+		stringstream ss;
+		for(unsigned int g=0; g < genos.size(); g++){
+			ss << prefix << data.getGenoName(genos[g]-1) << " ";
+		}
+		stringstream cs;
+		for(unsigned int c=0; c < covars.size(); c++){
+			cs << continPrefix << data.getCovarName(covars[c]-1) << " ";
+		}
+
+		outfile << "\t" << ss.str() + cs.str() << "\t" << bestSolution->fitness() <<
+			"\t" << bestSolution->testVal();
+
+		for(std::vector<string>::iterator iter=bestSolution->getAdditionalOutput().begin();
+			iter != bestSolution->getAdditionalOutput().end();
+			++iter){
+			outfile << "\t" << *iter;
+		}
+		outfile << endl;
+	}
+	
+	outfile << "\nModel\tEquation\n";
+
+	for(size_t i=0; i < models.size(); i++){
+		outfile << i+1 << "\t";
+		alg->writeEquation(outfile, models[i], &data,
+			mapUsed, dummyEncoded, continMapUsed);
+		outfile << endl;
+	}
+	
+	outfile << "\n\n**** For use by ATHENA when running models with independent datasets ****\n";
+	outfile << "\nModel\tInternal ATHENA representation\n";
+	for(size_t i=0; i<models.size(); i++){
+			outfile << i+1 << "\t";
+			models[i]->outputSolution(outfile);
+	}
+	
+	outfile.close();
+}
+
+
 ///
 /// returns a stream for writing
 /// @param filename
@@ -288,13 +370,20 @@ void OutputManager::outputEquations(Algorithm* alg, vector<Solution*>& bestSolut
 		
 	ofstream outfile;
 	outfile.open(summaryName.c_str(), ios::app);
-	outfile << "\nCV\tEquation\n";
+	outfile << "\nCV\tModel\n";
 	
 	for(unsigned int cv=0; cv < bestSolutions.size(); cv++){
 		outfile << cv+1 << "\t";
 		alg->writeEquation(outfile, bestSolutions[cv], &data,
 			mapUsed, ottDummy, continMapUsed);
 		outfile << endl;
+	}
+	
+	outfile << "\n\n**** For use by ATHENA when running models with independent datasets ****\n";
+	outfile << "\nCV\tInternal ATHENA representation\n";
+	for(unsigned int cv=0; cv < bestSolutions.size(); cv++){
+		outfile << cv+1 << "\t";
+		bestSolutions[cv]->outputSolution(outfile);
 	}
 	
 	outfile.close();
@@ -326,7 +415,7 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 			cout << "Writing file " << currFileName << endl;         
 			outfile.open(currFileName.c_str(), ios::out);
 			if(!outfile.is_open()){
-					throw AthenaExcept(currFileName + " unable to open for writing best model");
+					throw AthenaExcept(currFileName + " unable to open for writing " + ext + " file.");
 			}
 			
 			currSolution = pop[mod];

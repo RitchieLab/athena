@@ -159,6 +159,9 @@ public:
 
 		inline std::string getImgWriter(){return imgWriter;}
 		inline void setImgWriter(std::string executable){imgWriter=executable;}
+		
+		inline std::string getValidationSumFile(){return validationSumFile;}
+		inline void setValidationSumFile(std::string filename){validationSumFile=filename;}		
 
 		/// throws an exception if parameters are in error
 		void checkConfig();
@@ -214,7 +217,8 @@ private:
 		
 		std::string dataType, outName, mapName, dataFile, continFile, statusChange, 
 			trainFile, testFile, continTest, continTrain, bioFilterFile, biofilterFileType,
-			bioArchiveFile, bioGeneFile, continMap, splitFile, continChange, encodeName, imgWriter;
+			bioArchiveFile, bioGeneFile, continMap, splitFile, continChange, encodeName, imgWriter,
+			validationSumFile;
 		int missValue, nCV, randSeed, numExchanges, startCV;
 		float continMiss, statMissValue;
 		bool idIncluded, ottDummyEncoded, cvOut, indsOutput, allNodesOut, selectBest;

@@ -27,18 +27,14 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #define	_GENNALG_H
 
 #include "Algorithm.h"
-#include "InitGEgenome.h"
 #include "AlgorithmFactory.h"
 #include "NNLog.h"
 #include "NNModelLog.h"
-#include "GENNGrammarAdjuster.h"
-#include "BioFilterModelCollection.h"
+
 #include "Config.h"
-
 #ifdef PARALLEL
-#define MAX_GENOME_SIZE 100000
+	#include "GenomeTransfer.h"
 #endif
-
 
 class GENNAlg:public Algorithm{
 		
@@ -111,10 +107,10 @@ public:
 		vector<string> getBestVariables();
 		
 		/// Retrieves the models from BioFilter and stores the information in the algorithm
-		void getBioModels(std::string filename, std::string bioFileType, data_manage::Dataholder* holder);
+// 		void getBioModels(std::string filename, std::string bioFileType, data_manage::Dataholder* holder);
 		
 		/// Retrieves the models from the BioFilter archive files and stores information in algorithm
-		void getBioModelsArchive(string genegeneFile, string archiveFile, data_manage::Dataholder* holder);
+// 		void getBioModelsArchive(string genegeneFile, string archiveFile, data_manage::Dataholder* holder);
 		
 		/// Return additional output names used for final models
 		virtual vector<std::string>  getAdditionalOutputNames();
@@ -128,29 +124,31 @@ public:
 			
 		virtual void setConfigDefaults(Config& configuration, AlgorithmParams& algParam);
 		
-		#ifdef PARALLEL
-			struct genomeMPI{
-				float genomeParams[8];
-				int codons[MAX_GENOME_SIZE];
-			};
+		virtual vector<Solution*> runValidation(std::string sumFile);
 		
-			typedef struct genomeMPI structMPI;
-			
-			virtual void setRank(int rank);
-			void updateWithMigration(float* stats, int* codons, int totalNodes, int myRank, int max_length=0);
-			void updateWithMigration(structMPI * genomes, int totalNodes, int myRank);
-			void sendAndReceive(int totalNodes, int myRank);
-			void sendAndReceiveStruct(int totalNodes, int myRank);
-			int nodesCompleted(int complete);
-			void exchangeBestVariables(int totalNodes, int myRank, vector<int>& genotypes,
-				vector<int>& contins);
-		#endif
+ 		#ifdef PARALLEL
+// 			struct genomeMPI{
+// 				float genomeParams[8];
+// 				int codons[MAX_GENOME_SIZE];
+// 			};
+// 		
+// 			typedef struct genomeMPI structMPI;
+// 			
+ 			virtual void setRank(int rank);
+// 			void updateWithMigration(float* stats, int* codons, int totalNodes, int myRank, int max_length=0);
+// 			void updateWithMigration(structMPI * genomes, int totalNodes, int myRank);
+// 			void sendAndReceive(int totalNodes, int myRank);
+// 			void sendAndReceiveStruct(int totalNodes, int myRank);
+// 			int nodesCompleted(int complete);
+// 			void exchangeBestVariables(int totalNodes, int myRank, vector<int>& genotypes,
+// 				vector<int>& contins);
+ 		#endif
 	
 		
 protected:
 		
 		/// Sets GA for run
-		void setGAParams();
+		virtual void setGAParams();
 		
 		/// Sets default values for parameters
 		void initializeParams();   
@@ -163,7 +161,7 @@ protected:
 		
 		void convertNetworks(AthenaGrammarSI& currentMapper, AthenaGrammarSI& newMapper);
 		
-		void setMapperPrefs(AthenaGrammarSI& athenaMapper);
+// 		void setMapperPrefs(AthenaGrammarSI& athenaMapper);
 		
 		void resetCrossover();
 		
@@ -174,56 +172,62 @@ protected:
 		
 		void runBackPropagation();
 		
-		void setBioModels(BioFilterModelCollection& collection, data_manage::Dataholder* holder);
+// 		void setBioModels(BioFilterModelCollection& collection, data_manage::Dataholder* holder);
 		
 		NNSolution* convertGenome(GAGenome& ind);
 		
 		int reachedGoal();
 		
+// 		enum GENNParams{
+// 				noMatchParam,
+// 				minSizeParam,
+// 				maxSizeParam,
+// 				tailRatioParam,
+// 				growRateParam,
+// 				maxDepthParam,
+// 				tailSizeParam,
+// 				sensibleInitParam,
+// 				popSizeParam,
+// 				numGenParam,
+// 				probCrossParam,
+// 				probMutParam,
+// 				gramFileParam,
+// 				stepSizeParam,
+// 				calcType,
+// 				useEffectiveXO,
+// 				useAllSnps,
+// 				useAllCovariates,
+// 				requireAll,
+// 				requireAllOnce,
+// 				bioInitFract,
+// 				restrictVarGens,
+// 				bioModelSelection,
+// 				blockCrossGens,
+// 				resetVarsAtMigration,
+// 				bpfreq,
+// 				bpstart,
+// 				gaSelection,
+// 				doubleTournF,
+// 				doubleTournD,
+// 				doubleTournFitFirst,
+// 				prunePlantFract,
+// 				fitGoal,
+// 				bestCVThresh,
+// 				bestCorrThresh,
+// 				constantSpan
+// 		};
+
 		enum GENNParams{
 				noMatchParam,
-				minSizeParam,
-				maxSizeParam,
-				tailRatioParam,
-				growRateParam,
-				maxDepthParam,
-				tailSizeParam,
-				sensibleInitParam,
-				popSizeParam,
-				numGenParam,
-				probCrossParam,
-				probMutParam,
-				gramFileParam,
-				stepSizeParam,
 				calcType,
-				useEffectiveXO,
-				useAllSnps,
-				useAllCovariates,
 				requireAll,
 				requireAllOnce,
 				bioInitFract,
 				restrictVarGens,
-				bioModelSelection,
-				blockCrossGens,
 				resetVarsAtMigration,
 				bpfreq,
 				bpstart,
-				gaSelection,
-				doubleTournF,
-				doubleTournD,
-				doubleTournFitFirst,
-				prunePlantFract,
-				fitGoal,
-				bestCVThresh,
-				bestCorrThresh,
 				constantSpan
-		};
-		
-		
-		enum BioSelectionType{
-			NoMatchSelection,
-			rouletteSelect,
-			orderedSelect
 		};
 		
 		enum GASelectionType{
@@ -237,47 +241,40 @@ protected:
 		};
 	
 		
-		void freeMemory();
+// 		void freeMemory();
 		void outputAlgInds();
 		
-		bool parametersSet;
 		std::string oName;
 		
 		std::map<std::string, GENNParams> paramMap;
-		std::map<std::string, BioSelectionType> bioModelSelectionMap;
-		std::map<std::string, GASelectionType> gaSelectorMap;
+// 		std::map<std::string, BioSelectionType> bioModelSelectionMap;
+// 		std::map<std::string, GASelectionType> gaSelectorMap;
 		
 		void makeRestrictedGrammar(bool clearVariables, AthenaGrammarSI& useMapper);
 		
-		// BioFilter parameters
-		BioSelectionType biofilterSelectorType;
-		
 		// GA Selection parameters
-		GASelectionType gaSelector;
+// 		GASelectionType gaSelector;
 		bool fitFirst;
 		int doubleTourneyF;
 		float doubleTourneyD;
 		
 		//Random initialization parameters
-		unsigned int minSize, maxSize;
+// 		unsigned int minSize, maxSize;
 		
 		//Sensible initialization parameters
-		float tailRatio, growRate;
-		unsigned int maxDepth, tailSize;
-		bool sensibleInit;
+// 		float tailRatio, growRate;
+// 		unsigned int maxDepth, tailSize;
+// 		bool sensibleInit;
 		
 		//Prune and plant parameters
-		float pruneAndPlantFract;
+// 		float pruneAndPlantFract;
 		
 		//General algorithm parameters
-		bool effectiveXO, useAllVars, useAllCovars, requireAllVars, requireAllVarsOnce, maxBest,
-			resetRestrictedAtMigration, simpleConstants;
-		unsigned int wrapEvents, randSeed;
-		std::string grammarFile, calculatorName, mainLogFilename, fitnessLogFilename, 
-				snpnameLogFilename;
-		unsigned int popSize, numGenerations, stepSize, ngensVarRestrict, restrictStepsDone,
-			ngensBlockCross;
-		double probCross, probMut, initBioFract, fitnessGoal, bestCorrThreshold;
+		bool requireAllVars, requireAllVarsOnce, resetRestrictedAtMigration, simpleConstants;
+// 		unsigned int wrapEvents, randSeed;
+		std::string mainLogFilename, fitnessLogFilename, snpnameLogFilename;
+		unsigned int ngensVarRestrict, restrictStepsDone;
+		double initBioFract;
 		float minConstant, maxConstant, constantInterval;
 		int numGenotypes, numContinuous, bpFirstGen, bpFreqGen, bpNextOpt, bestCVThreshold;
 		
@@ -285,14 +282,14 @@ protected:
 		NNModelLog* modelLog;
 		
 		// GE parameters
-		AthenaGrammarSI mapper, restrictMapper;
+		AthenaGrammarSI restrictMapper;
 		
 		// Genetic algorithm
-		GASimpleGA* ga;
-		GENNGrammarAdjuster adjuster;
+// 		GASimpleGA* ga;
+// 		GENNGrammarAdjuster adjuster;
 		
 		#ifdef PARALLEL
-			int genomeInfo, genomeArray;
+			GenomeTransfer popMigrator;
 		#endif
 		
 };

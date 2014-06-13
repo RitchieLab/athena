@@ -67,6 +67,11 @@ public:
 			Algorithm* alg, bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
 			std::string fitnessName, std::vector<std::string> additionalHeaders);
 		
+		/// output validation scores for models
+		void writeValidation(string fitnessName, std::vector<std::string> additionalHeaders,
+			vector<Solution*> models, data_manage::Dataholder& data, bool mapUsed, bool dummyEncoded,
+			bool continMapUsed, Algorithm* alg);		
+		
 		/// returns a stream for writing
 		std::ostream& getStream(std::string filename);
 		

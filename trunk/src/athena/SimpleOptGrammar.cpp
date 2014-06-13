@@ -62,19 +62,11 @@ void SimpleOptGrammar::terminalsFromConstant(float value,
 	std::set<ConstantPointer>::iterator upperIter = constantSet.upper_bound(temp);
 	std::set<ConstantPointer>::reverse_iterator lowerIter = set<ConstantPointer>::reverse_iterator(upperIter);
 
-// if(lowerIter == constantSet.end()){
-// 	cout << "END FOR LOWER" << endl;
-// }
-// if(upperIter == constantSet.end()){
-// 	cout << "END FOR UPPER" << endl;
-// }
 	if((value-lowerIter->value) < (upperIter->value-value)){
 		constantTerm.symbol = lowerIter->cons->getName();
-//		optSymbols.push_back(lowerIter->cons->getName();
 	}
 	else{
 		constantTerm.symbol = upperIter->cons->getName();
-// 		optSymbols.push_back(upperIter->cons->getName());
 	}
 	optSymbols.push_back(constantTerm);
 }	

@@ -41,7 +41,9 @@ public:
 				/// Enum for GENN
 				GENNAlgorithm,
 				/// Enum for Symbolic Regression
-				GESymbRegAlgorithm
+				GESymbRegAlgorithm,
+				/// Enum for Bayesian
+				GEBayesAlgorithm
 		};
 		
 private:

@@ -72,19 +72,39 @@ TerminalSymbol* TerminalSymbCreator::getTerm(string& symbol){
 
 
 ///
+/// Creates name for genotype variable
+/// @param varIndex variable index
+/// @returns Name for use in mapping
+///
+std::string TerminalSymbCreator::getGenoName(int varIndex){
+	return "G" + Stringmanip::numberToString(varIndex+1);
+}
+
+///
 /// Adds variable terminals to map for use in constructing 
 /// neural networks.
 /// @param num_variables
 /// 
-void TerminalSymbCreator::addGenotypeVariables(int num_variables){
+void TerminalSymbCreator::addGenotypeVariables(int numVariables){
 		int g;
 		string name;
-		for(g=1; g<=num_variables; g++){
-				name = "G" + Stringmanip::numberToString(g);
+		for(g=0; g<numVariables; g++){
+// 				name = "G" + Stringmanip::numberToString(g);
+				name = getGenoName(g);
 				terminalMap[name] = new GenotypeTerm(name, g);
 				
 		}
 		
+}
+
+
+///
+/// Creates name for continuous variable
+/// @param varIndex variable index
+/// @returns Name for use in mapping
+///
+std::string TerminalSymbCreator::getContinName(int varIndex){
+	return "C" + Stringmanip::numberToString(varIndex+1);
 }
 
 
@@ -97,8 +117,9 @@ void TerminalSymbCreator::addContinVariables(int numVariables){
 		int c;
 		string name;
  
-		for(c=1; c<=numVariables; c++){
-				name = "C" + Stringmanip::numberToString(c);
+		for(c=1; c<numVariables; c++){
+// 				name = "C" + Stringmanip::numberToString(c);
+				name = getContinName(c);
 				terminalMap[name] = new ContinVariable(name, c);
 		}
 		
@@ -156,12 +177,16 @@ void TerminalSymbCreator::createTerminals(int numGenotypes,
 	terminalMap["cosin"] = new Cosine("Cosine", 1);
 	terminalMap["tan"] = new Tangent("Tangent", 1);
 	terminalMap["Bias"] = new BiasTerm("Bias", 0);
+	terminalMap["->"] = new TerminalSymbol("^", 0);
+	terminalMap["pheno"] = new PhenotypeTerm("Pheno");
 	
 	// set the special terminals for quick access
 	rParen = terminalMap[")"];
 	lParen = terminalMap["("];
 	commaPtr = terminalMap[","];
 	concat = terminalMap["Concat"];
+	connect = terminalMap["^"];
+	phenoPtr = terminalMap["pheno"];
 	
 	// create the constants
 	terminalMap["-1"] = createConstant("-1");
@@ -186,7 +211,7 @@ void TerminalSymbCreator::createTerminals(int numGenotypes,
 	terminalMap["18"] = createConstant("18");
 	terminalMap["19"] = createConstant("19");
 	terminalMap["20"] = createConstant("20");
-	
+
 	addGenotypeVariables(numGenotypes);
 	addContinVariables(numCovariates);
 	

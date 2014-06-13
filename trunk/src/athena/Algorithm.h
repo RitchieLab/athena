@@ -33,6 +33,14 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "AthenaExcept.h"
 #include "AlgorithmLog.h"
 #include <Dataholder.h>
+#include <ga/ga.h>
+#include "GENNGrammarAdjuster.h"
+#include "InitGEgenome.h"
+#include "BioFilterModelCollection.h"
+
+#ifdef PARALLEL
+#define MAX_GENOME_SIZE 100000
+#endif
 
 using namespace data_manage;
 
@@ -49,7 +57,7 @@ public:
 		
 		/// Set the parameters for the algorithm
 		virtual void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, 
-			int numContin)=0;
+			int numContin);
 		
 		/// Set current Dataset for running algorithm
 		virtual void setDataset(Dataset* newSet){
@@ -99,13 +107,13 @@ public:
 		virtual void saveLog()=0;
 		
 		/// Starts log
-		virtual void startLog(int num_snps)=0;
+		virtual void startLog(int num_snps){}
 
 		/// Writes the log
-		virtual void writeLog()=0;
+		virtual void writeLog(){}
 		
 		/// Clears the logs
-		virtual void clearLogs()=0;
+		virtual void clearLogs(){}
 		
 		/// Finish log and pulls together model information
 		virtual void finishLog(std::string basename, int cv)=0;
@@ -121,11 +129,11 @@ public:
 		
 		/// Retrieves the models from BioFilter and stores the information in the algorithm
 		virtual void getBioModels(std::string fileName, std::string bioFileType, 
-			data_manage::Dataholder* holder)=0;
+			data_manage::Dataholder* holder);
 		
 		/// Retrieves the models from BioFilter archive and stores in algorithm
 		virtual void getBioModelsArchive(string geneGeneFile, string archiveFile, 
-			data_manage::Dataholder* holder)=0;
+			data_manage::Dataholder* holder);
 		
 		virtual std::string getFitnessName(){return fitnessName;}
 		
@@ -145,6 +153,9 @@ public:
 		/// Select best model from models passed and return
 		virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
 			Dataset* set, Config& configuration)=0;
+			
+		/// Runs models from summary file against validation set
+		virtual vector<Solution*> runValidation(std::string sumFile)=0;			
 		
 		#ifdef PARALLEL
 			virtual void setRank(int rank){myRank = rank;}
@@ -154,6 +165,103 @@ public:
 		#endif
 		
 protected:
+
+		/// Sets default values for parameters
+		virtual void initializeParams();
+		
+		/// Sets GA parameters
+		virtual void setGAParams();
+		
+		virtual void freeMemory();
+
+		void setInitParams();
+
+		void expandVariables();
+		
+		void setMapperPrefs(AthenaGrammarSI& athenaMapper);
+		
+		void setBioModels(BioFilterModelCollection& collection, data_manage::Dataholder* holder);
+
+		enum AlgParams{
+				minSizeParam,
+				maxSizeParam,
+				tailRatioParam,
+				growRateParam,
+				maxDepthParam,
+				tailSizeParam,
+				sensibleInitParam,
+				popSizeParam,
+				probCrossParam,
+				probMutParam,
+				gramFileParam,
+				stepSizeParam,
+				calcType,
+				useEffectiveXO,
+				useAllSnps,
+				useAllCovariates,
+				bioModelSelection,
+// 				requireAll,
+// 				requireAllOnce,
+// 				bioInitFract,
+// 				restrictVarGens,
+// 				bioModelSelection,
+				blockCrossGens,
+// 				resetVarsAtMigration,
+// 				bpfreq,
+// 				bpstart,
+				gaSelection,
+			#ifdef ATHENA_BLOAT_CONTROL
+				doubleTournF,
+				doubleTournD,
+				doubleTournFitFirst,
+				prunePlantFract,
+			#endif
+				fitGoal,
+				bestCVThresh,
+				bestCorrThresh,
+// 				constantSpan
+		};
+		
+		enum GASelectionType{
+			NoMatchSelector,
+			#ifdef ATHENA_BLOAT_CONTROL
+			DoubleTournamentSelection,
+			#endif
+			RouletteWheelSelection,
+			ParetoFrontSelection,
+			ParetoRankSelection
+		};
+
+		enum BioSelectionType{
+			NoMatchSelection,
+			rouletteSelect,
+			orderedSelect
+		};
+
+		std::map<std::string, AlgParams> algParamMap;
+		std::map<std::string, GASelectionType> gaSelectorMap;
+		std::map<std::string, BioSelectionType> bioModelSelectionMap;
+		GASelectionType gaSelector;
+
+		// BioFilter parameters
+		BioSelectionType biofilterSelectorType;
+		
+		bool effectiveXO, useAllVars, useAllCovars;
+		unsigned int wrapEvents, randSeed;
+		unsigned int minSize, maxSize;
+		float tailRatio, growRate;
+		unsigned int maxDepth, tailSize;
+		bool sensibleInit, maxBest;
+		float pruneAndPlantFract;
+		unsigned int popSize, numGenerations, stepSize, ngensBlockCross;
+		
+		// Genetic algorithm
+		GASimpleGA* ga;
+		
+		std::string grammarFile, calculatorName;
+		double probCross, probMut, initBioFract, fitnessGoal, bestCorrThreshold;
+		int numGenotypes, numContinuous, bestCVThreshold;		
+
 		bool dummyEncoded;
 		data_manage::Dataset* set;
 		LogType logTypeSelected;
@@ -162,6 +270,8 @@ protected:
 		
 		vector<AlgorithmLog*> logs;
 		int myRank;
+		AthenaGrammarSI mapper;
+		GENNGrammarAdjuster adjuster;
 		
 		int totalNodes;
 };

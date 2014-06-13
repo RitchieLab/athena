@@ -12,8 +12,9 @@ ANNIEDIR = ../annie
 INCLUDEDIR = -I. -I$(STATDIR) -I$(DATADIR) -I$(GADIR) -I$(GEDIR) -I$(ANNIEDIR)
 DFLAGS = -DPARALLEL 
 DFLAGS = 
-CCFLAGS = -Wall $(DFLAGS) -O2 $(INCLUDEDIR)
+CCFLAGS = $(DFLAGS) -O2 $(INCLUDEDIR)
 CCFLAGS = -Wall $(DFLAGS) -g $(INCLUDEDIR)
+#CCFLAGS = $(DFLAGS) -g $(INCLUDEDIR)
 
 GALIBLIB = ../galib247/ga
 GELIBLIB = ../libGE-0.26
@@ -36,7 +37,9 @@ SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	BackPropAnnieTree.o SymRegressSolutionCreator.o GESymbReg.o NNModelLog.o \
 	ModelLogParser.o AUCCalculator.o BestModelSelector.o GAParetoSelector.o \
 	GAParetoRankSelector.o OptGrammarFactory.o SimpleOptGrammar.o \
-	ComplexOptGrammar.o
+	ComplexOptGrammar.o BayesSolution.o DAGraph.o BayesSolutionCreator.o \
+	GEBayes.o K2Calculator.o K2BICCalculator.o K2AICCalculator.o \
+	BayesModelLog.o SumFileReader.o
 
 SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	CalculatorFactory.h ConfigFileReader.h Config.h \
@@ -54,12 +57,16 @@ SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	SymRegressSolutionCreator.h GESymbReg.h NNModelLog.h ModelLogParser.h \
 	AUCCalculator.h BestModelSelector.h GAParetoSelector.h GAParetoRankSelector.h \
 	OptGrammarFactory.h SimpleOptGrammar.h ComplexOptGrammar.h \
-	OptGrammar.h
+	OptGrammar.h BayesSolution.h DAGraph.h BayesSolutionCreator.h \
+	GEBayes.h K2Calculator.h K2AICCalculator.h K2BICCalculator.h \
+	BayesModelLog.h SumFileReader.h
 
 #ifeq ($(DFLAGS),-DPARALLEL)
 PARALLEL_NEEDED := $(shell echo $(DFLAGS) | cut -f1 -d' ')
 ifeq ($(PARALLEL_NEEDED),-DPARALLEL)
 CC = mpiCC
+SYSHEADERS+=GenomeTransfer.h
+SYSOBJS+=GenomeTransfer.o
 EXECUTABLE = athenap
 TEST_NAME = athenap-test
 else

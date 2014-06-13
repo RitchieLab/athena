@@ -49,7 +49,8 @@ public:
 				Neuron,
 				Weight,
 				PreOperator,
-				Bias
+				Bias,
+				Phenotype
 		};
 		
 		TerminalSymbol(){name = ""; priority = 0;}

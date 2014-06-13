@@ -62,9 +62,9 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "1/31/14";
+		string versionDate = "6/11/2014";
 		string execName = "ATHENA";
-		string version = "1.0.3";
+		string version = "1.1.0";
 		 time_t start,end;
 		 
 		if(argc < 2){
@@ -99,7 +99,6 @@ int main(int argc, char** argv) {
 		vector<AlgorithmParams> algParams= config.getAlgorithmParams();
 		Algorithm* alg = AlgorithmFactory::createAlgorithm(algParams[0].name);
 		alg->setConfigDefaults(config,algParams[0]);
-		
 		// fill dataholder with data
 		data_manage::Dataholder data;
 
@@ -165,7 +164,6 @@ int main(int argc, char** argv) {
 			exitApp(de, myRank);
 		}
 
- 
 		// set random seed  before splitting
 		srand(config.getRandSeed());
 
@@ -224,6 +222,31 @@ int main(int argc, char** argv) {
 
 		OutputManager writer;
 		writer.setBasename(config.getOutputName());
+		
+				// for validation of existing models
+		if(!config.getValidationSumFile().empty()){
+#ifdef PARALLEL
+			if(myRank==0){
+#endif
+			try{
+				alg->setDataset(&(cvSet.getInterval(0).getTraining()));
+			}catch(AthenaExcept& ae){
+				exitApp(ae, myRank);
+			}
+			vector<Solution*> models = alg->runValidation(config.getValidationSumFile());
+			if(alg->getPopulation().getConvertScores()){
+				for(size_t i=0; i<models.size(); i++){
+					models[i]->adjustScoreOut(&(cvSet.getInterval(0).getTraining()));
+				}
+			}
+			writer.writeValidation(alg->getFitnessName(), alg->getAdditionalOutputNames(),
+				models, data, mapFileUsed, config.getOttEncoded(), continMapUsed, alg);
+#ifdef PARALLEL
+			}
+#endif
+		}
+		else{ 
+				
 		int currCV=config.getStartCV()-1;
 	if(currCV==0){
 		writer.setFiles(mapFileUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
@@ -261,7 +284,6 @@ int main(int argc, char** argv) {
 	} /* end check for master writing CV splits */
 #endif
 			alg->startLog(data.numGenos());
-
 		if(config.getBioFilterFile().size() > 0){
 			alg->getBioModels(config.getBioFilterFile(), config.getBioFileType(), &data);
 		}
@@ -416,6 +438,7 @@ if(myRank==0){
 #endif
 	if(config.getIndOutput())
 			writer.outputInds(performanceStream, config.getOutputName(), alg->getFitnessName());
+	} // end for standard run (no input validation file)
 #ifdef PARALLEL
 		MPI_Finalize();
 #endif

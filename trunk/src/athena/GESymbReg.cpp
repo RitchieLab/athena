@@ -40,6 +40,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// 
 void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, int numContin){
 			
+		GENNAlg::setParams(algParam, numExchanges, numGenos, numContin);	
+			
 		map<string, string>::iterator mapIter;
 		
 		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end(); 
@@ -49,100 +51,6 @@ void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 								throw AthenaExcept("No match for parameter " + mapIter->first +
 												"in Algorithm GE Symbolic Regression");
 								break;
-						case minSizeParam:
-								minSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case maxSizeParam:
-								maxSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case tailRatioParam:
-								tailRatio = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case growRateParam:
-								growRate = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case maxDepthParam:
-								maxDepth = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case tailSizeParam:
-								tailSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case sensibleInitParam:
-								sensibleInit = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case popSizeParam:
-								popSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case probCrossParam:
-								probCross = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case probMutParam:
-								probMut = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case gramFileParam:
-								grammarFile = mapIter->second;
-								break;
-						case stepSizeParam:
-								stepSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case calcType:
-								calculatorName = Stringmanip::to_upper(mapIter->second);
-								break;        
-						case useEffectiveXO:
-								effectiveXO = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case useAllSnps:
-								useAllVars = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case useAllCovariates:
-								useAllCovars = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case requireAll:
-								requireAllVars = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case requireAllOnce:
-								requireAllVarsOnce = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case bioInitFract:
-								initBioFract = Stringmanip::stringToNumber<double>(mapIter->second);     
-								break;
-						case restrictVarGens:
-								ngensVarRestrict = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case bioModelSelection:
-								if(bioModelSelectionMap.find(Stringmanip::to_upper(mapIter->second)) == 
-										bioModelSelectionMap.end())
-									throw AthenaExcept("No match for bio model selection type " + mapIter->second);
-								else
-									biofilterSelectorType = bioModelSelectionMap[Stringmanip::to_upper(mapIter->second)];
-								break;
-						case gaSelection:
-								if(gaSelectorMap.find(Stringmanip::to_upper(mapIter->second)) ==
-									gaSelectorMap.end())
-									throw AthenaExcept("No match for GA selection type " + mapIter->second);
-								else
-									gaSelector = gaSelectorMap[Stringmanip::to_upper(mapIter->second)];
-									break;
-						case doubleTournF:
-								doubleTourneyF = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case doubleTournD:
-								doubleTourneyD = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-						case doubleTournFitFirst:
-								fitFirst = Stringmanip::check_true_false(mapIter->second);
-								break;
-						case blockCrossGens:
-								ngensBlockCross = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								break;
-						case resetVarsAtMigration:
-								resetRestrictedAtMigration = Stringmanip::check_true_false(mapIter->second);
-								break;
-#ifdef ATHENA_BLOAT_CONTROL
-						case prunePlantFract:
-								pruneAndPlantFract = Stringmanip::stringToNumber<double>(mapIter->second);
-								break;
-#endif
 						case bpstart:
 								throw AthenaExcept("No match for parameter " + mapIter->first +
 												" in Algorithm GE Symbolic Regression");
@@ -156,14 +64,6 @@ void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 												" in Algorithm GE Symbolic Regression");               
 				}
 		}
-		
-		if(stepSize > numGenerations){
-				stepSize = numGenerations;
-		}
-		
-		numGenerations = stepSize * numExchanges;
-		numGenotypes = numGenos;
-		numContinuous = numContin;
 
 		setGAParams();   
 }
@@ -184,15 +84,7 @@ void GESymbReg::setGAParams(){
 		//Initialize the GE mapper
 	 //Set maximum number of wrapping events per mapping
 	 mapper.setMaxWraps(wrapEvents);
-		adjuster.readGrammarFile(grammarFile);
-		if(useAllVars){
-			adjuster.includeAllVars(numGenotypes, numContinuous);
-		}
-		else{
-			adjuster.expandVariables();
-			if(dummyEncoded)
-				adjuster.doubleGenotypeGrammar();
-		 }
+	 expandVariables();
 		adjuster.setMapper(mapper);
 
 		setMapperPrefs(mapper);
@@ -214,9 +106,7 @@ void GESymbReg::setGAParams(){
 
 	 // add mapper to objective function
 	 GEObjective::setMapper(&mapper);
-	 InitGEgenome::setMinSize(minSize);
-	 InitGEgenome::setMaxSize(maxSize);
-	 InitGEgenome::setMapper(&mapper);
+	 setInitParams();
 }
 
 
@@ -264,7 +154,7 @@ int GESymbReg::step(){
 				 GE1DArrayGenome::setMapper(&mapper);
 				 convertNetworks(restrictMapper, mapper);
 			}
-			sendAndReceiveStruct(totalNodes, myRank);
+			popMigrator.sendAndReceiveStruct(totalNodes, myRank, ga);
 
 			if(ngensVarRestrict && restrictStepsDone < ngensVarRestrict){
 				// after transfer construct new grammar and set for use

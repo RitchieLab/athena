@@ -50,12 +50,19 @@ public:
 		/// Outputs symbols from genome to output
 		static void outputSymbols(GAGenome& g, ostream& os);
 		
+		/// Calculate fitness for solution supplied
+		static void calcFitness(Solution* sol);
+		
+		/// Calculate additional output for solution supplied
+		static vector<std::string> calcAdditionalFinalOutput(Solution* sol);		
+		
 		/// sets the mapper to use
 		static void setMapper(AthenaGrammarSI* m){
 			mapper = m;
 			mapper->setLeftOptBound(solCreator->getLeftOptBound());
 			mapper->setRightOptBound(solCreator->getRightOptBound());
 			mapper->setArgSymbols(solCreator->getOptArgSymbols());
+			solCreator->setMapper(mapper);
 		}
 		
 		/// sets the Dataset for objective function to work with
