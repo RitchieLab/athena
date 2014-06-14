@@ -117,7 +117,7 @@ void TerminalSymbCreator::addContinVariables(int numVariables){
 		int c;
 		string name;
  
-		for(c=1; c<numVariables; c++){
+		for(c=0; c<numVariables; c++){
 // 				name = "C" + Stringmanip::numberToString(c);
 				name = getContinName(c);
 				terminalMap[name] = new ContinVariable(name, c);
