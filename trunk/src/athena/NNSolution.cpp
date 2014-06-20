@@ -184,7 +184,14 @@ void NNSolution::outputClean(std::ostream& os, data_manage::Dataholder& data,
 /// Works to alter mean squared error scores to r squared
 /// @param tes
 ///
-void NNSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet){
+void NNSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet, string calcName){
+
+	if(calcName.compare("MEANABSOLUTE")==0){
+		solFitness = 1-solFitness;
+		testScore = 1-testScore;
+		return;
+	}
+
 	float ssTotal;
 	int totalInds = calcInds(trainSet, ssTotal);
 	solFitness = alterScore(solFitness, totalInds, ssTotal);
@@ -200,7 +207,13 @@ void NNSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet){
 /// Works to alter mean squared error scores to r squared
 /// @param trainSet Dataset
 ///
-void NNSolution::adjustScoreOut(Dataset* trainSet){
+void NNSolution::adjustScoreOut(Dataset* trainSet, string calcName){
+
+	if(calcName.compare("MEANABSOLUTE")==0){
+		solFitness = 1-solFitness;
+		return;
+	}
+
 	float ssTotal;
 	int totalInds = calcInds(trainSet, ssTotal);
 	solFitness = alterScore(solFitness, totalInds, ssTotal);
@@ -215,7 +228,11 @@ void NNSolution::adjustScoreOut(Dataset* trainSet){
 /// @param ssTotal
 /// @return R-squared value
 ///
-float NNSolution::adjustScoreOut(float score, int nIndsTested, float ssTotal){
+float NNSolution::adjustScoreOut(float score, int nIndsTested, float ssTotal, string calcName){
+	if(calcName.compare("MEANABSOLUTE")==0){
+		return 1.0-score;
+	}
+	
 	return alterScore(score, nIndsTested, ssTotal);
 }
 

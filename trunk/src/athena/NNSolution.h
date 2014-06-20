@@ -50,13 +50,13 @@ public:
 			bool mapUsed,  bool ottDummy, bool continMapUsed);
 		
 		/// Adjusts output of the scores when needed (e.g. meansquared to rsquared)
-		virtual void adjustScoreOut(Dataset* trainSet, Dataset* testSet);
+		virtual void adjustScoreOut(Dataset* trainSet, Dataset* testSet, std::string calcName);
 		
 		/// Adjusts output of the scores when needed for training set only
-		virtual void adjustScoreOut(Dataset* trainSet);
+		virtual void adjustScoreOut(Dataset* trainSet, std::string calcName);
 		
 		/// Adjusts score passed and returns value
-		virtual float adjustScoreOut(float score, int nIndsTested, float ssTotal);
+		virtual float adjustScoreOut(float score, int nIndsTested, float ssTotal, std::string calcName);
 		
 		void setGramDepth(int dep){gramDepth = dep;}
 		int getGramDepth(){return gramDepth;}

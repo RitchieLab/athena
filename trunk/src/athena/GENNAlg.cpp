@@ -271,7 +271,8 @@ void GENNAlg::setGAParams(){
 	if(simpleConstants)
 		GEObjective::addConstants(adjuster.getIncludedConstants());
 
-	 if(calculatorName.compare("RSQUARED")==0){
+	 if(calculatorName.compare("RSQUARED")==0 || calculatorName.compare("MEANABSOLUTE")==0){
+//    if(calculatorName.compare("RSQUARED")==0){
 		 pop.setConvertScores(true);
 	 }
 
@@ -327,7 +328,7 @@ int GENNAlg::reachedGoal(){
 	// r-squared result
 	if(pop.getConvertScores()){
 		NNSolution* bestSolution = convertGenome(ga->population().individual(0));
-		bestSolution->adjustScoreOut(set);
+		bestSolution->adjustScoreOut(set, calculatorName);
 		fitness = double(bestSolution->fitness());
 		delete bestSolution;
 	}
@@ -470,7 +471,7 @@ void GENNAlg::fillLog(){
 				}
 				else{  // add converted score to log file
 					geLog->addFitness(pop[0]->adjustScoreOut(genome.score(), genome.getNumIndsEvaluated(),
-						genome.getSSTotal()), genome.getGenos(), genome.getCovars());
+						genome.getSSTotal(), getFitnessName()), genome.getGenos(), genome.getCovars());
 				}
 				geLog->addNumGenos(genome.getNumGenes());
 				geLog->addNumCovars(genome.getNumCovars());

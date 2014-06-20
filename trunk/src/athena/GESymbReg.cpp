@@ -100,7 +100,8 @@ void GESymbReg::setGAParams(){
 			GEObjective::setSolutionType("SYMBREGONCE", calculatorName, varStrings);
 		}
 
-	 if(calculatorName.compare("RSQUARED")==0){
+	 if(calculatorName.compare("RSQUARED")==0 || calculatorName.compare("MEANABSOLUTE")==0){
+//    if(calculatorName.compare("RSQUARED")==0){
 		 pop.setConvertScores(true);
 	 }
 

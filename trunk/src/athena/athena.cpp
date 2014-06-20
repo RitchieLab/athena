@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
 			vector<Solution*> models = alg->runValidation(config.getValidationSumFile());
 			if(alg->getPopulation().getConvertScores()){
 				for(size_t i=0; i<models.size(); i++){
-					models[i]->adjustScoreOut(&(cvSet.getInterval(0).getTraining()));
+					models[i]->adjustScoreOut(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
 				}
 			}
 			writer.writeValidation(alg->getFitnessName(), alg->getAdditionalOutputNames(),
@@ -363,9 +363,9 @@ int main(int argc, char** argv) {
 		if(pop.getConvertScores()){
 			if(numCV > 1)
 					pop.convertScores(&(cvSet.getInterval(currCV).getTraining()), 
-						&(cvSet.getInterval(currCV).getTesting()));
+						&(cvSet.getInterval(currCV).getTesting()), alg->getFitnessName());
 			else
-				pop.convertScores(&(cvSet.getInterval(0).getTraining()));
+				pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
 		}
 		writer.outputSummary(pop, currCV, data, mapFileUsed, config.getOttEncoded(), continMapUsed,
 				 alg->getFitnessName());

@@ -121,10 +121,10 @@ public:
 	 bool getConvertScores(){return convScores;} 
 	 
 	 /// converts scores of population
-	 void convertScores(Dataset* train, Dataset* test);
+	 void convertScores(Dataset* train, Dataset* test, std::string calcName);
 		
 	 /// convert scores of population when no testing set used
-	 void convertScores(Dataset* train);
+	 void convertScores(Dataset* train, std::string calcName);
 		
 private:
 		

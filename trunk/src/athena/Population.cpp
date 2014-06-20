@@ -104,12 +104,12 @@ void Population::clear(){
 /// @param train Dataset
 /// @param test Dataset
 ///
-void Population::convertScores(Dataset* train, Dataset* test){
+void Population::convertScores(Dataset* train, Dataset* test, string calcName){
 
 		SolutionTreeNode* node;
 		for(node = solutions.GetFirst(); node != solutions.GetLast();
 			node = node->GetNext()){
-			node->GetData()->adjustScoreOut(train, test);
+			node->GetData()->adjustScoreOut(train, test, calcName);
 		}
 }
 
@@ -118,12 +118,12 @@ void Population::convertScores(Dataset* train, Dataset* test){
 /// converts scores of population
 /// @param train Dataset
 ///
-void Population::convertScores(Dataset* train){
+void Population::convertScores(Dataset* train, string calcName){
 
 		SolutionTreeNode* node;
 		for(node = solutions.GetFirst(); node != solutions.GetLast();
 			node = node->GetNext()){
-			node->GetData()->adjustScoreOut(train);
+			node->GetData()->adjustScoreOut(train, calcName);
 		}
 
 }

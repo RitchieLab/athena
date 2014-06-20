@@ -111,13 +111,14 @@ public:
 				return blank;}
 		
 		/// Adjusts output of the scores when needed (e.g. meansquared to rsquared)
-		virtual void adjustScoreOut(Dataset* trainSet, Dataset* testSet){}
+		virtual void adjustScoreOut(Dataset* trainSet, Dataset* testSet, std::string calcName){}
 		
 		/// Adjusts output of the scores when needed
-		virtual void adjustScoreOut(Dataset* trainSet){}
+		virtual void adjustScoreOut(Dataset* trainSet, std::string calcName){}
 		
 		/// Adjusts score passed and returns value
-		virtual float adjustScoreOut(float score, int nIndsTested, float constant){return score;}  
+		virtual float adjustScoreOut(float score, int nIndsTested, float constant,
+			std::string calcName){return score;}  
 		
 		/// returns complexity
 		int getComplexity(){return complexity;}

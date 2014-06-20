@@ -1,5 +1,5 @@
 /*
-Copyright Marylyn Ritchie 2011
+Copyright Marylyn Ritchie 2014
 
 This file is part of ATHENA.
 
@@ -16,23 +16,33 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
- * File:   CalculatorList.h
- * Author: dudeksm
- *
- * Created on November 24, 2008, 10:42 AM
- */
+#include "MeanAbsErrCalculator.h"
+#include <cmath>
 
-#ifndef _CALCULATORLIST_H
-#define	_CALCULATORLIST_H
+using namespace std;
 
-#include "BalAccCalculator.h"
-#include "MeanSquaredErrCalculator.h"
-#include "RSquaredCalculator.h"
-#include "AUCCalculator.h"
-#include "K2Calculator.h"
-#include "MeanAbsoluteErrCalculator.h"
+string const MeanAbsErrCalculator::calcMatchName = MeanAbsErrCalculator::registerCalc("MEANABSOLUTE");
+
+MeanAbsErrCalculator::MeanAbsErrCalculator(){
+		reset();
+		name = "Mean Absolute Error";
+}
 
 
-#endif	/* _CALCULATORLIST_H */
+void MeanAbsErrCalculator::reset(){
+	 totalIndsTested = 0;
+	 errTotal = 0.0;
+	 obsTotal = 0.0;
+}
+
+
+///
+/// Adds score to running total within object
+/// @param score
+///
+void MeanAbsErrCalculator::addIndScore(float score, float stat){
+		totalIndsTested++;
+		obsTotal += abs(stat);
+		errTotal += abs(score - stat);
+}
 
