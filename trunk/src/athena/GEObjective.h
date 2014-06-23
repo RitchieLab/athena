@@ -53,6 +53,8 @@ public:
 		/// Calculate fitness for solution supplied
 		static void calcFitness(Solution* sol);
 		
+		static void calcFitnessOut(Solution* sol, ostream& os);
+		
 		/// Calculate additional output for solution supplied
 		static vector<std::string> calcAdditionalFinalOutput(Solution* sol);		
 		

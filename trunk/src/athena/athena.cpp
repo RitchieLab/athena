@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "6/11/2014";
+		string versionDate = "6/23/2014";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -241,6 +241,19 @@ int main(int argc, char** argv) {
 			}
 			writer.writeValidation(alg->getFitnessName(), alg->getAdditionalOutputNames(),
 				models, data, mapFileUsed, config.getOttEncoded(), continMapUsed, alg);
+			if(config.getIndOutput()){
+				stringstream tempss;
+				vector<std::stringstream*> indss;
+				for(size_t i=0; i<models.size(); i++){
+					std::stringstream * newss = new std::stringstream;
+					indss.push_back(newss);
+				}
+				alg->validationIndOutput(indss, models);
+				writer.validationIndOutput(indss, config.getOutputName());
+				for(size_t i=0; i<indss.size(); i++){
+					delete indss[i];
+				}
+			}
 #ifdef PARALLEL
 			}
 #endif
@@ -328,15 +341,6 @@ int main(int argc, char** argv) {
 		for(currProc=0; currProc < lastProc; currProc++){
 #endif
 			if(config.getIndOutput()){
-// 				stringstream ss;
-// 				ss << config.getOutputName() << "." << currCV+1 << "." << currProc+1 << ".ind_results.txt";
-// 				ostream & os = writer.getStream(ss.str());
-// 				os << "Ind ID\tPredicted\tOriginal\n";
-// 				alg->outputIndEvals(&(cvSet.getInterval(currCV).getTraining()), os, currProc);
-// 				if(numCV > 1)
-// 					alg->outputIndEvals(&(cvSet.getInterval(currCV).getTesting()), os, currProc);
-// 				writer.closeStream();
-				
 				performanceStream << "CV " << Stringmanip::numberToString(currCV+1) << endl;
 				performanceStream << "Training" << endl;
 				alg->outputIndEvals(&(cvSet.getInterval(currCV).getTraining()), performanceStream, currProc);

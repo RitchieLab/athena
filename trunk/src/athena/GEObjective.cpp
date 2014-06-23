@@ -206,6 +206,21 @@ void GEObjective::calcFitness(Solution* sol){
 	solCreator->freeSolution();
 }
 
+
+///
+/// Calculates fitness on model supplied and writes each individual
+/// to the output stream
+/// 
+///
+void GEObjective::calcFitnessOut(Solution* sol, ostream& os){
+
+	solCreator->establishSolution(sol->getSymbols(), set);
+	double fitness = solCreator->evaluateWithOutput(set, os);
+	sol->fitness(fitness);
+
+	solCreator->freeSolution();
+}
+
 ///
 /// Return values for final output
 /// @param g GAGenome to analyze

@@ -80,6 +80,9 @@ public:
 		
 		void outputInds(std::istream &is, std::string base, string fitnessName);
 		
+		/// output individual results for model
+		void validationIndOutput(vector<std::stringstream*> &ss, std::string base);
+		
 		/// output graphical representation as defined in algorithm
 		void outputGraphic(Algorithm* alg,  Population& pop, int currPop, std::string basename, int numModels,
 			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed, 

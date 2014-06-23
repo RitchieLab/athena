@@ -157,6 +157,8 @@ public:
 		/// Runs models from summary file against validation set
 		virtual vector<Solution*> runValidation(std::string sumFile)=0;			
 		
+		virtual void validationIndOutput(vector<std::stringstream*>& indss, vector<Solution*>& models){}
+		
 		#ifdef PARALLEL
 			virtual void setRank(int rank){myRank = rank;}
 			int getRank(){return myRank;}

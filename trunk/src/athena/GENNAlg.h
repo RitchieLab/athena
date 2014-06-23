@@ -126,6 +126,8 @@ public:
 		
 		virtual vector<Solution*> runValidation(std::string sumFile);
 		
+		virtual void validationIndOutput(vector<std::stringstream*>& indss, vector<Solution*>& models);
+		
  		#ifdef PARALLEL
 // 			struct genomeMPI{
 // 				float genomeParams[8];

@@ -437,6 +437,22 @@ int OutputManager::scoreConversion(float score){
 	return score > 0.5?1:0;
 }
 
+///
+/// outputs list of individuals with scores for best model
+/// @param is istream 
+/// @param base base portion of output file name
+///
+void OutputManager::validationIndOutput(vector<std::stringstream*>& ss, std::string base){
+
+	for(size_t i=0; i<ss.size(); i++){
+		string currFileName = base + ".indscores." + Stringmanip::numberToString(i+1) + ".validation.txt";
+		ofstream of(currFileName.c_str());
+		of << "IND ID\tScore\tObserved\n";
+		of << ss[i]->str() << endl;
+		of.close();
+	}
+}
+
 
 ///
 /// outputs list of individuals with scores for best model

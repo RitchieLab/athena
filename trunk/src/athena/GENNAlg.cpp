@@ -440,6 +440,17 @@ vector<Solution*> GENNAlg::runValidation(std::string sumFile){
 	return models;
 }
 
+///
+/// Writes individual output information to stringstreams
+/// @param indss
+/// @param models
+///
+void GENNAlg::validationIndOutput(vector<std::stringstream*>& indss, vector<Solution*>& models){
+  for(size_t i=0; i<indss.size(); i++){
+    GEObjective::calcFitnessOut(models[i], *(indss[i]));
+  }
+}
+
 
 ///
 /// Fills the algorithm log with data from the population
