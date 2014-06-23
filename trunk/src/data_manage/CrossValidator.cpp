@@ -48,8 +48,11 @@ CVSet CrossValidator::splitData(unsigned int numCrossVal, Dataholder* holder){
 
 	vector<Individual*> shuffled, affected, unaffected;
 	statusBin(holder, affected, unaffected);
-	shuffleInds(affected);
-	shuffleInds(unaffected);
+
+	if(numCrossVal > 1){
+		shuffleInds(affected);
+		shuffleInds(unaffected);
+	}
 		
 	vector<Individual*> temp;
 	
