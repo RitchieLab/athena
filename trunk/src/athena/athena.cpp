@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "6/23/2014";
+		string versionDate = "6/24/2014";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -172,11 +172,18 @@ int main(int argc, char** argv) {
 		CVSet cvSet;
 
 	if(config.getSplitFile()==""){
-	    cvSet = cvMaker.splitData(config.getNumCV(), &data);
+			if(config.getValidationSumFile().empty())
+		    cvSet = cvMaker.splitData(config.getNumCV(), &data);
+		  else
+		  	cvSet = cvMaker.splitData(1, &data);
 #ifdef PARALLEL
-		if(myRank==0)
+		if(myRank==0){
 #endif
-	    cvMaker.saveSplits(config.getOutputName() + ".cvsplit");
+			if(config.getValidationSumFile().empty())
+	    	cvMaker.saveSplits(config.getOutputName() + ".cvsplit");
+#ifdef PARALLEL
+		}
+#endif
 	}
 	else{
 	    try{
