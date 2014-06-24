@@ -67,6 +67,9 @@ private:
 	void statusBin(Dataholder* holder, std::vector<Individual*>& affected,
 			std::vector<Individual*>& unaffected);
 			
+	void statusBinAffOnly(Dataholder* holder, std::vector<Individual*>& affected,
+			std::vector<Individual*>& unaffected);
+			
 	CVSet splitByNum(Dataholder* holder);
 	
 	CVSet createSet(unsigned int num_cv, Dataholder* holder);

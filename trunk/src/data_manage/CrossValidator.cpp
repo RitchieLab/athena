@@ -53,7 +53,10 @@ CVSet CrossValidator::splitData(unsigned int numCrossVal, Dataholder* holder){
 		shuffleInds(affected);
 		shuffleInds(unaffected);
 	}
-		
+	else{
+		statusBinAffOnly(holder, affected, unaffected);
+	}
+
 	vector<Individual*> temp;
 	
 	splits.assign(numCrossVal, temp);
@@ -182,6 +185,27 @@ void CrossValidator::statusBin(Dataholder* holder, vector<Individual*>& affected
 	}
 }
 
+
+
+///
+/// Places all individuals in affected 
+/// @param holder Dataholder
+/// @param affected Vector will contain pointers to affected inds
+/// @param unaffected Vector will contain pointers to unaffected inds
+///
+void CrossValidator::statusBinAffOnly(Dataholder* holder, vector<Individual*>& affected,
+		vector<Individual*>& unaffected){
+
+	affected.clear();
+	unaffected.clear();
+
+	unsigned int n_inds = holder->numInds();
+	Individual* ind;
+	for(unsigned int i=0; i < n_inds; i++){
+		ind = holder->getInd(i);
+		affected.push_back(ind);
+	}
+}
 
 
 ///
