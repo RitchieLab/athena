@@ -22,6 +22,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+#include <stdio.h>
 // #include <deque>
 
 using namespace std;
@@ -34,7 +35,14 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 	std::vector<std::string> additionalHeaders){
 
 	addHeaders = additionalHeaders;
-	string summaryName = basename + ".athena.sum";
+	string summaryName = getSummaryFileName();
+	string progressFileName = getProgressFileName();
+	
+	// create blank progress file as this is a run from start
+	ofstream progOut;
+	progOut.open(progressFileName.c_str(), ios::out);
+	progOut.close();
+	
 	int width = 30;
 		if(!mapFileUsed){
 			width = 20;
@@ -56,6 +64,46 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 	outfile.close();
 }
 
+// ///
+// /// Checks existing summary file and stores lines for output
+// /// when a CV restart is being performed
+// ///
+// void OutputManager::storeSumInfo(){
+// 	
+// 	string summaryName = getSummaryFileName();
+// 	
+// 	ifstream infile;
+// 	infile.open(summaryName.c_str(), std::ifstream::in);
+// 	
+// 	if(infile.is_open()){
+// 		equationLines.clear();
+// 		modelLines.clear();
+// 		
+// 		string line;
+// 		while(getline(infile, line)){
+// 			if(line.find("Model") != string::npos){
+// 			}
+// 			else if(line.find("Internal") != string::npos){
+// 			}
+// 		}
+// 	
+// 	}
+// 	
+// 	infile.close();
+// }
+
+
+// void OutputManager::storeLines(ifstream& is, vector<string>& storedLines){
+// 	
+// 	string line;
+// 	while(getline(is, line){
+// 	  // store until blank line reached
+// 		if(line.find_first_of("1234567890ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz") == string::npos){
+// 			break;
+// 		}
+// 	}
+// 	
+// }
 
 
 ///
@@ -68,15 +116,16 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 /// original genotype positions
 ///
 void OutputManager::outputSummary(Population& pop, int currPop,
-	data_manage::Dataholder& data, bool mapFileUsed, 
-	bool dummyEncoded,
-	bool continMapUsed,  std::string fitnessName){
+	data_manage::Dataholder& data,  Algorithm* alg, bool mapFileUsed, 
+	bool dummyEncoded, bool continMapUsed,
+	std::string fitnessName){
 
-		string summaryName = basename + ".athena.sum";
+		string summaryName = getSummaryFileName();
+		string progressFileName = getProgressFileName();
 		
 		ofstream outfile;
 		outfile.open(summaryName.c_str(), ios::app);
-	 
+		
 		Solution* bestSolution;
 		
 		string prefix, continPrefix;
@@ -112,6 +161,40 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 		outfile << endl;
 		outfile.close();
 		
+		// write to progress file
+		ofstream progFile;
+		progFile.open(progressFileName.c_str(), ios::app);
+		
+		// each model will take up 2 lines with the first being the equation and the
+		// second being the internal representation
+		progFile << currPop+1 << "\t";
+		alg->writeEquation(progFile, bestSolution, &data,
+			mapFileUsed, dummyEncoded, continMapUsed);
+		progFile << endl;
+		progFile << currPop+1 << "\t";
+		bestSolution->outputSolution(progFile);
+		progFile.close();
+}
+
+///
+/// Reads progress file for model information and inclusion in final summary file
+///
+void OutputManager::fillProgress(){
+	string progressFileName = getProgressFileName();
+	ifstream progFile;
+	progFile.open(progressFileName.c_str(), ios::in);
+	
+	equationLines.clear();
+	modelLines.clear();
+	string line;
+	while(getline(progFile, line)){
+		equationLines.push_back(line);
+		getline(progFile, line);
+		modelLines.push_back(line);
+	}
+	
+	progFile.close();
+	remove(progressFileName.c_str());
 }
 
 ///
@@ -366,30 +449,38 @@ void OutputManager::outputEquations(Algorithm* alg, vector<Solution*>& bestSolut
 			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
 			bool continMapUsed){
 	
-	string summaryName = basename + ".athena.sum";
-		
+	string summaryName = getSummaryFileName();
+cout <<  "call fillProgress" << endl;
+	fillProgress();
 	ofstream outfile;
 	outfile.open(summaryName.c_str(), ios::app);
 	outfile << "\nCV\tModel\n";
 	
-	for(unsigned int cv=0; cv < bestSolutions.size(); cv++){
-		outfile << cv+1 << "\t";
-		alg->writeEquation(outfile, bestSolutions[cv], &data,
-			mapUsed, ottDummy, continMapUsed);
-		outfile << endl;
+	vector<string>::iterator strIter;
+	for(strIter=equationLines.begin(); strIter != equationLines.end(); ++strIter){
+		outfile << *strIter << "\n";
 	}
+	
+// 	for(unsigned int cv=0; cv < bestSolutions.size(); cv++){
+// 		outfile << cv+1 << "\t";
+// 		alg->writeEquation(outfile, bestSolutions[cv], &data,
+// 			mapUsed, ottDummy, continMapUsed);
+// 		outfile << endl;
+// 	}
 	
 	outfile << "\n\n**** For use by ATHENA when running models with independent datasets ****\n";
 	outfile << "\nCV\tInternal ATHENA representation\n";
-	for(unsigned int cv=0; cv < bestSolutions.size(); cv++){
-		outfile << cv+1 << "\t";
-		bestSolutions[cv]->outputSolution(outfile);
-	}
+	for(strIter=modelLines.begin(); strIter != modelLines.end(); ++strIter){
+		outfile << *strIter << "\n";
+	}	
+// 	for(unsigned int cv=0; cv < bestSolutions.size(); cv++){
+// 		outfile << cv+1 << "\t";
+// 		bestSolutions[cv]->outputSolution(outfile);
+// 	}
 	
 	outfile.close();
 	
 }
-
 
 
 ///

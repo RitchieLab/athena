@@ -50,9 +50,10 @@ public:
 			std::vector<std::string> additionalHeaders);
 		
 		/// outputs summary of best models
-		void outputSummary(Population& pop, int currPop, data_manage::Dataholder& data, 
+		void outputSummary(Population& pop, int currPop, data_manage::Dataholder& data,
+			Algorithm* alg, 
 			bool mapFileUsed=false, bool dummyEncoded=true, bool continMapUsed=false,
-			std::string fitnessName=" ");
+			 std::string fitnessName=" ");
 		
 		void outputBest(Solution* bestmodel, data_manage::Dataholder& data,
 			bool mapFileUsed=false, bool dummyEncoded=true, bool continMapUsed=false,
@@ -93,11 +94,19 @@ public:
 			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
 			bool continMapUsed);
 		
+		/// Returns name of summary file
+		std::string getSummaryFileName(){ return basename + ".athena.sum";}
+		
+		/// Returns name of progress file
+		std::string getProgressFileName(){ return basename + ".progress.txt";}
+		
 private:
+		
+		void fillProgress();
 		
 		std::string basename;
 		std::ofstream logStream;
-		std::vector<std::string> addHeaders;
+		std::vector<std::string> addHeaders, equationLines, modelLines;
 	
 		
 		struct indOutScores{

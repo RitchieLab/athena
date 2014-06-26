@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "6/24/2014";
+		string versionDate = "6/27/2014";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -271,6 +271,7 @@ int main(int argc, char** argv) {
 	if(currCV==0){
 		writer.setFiles(mapFileUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
 	}
+
 	  int originalSeed = config.getRandSeed();
 		for(; currCV < numCV; currCV++){
 			adjustSeed(config, originalSeed,currCV, nproc, myRank);
@@ -378,7 +379,7 @@ int main(int argc, char** argv) {
 			else
 				pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
 		}
-		writer.outputSummary(pop, currCV, data, mapFileUsed, config.getOttEncoded(), continMapUsed,
+		writer.outputSummary(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(), continMapUsed,
 				 alg->getFitnessName());
 		writer.outputPareto(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(),
 			continMapUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
