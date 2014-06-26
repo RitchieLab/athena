@@ -450,7 +450,6 @@ void OutputManager::outputEquations(Algorithm* alg, vector<Solution*>& bestSolut
 			bool continMapUsed){
 	
 	string summaryName = getSummaryFileName();
-cout <<  "call fillProgress" << endl;
 	fillProgress();
 	ofstream outfile;
 	outfile.open(summaryName.c_str(), ios::app);
@@ -460,23 +459,12 @@ cout <<  "call fillProgress" << endl;
 	for(strIter=equationLines.begin(); strIter != equationLines.end(); ++strIter){
 		outfile << *strIter << "\n";
 	}
-	
-// 	for(unsigned int cv=0; cv < bestSolutions.size(); cv++){
-// 		outfile << cv+1 << "\t";
-// 		alg->writeEquation(outfile, bestSolutions[cv], &data,
-// 			mapUsed, ottDummy, continMapUsed);
-// 		outfile << endl;
-// 	}
-	
+		
 	outfile << "\n\n**** For use by ATHENA when running models with independent datasets ****\n";
 	outfile << "\nCV\tInternal ATHENA representation\n";
 	for(strIter=modelLines.begin(); strIter != modelLines.end(); ++strIter){
 		outfile << *strIter << "\n";
-	}	
-// 	for(unsigned int cv=0; cv < bestSolutions.size(); cv++){
-// 		outfile << cv+1 << "\t";
-// 		bestSolutions[cv]->outputSolution(outfile);
-// 	}
+	}
 	
 	outfile.close();
 	
