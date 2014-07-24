@@ -157,10 +157,20 @@ public:
 	/// Returns the split number
 	int getTestSplit(){return splitNum;}
 	
+	/// Check for variance in variables and create lists of ones that have zero variance
+	void checkVariance();
+	
+	/// Returns list of excluded Genotypes
+	vector<unsigned int> getExcludedGenotypes(){return excludedGenos;}
+	
+	/// Returns list of excluded Continuous variables
+	vector<unsigned int> getExcludedContins(){return excludedContin;}
+	
 private:
 	std::vector<Individual*> inds;
 	std::vector<std::string> genos;
 	std::vector<std::string> covars;
+	std::vector<unsigned int> excludedGenos, excludedContin;
 	std::map<std::string, unsigned int> genosMap, covarsMap; //key is geno name, value is index into genos array
 	std::map<std::string, Individual*> indsMap;
 	std::map<std::string, std::vector<int> > covarsScaleGroup;

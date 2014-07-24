@@ -18,6 +18,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "Dataholder.h"
 #include "Stringmanip.h"
+#include <Descriptive.h>
+#include <iostream>
 
 namespace data_manage
 {
@@ -86,5 +88,43 @@ void Dataholder::addDefaultCovars(){
 			addCovarName(Stringmanip::numberToString(i));
 		}
 }
+
+
+
+///
+/// Check for variance in variables and create lists of ones that have zero variance
+///
+void Dataholder::checkVariance(){
+	excludedGenos.clear();
+	excludedContin.clear();
+
+	unsigned int nInds = numInds();
+	unsigned int nGenos = numGenos();
+	unsigned int nContin = numCovariates();
+	stat::Descriptive devCalculator;
+	vector<float> vals(nInds, 0.0);
+	
+	// check each geno
+	for(unsigned int i=0; i<nGenos; i++){
+		for(unsigned int j=0; j<nInds; j++){
+			vals[j] = inds[j]->getGenotype(i);
+		}
+		float stdDev = devCalculator.standard_dev(vals);
+		if(stdDev == 0){
+			excludedGenos.push_back(i);
+		}
+	}
+	
+	for(unsigned int i=0; i<nContin; i++){
+		for(unsigned int j=0; j<nInds; j++){
+			vals[j] = inds[j]->getCovariate(i);
+		}
+		float stdDev = devCalculator.standard_dev(vals);
+		if(stdDev == 0){
+			excludedContin.push_back(i);
+		}
+	}	
+}
+
 
 }
