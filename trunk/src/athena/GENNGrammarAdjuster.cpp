@@ -348,6 +348,79 @@ void GENNGrammarAdjuster::expandVariables(){
 }
 
 
+///
+/// Excludes indicated variables from grammar
+///
+void GENNGrammarAdjuster::excludeVariables(std::set<std::string>& varSet){
+
+// vector<string>::iterator tmpIter;
+// for(tmpIter=lines.begin(); tmpIter != lines.end(); ++tmpIter){
+// cout << *tmpIter << endl;
+// }
+
+
+	// find line starting with "<v>" as start of genotypes and continuous variables
+	vector<string>::iterator start = getStartVariables();
+	vector<string>::iterator last;
+	countVarLines(start, last);
+// cout << "last=" << *last << endl;
+	vector<string> tmp;
+	
+	vector<string>::iterator iter = lines.begin();
+	// copy up to the start of the variables
+	for(;iter != start-1; ++iter){
+		tmp.push_back(*iter);
+	}
+	
+// 	vector<string>::iterator final = last+1;
+	// check start and see if it is to be excluded
+	string varname = getVarname(*iter);
+// cout << "varname=" << varname << endl;
+	if(varSet.find(varname) == varSet.end()){
+		tmp.push_back(*iter);
+		++iter;
+	}
+	else{
+		while(varSet.find(varname) != varSet.end() && iter != last){
+			++iter;
+			varname = getVarname(*iter);
+		}
+		if(iter != last){
+			tmp.push_back("<v>      ::= " + varname);
+			++iter;
+		}
+	}
+	
+	while(iter != last){
+		varname = getVarname(*iter);
+		if(varSet.find(varname) == varSet.end()){
+			tmp.push_back(*iter);
+		}
+		++iter;
+	}
+	
+	for(;iter != lines.end(); ++iter){
+		tmp.push_back(*iter);
+	}
+	
+	lines = tmp;
+// cout << "--------------------------------" << endl;
+// for(tmpIter=lines.begin(); tmpIter != lines.end(); ++tmpIter){
+// cout << *tmpIter << endl;
+// }
+// exit(1);
+}
+
+///
+/// extracts variable name from a variable line
+/// @returns name of variable from grammar
+///
+string GENNGrammarAdjuster::getVarname(string varLine){
+	size_t nameStart, nameEnd;
+	nameStart=varLine.find_first_of("CG");
+	nameEnd = varLine.find_last_of("0123456789");
+	return varLine.substr(nameStart, nameEnd-nameStart+1);
+}
 
 ///
 /// Doubles number of genotypes for ott dummy encoding in the grammar

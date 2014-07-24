@@ -105,7 +105,6 @@ void Population::clear(){
 /// @param test Dataset
 ///
 void Population::convertScores(Dataset* train, Dataset* test, string calcName){
-
 		SolutionTreeNode* node;
 		for(node = solutions.GetFirst(); node != solutions.GetLast();
 			node = node->GetNext()){

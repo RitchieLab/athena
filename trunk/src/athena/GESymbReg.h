@@ -37,7 +37,9 @@ class GESymbReg: public GENNAlg{
 	public:
 	
 		/// Set the parameters for the algorithm
-		void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, int numContin);  
+		void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, 
+			int numContin, vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins);  
 		
 		/// Runs a step of the algorithm
 		virtual int step();
@@ -48,7 +50,8 @@ class GESymbReg: public GENNAlg{
 	private:
 		
 		/// Sets GA for run
-		void setGAParams();
+		void setGAParams(vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins);
 	
 };
 

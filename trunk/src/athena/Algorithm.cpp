@@ -20,6 +20,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Algorithm.h"
 #include "GEObjective.h"
+// #include <set>
+
 
 Algorithm::Algorithm(){
 		fitnessName=" ";
@@ -33,10 +35,10 @@ Algorithm::~Algorithm(){
 }
 
 
-void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, int numContin){
+void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, 
+	int numContin, vector<unsigned int>& excludedGenos, vector<unsigned int>& excludedContins){
 		map<string, string>::iterator mapIter;
 		vector<string> tokens;
-		
 		
 		numGenotypes = numGenos;
 		numContinuous = numContin;
@@ -284,12 +286,47 @@ void Algorithm::expandVariables(){
 		}
 }
 
+///
+/// Exclude variables from grammar so they will not appear in any model
+///
+void Algorithm::excludeVariables(vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins){
+	
+	std::set<string> varSet;
+	string name;
+	// construct a map of all excluded variables
+	for(vector<unsigned int>::iterator iter=excludedContins.begin();
+		 iter!=excludedContins.end(); ++iter){
+		name = "C" + Stringmanip::numberToString(*iter+1);
+		varSet.insert(name);
+	}
+	
+	for(vector<unsigned int>::iterator iter=excludedGenos.begin();
+		 iter!=excludedGenos.end(); ++iter){
+		if(dummyEncoded){
+			unsigned int num = (*iter*2)+1;
+			name = "G" + Stringmanip::numberToString(num);
+			varSet.insert(name);
+			name = "G" + Stringmanip::numberToString(num+1);
+			varSet.insert(name);
+		}
+		else{
+			name = "G" + Stringmanip::numberToString(*iter+1);
+			varSet.insert(name);
+		}
+	}
+	
+	adjuster.excludeVariables(varSet);
+	
+}
+
 
 /// Sets parameters for use with GAlib
 /// @param alg_params AlgorithmParams
 /// @throws AthenaExcept on error
 ///
-void Algorithm::setGAParams(){   
+void Algorithm::setGAParams(vector<unsigned int>& excludedGenos, 
+	vector<unsigned int>& excludedContins){   
 	GARandomSeed(randSeed);
 	srand(randSeed);   
 	// first free ga memory if already run

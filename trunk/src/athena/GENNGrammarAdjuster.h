@@ -56,6 +56,9 @@ public:
 		///  Expands shorthand for continuous variables and genotypes into useable format
 		void expandVariables();
 		
+		/// Excludes indicated variables from grammar
+		void excludeVariables(std::set<std::string>& vars);
+		
 		/// Sets parent and child grammar to restrict allowed sizes
 		void setBayesianSize(unsigned int minP, unsigned int maxP, unsigned int minC,
 			unsigned int maxC);
@@ -82,6 +85,9 @@ private:
 		
 		/// creates variable symbol for insertion in grammar
 		string createVariableSymbol(string vPrefix, int num);
+		
+		/// extracts variable name from a variable line
+		string getVarname(string varLine);
 		
 		vector<string>::iterator getStartVariables();
 		

@@ -101,6 +101,27 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 		throw AthenaExcept("not enough variables");
 	}
 
+// symbols.clear();
+// symbols.push_back("(");
+// symbols.push_back("G1");
+// symbols.push_back("G5");
+// symbols.push_back("G11");
+// symbols.push_back(")");
+// symbols.push_back("^");
+// symbols.push_back("(");
+// symbols.push_back("pheno");
+// symbols.push_back(")");
+// symbols.push_back("^");
+// symbols.push_back("(");
+// symbols.push_back("G11");
+// symbols.push_back(")");
+
+// 
+// for(unsigned int i=0; i<symbols.size(); i++){
+// cout << symbols[i];
+// }
+// cout << endl;
+
 	// make list of children and parents of pheno (can't be both) -- so switch any children
 	// to a second variable
 	// also can't have duplicate parents or children -- switch those to new variable
@@ -239,7 +260,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 						}
 						else if(childIter->term->getTermType()==TerminalSymbol::Phenotype){
 							// can't be both a child and a parent of the phenotype
-							if(phenoChildren.find(parIter->term) != phenoChildren.end()){
+							if(phenoChildren.find(parIter->term) != phenoChildren.end()){ 
 							// select new parent here to replace one already used
 								TerminalSymbol* newTerm;
 								int newCodon;
@@ -291,7 +312,8 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 			covars[(*iter)->term]=1;
 		}
 	}
-
+// equationOutput(cout,NULL,false,false,false);
+// cout << endl;
 }
 
 ///
@@ -427,17 +449,44 @@ float BayesSolutionCreator::evaluate(Dataset* set){
 	 					parents.push_back(static_cast<IndividualTerm*>((*parentIter)->term));
 	 			}
 	 			score = k2calcWithParent(static_cast<IndividualTerm*>((*iter)->term), parents, nParams);
+// cout << "score for " << (*iter)->term->getName() << " with  parents: ";
+// for(unsigned int i=0; i<parents.size(); i++){
+// cout << parents[i]->getName() << " ";
+// }
+// cout << " is " << score << endl;
 	 			calculator->addIndScore(score, nParams);
 	 			cumulativeBaseScore += parentScore[(*iter)->term];
 	 		}
 	 }
 
-		// score will be the difference between the cumulativeBaseScore
-		score = -(cumulativeBaseScore + calculator->getScore());	
-		if(score < 0.0){
-			score = 0.0;
-		}
-	
+// change score to be the - of the actual score
+// include the total score 
+// cout << "cumulativeBaseScore=" << cumulativeBaseScore << " actual score=" << calculator->getScore() << endl;
+// cout <<  "total=" << set->getConstant() << " difference is " << cumulativeBaseScore + calculator->getScore() << endl;
+// cout << "------------------------------------" << endl;
+// so all I have to do is add the difference to the original and then take the - of it
+// so that better scores are more positive
+// at the end of the run convert the scores back to negative with simple -
+// need to make the scores positive during fitness so that roulette wheel will work
+
+/// ADD output to indicate any cases where all the models are worse than the original
+/// IN the sum file
+
+/// one check is to throw out variables without any variants
+/// check for standard deviation of the column and throw out if zero
+/// print warning and throw out
+
+		// score will be the sum of total score plus the difference of the two
+		// It will be scaled so that the better scores are greater for the fitness
+		// The final score report will alter it so that the scores are the correct negative
+		// values
+		double diff = cumulativeBaseScore + calculator->getScore();	
+		score = -(set->getConstant() + diff);
+// 		if(score < 0.0){
+// 			score = 0.0;
+// 		}
+// cout << "diff=" << diff << " final network score=" << score << endl;
+// exit(1);
 		return score;
 }
 
@@ -576,39 +625,48 @@ float BayesSolutionCreator::evaluateWithOutput(Dataset* set, ostream& os){
 
 
 ///
-/// stores evaluation results as TestResult
+/// check whether the current solution is better than the default network
 /// @param set Dataset
 /// @param results TestResult vector to contain values
 ///
 void BayesSolutionCreator::evaluateForOutput(Dataset* set){
-		Individual * ind;
-		std::vector<stat::TestResult> results;
+	float score = evaluate(set);
+	
+	if(score + set->getConstant() > 0){	
+		notImproved = false;
+	} 
+	else{
+		notImproved = true;
+	}
 		
-		calculator->reset();
-		stat::TestResult tempResult;
-		
-		int missingInds=0;
-		// when missing skip that ind
-		for(unsigned int i=0; i < set->numInds(); i++){
-				ind = (*set)[i];
-							 
-				ContinVariable::setInd(ind);
-				GenotypeTerm::setInd(ind);       
-				if(!useInd(ind, set)){
-						missingInds++;
-						continue;
-				}
-				
-				tempResult.score = evaluateInd(ind);
-				tempResult.status = ind->getStatus();
-				results.push_back(tempResult);
-		}
-		float percentMissing=float(missingInds)/set->numInds() * 100.0;
-		stringstream ss;
-		ss << percentMissing;
-		addOutputValues.clear();
-		addOutputValues.push_back(ss.str() + "%");	
-		calculator->evaluateAdditionalOutput(results);
+// 		Individual * ind;
+// 		std::vector<stat::TestResult> results;
+// 		
+// 		calculator->reset();
+// 		stat::TestResult tempResult;
+// 		
+// 		int missingInds=0;
+// 		// when missing skip that ind
+// 		for(unsigned int i=0; i < set->numInds(); i++){
+// 				ind = (*set)[i];
+// 							 
+// 				ContinVariable::setInd(ind);
+// 				GenotypeTerm::setInd(ind);       
+// 				if(!useInd(ind, set)){
+// 						missingInds++;
+// 						continue;
+// 				}
+// 				
+// 				tempResult.score = evaluateInd(ind);
+// 				tempResult.status = ind->getStatus();
+// 				results.push_back(tempResult);
+// 		}
+// 		float percentMissing=float(missingInds)/set->numInds() * 100.0;
+// 		stringstream ss;
+// 		ss << percentMissing;
+// 		addOutputValues.clear();
+// 		addOutputValues.push_back(ss.str() + "%");	
+// 		calculator->evaluateAdditionalOutput(results);
 }
 
 
@@ -648,8 +706,9 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		// store with penalty - will be stored as the negative value (actual score)
 		parentScore[term] = -calculator->getScore();
 		total += parentScore[term];
+// cout << "gIndex=" << gIndex << " score=" << parentScore[term] << endl;
 	}
-	
+
 	term = termHolder.phenotype();
 	// set value for Phenotype without parents
 	calculator->reset();
@@ -658,7 +717,7 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 	calculator->addIndScore(parentScore[term], nParams);
 	parentScore[term] = -calculator->getScore();
 	total += parentScore[term];
-	
+// cout << "total score for independent network is " << total << endl;	
 	newSet->setConstant(total);
 	// base score will be stored as negative of the K2 (so it will be a positive number)
 }

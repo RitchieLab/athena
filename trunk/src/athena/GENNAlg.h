@@ -45,7 +45,9 @@ public:
 		~GENNAlg();
 		
 		/// Set the parameters for the algorithm
-		virtual void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, int numContin);
+		virtual void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, 
+			int numContin, vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins);
 		
 		/// Run algorithm 
 		void run();
@@ -150,7 +152,8 @@ public:
 protected:
 		
 		/// Sets GA for run
-		virtual void setGAParams();
+		virtual void setGAParams(vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins);
 		
 		/// Sets default values for parameters
 		void initializeParams();   

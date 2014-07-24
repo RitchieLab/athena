@@ -38,9 +38,11 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// @param numGenos number of Genotypes in set
 /// @param numContin number of Continuous variables in set
 /// 
-void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, int numContin){
+void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, 
+	int numContin, vector<unsigned int>& excludedGenos, vector<unsigned int>& excludedContins){
 			
-		GENNAlg::setParams(algParam, numExchanges, numGenos, numContin);	
+		GENNAlg::setParams(algParam, numExchanges, numGenos, numContin, excludedGenos,
+			excludedContins);	
 			
 		map<string, string>::iterator mapIter;
 		
@@ -65,7 +67,7 @@ void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 				}
 		}
 
-		setGAParams();   
+		setGAParams(excludedGenos, excludedContins);   
 }
 
 
@@ -74,7 +76,8 @@ void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 /// Sets parameters for use with GAlib
 /// @throws AthenaExcept on error
 ///
-void GESymbReg::setGAParams(){   
+void GESymbReg::setGAParams(vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins){   
 		GARandomSeed(randSeed);
 		srand(randSeed);
 	

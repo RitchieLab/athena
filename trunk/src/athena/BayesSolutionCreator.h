@@ -57,6 +57,22 @@ public:
 		/// returns fitness score through evaluation of solution
 		virtual float evaluate(Dataset* set);
 		
+		virtual vector<std::string> getAdditionalOutputNames(){
+			vector<std::string> calcNames = calculator->getAdditionalOutputNames();
+			return calcNames;
+		}
+		
+		virtual vector<std::string> getAdditionalFinalOutput(){
+			vector<std::string> returnValues;
+			if(notImproved){
+				returnValues.push_back("*");
+			}
+			else{
+				returnValues.push_back(" ");
+			}
+			return returnValues;
+		}
+		
 		/// optimize solution by running back propagation
 		int optimizeSolution(std::vector<std::string>& symbols, Dataset* set);
 		
@@ -146,7 +162,7 @@ protected:
 		DAGraph network;
 		
 		float optimizedScore;
-		bool terminalsSet, parentScoresSet;
+		bool terminalsSet, parentScoresSet, notImproved;
 		unsigned int nnTerminalSize, nnDepth, numNodes;
 		std::map<TerminalSymbol*, double> parentScore, parentParams;
 		Dataset* currentSet;

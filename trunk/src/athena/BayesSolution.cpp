@@ -185,7 +185,7 @@ void BayesSolution::outputClean(std::ostream& os, data_manage::Dataholder& data,
 /// @param tes
 ///
 void BayesSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet){
-
+cout << "in adjustScoreOut 2" << endl;
 	solFitness = alterScore(solFitness, trainSet->getConstant());
 	testScore = alterScore(testScore, testSet->getConstant());
 }
@@ -197,6 +197,32 @@ void BayesSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet){
 /// @param trainSet Dataset
 ///
 void BayesSolution::adjustScoreOut(Dataset* trainSet){
+cout << "in adjustScoreOut" << endl;
+	solFitness = alterScore(solFitness, trainSet->getConstant());
+}
+
+
+///
+/// Adjusts score passed and returns value
+///
+float BayesSolution::adjustScoreOut(float score, int nIndsTested, 
+	float constant, std::string calcName){
+	return alterScore(score, constant);
+}
+
+///
+/// Adjusts output of the scores when needed (e.g. meansquared to rsquared)
+///
+void BayesSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet, 
+	std::string calcName){
+	solFitness = alterScore(solFitness, trainSet->getConstant());
+	testScore = alterScore(testScore, testSet->getConstant());
+}
+		
+///		
+/// Adjusts output of the scores when needed
+///
+void BayesSolution::adjustScoreOut(Dataset* trainSet, std::string calcName){
 	solFitness = alterScore(solFitness, trainSet->getConstant());
 }
 
@@ -210,7 +236,7 @@ void BayesSolution::adjustScoreOut(Dataset* trainSet){
 /// @return R-squared value
 ///
 float BayesSolution::adjustScoreOut(float score, int nIndsTested, float ssTotal){
-	return score;
+	return alterScore(score, ssTotal);
 }
 
 
@@ -221,7 +247,10 @@ float BayesSolution::adjustScoreOut(float score, int nIndsTested, float ssTotal)
 /// @return R squared score for the set
 ///
 float BayesSolution::alterScore(float score, double c){
-	return c + score;
+// 	if(score > 0.0){
+		score = c + score + c;
+// 	}
+	return score;
 }
 
 

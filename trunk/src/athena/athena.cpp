@@ -45,6 +45,7 @@ void exitApp(AthenaExcept& he, int myRank);
 void exitApp(DataExcept& de, int myRank);
 void adjustSeed(Config& config, int orig_seed, int cv, int nproc, int myRank);
 std::string timeDiff(double dif);
+void reportExcluded(vector<unsigned int> genotypes, vector<unsigned int> contins);
 
 int main(int argc, char** argv) {
 
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "6/27/2014";
+		string versionDate = "7/24/2014";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -124,6 +125,18 @@ int main(int argc, char** argv) {
 						continReader.readContinFile(config.getContinFileName(), &data,
 										config.getContinMiss(), config.getIDinData());
 				}
+		
+				// check variance of input variables
+				data.checkVariance();
+#ifdef PARALLEL
+		if(myRank==0){
+#endif
+				if(!data.getExcludedGenotypes().empty() || !data.getExcludedContins().empty()){
+					reportExcluded(data.getExcludedGenotypes(), data.getExcludedContins());
+				}
+#ifdef PARALLEL
+}
+#endif
 				
 				// if present read map file
 				if(config.getMapName().size() > 0){
@@ -215,8 +228,10 @@ int main(int argc, char** argv) {
 		alg->setLogType(config.getLogType());
 		
 		try{
+			vector<unsigned int> exGenos=data.getExcludedGenotypes();
+			vector<unsigned int> exContins=data.getExcludedContins();
 			alg->setParams(algParams[0], config.getNumExchanges(), 
-				data.numGenos(), data.numCovariates());
+				data.numGenos(), data.numCovariates(), exGenos, exContins);
 		}
 		catch(AthenaExcept ex){
 			exitApp(ex, myRank);
@@ -530,3 +545,22 @@ void adjustSeed(Config& config, int origSeed, int cv, int nproc, int myRank){
 	int newSeed = origSeed + nproc * cv + myRank;
 	config.setRandSeed(newSeed);
 }
+
+///
+/// Output any excluded variables
+/// @param genotypes
+/// @param contins
+///
+void reportExcluded(vector<unsigned int> genotypes, vector<unsigned int> contins){
+	vector<unsigned int>::iterator iter;
+	cout << "\nExcluded variables: ";
+	for(iter=genotypes.begin(); iter != genotypes.end(); ++iter){
+		cout << "G" << Stringmanip::numberToString(*iter+1) << " ";
+	}
+	for(iter=contins.begin(); iter != contins.end(); ++iter){
+		cout << "C" << Stringmanip::numberToString(*iter+1) << " ";
+	}
+	cout << "\n" << endl;
+	
+}
+

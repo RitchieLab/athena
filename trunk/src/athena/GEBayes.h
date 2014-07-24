@@ -48,7 +48,9 @@ public:
 	~GEBayes();
 
 	/// Set the parameters for the algorithm
-	virtual void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, int numContin);
+	virtual void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, 
+		int numContin, vector<unsigned int>& excludedGenos, 
+		vector<unsigned int>& excludedContins);
 		
 	/// Run algorithm 
 	void run();
@@ -112,6 +114,11 @@ public:
 	virtual void closeLog();
 	
 	virtual vector<Solution*> runValidation(std::string sumFile);
+	
+	virtual vector<std::string> getAdditionalOutputNames();
+	
+	/// Return formatted output for display for final models;
+	virtual	void getAdditionalFinalOutput(Dataset* set);	
 
 	#ifdef PARALLEL
 		virtual void setRank(int rank);
@@ -123,7 +130,8 @@ protected:
 	void resetCrossover();
 	
 	/// Sets GA for run
-	virtual void setGAParams();
+	virtual void setGAParams(vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins);
 		
 	/// Sets default values for parameters
 	void initializeParams(); 

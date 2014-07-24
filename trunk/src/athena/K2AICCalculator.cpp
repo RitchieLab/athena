@@ -26,6 +26,7 @@ K2AICCalculator::K2AICCalculator(){
 		reset();
 		name = "K2-AIC";
 		kTerm = 1.0;
+		outputNames.push_back("not-improved");
 }
 
 

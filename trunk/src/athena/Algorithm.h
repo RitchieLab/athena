@@ -57,7 +57,8 @@ public:
 		
 		/// Set the parameters for the algorithm
 		virtual void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, 
-			int numContin);
+			int numContin, vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins);
 		
 		/// Set current Dataset for running algorithm
 		virtual void setDataset(Dataset* newSet){
@@ -172,13 +173,17 @@ protected:
 		virtual void initializeParams();
 		
 		/// Sets GA parameters
-		virtual void setGAParams();
+		virtual void setGAParams(vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins);
 		
 		virtual void freeMemory();
 
 		void setInitParams();
 
 		void expandVariables();
+		
+		void excludeVariables(vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins);
 		
 		void setMapperPrefs(AthenaGrammarSI& athenaMapper);
 		

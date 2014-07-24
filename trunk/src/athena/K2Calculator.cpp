@@ -25,9 +25,8 @@ string const K2Calculator::calcMatchName = K2Calculator::registerCalc("K2");
 K2Calculator::K2Calculator(){
 		reset();
 		name = "K2";
-// 		outputNames.push_back("AUC");
+		outputNames.push_back("not-improved");
 }
-
 
 
 void K2Calculator::reset(){

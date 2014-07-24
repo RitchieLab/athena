@@ -50,7 +50,9 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 			 
 			for(unsigned int i=0; i<phenoSize; ++i){
 					symbols[i] = *((*phenotype)[i]);
+// cout << symbols[i] << " ";
 			}
+// cout << endl;
 
 			try{
 				solCreator->establishSolution(symbols, set);
@@ -63,7 +65,7 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 			// alter genome to match any variable changes
 			if(solCreator->anyChangedVariables()){
 				// change them in the mapper
-					mapper->changeVariables(genome, solCreator->getChangedVariables());		
+				mapper->changeVariables(genome, solCreator->getChangedVariables());		
 			}
 
 			fitness = solCreator->evaluate(set);
@@ -91,6 +93,15 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 			else{
 				genome.setSSTotal(set->getSSTotal());
 			}
+// if(solCreator->anyChangedVariables()){			
+// mapper->setGenotype(genome); 
+// Phenotype const *phenotype=mapper->getPhenotype();			
+// for(unsigned int i=0; i<phenoSize; ++i){
+// symbols[i] = *((*phenotype)[i]);
+// cout << symbols[i] << " ";
+// }
+// cout << endl; cout << "-------------------------------------------------" << endl;
+// }
 	 }
 	 else{
 				// set fitness to worst score initially

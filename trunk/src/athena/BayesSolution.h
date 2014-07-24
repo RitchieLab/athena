@@ -58,6 +58,16 @@ public:
 		/// Adjusts score passed and returns value
 		virtual float adjustScoreOut(float score, int nIndsTested, float ssTotal);
 		
+		/// Adjusts score passed and returns value
+		virtual float adjustScoreOut(float score, int nIndsTested, float constant,
+			std::string calcName);
+			
+		/// Adjusts output of the scores when needed (e.g. meansquared to rsquared)
+		virtual void adjustScoreOut(Dataset* trainSet, Dataset* testSet, std::string calcName);
+		
+		/// Adjusts output of the scores when needed
+		virtual void adjustScoreOut(Dataset* trainSet, std::string calcName);
+		
 		void setGramDepth(int dep){gramDepth = dep;}
 		int getGramDepth(){return gramDepth;}
 		

@@ -26,6 +26,7 @@ K2BICCalculator::K2BICCalculator(){
 		reset();
 		name = "K2-BIC";
 		kTerm = 1.0;
+		outputNames.push_back("not-improved");
 }
 
 

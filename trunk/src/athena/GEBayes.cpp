@@ -114,10 +114,12 @@ void GEBayes::setRand(unsigned int seed){
 /// @param numGenos number of Genotypes in set
 /// @param numContin number of Continuous variables in set
 /// 
-void GEBayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, int numContin){
+void GEBayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, 
+	int numContin, vector<unsigned int>& excludedGenos, vector<unsigned int>& excludedContins){
 		
 		
-		Algorithm::setParams(algParam, numExchanges, numGenos, numContin);
+		Algorithm::setParams(algParam, numExchanges, numGenos, numContin, excludedGenos,
+			excludedContins);
 		
 		map<string, string>::iterator mapIter;
 		vector<string> tokens;
@@ -158,7 +160,7 @@ void GEBayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 		// first optimization of backpropagation 
 // 		bpNextOpt = bpFirstGen;
 			 
-		setGAParams();
+		setGAParams(excludedGenos, excludedContins);
 		
 }
 
@@ -280,7 +282,8 @@ void GEBayes::initialize(){
 /// @param alg_params AlgorithmParams
 /// @throws AthenaExcept on error
 ///
-void GEBayes::setGAParams(){   
+void GEBayes::setGAParams(vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins){   
     
 		GARandomSeed(randSeed);
 		srand(randSeed);   
@@ -291,9 +294,12 @@ void GEBayes::setGAParams(){
 	 //Set maximum number of wrapping events per mapping
 	 mapper.setMaxWraps(wrapEvents);
 	 expandVariables();
-		adjuster.setBayesianSize(minNumParents, maxNumParents, minNumChildren, 
+	 adjuster.setBayesianSize(minNumParents, maxNumParents, minNumChildren, 
 			maxNumChildren);
-		 
+		// remove any excluded SNPs and/or continuous variables
+		if(!excludedGenos.empty() || !excludedContins.empty())
+			excludeVariables(excludedGenos, excludedContins);
+			
 		adjuster.setMapper(mapper);
 		setMapperPrefs(mapper);
 			
@@ -344,7 +350,6 @@ BayesSolution* GEBayes::convertGenome(GAGenome& ind){
 	for(unsigned int i=0; i<phenoSize; ++i){
 		symbols[i] = *((*phenotype)[i]);
 	}
-
 	sol->setSymbols(symbols);
 	sol->fitness(genome.score());
 	sol->testVal(genome.getTestValue());
@@ -353,6 +358,27 @@ BayesSolution* GEBayes::convertGenome(GAGenome& ind){
 	sol->setComplexity(genome.getComplexity());
 // 	sol->setComplexity(genome.getNumNodes());
 	return sol;
+}
+
+
+///
+/// Return additional output names (if any such as AUC)
+/// 
+vector<string> GEBayes::getAdditionalOutputNames(){
+  return GEObjective::getAdditionalOutputNames();
+}
+
+///
+/// Calculate and return additional output (whether model is better than unconnected 
+///  bayesian network) for best model
+///
+void GEBayes::getAdditionalFinalOutput(Dataset* set){
+	GEObjective::setDataset(set);
+	unsigned int numInds = ga->population().size();
+  for(unsigned int currInd = 0; currInd < numInds; currInd++){
+		pop[currInd]->setAdditionalOutput(GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd)));
+	}
+	
 }
 
 
@@ -398,14 +424,14 @@ void GEBayes::fillLog(){
 				geLog->addNetwork();
 				geLog->addNNSize(genome.getEffectiveSize());
 				geLog->addNNDepth(genome.getDepth());
-// 				if(!pop.getConvertScores()){
+				if(!pop.getConvertScores()){
 				// no need to convert scores for Bayesian network
 					geLog->addFitness(genome.score(), genome.getGenos(), genome.getCovars());
-// 				}
-// 				else{  // add converted score to log file
-// 					geLog->addFitness(pop[0]->adjustScoreOut(genome.score(), genome.getNumIndsEvaluated(),
-// 						genome.getSSTotal()), genome.getGenos(), genome.getCovars());
-// 				}
+				}
+				else{  // add converted score to log file
+					geLog->addFitness(pop[0]->adjustScoreOut(genome.score(), genome.getNumIndsEvaluated(),
+						set->getConstant(), getFitnessName()), genome.getGenos(), genome.getCovars());
+				}
 				geLog->addNumGenos(genome.getNumGenes());
 				geLog->addNumCovars(genome.getNumCovars());
 				geLog->addEpochs(genome.getNumEpochsTrained());

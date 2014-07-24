@@ -81,10 +81,12 @@ void GENNAlg::setDataset(Dataset* newSet){
 /// @param numGenos number of Genotypes in set
 /// @param numContin number of Continuous variables in set
 /// 
-void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, int numContin){
+void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, 
+  int numContin, vector<unsigned int>& excludedGenos, vector<unsigned int>& excludedContins){
 		
 		
-		Algorithm::setParams(algParam, numExchanges, numGenos, numContin);
+		Algorithm::setParams(algParam, numExchanges, numGenos, numContin, excludedGenos,
+		  excludedContins);
 		
 		map<string, string>::iterator mapIter;
 		vector<string> tokens;
@@ -154,7 +156,7 @@ void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 		// first optimization of backpropagation 
 		bpNextOpt = bpFirstGen;
 			 
-		setGAParams();
+		setGAParams(excludedGenos, excludedContins);
 		
 }
 
@@ -237,7 +239,8 @@ void GENNAlg::setRand(unsigned int seed){
 /// @param alg_params AlgorithmParams
 /// @throws AthenaExcept on error
 ///
-void GENNAlg::setGAParams(){   
+void GENNAlg::setGAParams(vector<unsigned int>& excludedGenos, 
+			vector<unsigned int>& excludedContins){   
     
 		GARandomSeed(randSeed);
 		srand(randSeed);   
