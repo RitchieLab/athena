@@ -329,7 +329,7 @@ void GE1DArrayGenome::establish(){
 ///
 /// Performs prune and plant on genome passed
 ///
-int GE1DArrayGenome::prune_and_plant(GAGenome* startGenome,
+int GE1DArrayGenome::pruneAndPlant(GAGenome* startGenome,
 	GAGenome* planted){
  
 	GAGenome * cloned = startGenome->clone();

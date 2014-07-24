@@ -259,9 +259,9 @@ protected:
 		
 		// GA Selection parameters
 // 		GASelectionType gaSelector;
-		bool fitFirst;
-		int doubleTourneyF;
-		float doubleTourneyD;
+// 		bool fitFirst;
+// 		int doubleTourneyF;
+// 		float doubleTourneyD;
 		
 		//Random initialization parameters
 // 		unsigned int minSize, maxSize;

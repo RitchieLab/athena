@@ -49,10 +49,10 @@ void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end(); 
 			mapIter++){       
 				switch(paramMap[mapIter->first]){
-						case noMatchParam:
-								throw AthenaExcept("No match for parameter " + mapIter->first +
-												"in Algorithm GE Symbolic Regression");
-								break;
+// 						case noMatchParam:
+// 								throw AthenaExcept("No match for parameter " + mapIter->first +
+// 												"in Algorithm GE Symbolic Regression");
+// 								break;
 						case bpstart:
 								throw AthenaExcept("No match for parameter " + mapIter->first +
 												" in Algorithm GE Symbolic Regression");
@@ -61,9 +61,9 @@ void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 								throw AthenaExcept("No match for parameter " + mapIter->first +
 												" in Algorithm GE Symbolic Regression");
 								break;
-						default:
-								throw AthenaExcept("No match for parameter " + mapIter->first +
-												" in Algorithm GE Symbolic Regression");               
+// 						default:
+// 								throw AthenaExcept("No match for parameter " + mapIter->first +
+// 												" in Algorithm GE Symbolic Regression");               
 				}
 		}
 

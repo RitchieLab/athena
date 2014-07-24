@@ -280,6 +280,10 @@ protected:
 		AthenaGrammarSI mapper;
 		GENNGrammarAdjuster adjuster;
 		
+		bool fitFirst;
+		int doubleTourneyF;
+		float doubleTourneyD;
+		
 		int totalNodes;
 };
 

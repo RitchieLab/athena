@@ -142,6 +142,7 @@ void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 						    break;
 #ifdef ATHENA_BLOAT_CONTROL
 						case prunePlantFract:
+								break;
 #endif
 // 						default:
 // 								throw AthenaExcept("No match for parameter " + mapIter->first +
