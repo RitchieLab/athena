@@ -59,6 +59,7 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 				}catch(AthenaExcept& ae){
 					fitness = solCreator->getWorst();
 	  			 genome.clearScores();
+// cout << "failed: fitness=" << fitness << endl;
 	  			 return fitness;
 				}
 
@@ -69,6 +70,7 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 			}
 
 			fitness = solCreator->evaluate(set);
+// cout << "success: fitness=" << fitness << endl;
 			if(additionalLogging){
 				solCreator->detailedLogging();
 				genome.setDepth(solCreator->getDetailedLog());
@@ -138,7 +140,7 @@ void GEObjective::GEObjectiveInit(GAGenome& g){
 				// set fitness to worst score initially
 		 fitness = solCreator->getWorst();
 		 genome.clearScores();
-	 }	
+	 }
 
 }
 
@@ -237,12 +239,17 @@ void GEObjective::calcFitnessOut(Solution* sol, ostream& os){
 /// @param g GAGenome to analyze
 ///
 vector<std::string> GEObjective::calcAdditionalFinalOutput(Solution* sol){ 
-
+	try{
 		solCreator->establishSolution(sol->getSymbols(), set);
-		solCreator->evaluateForOutput(set);
-		solCreator->freeSolution();
+	}catch(AthenaExcept& ae){
+		// fails so return empty strings
+		vector<string> tmp;
+		return tmp;
+	}
+	solCreator->evaluateForOutput(set);
+	solCreator->freeSolution();
 		
-	 return solCreator->getAdditionalFinalOutput();	
+	return solCreator->getAdditionalFinalOutput();	
 }
 
 
@@ -269,8 +276,13 @@ vector<std::string> GEObjective::getAdditionalFinalOutput(GAGenome& g){
 			for(unsigned int i=0; i<phenoSize; ++i){
 					symbols[i] = *((*phenotype)[i]);
 			}
-
-			solCreator->establishSolution(symbols, set);
+		  try{
+				solCreator->establishSolution(symbols, set);
+			}catch(AthenaExcept& ae){
+				// return empty string as this isn't a valid network
+				vector<std::string> tmp;
+				return tmp;
+			}
 			solCreator->evaluateForOutput(set);
 			solCreator->freeSolution();
 			

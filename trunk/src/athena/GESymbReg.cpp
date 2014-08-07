@@ -43,7 +43,7 @@ void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 			
 		GENNAlg::setParams(algParam, numExchanges, numGenos, numContin, excludedGenos,
 			excludedContins);	
-			
+
 		map<string, string>::iterator mapIter;
 		
 		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end(); 

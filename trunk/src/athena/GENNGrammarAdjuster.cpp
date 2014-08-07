@@ -59,7 +59,8 @@ void GENNGrammarAdjuster::setMapper(AthenaGrammarSI& mapper, int rank){
 		program += *iter + "\n";
 	}
 	program += "\n";
-
+// cout << program << endl;
+// exit(1);
 	mapper.readBNFString(program);
 }
 
