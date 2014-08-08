@@ -90,6 +90,67 @@ void Dataholder::addDefaultCovars(){
 }
 
 
+///
+/// Check for variance across all data splits
+/// @param cvSet
+///
+void Dataholder::checkVariance(CVSet& cvSet){
+
+	unsigned int nIntervals = cvSet.numIntervals();
+	
+	if(nIntervals == 1){
+		// check entire set at one time
+		checkVariance();
+	}
+	else{
+		excludedGenos.clear();
+		excludedContin.clear();
+		for(unsigned int i=0; i<nIntervals; i++){
+			CVInterval cvInt = cvSet.getInterval(i);
+			Dataset trainSet = cvInt.getTraining();
+			Dataset testSet = cvInt.getTesting();
+			checkVariance(trainSet);
+			checkVariance(testSet);	
+		}
+	}
+	
+}
+
+
+///
+/// Check variance for the dataSet passed
+///
+void Dataholder::checkVariance(Dataset& dataSet){
+	unsigned int nInds = dataSet.numInds();
+	unsigned int nGenos = dataSet.numGenos();
+	unsigned int nContin = dataSet.numCovariates();
+	stat::Descriptive devCalculator;
+	vector<float> vals(nInds, 0.0);
+	
+	// check each geno
+	for(unsigned int i=0; i<nGenos; i++){
+		for(unsigned int j=0; j<nInds; j++){
+			vals[j] = dataSet[j]->getGenotype(i);
+		}
+		float stdDev = devCalculator.standard_dev(vals);
+		if(stdDev == 0){
+			excludedGenos.push_back(i);
+		}
+	}
+	
+	// check each continuous variable
+	for(unsigned int i=0; i<nContin; i++){
+		for(unsigned int j=0; j<nInds; j++){
+			vals[j] = dataSet[j]->getCovariate(i);
+		}
+		float stdDev = devCalculator.standard_dev(vals);
+		if(stdDev == 0){
+			excludedContin.push_back(i);
+		}
+	}		
+}
+
+
 
 ///
 /// Check for variance in variables and create lists of ones that have zero variance
@@ -115,6 +176,7 @@ void Dataholder::checkVariance(){
 		}
 	}
 	
+	// check each continuous variable
 	for(unsigned int i=0; i<nContin; i++){
 		for(unsigned int j=0; j<nInds; j++){
 			vals[j] = inds[j]->getCovariate(i);

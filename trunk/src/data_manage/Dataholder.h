@@ -21,6 +21,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Individual.h"
 #include "DataExcept.h"
+#include "CVSet.h"
 #include <string>
 
 using namespace std;
@@ -159,6 +160,10 @@ public:
 	
 	/// Check for variance in variables and create lists of ones that have zero variance
 	void checkVariance();
+	
+	void checkVariance(CVSet& cvSet);
+	
+	void checkVariance(Dataset& dataSet);
 	
 	/// Returns list of excluded Genotypes
 	vector<unsigned int> getExcludedGenotypes(){return excludedGenos;}
