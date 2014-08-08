@@ -359,7 +359,6 @@ void GENNGrammarAdjuster::excludeVariables(std::set<std::string>& varSet){
 // cout << *tmpIter << endl;
 // }
 
-
 	// find line starting with "<v>" as start of genotypes and continuous variables
 	vector<string>::iterator start = getStartVariables();
 	vector<string>::iterator last;

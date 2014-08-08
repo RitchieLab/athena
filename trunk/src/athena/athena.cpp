@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "8/7/2014";
+		string versionDate = "8/8/2014";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -102,6 +102,8 @@ int main(int argc, char** argv) {
 		alg->setConfigDefaults(config,algParams[0]);
 		// fill dataholder with data
 		data_manage::Dataholder data;
+		CrossValidator cvMaker;
+		CVSet cvSet;
 
 		try{
 			// read in genotype data
@@ -126,17 +128,17 @@ int main(int argc, char** argv) {
 										config.getContinMiss(), config.getIDinData());
 				}
 		
-				// check variance of input variables
-				data.checkVariance();
-#ifdef PARALLEL
-		if(myRank==0){
-#endif
-				if(!data.getExcludedGenotypes().empty() || !data.getExcludedContins().empty()){
-					reportExcluded(data.getExcludedGenotypes(), data.getExcludedContins());
-				}
-#ifdef PARALLEL
-}
-#endif
+// check variance of input variables
+// 				data.checkVariance();
+// #ifdef PARALLEL
+// 		if(myRank==0){
+// #endif
+// 				if(!data.getExcludedGenotypes().empty() || !data.getExcludedContins().empty()){
+// 					reportExcluded(data.getExcludedGenotypes(), data.getExcludedContins());
+// 				}
+// #ifdef PARALLEL
+// }
+// #endif
 				
 				// if present read map file
 				if(config.getMapName().size() > 0){
@@ -158,6 +160,45 @@ int main(int argc, char** argv) {
 						continMapUsed = false;
 						data.addDefaultCovars();
 				}
+
+		// set random seed  before splitting
+		srand(config.getRandSeed());
+
+		// construct crossvalidation sets to use in running algorithm
+
+	if(config.getSplitFile()==""){
+			if(config.getValidationSumFile().empty())
+		    cvSet = cvMaker.splitData(config.getNumCV(), &data);
+		  else
+		  	cvSet = cvMaker.splitData(1, &data);
+#ifdef PARALLEL
+		if(myRank==0){
+#endif
+			if(config.getValidationSumFile().empty())
+	    	cvMaker.saveSplits(config.getOutputName() + ".cvsplit");
+#ifdef PARALLEL
+		}
+#endif
+	}
+	else{
+// 	    try{
+			cvSet = cvMaker.loadSplits(config.getSplitFile(), &data);
+// 		}catch(DataExcept de){
+// 				exitApp(de, myRank);
+// 		}
+	}
+	
+	// check variance of input variables
+				data.checkVariance(cvSet);
+#ifdef PARALLEL
+		if(myRank==0){
+#endif
+				if(!data.getExcludedGenotypes().empty() || !data.getExcludedContins().empty()){
+					reportExcluded(data.getExcludedGenotypes(), data.getExcludedContins());
+				}
+#ifdef PARALLEL
+}
+#endif
 			 
 				// convert data if needed
 				try{
@@ -178,33 +219,33 @@ int main(int argc, char** argv) {
 		}
 
 		// set random seed  before splitting
-		srand(config.getRandSeed());
+// 		srand(config.getRandSeed());
 
 		// construct crossvalidation sets to use in running algorithm
-		CrossValidator cvMaker;
-		CVSet cvSet;
-
-	if(config.getSplitFile()==""){
-			if(config.getValidationSumFile().empty())
-		    cvSet = cvMaker.splitData(config.getNumCV(), &data);
-		  else
-		  	cvSet = cvMaker.splitData(1, &data);
-#ifdef PARALLEL
-		if(myRank==0){
-#endif
-			if(config.getValidationSumFile().empty())
-	    	cvMaker.saveSplits(config.getOutputName() + ".cvsplit");
-#ifdef PARALLEL
-		}
-#endif
-	}
-	else{
-	    try{
-			cvSet = cvMaker.loadSplits(config.getSplitFile(), &data);
-		}catch(DataExcept de){
-				exitApp(de, myRank);
-		}
-	}
+// 		CrossValidator cvMaker;
+// 		CVSet cvSet;
+// 
+// 	if(config.getSplitFile()==""){
+// 			if(config.getValidationSumFile().empty())
+// 		    cvSet = cvMaker.splitData(config.getNumCV(), &data);
+// 		  else
+// 		  	cvSet = cvMaker.splitData(1, &data);
+// #ifdef PARALLEL
+// 		if(myRank==0){
+// #endif
+// 			if(config.getValidationSumFile().empty())
+// 	    	cvMaker.saveSplits(config.getOutputName() + ".cvsplit");
+// #ifdef PARALLEL
+// 		}
+// #endif
+// 	}
+// 	else{
+// 	    try{
+// 			cvSet = cvMaker.loadSplits(config.getSplitFile(), &data);
+// 		}catch(DataExcept de){
+// 				exitApp(de, myRank);
+// 		}
+// 	}
 	
 					// alter continuous variables and status value
 				scaler = data_manage::ScaledDataFactory::createScaler(config.getStatusAdjust());
@@ -553,14 +594,19 @@ void adjustSeed(Config& config, int origSeed, int cv, int nproc, int myRank){
 ///
 void reportExcluded(vector<unsigned int> genotypes, vector<unsigned int> contins){
 	vector<unsigned int>::iterator iter;
-	cout << "\nExcluded variables: ";
+	cout << "\nExcluded variables:";
+	set<string> excluded;
 	for(iter=genotypes.begin(); iter != genotypes.end(); ++iter){
-		cout << "G" << Stringmanip::numberToString(*iter+1) << " ";
+		excluded.insert("G" + Stringmanip::numberToString(*iter+1));
 	}
 	for(iter=contins.begin(); iter != contins.end(); ++iter){
-		cout << "C" << Stringmanip::numberToString(*iter+1) << " ";
+		excluded.insert("C" + Stringmanip::numberToString(*iter+1));
+	}
+	
+	for(set<string>::iterator iter=excluded.begin(); iter != excluded.end();
+		++iter){
+		cout << " " << *iter;
 	}
 	cout << "\n" << endl;
-	
 }
 
