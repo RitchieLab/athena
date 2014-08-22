@@ -29,6 +29,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "TerminalSymbol.h"
 #include <vector>
 #include <Individual.h>
+#include <Dataset.h>
 
 using namespace data_manage;
 
@@ -84,6 +85,8 @@ class IndividualTerm :public TerminalSymbol{
 		
 		inline int getIndex(){return indexValue;}
 		
+		virtual int getNumLevels(Dataset* dataSet){return 3;}
+		
 		static void setInd(Individual* ind);
 		
 		protected:
@@ -105,6 +108,8 @@ class PhenotypeTerm :public IndividualTerm{
 		virtual ~PhenotypeTerm(){}
 		
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
+		
+		virtual int getNumLevels(Dataset* dataSet){return dataSet->getNumStatusLevels();}
 		
 // 		inline int getIndex(){return indexValue;}
 // 		
@@ -150,6 +155,9 @@ class ContinVariable :public IndividualTerm{
 		virtual ~ContinVariable(){}
 		
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
+		
+		virtual int getNumLevels(Dataset* dataSet){return dataSet->getNumLevels(indexValue);}
+		
 // 		static void setInd(Individual* ind);
 		
 // 		inline int getIndex(){return indexValue;}

@@ -91,13 +91,13 @@ void BayesSolutionCreator::establishSolutionEquation(vector<string>& symbols){
 ///
 void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 	
-	int varCount=0;
+	unsigned int varCount=0;
 	for(unsigned int i=0; i<symbols.size(); i++){
-		if(symbols[i][0] == 'G'){
+		if(symbols[i][0] == 'G' || symbols[i][0] == 'C'){
 			varCount++;
 		}
 	}
-	if(varCount > currentSet->numGenos() ){
+	if(varCount > currentSet->numGenos() + currentSet->numCovariates()){
 		throw AthenaExcept("not enough variables");
 	}
 
@@ -308,7 +308,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 		if((*iter)->term->getTermType() == TerminalSymbol::Genotype){
 			genos[(*iter)->term]=1;
 		}
-		else if((*iter)->term->getTermType() == TerminalSymbol::Genotype){
+		else if((*iter)->term->getTermType() == TerminalSymbol::Covariate){
 			covars[(*iter)->term]=1;
 		}
 	}
@@ -685,17 +685,19 @@ void BayesSolutionCreator::evaluateForOutput(Dataset* set){
 void BayesSolutionCreator::setParentScores(Dataset* newSet){
 
 	// check that all variables are genos (or any value that fits in a geno variable)
-	if(newSet->numCovariates() > 0){
-		throw AthenaExcept("Data set includes " + Stringmanip::numberToString(newSet->numCovariates()) + 
-			"  continuous variables and GEBN requires that all values be in the data file.");
-	}
+// 	if(newSet->numCovariates() > 0){
+// 		throw AthenaExcept("Data set includes " + Stringmanip::numberToString(newSet->numCovariates()) + 
+// 			"  continuous variables and GEBN requires that all values be in the data file.");
+// 	}
+	
 	double total=0.0;	
-	unsigned int numGenos = newSet->numGenos();
+	unsigned int numGenos = newSet->numGenos(), numContins = newSet->numCovariates();
 	parentScore.clear();
 	
 	TerminalSymbol * term;
 	double nParams;
 	
+	// calculate genos scores when no parent
 	for(unsigned int gIndex=0; gIndex < numGenos; gIndex++){
 		string genoName = termHolder.getGenoName(gIndex);
 		term = termHolder.getTerm(genoName);
@@ -706,7 +708,20 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		// store with penalty - will be stored as the negative value (actual score)
 		parentScore[term] = -calculator->getScore();
 		total += parentScore[term];
-// cout << "gIndex=" << gIndex << " score=" << parentScore[term] << endl;
+// cout << "gIndex=" << gIndex << " score=" << parentScore[term] << " nParams=" << nParams << endl;
+	}
+	
+	// calculate continuous variable scores when no parent
+	for(unsigned int cIndex=0; cIndex < numContins; cIndex++){
+		string continName = termHolder.getContinName(cIndex);
+		term = termHolder.getTerm(continName);
+		calculator->reset();
+		parentScore[term]=k2calcNoParentContin(cIndex, nParams);
+		parentParams[term]=nParams;
+		calculator->addIndScore(parentScore[term], nParams);
+		parentScore[term] = -calculator->getScore();
+		total += parentScore[term];		
+// cout << "cIndex=" << cIndex << " score=" << parentScore[term] << " nParams=" << nParams << endl;
 	}
 
 	term = termHolder.phenotype();
@@ -716,9 +731,11 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 	parentParams[term] = nParams;
 	calculator->addIndScore(parentScore[term], nParams);
 	parentScore[term] = -calculator->getScore();
+// cout << "pheno score=" << parentScore[term] <<  " nParams=" << nParams << endl;
 	total += parentScore[term];
 // cout << "total score for independent network is " << total << endl;	
 	newSet->setConstant(total);
+// exit(1);
 	// base score will be stored as negative of the K2 (so it will be a positive number)
 }
 
@@ -728,14 +745,15 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 /// @param nP (out) number of parameters in calculation
 ///
 double BayesSolutionCreator::k2calcPhenoNoParent(double& nP){
-	vector<unsigned int> totals(3,0);
+// cout << "pheno number status levels=" << currentSet->getNumStatusLevels() << endl;
+	vector<unsigned int> totals(currentSet->getNumStatusLevels(),0);
 	unsigned int nInds = currentSet->numInds();
 	double result = 0.0;
 
 	for(unsigned int i=0; i < nInds; i++){
 		totals[int(currentSet->getInd(i)->getStatus())]++;
 	}
-
+// cout << "pheno totals 0=>" << totals[0] << " 1=>" << totals[1] << endl;
 	// alpha = 1
 	// imaginary is simply number of levels of totals for K2
 	double imaginary = double(totals.size());
@@ -789,6 +807,41 @@ double BayesSolutionCreator::k2calcNoParent(unsigned int gIndex, double& nP){
 }
 
 ///
+/// Returns k2 score for node without a parent
+/// @param cIndex continuous variable Index for Node
+/// @param nP (out) number of parameters in calculation
+/// @returns k2 score for node
+///
+double BayesSolutionCreator::k2calcNoParentContin(unsigned int cIndex, double& nP){
+	
+	// create empty vector to hold totals
+	vector<unsigned int> totals(currentSet->getNumLevels(cIndex),0);
+	unsigned int nInds = currentSet->numInds();
+	double result = 0.0;
+	
+	for(unsigned int i=0; i < nInds; i++){
+		totals[int(currentSet->getInd(i)->getCovariate(cIndex))]++;
+	}
+	
+	nP =-1;
+	// alpha = 1
+	// imaginary is simply number of levels of totals for K2
+	double imaginary = double(totals.size());
+	double alpha = 1.0;
+	for(unsigned int i=0; i<totals.size(); i++){
+		result += lgamma(totals[i]+alpha); // no need to get gamma of alpha (it is 0)
+		// reduce imaginary when a cell is empty
+		if(totals[i]==0)
+			imaginary--;
+		else
+			nP++;
+	}
+	result += lgamma(imaginary) - lgamma(imaginary + nInds);
+	return result;
+}
+
+
+///
 /// Create parent data combination 
 /// @param parentValues
 /// @param parents
@@ -796,12 +849,22 @@ double BayesSolutionCreator::k2calcNoParent(unsigned int gIndex, double& nP){
 ///
 int BayesSolutionCreator::configParentData(vector<int>& parentValues, vector<IndividualTerm*> &parents){
 	// assume three levels (to hold SNP data)
-	int nLevels = 3;
+// 	int nLevels = 3; // this has to be changed also
+	
+	// set number of levels for each parent
+	vector<int> nLevels(parents.size(), 0);
+	int nl = 1;
+	for(size_t i=0; i<parents.size(); i++){
+		nLevels[i] = parents[i]->getNumLevels(currentSet);
+		nl *= nLevels[i];
+	}
+	
 	vector<int> cumulativeLevels(parents.size(), 1);
 	for(unsigned int i=1; i<cumulativeLevels.size(); i++){
-		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels;
+// 		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels;
+		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels[i-1];
 	}
-	int nl = cumulativeLevels.back() * nLevels;
+// 	int nl = cumulativeLevels.back() * nLevels;
 	deque<float> args;
 	unsigned int nParents = parents.size();
 	Individual* ind;
@@ -832,7 +895,8 @@ double BayesSolutionCreator::k2calcWithParent(IndividualTerm* node, vector<Indiv
 	// construct table with node values and the values for the parent combinations
 	vector<int> parentValues;
 	int parentLevels = configParentData(parentValues, parents);
-	int nodeLevels = 3; // default value assuming SNP data 
+// 	int nodeLevels = 3; // default value assuming SNP data -- need to adjust calculation here
+	int nodeLevels = node->getNumLevels(currentSet);
 	 
 	int imaginary = 0;
 	float alpha = 1.0;

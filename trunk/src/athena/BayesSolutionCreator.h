@@ -151,6 +151,7 @@ protected:
 			std::vector<IndividualTerm*> &parents);
 		
 		double k2calcNoParent(unsigned int gIndex, double& nP);
+		double k2calcNoParentContin(unsigned int cIndex, double& nP);
 		double k2calcPhenoNoParent(double& nP);
 		double k2calcWithParent(IndividualTerm* node, std::vector<IndividualTerm*> &parents,
 			double& nP);

@@ -30,6 +30,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <ctime>
 #include <set>
 #include <algorithm>
+#include <ScaleCategorical.h>
 
 ///
 /// Constructor
@@ -171,6 +172,9 @@ void GEBayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 /// 
 void GEBayes::setDataset(Dataset* newSet){
 	 set = newSet;
+	 ScaleCategorical scaler;
+	 scaler.adjustContin(set);
+	 scaler.adjustStatus(set);
 	 GEObjective::setDataset(set);
 }
 
@@ -669,6 +673,11 @@ int GEBayes::step(){
 /// @param test_set Dataset containing individuals for the test set
 ///
 void GEBayes::testSolution(Dataset* testSet, int nproc){
+	 
+	 // make sure test set is categorical
+	 ScaleCategorical scaler;
+	 scaler.adjustContin(testSet);
+	 scaler.adjustStatus(testSet);
 	 
 	 // use first dataset
 	 set = testSet;

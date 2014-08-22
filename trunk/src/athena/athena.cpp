@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "8/8/2014";
+		string versionDate = "8/19/2014";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -127,18 +127,6 @@ int main(int argc, char** argv) {
 						continReader.readContinFile(config.getContinFileName(), &data,
 										config.getContinMiss(), config.getIDinData());
 				}
-		
-// check variance of input variables
-// 				data.checkVariance();
-// #ifdef PARALLEL
-// 		if(myRank==0){
-// #endif
-// 				if(!data.getExcludedGenotypes().empty() || !data.getExcludedContins().empty()){
-// 					reportExcluded(data.getExcludedGenotypes(), data.getExcludedContins());
-// 				}
-// #ifdef PARALLEL
-// }
-// #endif
 				
 				// if present read map file
 				if(config.getMapName().size() > 0){
@@ -217,35 +205,6 @@ int main(int argc, char** argv) {
 		catch(DataExcept& de){
 			exitApp(de, myRank);
 		}
-
-		// set random seed  before splitting
-// 		srand(config.getRandSeed());
-
-		// construct crossvalidation sets to use in running algorithm
-// 		CrossValidator cvMaker;
-// 		CVSet cvSet;
-// 
-// 	if(config.getSplitFile()==""){
-// 			if(config.getValidationSumFile().empty())
-// 		    cvSet = cvMaker.splitData(config.getNumCV(), &data);
-// 		  else
-// 		  	cvSet = cvMaker.splitData(1, &data);
-// #ifdef PARALLEL
-// 		if(myRank==0){
-// #endif
-// 			if(config.getValidationSumFile().empty())
-// 	    	cvMaker.saveSplits(config.getOutputName() + ".cvsplit");
-// #ifdef PARALLEL
-// 		}
-// #endif
-// 	}
-// 	else{
-// 	    try{
-// 			cvSet = cvMaker.loadSplits(config.getSplitFile(), &data);
-// 		}catch(DataExcept de){
-// 				exitApp(de, myRank);
-// 		}
-// 	}
 	
 					// alter continuous variables and status value
 				scaler = data_manage::ScaledDataFactory::createScaler(config.getStatusAdjust());
@@ -258,8 +217,6 @@ int main(int argc, char** argv) {
 		int numCV = cvSet.numIntervals();
 			 
 		// create algorithm
-// 		vector<AlgorithmParams> algParams= config.getAlgorithmParams();
-// 		Algorithm* alg = AlgorithmFactory::createAlgorithm(algParams[0].name);
 #ifdef PARALLEL
 		alg->setRank(myRank);
 		alg->setTotalNodes(nproc);
