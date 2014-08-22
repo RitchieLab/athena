@@ -89,12 +89,30 @@ public:
 	
 	Dataset operator+(Dataset& d);
 	
+	/// Gets number of levels for a continuous variable
+	unsigned int getNumLevels(unsigned int varIndex){return continLevels[varIndex];}
+	
+	/// Sets number of levels for a continuous variable
+	void setNumLevels(unsigned int varIndex, unsigned int nLevels){
+		if(continLevels.empty())
+			continLevels.resize(numCovariates());
+		continLevels[varIndex]=nLevels;
+	}
+	
+	/// Returns number of levels for phenotype
+	unsigned int getNumStatusLevels(){return statusLevels;}
+	
+	/// Sets number of levels for phenotype
+	void setNumStatusLevels(unsigned int nLevels){statusLevels=nLevels;}	
+	
 private:
 	std::vector<Individual*> inds;
+	std::vector<unsigned int> continLevels;
 	float missingCoValue, ssTotal;
 	int missingGenotype;
 	bool binaryStatusOnly;
 	double constantValue;
+	unsigned int statusLevels;
 
 };
 

@@ -171,6 +171,8 @@ public:
 	/// Returns list of excluded Continuous variables
 	vector<unsigned int> getExcludedContins(){return excludedContin;}
 	
+
+	
 private:
 	std::vector<Individual*> inds;
 	std::vector<std::string> genos;
