@@ -3,12 +3,12 @@ LIBDIR = ../lib/
 LIB= $(LIBDIR)libstat_calc.a
 CFLAGS=  -Wall -Wno-deprecated
 
-OBJS = Descriptive.o AUCcalc.o Spearman.o
+OBJS = Descriptive.o AUCcalc.o Spearman.o KnuthComboGenerator.o
 
-HEADERS = Descriptive.h AUCcalc.h Spearman.h
+HEADERS = Descriptive.h AUCcalc.h Spearman.h KnuthComboGenerator.h
 
 CC          = g++ -O2
-#CC          = g++ -g
+CC          = g++ -g
 PRELINK     =
 LD          = g++ -w
 AR          = ar rv
