@@ -562,7 +562,6 @@ void GENNAlg::getAdditionalFinalOutput(Dataset* set){
   for(unsigned int currInd = 0; currInd < numInds; currInd++){
 		pop[currInd]->setAdditionalOutput(GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd)));
 	}
-	
 }
 
 

@@ -339,16 +339,14 @@ int main(int argc, char** argv) {
 			}
 
 		alg->closeLog();
-// 		vector<string> additValues=alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
 		alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
 		if(numCV > 1){
 			alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
-			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()));
-// 			additValues.insert(additValues.end(), testingValues.begin(), testingValues.end());
+			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()),
+				&(cvSet.getInterval(currCV).getTraining()));
 		}
 			
 			// check population values
-// 	  Population pop = alg->getPopulation();
 	  pops.push_back(alg->getPopulation());
 	  Population& pop = pops.back();
 	  bestSolutions.push_back(pop[0]->clone());

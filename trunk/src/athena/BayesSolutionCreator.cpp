@@ -23,6 +23,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <Stringmanip.h>
 #include "AthenaGrammarSI.h"
+#include <KnuthComboGenerator.h>
+#include "MDR.h"
 
 ///
 /// Constructor
@@ -45,7 +47,10 @@ BayesSolutionCreator::BayesSolutionCreator(vector<string>& symbols){
 void BayesSolutionCreator::initialize(){
 	terminalsSet = false;
 	calculator = NULL;
+	currentSet = NULL;
 	graphicExtension = ".dot";
+	startOpt = "<v>";
+// 	optSymbols.insert("<v>");
 	
 	leftOptBound = '(';
 	rightOptBound = ')';
@@ -228,7 +233,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 				}	
 			}
 
-	
+		
 			// check that parents and children are not the same
 			for(vector<TerminalInfo>::iterator parIter=parents.begin(); parIter != parents.end();
 				++parIter){
@@ -249,6 +254,13 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 				}
 			}
 	
+	
+			set<TerminalSymbol*> parentSet;
+			for(vector<TerminalInfo>::iterator parIter=parents.begin(); parIter != parents.end();
+				++parIter){
+				parentSet.insert(parIter->term);
+			}
+			
 			// set parents to point to children
 			// CODE HERE
 			for(vector<TerminalInfo>::iterator parIter=parents.begin(); parIter != parents.end();
@@ -267,7 +279,8 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 								do{
 									string newSymb = mapper->getNewVariable(newCodon);
 									newTerm = termHolder.getTerm(newSymb);
-								}while(phenoChildren.find(newTerm) != phenoChildren.end());
+								}while(phenoChildren.find(newTerm) != phenoChildren.end() ||
+									parentSet.find(newTerm) != parentSet.end());
 								phenoChildren.insert(parIter->term);
 								parIter->term=newTerm;
 								parIter->newValue = newCodon;
@@ -277,7 +290,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 						}
 						else{ // non-pheno parent and child
 							
-						}						
+						}				
 						network.addConnection(parIter->term, childIter->term);
 				}
 			}
@@ -312,6 +325,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 			covars[(*iter)->term]=1;
 		}
 	}
+// cout << "END establishSolution: ";
 // equationOutput(cout,NULL,false,false,false);
 // cout << endl;
 }
@@ -323,6 +337,136 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 /// @returns indicator of optimization
 ///
 int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Dataset* set){
+	// clear old symbols
+	optValSymbols.clear();
+
+	vector<IndividualTerm*> variables;
+	std::set<IndividualTerm*> phenoOrigParents;
+	size_t combinationSize;
+	
+	for(size_t i=0; i<symbols.size(); i++){
+		TerminalSymbol* currTerm = termHolder.getTerm(symbols[i]);
+		if(currTerm->getTermType() == TerminalSymbol::Genotype ||
+			currTerm->getTermType() == TerminalSymbol::Covariate){
+			variables.push_back( dynamic_cast<IndividualTerm*>(currTerm));
+		}
+		else if(currTerm->getTermType() == TerminalSymbol::Phenotype){
+			combinationSize = variables.size();
+			for(vector<IndividualTerm*>::iterator iter=variables.begin(); iter!=variables.end();
+				++iter){
+				phenoOrigParents.insert(*iter);
+			}
+		}
+	}
+	
+	// no need to try combinations for balanced accuracy as no other combinations possible
+	if(combinationSize == variables.size()){
+		optimizedScore = 1e9;
+		return 0;
+	}
+	
+	// set up combination generator
+	stat::KnuthComboGenerator generator;
+	// set size of models to generate
+  generator.ComboEnds(combinationSize, combinationSize);
+  // set number of loci to use in generating the combinations
+  generator.SetLoci(variables.size());
+  generator.SetComboInterval(10000);
+  generator.initialize_state();
+  bool combosDone = false;
+  vector<IndividualTerm*> modelTerms(combinationSize, NULL), bestTerms;
+  float bestBalAcc=0.0;
+	
+  while(!combosDone){
+  	combosDone = generator.GenerateCombinations();
+  	for(vector<vector<unsigned int> >::iterator iter=generator.ComboList.begin(); iter != generator.ComboList.end();
+  		++iter){
+  		for(size_t i=0; i<iter->size(); i++){
+  			modelTerms[i]=variables[(*iter)[i]-1];
+  		}
+    float balAcc = MDR::calcBalAccuracy(currentSet, currentSet, modelTerms);
+    if(balAcc > bestBalAcc){
+    	bestBalAcc = balAcc;
+    	bestTerms = modelTerms;
+    }
+// cout << "balAcc=" << balAcc << endl;
+  	}
+  }
+
+// for(size_t i=0; i<bestTerms.size(); i++){
+// cout << bestTerms[i]->getLabel() << " ";
+// }
+// cout << " bestBalAcc=" << bestBalAcc << endl;
+	// if find one of best terms and it is not in original pheno Parent terms
+	// swap it with one of the pheno parents in the variables array
+	for(vector<IndividualTerm*>::iterator modelIter=bestTerms.begin(); modelIter != bestTerms.end();
+		++modelIter){
+		std::set<IndividualTerm*>::iterator origIter = phenoOrigParents.find(*modelIter);
+		// model term not in original phenotype parents
+		if(origIter == phenoOrigParents.end()){
+			std::set<IndividualTerm*>::iterator swapIter = phenoOrigParents.begin();
+			
+// cout << "new var=" << (*modelIter)->getLabel() << " swap var=" << (*swapIter)->getLabel() << endl;
+			// in variables find both new and old variables
+			vector<IndividualTerm*>::iterator v1 =  find(variables.begin(), variables.end(), *modelIter);
+			IndividualTerm* tempTerm = *v1;
+			
+			vector<vector<IndividualTerm*>::iterator> v1iters;
+			vector<vector<IndividualTerm*>::iterator> v2iters;
+			
+			while(v1 != variables.end()){
+// cout << (*v1)->getLabel() << endl;
+// cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;
+// 				*v1 = *v2;
+// 				*v2 = tempTerm;
+// cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;				
+// cout << "look for another " << (*modelIter)->getLabel() << endl;
+				v1iters.push_back(v1);
+				v1 = find(v1+1, variables.end(), *modelIter);
+			}
+			
+			vector<IndividualTerm*>::iterator v2 = find(variables.begin(), variables.end(), *swapIter);
+			while(v2 != variables.end()){
+// cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;
+// 				*v1 = *v2;
+// 				*v2 = tempTerm;
+// cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;				
+// cout << "look for another " << (*modelIter)->getLabel() << endl;
+				v2iters.push_back(v2);
+				v2 = find(v2+1, variables.end(), *swapIter);				
+			}
+			IndividualTerm* newv2 = *(v1iters[0]);
+			IndividualTerm* newv1 = *(v2iters[0]);
+			
+		  for(vector<vector<IndividualTerm*>::iterator>::iterator iter=v1iters.begin();
+		  	iter != v1iters.end(); ++iter){
+		  	*(*iter) = newv1;
+		  }
+		  for(vector<vector<IndividualTerm*>::iterator>::iterator iter=v2iters.begin();
+		  	iter != v2iters.end(); ++iter){
+		  	*(*iter) = newv2;
+		  }		  
+			
+			phenoOrigParents.erase(swapIter);
+		}
+	}
+
+	// swap the best parents with variable position
+	symbVector newSymbols;
+	optSymbol tempSymbol;
+	newSymbols.push_back(tempSymbol);
+	tempSymbol.noNT=false;
+	for(vector<IndividualTerm*>::iterator iter=variables.begin(); iter != variables.end();
+		++iter){		
+		newSymbols[0].symbol = (*iter)->getLabel();
+		optValSymbols.push_back(newSymbols);
+// cout << "newSymbols=>" << newSymbols[0].symbol << endl;
+	}
+// cout << "optValSymbols.size=" << optValSymbols.size() << endl;
+	// force replacement in original network
+	// switch this later to reflect need or lack thereof to change
+	optimizedScore = 0.0;
+	
 	return 0;
 }
 
@@ -630,43 +774,46 @@ float BayesSolutionCreator::evaluateWithOutput(Dataset* set, ostream& os){
 /// @param results TestResult vector to contain values
 ///
 void BayesSolutionCreator::evaluateForOutput(Dataset* set){
+	evaluateForOutput(set, set);
+}
+
+///
+/// check whether the current solution is better than the default network
+/// @param set Dataset
+/// @param set Reference set that determines the conditional probabilities
+/// @param results TestResult vector to contain values
+///
+void BayesSolutionCreator::evaluateForOutput(Dataset* set, Dataset* refSet){
 	float score = evaluate(set);
 	
+	addOutputValues.clear();
+	
 	if(score + set->getConstant() > 0){	
-		notImproved = false;
+		addOutputValues.push_back("+");
 	} 
 	else{
-		notImproved = true;
+		addOutputValues.push_back("-");
 	}
-		
-// 		Individual * ind;
-// 		std::vector<stat::TestResult> results;
-// 		
-// 		calculator->reset();
-// 		stat::TestResult tempResult;
-// 		
-// 		int missingInds=0;
-// 		// when missing skip that ind
-// 		for(unsigned int i=0; i < set->numInds(); i++){
-// 				ind = (*set)[i];
-// 							 
-// 				ContinVariable::setInd(ind);
-// 				GenotypeTerm::setInd(ind);       
-// 				if(!useInd(ind, set)){
-// 						missingInds++;
-// 						continue;
-// 				}
-// 				
-// 				tempResult.score = evaluateInd(ind);
-// 				tempResult.status = ind->getStatus();
-// 				results.push_back(tempResult);
-// 		}
-// 		float percentMissing=float(missingInds)/set->numInds() * 100.0;
-// 		stringstream ss;
-// 		ss << percentMissing;
-// 		addOutputValues.clear();
-// 		addOutputValues.push_back(ss.str() + "%");	
-// 		calculator->evaluateAdditionalOutput(results);
+
+// equationOutput(cout,NULL,false,false,false);
+// cout << endl;
+
+	// calculate balanced accuracy
+	// find pheno
+	vector<IndividualTerm*> parents;
+	for(GraphNodeIter iter=network.begin(); iter != network.end(); ++iter){
+		if((*iter)->term->getTermType() == TerminalSymbol::Phenotype){
+			for(GraphNodeIter parIter=(*iter)->parents.begin(); parIter != (*iter)->parents.end();
+				++parIter){
+				parents.push_back(dynamic_cast<IndividualTerm*>((*parIter)->term));
+			}
+			break;
+		}
+	}
+
+	float balAcc = MDR::calcBalAccuracy(currentSet, refSet, parents);
+// cout << "in evaluateForOutput balAcc=" << balAcc << endl;
+	addOutputValues.push_back(Stringmanip::numberToString(balAcc));
 }
 
 
@@ -708,7 +855,6 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		// store with penalty - will be stored as the negative value (actual score)
 		parentScore[term] = -calculator->getScore();
 		total += parentScore[term];
-// cout << "gIndex=" << gIndex << " score=" << parentScore[term] << " nParams=" << nParams << endl;
 	}
 	
 	// calculate continuous variable scores when no parent
@@ -720,8 +866,7 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		parentParams[term]=nParams;
 		calculator->addIndScore(parentScore[term], nParams);
 		parentScore[term] = -calculator->getScore();
-		total += parentScore[term];		
-// cout << "cIndex=" << cIndex << " score=" << parentScore[term] << " nParams=" << nParams << endl;
+		total += parentScore[term];	
 	}
 
 	term = termHolder.phenotype();
@@ -731,12 +876,8 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 	parentParams[term] = nParams;
 	calculator->addIndScore(parentScore[term], nParams);
 	parentScore[term] = -calculator->getScore();
-// cout << "pheno score=" << parentScore[term] <<  " nParams=" << nParams << endl;
 	total += parentScore[term];
-// cout << "total score for independent network is " << total << endl;	
 	newSet->setConstant(total);
-// exit(1);
-	// base score will be stored as negative of the K2 (so it will be a positive number)
 }
 
 
@@ -745,7 +886,6 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 /// @param nP (out) number of parameters in calculation
 ///
 double BayesSolutionCreator::k2calcPhenoNoParent(double& nP){
-// cout << "pheno number status levels=" << currentSet->getNumStatusLevels() << endl;
 	vector<unsigned int> totals(currentSet->getNumStatusLevels(),0);
 	unsigned int nInds = currentSet->numInds();
 	double result = 0.0;
@@ -753,7 +893,6 @@ double BayesSolutionCreator::k2calcPhenoNoParent(double& nP){
 	for(unsigned int i=0; i < nInds; i++){
 		totals[int(currentSet->getInd(i)->getStatus())]++;
 	}
-// cout << "pheno totals 0=>" << totals[0] << " 1=>" << totals[1] << endl;
 	// alpha = 1
 	// imaginary is simply number of levels of totals for K2
 	double imaginary = double(totals.size());
@@ -953,3 +1092,22 @@ void BayesSolutionCreator::setMapper(AthenaGrammarSI* m){
 	mapper = m;
 	mapper->setVariableSymbol("<v>");
 }
+
+///
+/// Generates and return balanced accuracy output
+///@return additional output 
+///
+vector<std::string> BayesSolutionCreator::getAdditionalFinalOutput(){
+// 	vector<std::string> returnValues;
+// 	if(notImproved){
+// 		returnValues.push_back("*");
+// 	}
+// 	else{
+// 		returnValues.push_back(" ");
+// 	}
+// 	
+// 	// placeholder for balanced accuracy results
+// 	returnValues.push_back(" ");		
+	return addOutputValues;
+}
+

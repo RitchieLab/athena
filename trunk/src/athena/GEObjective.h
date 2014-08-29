@@ -70,6 +70,9 @@ public:
 		/// sets the Dataset for objective function to work with
 		static void setDataset(data_manage::Dataset* ds);
 		
+		/// sets the Dataset for reference when calculating additional output
+		static void setRefDataset(data_manage::Dataset* ds);
+		
 		/// sets Solution type for objective function
 		static void setSolutionType(std::string solutionName, std::string calculatorName){
 				solCreator = SolutionFactory::createSolution(solutionName);
@@ -134,7 +137,7 @@ public:
 private:
 
 		static AthenaGrammarSI* mapper;
-		static data_manage::Dataset* set;
+		static data_manage::Dataset* set, *referenceSet;
 		static SolutionCreator* solCreator;
 		static unsigned int maxGenSize;
 		static bool additionalLogging;  

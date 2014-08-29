@@ -97,7 +97,7 @@ class AthenaGrammarSI: public GEGrammarSI{
 		
 		/// Sets genotype for use in optimization
 		vector<codonBlocks> setGenotypeOpt(const GA1DArrayGenome<int> &genome,
-			std::set<string> compressedSet, string startSymbol);
+			std::set<string> compressedSet, string startSymbol, bool singelOpt=false);
 		
 		/// Sets genotype for use in optimization
 		vector<codonBlocks> setGenotypeOpt(const GA1DArrayGenome<int> &genome);
@@ -185,6 +185,7 @@ class AthenaGrammarSI: public GEGrammarSI{
 	 
 		std::set<string> optSymbols, isArg;
 		std::string optStartSymbol;
+		bool optIsSingle;
 
 		// map has key as variable name and value as codon value appropriate for it
 		std::map<std::string, int> variableCodonMap;

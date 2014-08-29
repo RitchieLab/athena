@@ -85,6 +85,8 @@ public:
 			
 	virtual void writeEquation(ostream& os, Solution* sol, data_manage::Dataholder* holder,
 		bool mapUsed, bool ottDummy, bool continMapUsed);
+		
+	virtual void getAdditionalFinalOutput(Dataset* testing, Dataset* training);
 
 	virtual void produceGraphic(std::string inputGraphic, std::string outputGraphic, 
 		std::string imgWriter){}
@@ -140,12 +142,16 @@ protected:
 	
 	void fillLog();
 	
+	void runBalancedAccuracyOptimization();
+	
 	BayesSolution* convertGenome(GAGenome& ind);
 	
 	enum GEBayesParams{
 		noMatchParam,
 		parentRange,
-		childRange
+		childRange,
+		bafreq,
+		bastart
 	};
 	
 	NNLog* geLog;
@@ -155,6 +161,7 @@ protected:
 	std::map<std::string, GEBayesParams> paramMap;	
 	unsigned int restrictStepsDone, minNumParents, maxNumParents, minNumChildren, 
 		maxNumChildren;
+	int balAccStart, balAccFreq, baNextOpt;
 
 	#ifdef PARALLEL
 		GenomeTransfer popMigrator;

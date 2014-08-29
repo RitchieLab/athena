@@ -65,9 +65,13 @@ void GEBayes::initializeParams(){
 	minNumChildren = 1;
 	maxNumParents = 3;
 	maxNumChildren = 2;
+	balAccStart=-1;
+	balAccFreq=0;
 
 	paramMap["CHILDRANGE"] = childRange;
 	paramMap["PARENTRANGE"] = parentRange;
+	paramMap["BAFREQ"] = bafreq;
+	paramMap["BABEGIN"] = bastart;
 	
 }
 
@@ -148,6 +152,12 @@ void GEBayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 							if(minNumChildren < 1)
 								throw AthenaExcept("CHILDRANGE minimum must be 1 or greater");
 							break;
+						case bafreq:
+							balAccFreq = Stringmanip::stringToNumber<int>(mapIter->second);
+							break;
+						case bastart:
+							balAccStart = Stringmanip::stringToNumber<int>(mapIter->second);
+							break;
 #ifdef ATHENA_BLOAT_CONTROL
 						case prunePlantFract:
 #endif
@@ -160,6 +170,7 @@ void GEBayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 		
 		// first optimization of backpropagation 
 // 		bpNextOpt = bpFirstGen;
+		baNextOpt = balAccStart;
 			 
 		setGAParams(excludedGenos, excludedContins);
 		
@@ -184,7 +195,6 @@ void GEBayes::setDataset(Dataset* newSet){
 ///
 void GEBayes::initialize(){
 		restrictStepsDone=0;
-		
 		// free ga if already established
 		freeMemory();
 		
@@ -275,7 +285,14 @@ void GEBayes::initialize(){
 		mapper.setVariableCodonMap();
 		GE1DArrayGenome::setMapper(&mapper);
 		ga->initialize();
-// exit(1);
+		baNextOpt = balAccStart;
+// cout << "baNextOpt=" << baNextOpt << " balAccFreq=" << balAccFreq << endl;
+		// run optimization after initialization when indicated
+		if(baNextOpt == 0){
+			runBalancedAccuracyOptimization();
+			baNextOpt += balAccFreq;
+		}
+		
 		fillPopulation();
 		fillLog();
 }
@@ -378,6 +395,21 @@ vector<string> GEBayes::getAdditionalOutputNames(){
 ///
 void GEBayes::getAdditionalFinalOutput(Dataset* set){
 	GEObjective::setDataset(set);
+	GEObjective::setRefDataset(set);
+	unsigned int numInds = ga->population().size();
+  for(unsigned int currInd = 0; currInd < numInds; currInd++){
+		pop[currInd]->setAdditionalOutput(GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd)));
+	}
+}
+
+
+///
+/// Calculate and return additional output (whether model is better than unconnected 
+///  bayesian network) for best model
+///
+void GEBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* training){
+	GEObjective::setDataset(testing);
+	GEObjective::setRefDataset(training);
 	unsigned int numInds = ga->population().size();
   for(unsigned int currInd = 0; currInd < numInds; currInd++){
 		pop[currInd]->setAdditionalOutput(GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd)));
@@ -413,10 +445,8 @@ void GEBayes::fillLog(){
 			return;
 		}
 
-
 		// add to detailed log files
 		fillPopulation();
-
 
 		unsigned int numInds = ga->population().size();	
 		float worstScore = GEObjective::getWorstScore();
@@ -648,9 +678,22 @@ int GEBayes::step(){
 				 if(ngensBlockCross && restrictStepsDone == ngensBlockCross){
 						resetCrossover();
 				 }
+// cout << "restrictStepsDone=" << restrictStepsDone << endl;
+				 // check to see if the back propagation should be done at this generation
+				 if(int(restrictStepsDone) == baNextOpt && balAccStart >= 0){
+// cout << "restrictStepsDone=" << restrictStepsDone << " running optimization\n";
+						runBalancedAccuracyOptimization();
+						baNextOpt += balAccFreq;
+				 }				 
+				 
 				 fillLog();
-				}
+				}	
 		}
+
+// if(int(restrictStepsDone) == bpNextOpt && bpFirstGen >= 0){
+// runBalancedAccuracyOptimization();
+// bpNextOpt += bpFreqGen;
+// }
 
 		#ifdef PARALLEL
 			popMigrator.sendAndReceiveStruct(totalNodes, myRank,ga);
@@ -665,6 +708,20 @@ int GEBayes::step(){
 		// only need to fill population at this point not at end of each generation
 		fillPopulation();
 		return completed;
+}
+
+
+///
+/// Runs backpropagation on current population of genomes
+///
+void GEBayes::runBalancedAccuracyOptimization(){
+	
+	unsigned int numInds = ga->population().size();
+	
+	for(unsigned int currInd = 0; currInd < numInds; currInd++){
+		GEObjective::optimizeSolution(ga->population().individual(currInd));
+	}
+	ga->evaluatePop();
 }
 
 

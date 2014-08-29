@@ -22,6 +22,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 AthenaGrammarSI* GEObjective::mapper = NULL;
 data_manage::Dataset* GEObjective::set = NULL;
+data_manage::Dataset* GEObjective::referenceSet = NULL;
 SolutionCreator* GEObjective::solCreator = NULL;
 unsigned int GEObjective::maxGenSize = 250;
 bool GEObjective::additionalLogging = false;
@@ -267,7 +268,7 @@ vector<std::string> GEObjective::getAdditionalFinalOutput(GAGenome& g){
 
 	 Phenotype const *phenotype=mapper->getPhenotype();
 	 
-	vector<std::string> outputValues;
+// 	vector<std::string> outputValues;
 
 	 if(phenotype->getValid()){
 			 unsigned int phenoSize=(*phenotype).size();
@@ -283,7 +284,7 @@ vector<std::string> GEObjective::getAdditionalFinalOutput(GAGenome& g){
 				vector<std::string> tmp;
 				return tmp;
 			}
-			solCreator->evaluateForOutput(set);
+			solCreator->evaluateForOutput(set, referenceSet);
 			solCreator->freeSolution();
 			
 			genome.setEffectiveSize(mapper->getGenotype()->getEffectiveSize());   
@@ -306,6 +307,17 @@ void GEObjective::setDataset(data_manage::Dataset* ds){
 }
 
 ///
+/// sets the Dataset for objective function to work with
+///
+void GEObjective::setRefDataset(data_manage::Dataset* ds){
+	referenceSet = ds; 
+// 	if(!set->isCaseControl() && solCreator->getCalculator()->requiresCaseControl()){
+// 		throw AthenaExcept(solCreator->getCalculator()->getName() + " requires a case-control dataset");
+// 	}
+// 	solCreator->setCalculatorConstant(ds);
+}
+
+///
 /// Optimizes current model using process provided by SolutionCreator
 /// @param g GAGenome to optimize
 ///
@@ -316,9 +328,21 @@ void GEObjective::optimizeSolution(GAGenome& g){
 	GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
 	//Assign genotype to mapper
 	vector<AthenaGrammarSI::codonBlocks> blocks = mapper->setGenotypeOpt(genome, 
-	  solCreator->getOptIncluded(), solCreator->getStartOptSymbol());
+	  solCreator->getOptIncluded(), solCreator->getStartOptSymbol(),
+	  solCreator->singleOpt());
 	Phenotype const *phenotype=mapper->getPhenotype();	
-	
+// cout << endl;
+// for(unsigned int i=0; i<blocks.size(); i++){
+// cout << "i=" << i << " block.start=" << blocks[i].start << " block.end=" << blocks[i].end << endl;
+// }
+// unsigned int phenoSize=(*phenotype).size();
+// vector<string> symbols(phenoSize, "");     			 
+// for(unsigned int i=0; i<phenoSize; ++i){
+// symbols[i] = *((*phenotype)[i]);
+// cout << symbols[i] << " ";
+// }
+// cout << endl;
+
 	// run optimization on the model if it is a valid solution
 	if(phenotype->getValid()){
 		unsigned int phenoSize=(*phenotype).size();
@@ -334,7 +358,11 @@ void GEObjective::optimizeSolution(GAGenome& g){
 	 
 		// after optimization, get the new constant list
 		vector<symbVector> newWeights = solCreator->getOptimizedSymbols();
+// cout << "number of newWeights=" << newWeights.size() << endl;
+// cout << "genome.score=" << genome.score() << endl;
+
 		optScore = solCreator->getOptimizedScore();
+// cout << "optScore=" << optScore << endl;
 
 		// skip the optimization if it isn't improving 
 		if(optScore < genome.score()){
@@ -353,6 +381,7 @@ void GEObjective::optimizeSolution(GAGenome& g){
 				// in mapper have function that returns codon list for a specified value
 					newCodons.insert(newCodons.end(), tempCodons.begin(), tempCodons.end());
 					currBlock++;
+
 				}
 				else{
 					newCodons.push_back(genome.gene(i));
@@ -368,14 +397,14 @@ void GEObjective::optimizeSolution(GAGenome& g){
 					genome.gene(i++, *iter);
 				}
 			}
-		
+
 			genome.setNumEpochsTrained(numEpochsTrained);
 
 		// as last step evaluate new genome and set score in it to be new value
 			genome.score(GEObjective::GEObjectiveFunc(genome));
 		}
 	}  	
-
+// exit(1);
 }
 
 ///

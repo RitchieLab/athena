@@ -797,10 +797,11 @@ vector<AthenaGrammarSI::codonBlocks> AthenaGrammarSI::setGenotypeOpt(const GA1DA
 /// later conversion
 ///
 vector<AthenaGrammarSI::codonBlocks> AthenaGrammarSI::setGenotypeOpt(const GA1DArrayGenome<int> &genome,
-	std::set<string> compressedSet, string startSymbol){
+	std::set<string> compressedSet, string startSymbol, bool singleOpt){
 
 	setOptStartSymbol(startSymbol);
 	setOptSymbolSet(compressedSet);
+	optIsSingle = singleOpt;
 	return setGenotypeOpt(genome);
 }
 
@@ -848,16 +849,24 @@ bool AthenaGrammarSI::genotype2PhenotypeOpt(vector<AthenaGrammarSI::codonBlocks>
 	bool gotToUseWrap=false;
 	// Get rid of all non-terminal symbols
 	while((!nonTerminals.empty())&&(wraps<=getMaxWraps())){
+// cout << "non terminals top=" << *(nonTerminals.top()) << endl;
 		// check top of nonTerminals to see if it is the start symbol for optimization
 		if(!inOpt){
 			if(startOptSymbol == nonTerminals.top()){
 				startOptSite = newEffectiveSize;
 				inOpt=true;
+				if(optIsSingle){
+				  inOpt=false;
+				  newBlock.start = startOptSite;
+				  newBlock.end = newEffectiveSize+1;
+				  blocks.push_back(newBlock);
+				}
 			}
 		}
 		else{ // currently running through optimized section of solution
 			// check to see if top of nonTerminals is still in optimized set
 			string ntString = *(nonTerminals.top());
+// cout << "ntString=" << ntString << endl;
 			if(optSymbols.find(ntString) == optSymbols.end()){
 				// found end of the current optimized 
 				inOpt=false;
@@ -1056,13 +1065,23 @@ int AthenaGrammarSI::genotype2PhenotypeStepOpt(stack<const Symbol*> &nonTerminal
 ///
 vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 	 
+	if(optimizedSymb.size() == 1){
+	  // find rhs that matches the value needed then return a codon for it
+	  int codon;
+	  string lhstr;
+	  vector<int> codons(1,0);
+// cout << "get codon for " << optimizedSymb[0].symbol << endl;
+	  getRuleFromProduction(optimizedSymb[0].symbol, lhstr, codons[0]);
+	  return codons;
+	} 
+	 
 	stack<GramElement> terms;
 	stack<GramElement> workingStack;
 	GramElement tempGram;
 	// set up stack of terminal characters
 	for(vector<optSymbol>::reverse_iterator symbIter = optimizedSymb.rbegin(); 
 		symbIter != optimizedSymb.rend(); ++symbIter){
-		 
+// cout << symbIter->symbol << " " << symbIter->noNT << endl;		 
 			tempGram.symbol = symbIter->symbol;
 			tempGram.noNT = symbIter->noNT;
 			terms.push(tempGram);

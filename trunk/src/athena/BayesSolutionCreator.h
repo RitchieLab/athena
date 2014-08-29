@@ -1,5 +1,5 @@
 /*
-Copyright Marylyn Ritchie 2011
+Copyright Marylyn Ritchie 2014
 
 This file is part of ATHENA.
 
@@ -62,16 +62,7 @@ public:
 			return calcNames;
 		}
 		
-		virtual vector<std::string> getAdditionalFinalOutput(){
-			vector<std::string> returnValues;
-			if(notImproved){
-				returnValues.push_back("*");
-			}
-			else{
-				returnValues.push_back(" ");
-			}
-			return returnValues;
-		}
+		virtual vector<std::string> getAdditionalFinalOutput();
 		
 		/// optimize solution by running back propagation
 		int optimizeSolution(std::vector<std::string>& symbols, Dataset* set);
@@ -95,6 +86,9 @@ public:
 		
 		/// evaluate for further output information (such as AUC)
 		virtual void evaluateForOutput(Dataset* set);
+		
+		/// evaluate for further output information (such as AUC)
+		virtual void evaluateForOutput(Dataset* set, Dataset* refSet);
 		
 		/// writes a dot compatible text file representing the network
 		virtual void graphicalOutput(ostream& os, data_manage::Dataholder* holder,
@@ -133,6 +127,8 @@ public:
 		unsigned int getDetailedLog();
 		
 		virtual void setMapper(AthenaGrammarSI* m);
+		
+		virtual bool singleOpt(){return true;}
 
 protected:
 		
@@ -163,7 +159,7 @@ protected:
 		DAGraph network;
 		
 		float optimizedScore;
-		bool terminalsSet, parentScoresSet, notImproved;
+		bool terminalsSet, parentScoresSet;
 		unsigned int nnTerminalSize, nnDepth, numNodes;
 		std::map<TerminalSymbol*, double> parentScore, parentParams;
 		Dataset* currentSet;

@@ -15,7 +15,7 @@ DFLAGS =
 DFLAGS = -DATHENA_BLOAT_CONTROL
 CCFLAGS = $(DFLAGS) -O2 $(INCLUDEDIR)
 #CCFLAGS = -Wall $(DFLAGS) -g $(INCLUDEDIR)
-#CCFLAGS = $(DFLAGS) -g $(INCLUDEDIR)
+CCFLAGS = $(DFLAGS) -g $(INCLUDEDIR)
 
 GALIBLIB = ../galib247/ga
 GELIBLIB = ../libGE-0.26
@@ -40,7 +40,8 @@ SYSOBJS = AlgorithmFactory.o BalAccCalculator.o CalculatorFactory.o Config.o \
 	GAParetoRankSelector.o OptGrammarFactory.o SimpleOptGrammar.o \
 	ComplexOptGrammar.o BayesSolution.o DAGraph.o BayesSolutionCreator.o \
 	GEBayes.o K2Calculator.o K2BICCalculator.o K2AICCalculator.o \
-	BayesModelLog.o SumFileReader.o MeanAbsErrCalculator.o
+	BayesModelLog.o SumFileReader.o MeanAbsErrCalculator.o \
+	MDR.o
 
 SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	CalculatorFactory.h ConfigFileReader.h Config.h \
@@ -60,7 +61,7 @@ SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	OptGrammarFactory.h SimpleOptGrammar.h ComplexOptGrammar.h \
 	OptGrammar.h BayesSolution.h DAGraph.h BayesSolutionCreator.h \
 	GEBayes.h K2Calculator.h K2AICCalculator.h K2BICCalculator.h \
-	BayesModelLog.h SumFileReader.h MeanAbsErrCalculator.h
+	BayesModelLog.h SumFileReader.h MeanAbsErrCalculator.h MDR.h
 
 #ifeq ($(DFLAGS),-DPARALLEL)
 PARALLEL_NEEDED := $(shell echo $(DFLAGS) | cut -f1 -d' ')

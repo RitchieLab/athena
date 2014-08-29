@@ -147,6 +147,11 @@ public:
 		/// Get final values for best model for reporting (such as AUC)
 		virtual	void getAdditionalFinalOutput(Dataset* set){}
 		
+		/// Get final values for testing -- calls training one by default
+		virtual void getAdditionalFinalOutput(Dataset* testing, Dataset* training){
+			getAdditionalFinalOutput(testing);
+		}
+		
 		virtual void setFitnessName(std::string fname){fitnessName = fname;}
 		
 		virtual void setConfigDefaults(Config& configuration,AlgorithmParams& algParam)=0;

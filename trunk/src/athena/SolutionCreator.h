@@ -66,6 +66,11 @@ public:
 		virtual float evaluate(Dataset* set)=0;
 		
 		/// evaluate for further output information (such as AUC)
+		virtual void evaluateForOutput(Dataset* set, Dataset* refSet){
+			evaluateForOutput(set);
+		}
+		
+		/// evaluate for further output information (such as AUC)
 		virtual void evaluateForOutput(Dataset* set)=0;
 		
 		/// adds a solution calculator for determining fitness
@@ -195,6 +200,8 @@ public:
 		map<int, TerminalInfo> getChangedVariables(){return changedVariables;}
 		
 		inline bool anyChangedVariables(){return !changedVariables.empty();}
+		
+		virtual bool singleOpt(){return false;}
 		
 protected:
 		Solution* sol;
