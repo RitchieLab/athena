@@ -31,6 +31,27 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "BayesSolution.h"
 #include <set>
 #include "DAGraph.h"
+#include "ScoreHolder.h"
+
+struct OptScore{
+
+	OptScore(){
+		key = "";
+		sc = 1.01;
+	}
+	
+	OptScore(float ba, std::string k){
+		sc = ba;
+		k = key;
+	}
+
+	std::string key;
+	float sc;
+};
+
+bool operator<(const OptScore& lhs, const OptScore& rhs);// {
+//       return lhs.key < rhs.key;
+// }
 
 class BayesSolutionCreator: public SolutionCreator{
 		
@@ -129,6 +150,9 @@ public:
 		virtual void setMapper(AthenaGrammarSI* m);
 		
 		virtual bool singleOpt(){return true;}
+		
+		float getBalAccuracy(Dataset* s, vector<IndividualTerm*> modelTerms);
+		
 
 protected:
 		
@@ -160,13 +184,16 @@ protected:
 		
 		float optimizedScore;
 		bool terminalsSet, parentScoresSet;
-		unsigned int nnTerminalSize, nnDepth, numNodes;
+		unsigned int nnTerminalSize, nnDepth, numNodes, maximumSetSize;
 		std::map<TerminalSymbol*, double> parentScore, parentParams;
 		Dataset* currentSet;
 // 		vector<TerminalSymbol *> postFixStack;
 		int nIndsEvaluated;
 		string startOpt;
 		std::set<string> optSymbols, optArgSymbols;
+		std::set<OptScore> scoreSet;
+		ScoreHolder savedScores;
+// 		OptScore worstScore;
 		
 		char leftOptBound, rightOptBound;
 		

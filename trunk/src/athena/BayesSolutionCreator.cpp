@@ -24,7 +24,12 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <Stringmanip.h>
 #include "AthenaGrammarSI.h"
 #include <KnuthComboGenerator.h>
+#include <algorithm>
 #include "MDR.h"
+
+bool operator<(const OptScore& lhs, const OptScore& rhs){
+      return lhs.key < rhs.key;
+}
 
 ///
 /// Constructor
@@ -55,6 +60,7 @@ void BayesSolutionCreator::initialize(){
 	leftOptBound = '(';
 	rightOptBound = ')';
 	numNodes=0;
+	maximumSetSize = 500000;
 }
 
 
@@ -74,6 +80,10 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols, Dataset* s
 		if(currentSet != set){
 			currentSet = set;
 			setParentScores(set);
+			scoreSet.clear();
+			savedScores.clear();
+// 			worstScore.key = "";
+// 			worstScore.sc = 1.01;
 		}
 		
 		establishSolution(symbols);
@@ -383,8 +393,9 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
   		++iter){
   		for(size_t i=0; i<iter->size(); i++){
   			modelTerms[i]=variables[(*iter)[i]-1];
-  		}
-    float balAcc = MDR::calcBalAccuracy(currentSet, currentSet, modelTerms);
+  		} 		
+//     float balAcc = MDR::calcBalAccuracy(currentSet, currentSet, modelTerms);
+    float balAcc = getBalAccuracy(currentSet, modelTerms);
     if(balAcc > bestBalAcc){
     	bestBalAcc = balAcc;
     	bestTerms = modelTerms;
@@ -1110,4 +1121,55 @@ vector<std::string> BayesSolutionCreator::getAdditionalFinalOutput(){
 // 	returnValues.push_back(" ");		
 	return addOutputValues;
 }
+
+// float BayesSolutionCreator::getBalAccuracy(Dataset* calcSet, vector<IndividualTerm*>& modelTerms){
+// 
+// 	string key;
+// 	for(vector<IndividualTerm*>::iterator iter=modelTerms.begin(); iter != modelTerms.end();
+// 		++iter){
+// 			key += (*iter)->getLabel() + ":";
+// 	}
+// 	
+// 	OptScore newScore(1.01, key);
+// 	float balAcc;
+// 	std::set<OptScore>::iterator scoreIter = scoreSet.find(newScore);
+// 	if(scoreIter == scoreSet.end()){
+// 	  newScore.sc = MDR::calcBalAccuracy(calcSet, calcSet, modelTerms);
+// 	  if(scoreSet.size() < maximumSetSize){
+// 	  	scoreSet.insert(newScore);
+// 		}
+// 	}
+// 	else{
+// 		newScore = (*scoreIter);
+// 	}
+// 	return newScore.sc;
+// }
+
+///
+/// alternative implementation
+///
+float BayesSolutionCreator::getBalAccuracy(Dataset* calcSet, vector<IndividualTerm*> modelTerms){
+
+
+// for(size_t i=0; i<modelTerms.size(); i++){
+// cout << modelTerms[i]->getLabel() << " ";
+// }
+
+sort(modelTerms.begin(), modelTerms.end());	
+	
+	ScoreHolder::ScoreNode* scNode = savedScores.getScore(modelTerms);
+// cout << "score=" << scNode->sc; //<< endl;
+	if(scNode->sc == ScoreHolder::notFound()){
+// cout << " NOT FOUND ";
+		scNode->sc = MDR::calcBalAccuracy(calcSet, calcSet, modelTerms);
+	}
+// else{
+// 	cout << " FOUND ";
+// }
+// 
+// cout << scNode->sc << endl;
+	return scNode->sc;
+}
+
+
 
