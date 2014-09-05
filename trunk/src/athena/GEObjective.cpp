@@ -96,6 +96,7 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 			else{
 				genome.setSSTotal(set->getSSTotal());
 			}
+/////////////   DEBUG 
 // if(solCreator->anyChangedVariables()){			
 // mapper->setGenotype(genome); 
 // Phenotype const *phenotype=mapper->getPhenotype();			
@@ -105,6 +106,7 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 // }
 // cout << endl; cout << "-------------------------------------------------" << endl;
 // }
+///////////   END DEBUG 
 	 }
 	 else{
 				// set fitness to worst score initially
@@ -349,6 +351,11 @@ void GEObjective::optimizeSolution(GAGenome& g){
 		vector<string> symbols(phenoSize, "");     
 
 		oldScore = genome.score();
+		// network is not optimizable
+		if(oldScore == solCreator->getWorst()){
+// cout << "worst score " << endl;
+			return;
+		}
 
 		for(unsigned int i=0; i<phenoSize; ++i){
 		 symbols[i] = *((*phenotype)[i]);

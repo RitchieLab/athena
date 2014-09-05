@@ -132,6 +132,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 // symbols.push_back(")");
 
 // 
+// cout << "START:";
 // for(unsigned int i=0; i<symbols.size(); i++){
 // cout << symbols[i];
 // }
@@ -288,12 +289,14 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 								int newCodon;
 								do{
 									string newSymb = mapper->getNewVariable(newCodon);
+// cout << "selected newSymb=" << newSymb << endl;
 									newTerm = termHolder.getTerm(newSymb);
 								}while(phenoChildren.find(newTerm) != phenoChildren.end() ||
 									parentSet.find(newTerm) != parentSet.end());
 								phenoChildren.insert(parIter->term);
 								parIter->term=newTerm;
 								parIter->newValue = newCodon;
+								parentSet.insert(parIter->term);
 								changedVariables[parIter->phenoIndex]=TerminalInfo(parIter->term,
 									parIter->phenoIndex, parIter->newValue);
 							}
@@ -349,12 +352,24 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Dataset* set){
 	// clear old symbols
 	optValSymbols.clear();
+	
+// 	unsigned int varCount=0;
+// 	for(unsigned int i=0; i<symbols.size(); i++){
+// 		if(symbols[i][0] == 'G' || symbols[i][0] == 'C'){
+// 			varCount++;
+// 		}
+// 	}
+// 	if(varCount > currentSet->numGenos() + currentSet->numCovariates()){
+// 		throw AthenaExcept("not enough variables");
+// 	}
+	
 
 	vector<IndividualTerm*> variables;
 	std::set<IndividualTerm*> phenoOrigParents;
 	size_t combinationSize;
 	
 	for(size_t i=0; i<symbols.size(); i++){
+// cout << symbols[i] << " ";
 		TerminalSymbol* currTerm = termHolder.getTerm(symbols[i]);
 		if(currTerm->getTermType() == TerminalSymbol::Genotype ||
 			currTerm->getTermType() == TerminalSymbol::Covariate){
@@ -368,7 +383,7 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 			}
 		}
 	}
-	
+// cout << endl;
 	// no need to try combinations for balanced accuracy as no other combinations possible
 	if(combinationSize == variables.size()){
 		optimizedScore = 1e9;
@@ -404,17 +419,30 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
   	}
   }
 
+	modelTerms.clear();
+	for(vector<IndividualTerm*>::iterator modelIter=bestTerms.begin(); modelIter != bestTerms.end();
+		++modelIter){
+		std::set<IndividualTerm*>::iterator origIter = phenoOrigParents.find(*modelIter);
+		if(origIter != phenoOrigParents.end()){
+			phenoOrigParents.erase(origIter);
+		}
+		else{
+			modelTerms.push_back(*modelIter);
+		}
+		
+	}
+
 // for(size_t i=0; i<bestTerms.size(); i++){
 // cout << bestTerms[i]->getLabel() << " ";
 // }
 // cout << " bestBalAcc=" << bestBalAcc << endl;
 	// if find one of best terms and it is not in original pheno Parent terms
 	// swap it with one of the pheno parents in the variables array
-	for(vector<IndividualTerm*>::iterator modelIter=bestTerms.begin(); modelIter != bestTerms.end();
+	for(vector<IndividualTerm*>::iterator modelIter=modelTerms.begin(); modelIter != modelTerms.end();
 		++modelIter){
 		std::set<IndividualTerm*>::iterator origIter = phenoOrigParents.find(*modelIter);
 		// model term not in original phenotype parents
-		if(origIter == phenoOrigParents.end()){
+// 		if(origIter == phenoOrigParents.end()){
 			std::set<IndividualTerm*>::iterator swapIter = phenoOrigParents.begin();
 			
 // cout << "new var=" << (*modelIter)->getLabel() << " swap var=" << (*swapIter)->getLabel() << endl;
@@ -459,7 +487,7 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 		  }		  
 			
 			phenoOrigParents.erase(swapIter);
-		}
+// 		}
 	}
 
 	// swap the best parents with variable position
