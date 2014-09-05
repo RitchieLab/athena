@@ -175,7 +175,8 @@ public:
 		enum SummaryType{
 			True,
 			False,
-			Best
+			Best,
+			All
 		};
 		
 		inline void setSummaryOnly(std::string val){

@@ -348,8 +348,7 @@ void GEBayes::setGAParams(vector<unsigned int>& excludedGenos,
 void GEBayes::fillPopulation(){
 		unsigned int numInds = ga->population().size();
 		// clear solution population
-		pop.clear();
-		
+		pop.clear();		
 		for(unsigned int currInd = 0; currInd < numInds; currInd++){
 				pop.insert(convertGenome(ga->population().individual(currInd)));
 		}

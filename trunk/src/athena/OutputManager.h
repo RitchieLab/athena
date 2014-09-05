@@ -94,13 +94,31 @@ public:
 			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
 			bool continMapUsed);
 		
+		/// output all the models	from run
+		void outputAllModels(Population& pop, int rank, int currPop,
+			string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+			bool continMapUsed, bool testingDone);
+		
 		/// Returns name of summary file
 		std::string getSummaryFileName(){ return basename + ".athena.sum";}
 		
 		/// Returns name of progress file
 		std::string getProgressFileName(){ return basename + ".progress.txt";}
 		
+		/// Combine all mmodels
+		void combineAllModels(int nProcs, int currCV);
+		
 private:
+		
+		struct ModelInfo{
+			int lineNo;
+			float score;
+		};
+		
+		
+		struct ModInfoSorter {
+		  bool operator() (ModelInfo i,ModelInfo j) { return (i.score<j.score);}
+		} mySorter;
 		
 		void fillProgress();
 		

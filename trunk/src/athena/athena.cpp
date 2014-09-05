@@ -375,6 +375,21 @@ int main(int argc, char** argv) {
 		cout << " Completed" << endl;
 	alg->finishLog(config.getOutputName(),currCV+1);
 		int nModels=1;
+
+		// update output when needed
+		if(myRank ==0 or config.getSummaryOnly()==Config::All){
+			if(pop.getConvertScores()){
+				if(numCV > 1)
+						pop.convertScores(&(cvSet.getInterval(currCV).getTraining()), 
+							&(cvSet.getInterval(currCV).getTesting()), alg->getFitnessName());
+				else
+					pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
+			}
+			if(Config::All){
+				writer.outputAllModels(pop, myRank, currCV,scaler->outputScaleInfo(), data, 
+					mapFileUsed, config.getOttEncoded(), continMapUsed, numCV > 1);
+			}
+		}
 		
  #ifdef PARALLEL
 		if(myRank==0){
@@ -382,14 +397,7 @@ int main(int argc, char** argv) {
 			if(config.outputAllNodesBest())
 				nModels = nproc;
 #endif
-	  // update output when needed
-		if(pop.getConvertScores()){
-			if(numCV > 1)
-					pop.convertScores(&(cvSet.getInterval(currCV).getTraining()), 
-						&(cvSet.getInterval(currCV).getTesting()), alg->getFitnessName());
-			else
-				pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
-		}
+
 		writer.outputSummary(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(), continMapUsed,
 				 alg->getFitnessName());
 		writer.outputPareto(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(),
@@ -400,7 +408,7 @@ int main(int argc, char** argv) {
 					mapFileUsed, config.getOttEncoded(), continMapUsed, config.getImgWriter());
 			case Config::Best:
 				writer.outputBestModels(pop, nModels, currCV,scaler->outputScaleInfo(), data, 
-					mapFileUsed, config.getOttEncoded(), continMapUsed); 
+					mapFileUsed, config.getOttEncoded(), continMapUsed);
 			default:
 				;
 		}
@@ -416,7 +424,7 @@ int main(int argc, char** argv) {
 	// add equation output to summary	
 #ifdef PARALLEL
 if(myRank==0){
-#endif		
+#endif
 	writer.outputEquations(alg, bestSolutions, data, mapFileUsed, config.getOttEncoded(), 
 		continMapUsed);
 #ifdef PARALLEL
@@ -471,6 +479,13 @@ if(myRank==0){
 #ifdef PARALLEL
 		if(myRank==0){
 #endif
+		if(config.getSummaryOnly()==Config::All){
+			if(nproc > 1)
+				sleep(5);
+			for(int cv=0; cv < numCV; cv++){
+				writer.combineAllModels(nproc, cv);
+			}
+		}
 		time(&end);
 		double dif = difftime (end,start);
 		cout << "\n\tAnalysis took " << timeDiff(dif) << endl << endl;

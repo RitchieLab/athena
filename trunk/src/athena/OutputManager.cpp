@@ -294,7 +294,7 @@ void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& 
 			for(unsigned int i=0; i<addHeaders.size(); i++){
 				outfile << addHeaders[i] << ":\t" << bestSolution->getAdditionalOutput()[i] << endl;
 			}
-		}
+		}		
 		
 		outfile << "\nModel:" << endl;
 		bestSolution->outputClean(outfile, data, mapFileUsed, dummyEncoded, continMapUsed);
@@ -314,7 +314,8 @@ void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& 
 /// @param mapUsed
 ///
 void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
-	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, bool continMapUsed){
+	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+	bool continMapUsed){
 	
 		Solution* bestSolution;
 			for(int mod=0; mod < nmodels; mod++){
@@ -334,6 +335,14 @@ void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
 				outfile << "Model Rank: " << mod + 1 << endl;
 				outfile << "Training result: " << bestSolution->fitness() << endl;
 				outfile << "Testing result: " << bestSolution->testVal() << endl;
+				if(!addHeaders.empty()){
+					for(unsigned int i=0; i<addHeaders.size(); i++){
+						outfile << "Training-" << addHeaders[i] << ":\t" << bestSolution->getAdditionalOutput()[i] << endl;
+					}
+// 					for(unsigned int i=0; i<addHeaders.size(); i++){
+// 						outfile <<  "Testing-" << addHeaders[i] << ":\t" << bestSolution->getAdditionalOutput()[i + addHeaders.size()] << endl;
+// 					}
+				}
 				outfile << "Model:" << endl;
 				bestSolution->outputClean(outfile, data, mapUsed, ottDummy, continMapUsed);
 				
@@ -341,6 +350,100 @@ void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
 			}
 }
 
+/// 
+/// Output all models for this population in one file
+///
+void OutputManager::outputAllModels(Population& pop, int rank, int currPop,
+	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+	bool continMapUsed, bool testingDone){
+	
+	string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
+		Stringmanip::numberToString(rank+1) + ".all";	
+	ofstream outfile;
+	outfile.open(currFileName.c_str(), ios::out);
+	if(!outfile.is_open()){
+		throw AthenaExcept(currFileName + " unable to open for writing all models");
+	}	
+	outfile << "Model\tTraining\tTesting";
+	for(size_t i=0; i < addHeaders.size(); i++){
+		outfile << "\tTraining-" << addHeaders[i];
+	}	
+	if(testingDone){
+		for(size_t i=0; i < addHeaders.size(); i++){
+			outfile << "\tTesting-" << addHeaders[i];
+		}
+	}
+	outfile << "\n";
+	Solution* bestSolution;
+	for(int mod=0; mod < pop.getPopSize(); mod++){
+		bestSolution = pop[mod];
+		bestSolution->outputClean(outfile, data, mapUsed, ottDummy, continMapUsed);
+		outfile << "\t" << bestSolution->fitness() << "\t" << bestSolution->testVal();
+		for(size_t i=0; i < addHeaders.size(); i++){
+			outfile << "\t" << bestSolution->getAdditionalOutput()[i];
+		}
+		if(testingDone){
+			for(size_t i=0; i < addHeaders.size(); i++){
+				outfile << "\t" << bestSolution->getAdditionalOutput()[i + addHeaders.size()];
+			}
+		}
+		outfile << "\n";
+	}
+}
+
+
+///
+/// Renames all models file (for single) or combines all models for 
+/// multiple files
+///
+void OutputManager::combineAllModels(int nProcs, int currCV){
+	
+	string finalName = basename + ".cv" + Stringmanip::numberToString(currCV+1) + ".all";
+	string currFilename;
+	
+	if(nProcs==1){
+		currFilename =  basename + ".cv" + Stringmanip::numberToString(currCV+1) + ".1.all";
+		string command = "mv " + currFilename + " " + finalName;
+		system(command.c_str());
+	}
+	else{
+		// parse each one
+		string line, header;
+		vector<string> lines;
+		vector<ModelInfo> modInfo;
+		ModelInfo m;
+		std::vector<std::string> linePcs;
+		for(int p = 1; p <= nProcs; p++){
+			currFilename = basename + ".cv" + Stringmanip::numberToString(currCV+1) + "." +
+				Stringmanip::numberToString(p) + ".all";
+			ifstream infile;
+			infile.open(currFilename.c_str());
+			getline(infile, header);
+			while(getline(infile, line)){
+				lines.push_back(line);
+				linePcs = Stringmanip::split(line, '\t');
+				m.lineNo = lines.size()-1;
+				m.score = Stringmanip::stringToNumber<float>(linePcs[1]);
+			}
+			infile.close();
+			remove(currFilename.c_str());
+		}
+		
+		// sort the lines
+		sort(modInfo.begin(), modInfo.end(), mySorter);
+		
+		ofstream outfile;
+		outfile.open(finalName.c_str(), ios::out);
+		outfile << header << "\n";
+		for(vector<ModelInfo>::iterator infoIter = modInfo.begin(); infoIter != modInfo.end();
+			++infoIter){
+			outfile << lines[infoIter->lineNo] << "\n";
+		}
+		outfile.close();
+		
+	}
+	
+}
 
 
 ///

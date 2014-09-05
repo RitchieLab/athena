@@ -278,8 +278,10 @@ vector<std::string> GEObjective::getAdditionalFinalOutput(GAGenome& g){
 
 			for(unsigned int i=0; i<phenoSize; ++i){
 					symbols[i] = *((*phenotype)[i]);
+// cout << symbols[i] << " ";
 			}
 		  try{
+// cout << endl;
 				solCreator->establishSolution(symbols, set);
 			}catch(AthenaExcept& ae){
 				// return empty string as this isn't a valid network
@@ -409,6 +411,7 @@ void GEObjective::optimizeSolution(GAGenome& g){
 
 		// as last step evaluate new genome and set score in it to be new value
 			genome.score(GEObjective::GEObjectiveFunc(genome));
+// cout << "orig=" << oldScore << " k2 score=" << genome.score() << endl;
 		}
 	}  	
 // exit(1);

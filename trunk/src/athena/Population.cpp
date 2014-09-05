@@ -43,6 +43,10 @@ void Population::copy(const Population& other){
 				Solution* sol = currentNode->GetData()->clone();
 				solutions.Insert(currentNode->GetKey(), sol);
 		}
+		
+		Solution* sol = currentNode->GetData()->clone();
+		solutions.Insert(currentNode->GetKey(), sol);
+		
 		currNode = solutions.GetFirst();
 		convScores = other.convScores;
 }

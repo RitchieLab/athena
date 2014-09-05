@@ -66,6 +66,7 @@ void Config::initialize(){
 		summaryMap["TRUE"] = True;
 		summaryMap["FALSE"] = False;
 		summaryMap["BEST"] = Best;
+		summaryMap["ALL"] = All;
 		imgWriter="";
 		startCV = 1;
 		selectBest=false;
