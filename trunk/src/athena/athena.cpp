@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end PARALLEL code block */
 	 
-		string versionDate = "9/3/2014";
+		string versionDate = "9/11/2014";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -351,6 +351,21 @@ int main(int argc, char** argv) {
 	  Population& pop = pops.back();
 	  bestSolutions.push_back(pop[0]->clone());
 
+		// update output when needed
+		if(myRank ==0 or config.getSummaryOnly()==Config::All){
+			if(pop.getConvertScores()){
+				if(numCV > 1)
+						pop.convertScores(&(cvSet.getInterval(currCV).getTraining()), 
+							&(cvSet.getInterval(currCV).getTesting()), alg->getFitnessName());
+				else
+					pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
+			}
+			if(Config::All){
+				writer.outputAllModels(pop, myRank, currCV,scaler->outputScaleInfo(), data, 
+					mapFileUsed, config.getOttEncoded(), continMapUsed, numCV > 1);
+			}
+		}
+
 		int currProc = 0;
 #ifdef PARALLEL
 	if(myRank==0){
@@ -376,20 +391,7 @@ int main(int argc, char** argv) {
 	alg->finishLog(config.getOutputName(),currCV+1);
 		int nModels=1;
 
-		// update output when needed
-		if(myRank ==0 or config.getSummaryOnly()==Config::All){
-			if(pop.getConvertScores()){
-				if(numCV > 1)
-						pop.convertScores(&(cvSet.getInterval(currCV).getTraining()), 
-							&(cvSet.getInterval(currCV).getTesting()), alg->getFitnessName());
-				else
-					pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
-			}
-			if(Config::All){
-				writer.outputAllModels(pop, myRank, currCV,scaler->outputScaleInfo(), data, 
-					mapFileUsed, config.getOttEncoded(), continMapUsed, numCV > 1);
-			}
-		}
+
 		
  #ifdef PARALLEL
 		if(myRank==0){
@@ -480,8 +482,6 @@ if(myRank==0){
 		if(myRank==0){
 #endif
 		if(config.getSummaryOnly()==Config::All){
-			if(nproc > 1)
-				sleep(5);
 			for(int cv=0; cv < numCV; cv++){
 				writer.combineAllModels(nproc, cv);
 			}

@@ -117,7 +117,7 @@ private:
 		
 		
 		struct ModInfoSorter {
-		  bool operator() (ModelInfo i,ModelInfo j) { return (i.score<j.score);}
+		  bool operator() (ModelInfo i,ModelInfo j) { return (i.score>j.score);}
 		} mySorter;
 		
 		void fillProgress();

@@ -23,6 +23,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <iomanip>
 #include <sstream>
 #include <stdio.h>
+#include <algorithm>
 // #include <deque>
 
 using namespace std;
@@ -356,7 +357,6 @@ void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
 void OutputManager::outputAllModels(Population& pop, int rank, int currPop,
 	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
 	bool continMapUsed, bool testingDone){
-	
 	string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
 		Stringmanip::numberToString(rank+1) + ".all";	
 	ofstream outfile;
@@ -424,11 +424,11 @@ void OutputManager::combineAllModels(int nProcs, int currCV){
 				linePcs = Stringmanip::split(line, '\t');
 				m.lineNo = lines.size()-1;
 				m.score = Stringmanip::stringToNumber<float>(linePcs[1]);
+				modInfo.push_back(m);
 			}
 			infile.close();
 			remove(currFilename.c_str());
 		}
-		
 		// sort the lines
 		sort(modInfo.begin(), modInfo.end(), mySorter);
 		

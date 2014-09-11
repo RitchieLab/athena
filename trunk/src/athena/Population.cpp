@@ -64,6 +64,8 @@ void Population::outputTree(){
 			 cout << "tree solution fitness=" << 
 					 currentNode->GetData()->fitness() << endl;
 		}
+		cout << "tree solution fitness=" << 
+				currentNode->GetData()->fitness() << endl;
 }
 
 
@@ -114,6 +116,7 @@ void Population::convertScores(Dataset* train, Dataset* test, string calcName){
 			node = node->GetNext()){
 			node->GetData()->adjustScoreOut(train, test, calcName);
 		}
+		node->GetData()->adjustScoreOut(train, test, calcName);
 }
 
 
@@ -128,6 +131,6 @@ void Population::convertScores(Dataset* train, string calcName){
 			node = node->GetNext()){
 			node->GetData()->adjustScoreOut(train, calcName);
 		}
-
+		node->GetData()->adjustScoreOut(train, calcName);
 }
 

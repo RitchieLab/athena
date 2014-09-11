@@ -1,4 +1,4 @@
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Make ATHENA
 # -----------------------------------------------------------------------------
 
@@ -10,9 +10,9 @@ GEDIR = ../libGE-0.26
 ANNIEDIR = ../annie
 
 INCLUDEDIR = -I. -I$(STATDIR) -I$(DATADIR) -I$(GADIR) -I$(GEDIR) -I$(ANNIEDIR)
-DFLAGS = -DPARALLEL 
-DFLAGS = 
-DFLAGS = -DATHENA_BLOAT_CONTROL
+DFLAGS = -DPARALLEL  -DATHENA_BLOAT_CONTROL
+#DFLAGS = 
+#DFLAGS = -DATHENA_BLOAT_CONTROL
 CCFLAGS = $(DFLAGS) -O2 $(INCLUDEDIR)
 #CCFLAGS = -Wall $(DFLAGS) -g $(INCLUDEDIR)
 #CCFLAGS = $(DFLAGS) -g $(INCLUDEDIR)
@@ -49,7 +49,7 @@ SYSHEADERS = AlgorithmFactory.h Algorithm.h AlgorithmList.h BalAccCalculator.h \
 	AthenaExcept.h InitGEgenome.h MeanSquaredErrCalculator.h NNSolution.h \
 	NNSolutionCreator.h OutputManager.h Population.h rbtree.h \
 	SolutionCalculator.h SolutionCreator.h SolutionFactory.h Solution.h \
-	Terminals.h TerminalSymbCreator.h TerminalSymbol.h  \
+	Terminals.h TerminalSymbCreator.h TerminalSymbol.h \
 	NNSolutionCreatorIncludeAll.h NNSolutionCreatorIncludeOnce.h \
 	ExpressionTree.h Tree.hh AlgorithmLog.h NNLog.h BioFilterReader.h \
 	AthenaGrammarSI.h BioFilterModelCollection.h BackProp.h \
