@@ -360,7 +360,7 @@ int main(int argc, char** argv) {
 				else
 					pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
 			}
-			if(Config::All){
+			if(config.getSummaryOnly()==Config::All){
 				writer.outputAllModels(pop, myRank, currCV,scaler->outputScaleInfo(), data, 
 					mapFileUsed, config.getOttEncoded(), continMapUsed, numCV > 1);
 			}
