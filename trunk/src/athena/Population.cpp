@@ -60,9 +60,8 @@ void Population::outputTree(){
 		SolutionTreeNode* currentNode;
 		for(currentNode = solutions.GetFirst(); currentNode != solutions.GetLast();
 			currentNode = currentNode->GetNext()){
-				// need to create a clone operator 
-			 cout << "tree solution fitness=" << 
-					 currentNode->GetData()->fitness() << endl;
+				// need to create a clone operator
+			cout << "tree solution fitness=" << currentNode->GetData()->fitness() << endl;
 		}
 		cout << "tree solution fitness=" << 
 				currentNode->GetData()->fitness() << endl;

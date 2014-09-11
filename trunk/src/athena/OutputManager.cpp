@@ -380,11 +380,15 @@ void OutputManager::outputAllModels(Population& pop, int rank, int currPop,
 		bestSolution->outputClean(outfile, data, mapUsed, ottDummy, continMapUsed);
 		outfile << "\t" << bestSolution->fitness() << "\t" << bestSolution->testVal();
 		for(size_t i=0; i < addHeaders.size(); i++){
-			outfile << "\t" << bestSolution->getAdditionalOutput()[i];
+			outfile << "\t";
+			if(bestSolution->getAdditionalOutput().size() > i)
+				outfile << bestSolution->getAdditionalOutput()[i];
 		}
 		if(testingDone){
 			for(size_t i=0; i < addHeaders.size(); i++){
-				outfile << "\t" << bestSolution->getAdditionalOutput()[i + addHeaders.size()];
+				outfile << "\t";
+				if(bestSolution->getAdditionalOutput().size() > i + addHeaders.size())
+					outfile << bestSolution->getAdditionalOutput()[i + addHeaders.size()];
 			}
 		}
 		outfile << "\n";
