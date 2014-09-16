@@ -474,7 +474,7 @@ void GEBayes::fillLog(){
 		}
 		geLog->completeGen();
 
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			geLog->sendReceiveLogs(totalNodes, myRank);
 		#endif
 		
@@ -574,7 +574,7 @@ void GEBayes::prepareLog(string basename, int cv){
 				modelLog->setDetailed(true);
 	}
 		
-	#ifdef PARALLEL
+	#ifdef HAVE_CXX_MPI
 		if(myRank==0){
 	#endif
 	
@@ -595,7 +595,7 @@ void GEBayes::prepareLog(string basename, int cv){
 	}
 	
 	
-	#ifdef PARALLEL
+	#ifdef HAVE_CXX_MPI
 		}
 	#endif
 }
@@ -694,7 +694,7 @@ int GEBayes::step(){
 // bpNextOpt += bpFreqGen;
 // }
 
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			popMigrator.sendAndReceiveStruct(totalNodes, myRank,ga);
 
 			// when running in parallel transfer around populations
@@ -757,7 +757,7 @@ std::string GEBayes::getGraphicalFileExt(){
 }
 
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 void GEBayes::setRank(int rank){
   popMigrator.setRank(rank);
                         Algorithm::setRank(rank);

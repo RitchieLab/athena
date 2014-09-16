@@ -37,8 +37,11 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "GENNGrammarAdjuster.h"
 #include "InitGEgenome.h"
 #include "BioFilterModelCollection.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 #define MAX_GENOME_SIZE 100000
 #endif
 
@@ -165,7 +168,7 @@ public:
 		
 		virtual void validationIndOutput(vector<std::stringstream*>& indss, vector<Solution*>& models){}
 		
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			virtual void setRank(int rank){myRank = rank;}
 			int getRank(){return myRank;}
 			void setTotalNodes(int total){totalNodes = total;}

@@ -23,7 +23,11 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
 
-#ifdef PARALLEL
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_CXX_MPI
 #include "mpi.h"
 #endif
 
@@ -41,7 +45,7 @@ class AlgorithmLog{
 		/// Outputs 
 		virtual void outputLog(std::ostream& os)=0;
 		
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			virtual void sendLog()=0; // for slaves
 			virtual void receiveLogs(int nprocs)=0; // for master
 		#endif

@@ -147,7 +147,7 @@ int GESymbReg::step(){
 				}
 		}
 
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			// if restricted variables has been used and are still in effect
 			// need to convert all networks back to original grammar and exchange
 			// then construct new grammar restricted to only variables in the 

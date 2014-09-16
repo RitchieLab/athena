@@ -1,4 +1,5 @@
 #include "GenomeTransfer.h"
+#ifdef HAVE_CXX_MPI
 #include "Algorithm.h"
 #include "InitGEgenome.h"
 #include "GEObjective.h"
@@ -145,3 +146,5 @@ void GenomeTransfer::updateWithMigration(structMPI* mpiGenomes, int totalNodes, 
 	ga->population(pop);
 
 }
+
+#endif /* HAVE_CXX_MPI */

@@ -151,7 +151,7 @@ class NNLog: public AlgorithmLog{
 		
 		void outputMainHeaders(std::ostream& os);
 
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			void sendLog(); // for slaves
 			void receiveLogs(int nprocs); // for master
 			void sendDetailedLog(); // for slaves
@@ -200,7 +200,7 @@ class NNLog: public AlgorithmLog{
 			std::vector<float> allFitness;
 		};
 			 
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			void fillMasterLog(float* recData, int basicSize, float* snps, int snpSize,
 				int nprocs);
 			void fillSendBuffer(float* sendData);

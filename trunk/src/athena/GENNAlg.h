@@ -32,7 +32,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "NNModelLog.h"
 
 #include "Config.h"
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	#include "GenomeTransfer.h"
 #endif
 
@@ -130,7 +130,7 @@ public:
 		
 		virtual void validationIndOutput(vector<std::stringstream*>& indss, vector<Solution*>& models);
 		
- 		#ifdef PARALLEL
+ 		#ifdef HAVE_CXX_MPI
 // 			struct genomeMPI{
 // 				float genomeParams[8];
 // 				int codons[MAX_GENOME_SIZE];
@@ -293,7 +293,7 @@ protected:
 // 		GASimpleGA* ga;
 // 		GENNGrammarAdjuster adjuster;
 		
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			GenomeTransfer popMigrator;
 		#endif
 		

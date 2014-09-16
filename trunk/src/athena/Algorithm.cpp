@@ -55,7 +55,7 @@ void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 								break;
 						case maxSizeParam:
 								maxSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
-								#ifdef PARALLEL
+								#ifdef HAVE_CXX_MPI
 									if(maxSize > MAX_GENOME_SIZE)
 										throw AthenaExcept(mapIter->first + " can be no more than " + 
 											Stringmanip::numberToString<int>(MAX_GENOME_SIZE));

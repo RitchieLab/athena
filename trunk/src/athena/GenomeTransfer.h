@@ -23,6 +23,12 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
  * Created on Fri May  9 11:45:50 CDT 2014 
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_CXX_MPI
+
 #ifndef _GENOMETRANSFER_H
 #define	_GENOMETRANSFER_H
 
@@ -68,3 +74,4 @@ private:
 
 #endif	/* _GENOMETRANSFER_H */
 
+#endif /* HAVE_CXX_MPI */

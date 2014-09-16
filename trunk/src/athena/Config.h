@@ -31,8 +31,11 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include "AthenaExcept.h"
 #include "Structs.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 #include <mpi.h>
 #endif
 

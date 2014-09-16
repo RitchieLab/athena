@@ -143,7 +143,7 @@ void NNLog::outputFitness(std::ostream& os, unsigned int totalPopSize){
 }
 
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 
 	///
 	/// Send and receive all log information using MPI_Gather.  The log information

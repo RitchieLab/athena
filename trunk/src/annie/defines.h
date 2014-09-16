@@ -2,7 +2,7 @@
 #define DEFINES_H
 
 #include <cstdlib>
-#include "config.h"
+//#include "config.h"
 #include <string>
 #include "Exception.h"
 #include <limits>

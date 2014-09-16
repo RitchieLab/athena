@@ -40,6 +40,9 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <ScaledDataFactory.h>
 #include <EncodingFactory.h>
 #include <time.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 void exitApp(AthenaExcept& he, int myRank);
 void exitApp(DataExcept& de, int myRank);
@@ -54,16 +57,15 @@ int main(int argc, char** argv) {
  bool mapFileUsed = false, continMapUsed = false;
  int myRank = 0;
 	 
-#ifdef PARALLEL
-
+#ifdef HAVE_CXX_MPI
 	// set up MPI
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 	
-#endif /* end PARALLEL code block */
+#endif /* end HAVE_CXX_MPI code block */
 	 
-		string versionDate = "9/11/2014";
+		string versionDate = "9/15/2014";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -74,12 +76,12 @@ int main(int argc, char** argv) {
 				exitApp(he, myRank);
 		}
 		else{
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	if(myRank==0){
 #endif
 				time (&start);
 				cout << endl << "\t" << execName << ":\t" << versionDate << endl << endl;
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 				}
 #endif
 		}
@@ -159,12 +161,12 @@ int main(int argc, char** argv) {
 		    cvSet = cvMaker.splitData(config.getNumCV(), &data);
 		  else
 		  	cvSet = cvMaker.splitData(1, &data);
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		if(myRank==0){
 #endif
 			if(config.getValidationSumFile().empty())
 	    	cvMaker.saveSplits(config.getOutputName() + ".cvsplit");
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		}
 #endif
 	}
@@ -178,13 +180,13 @@ int main(int argc, char** argv) {
 	
 	// check variance of input variables
 				data.checkVariance(cvSet);
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		if(myRank==0){
 #endif
 				if(!data.getExcludedGenotypes().empty() || !data.getExcludedContins().empty()){
 					reportExcluded(data.getExcludedGenotypes(), data.getExcludedContins());
 				}
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 }
 #endif
 			 
@@ -217,7 +219,7 @@ int main(int argc, char** argv) {
 		int numCV = cvSet.numIntervals();
 			 
 		// create algorithm
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		alg->setRank(myRank);
 		alg->setTotalNodes(nproc);
 #endif
@@ -245,7 +247,7 @@ int main(int argc, char** argv) {
 		
 				// for validation of existing models
 		if(!config.getValidationSumFile().empty()){
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 			if(myRank==0){
 #endif
 			try{
@@ -274,7 +276,7 @@ int main(int argc, char** argv) {
 					delete indss[i];
 				}
 			}
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 			}
 #endif
 		}
@@ -289,12 +291,12 @@ int main(int argc, char** argv) {
 		for(; currCV < numCV; currCV++){
 			adjustSeed(config, originalSeed,currCV, nproc, myRank);
 			alg->setRand(config.getRandSeed());
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	if(myRank==0){
 #endif
 			cout << "Beginning Cross-validation " << currCV + 1 << "...";
 			cout.flush();
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	}
 #endif
 
@@ -304,7 +306,7 @@ int main(int argc, char** argv) {
 				exitApp(ae, myRank);
 			}
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		if(myRank==0){  // only have master output cv when desired
 #endif
 			// output cv interval when requested
@@ -314,7 +316,7 @@ int main(int argc, char** argv) {
 				if(numCV > 1)
 				oSet.outputCV(config.getOutputName() + ".test.cv", cvSet.getInterval(currCV).getTesting(), currCV+1);
 			}
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	} /* end check for master writing CV splits */
 #endif
 			alg->startLog(data.numGenos());
@@ -367,7 +369,7 @@ int main(int argc, char** argv) {
 		}
 
 		int currProc = 0;
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	if(myRank==0){
 		int lastProc = 1;
 		if(config.outputAllNodesBest())
@@ -384,7 +386,7 @@ int main(int argc, char** argv) {
 				}
 				
 			}
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	}
 #endif 
 		cout << " Completed" << endl;
@@ -393,7 +395,7 @@ int main(int argc, char** argv) {
 
 
 		
- #ifdef PARALLEL
+ #ifdef HAVE_CXX_MPI
 		if(myRank==0){
 
 			if(config.outputAllNodesBest())
@@ -415,21 +417,21 @@ int main(int argc, char** argv) {
 				;
 		}
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 } /* end of output */
 #endif
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		}   /* ends master processing of output */
 #endif
 		}
 		
 	// add equation output to summary	
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 if(myRank==0){
 #endif
 	writer.outputEquations(alg, bestSolutions, data, mapFileUsed, config.getOttEncoded(), 
 		continMapUsed);
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 }
 #endif
 		
@@ -442,7 +444,7 @@ if(myRank==0){
 		else
 			selectSet = cvSet.getInterval(0).getTraining();
 		alg->selectBestModel(bestSolutions, &data, &selectSet, config);
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	if(myRank==0){
 #endif
 
@@ -454,31 +456,31 @@ if(myRank==0){
 				performanceStream << "CV Best" << endl;
 				alg->outputIndEvals(&selectSet, performanceStream, 0);
 			}
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	}
 #endif
 	}
 	}
 	catch(AthenaExcept ae){
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	if(myRank==0)
 #endif
 		cout << ae.what() << endl;
 	}
 	
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		if(myRank==0)
 #endif
 	if(config.getIndOutput())
 			writer.outputInds(performanceStream, config.getOutputName(), alg->getFitnessName());
 	} // end for standard run (no input validation file)
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		MPI_Finalize();
 #endif
 		delete scaler;
 		delete continScaler;
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		if(myRank==0){
 #endif
 		if(config.getSummaryOnly()==Config::All){
@@ -489,7 +491,7 @@ if(myRank==0){
 		time(&end);
 		double dif = difftime (end,start);
 		cout << "\n\tAnalysis took " << timeDiff(dif) << endl << endl;
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 		}
 #endif
 
@@ -525,7 +527,7 @@ std::string timeDiff(double dif){
 void exitApp(AthenaExcept& he, int myRank){
 		if(myRank==0)
 			cout << "\n" << he.what() << endl << endl;;
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	MPI_Finalize();
 #endif
 	exit(EXIT_FAILURE);    
@@ -538,7 +540,7 @@ void exitApp(AthenaExcept& he, int myRank){
 void exitApp(DataExcept& de, int myRank){
 		if(myRank==0)
 			cout << "\nERROR: " << de.what() << endl << endl;;
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	MPI_Finalize();
 #endif
 	exit(EXIT_FAILURE);    

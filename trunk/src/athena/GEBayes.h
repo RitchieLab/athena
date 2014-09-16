@@ -35,7 +35,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "NNLog.h"
 #include "BayesModelLog.h"
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 	#include "GenomeTransfer.h"
 #endif
 
@@ -122,7 +122,7 @@ public:
 	/// Return formatted output for display for final models;
 	virtual	void getAdditionalFinalOutput(Dataset* set);	
 
-	#ifdef PARALLEL
+	#ifdef HAVE_CXX_MPI
 		virtual void setRank(int rank);
 	#endif
 	
@@ -163,7 +163,7 @@ protected:
 		maxNumChildren;
 	int balAccStart, balAccFreq, baNextOpt;
 
-	#ifdef PARALLEL
+	#ifdef HAVE_CXX_MPI
 		GenomeTransfer popMigrator;
 	#endif
 

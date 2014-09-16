@@ -391,7 +391,7 @@ int GENNAlg::step(){
 				 fillLog();
 				 // stop analysis when best model reaches or exceeds the fitness goal
 				 completed = reachedGoal();
-					#ifdef PARALLEL
+					#ifdef HAVE_CXX_MPI
 							completed = popMigrator.nodesCompleted(completed);
 					#endif
 					if(completed){
@@ -400,7 +400,7 @@ int GENNAlg::step(){
 				}
 		}
 
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			// if restricted variables has been used and are still in effect
 			// need to convert all networks back to original grammar and exchange
 			// then construct new grammar restricted to only variables in the 
@@ -496,7 +496,7 @@ void GENNAlg::fillLog(){
 		}
 		geLog->completeGen();
 
-		#ifdef PARALLEL
+		#ifdef HAVE_CXX_MPI
 			geLog->sendReceiveLogs(totalNodes, myRank);
 		#endif
 		
@@ -534,7 +534,7 @@ void GENNAlg::fillLog(){
 void GENNAlg::saveLog(){
 
 	// need to get all slaves logs when running parallel
-	#ifdef PARALLEL
+	#ifdef HAVE_CXX_MPI
 		if(myRank==0)
 			geLog->receiveLogs(totalNodes);
 		else
@@ -1023,7 +1023,7 @@ void GENNAlg::prepareLog(string basename, int cv){
 				modelLog->setDetailed(true);
 	}
 		
-	#ifdef PARALLEL
+	#ifdef HAVE_CXX_MPI
 		if(myRank==0){
 	#endif
 	
@@ -1044,7 +1044,7 @@ void GENNAlg::prepareLog(string basename, int cv){
 	}
 	
 	
-	#ifdef PARALLEL
+	#ifdef HAVE_CXX_MPI
 		}
 	#endif
 }
@@ -1075,7 +1075,7 @@ void GENNAlg::selectBestModel(std::vector<Solution*>& solutions, data_manage::Da
 	  bestContin = bestSelector.getIncludedContins();
 	}
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 //   exchangeBestVariables(totalNodes, myRank, bestGenos, bestContin);
   popMigrator.exchangeBestVariables(totalNodes, myRank, bestGenos, bestContin);
 #endif
@@ -1243,7 +1243,7 @@ std::string GENNAlg::getGraphicalFileExt(){
 
 
 
-#ifdef PARALLEL
+#ifdef HAVE_CXX_MPI
 
 void GENNAlg::setRank(int rank){
   popMigrator.setRank(rank);

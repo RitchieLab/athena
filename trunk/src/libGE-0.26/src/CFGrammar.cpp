@@ -562,7 +562,7 @@ bool CFGrammar::readBNFString(const char *stream){
 						}
 						break;
 					default://Impossible error, quit the program now!
-						cerr << "Internal error.\nPlease report error 'Impossible state in CFGrammar parser' to " << PACKAGE_BUGREPORT << "\n";
+						cerr << "Internal error.\nPlease report error 'Impossible state in CFGrammar parser' to " << LIBGEPACKAGE_BUGREPORT << "\n";
 						exit(0);
 				}
 			}

@@ -18,19 +18,19 @@
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
-#define HAVE_MALLOC 1
+/* #define HAVE_MALLOC 1 */
 
 /* Define to 1 if you have the <memory.h> header file. */
 /* #undef HAVE_MEMORY_H */
 
 /* Define to 1 if stdbool.h conforms to C99. */
-#define HAVE_STDBOOL_H 1
+/* #define HAVE_STDBOOL_H 1 */
 
 /* Define to 1 if you have the <stdint.h> header file. */
 /* #undef HAVE_STDINT_H */
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H 1
+/* #define HAVE_STDLIB_H 1 */
 
 /* Define to 1 if you have the <strings.h> header file. */
 /* #undef HAVE_STRINGS_H */
@@ -51,31 +51,31 @@
 /* #undef HAVE__BOOL */
 
 /* Name of package */
-#define PACKAGE "libGE"
+/* #define PACKAGE "libGE" */
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "miguel.nicolau@gmail.com"
+#define LIBGEPACKAGE_BUGREPORT "miguel.nicolau@gmail.com"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "libGE"
+/* #define PACKAGE_NAME "libGE" */
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libGE 0.26"
+/* #define PACKAGE_STRING "libGE 0.26" */
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "libGE"
+/* #define PACKAGE_TARNAME "libGE" */
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL ""
+/* #define PACKAGE_URL "" */
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.26"
+/* #define PACKAGE_VERSION "0.26" */
 
 /* Define to 1 if you have the ANSI C header files. */
 /* #undef STDC_HEADERS */
 
 /* Version number of package */
-#define VERSION "0.26"
+/* #define VERSION "0.26" */
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */
