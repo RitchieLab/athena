@@ -286,7 +286,6 @@ void GEBayes::initialize(){
 		GE1DArrayGenome::setMapper(&mapper);
 		ga->initialize();
 		baNextOpt = balAccStart;
-// cout << "baNextOpt=" << baNextOpt << " balAccFreq=" << balAccFreq << endl;
 		// run optimization after initialization when indicated
 		if(baNextOpt == 0){
 			runBalancedAccuracyOptimization();
@@ -395,10 +394,18 @@ vector<string> GEBayes::getAdditionalOutputNames(){
 void GEBayes::getAdditionalFinalOutput(Dataset* set){
 	GEObjective::setDataset(set);
 	GEObjective::setRefDataset(set);
+// cout << "getAdditionalFinalOutput" << endl;
+
 	unsigned int numInds = ga->population().size();
   for(unsigned int currInd = 0; currInd < numInds; currInd++){
 		pop[currInd]->setAdditionalOutput(GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd)));
 	}
+
+	// if used the balanced accuracy optimization use that as the sorting for final population 
+// 	if(int(restrictStepsDone) == (baNextOpt - balAccFreq)){
+// 		setBABest();
+// 	}
+	
 }
 
 
@@ -410,10 +417,55 @@ void GEBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* training){
 	GEObjective::setDataset(testing);
 	GEObjective::setRefDataset(training);
 	unsigned int numInds = ga->population().size();
+;
   for(unsigned int currInd = 0; currInd < numInds; currInd++){
 		pop[currInd]->setAdditionalOutput(GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd)));
+// cout << "addoutput: ";
+// for(unsigned int i=0; i<pop[currInd]->getAdditionalOutput().size(); i++){
+// cout << pop[currInd]->getAdditionalOutput()[i] << " ";
+// }
+// cout << endl;
 	}
+
+	// if used the balanced accuracy optimization use that as the sorting for final population 
+	if(int(restrictStepsDone) == (baNextOpt - balAccFreq)){
+		setBABest();
+	}
+}
+
+
+///
+/// Set final best model based on the balanced accuracy if that feature was used
+///
+void GEBayes::setBABest(){
+	float value;
+	vector<Solution*> sols;
+	vector<string> values;
+	vector<float> scores;
 	
+	Solution* sol = pop.GetFirst();
+	while(sol != NULL){
+		sols.push_back(sol);
+		values = sol->getAdditionalOutput();
+		if(!values.empty()){
+			value = Stringmanip::stringToNumber<float>(values[1]);
+// if(values.size() > 2)
+// cout << "training=" << values[1] << " testing=" << values[3] << endl;
+// else
+// cout << "training=" << values[1] << endl;
+			scores.push_back(value);
+		}
+		else{
+			scores.push_back(0.0);
+		}
+		sol = pop.GetNext();
+	}
+	unsigned int numInds = ga->population().size();
+	pop.clearTree();
+	for(unsigned int currInd=0; currInd < numInds; currInd++){
+		pop.insert(sols[currInd], scores[currInd]);
+	}
+// cout << "end setBABest"<<endl;
 }
 
 
@@ -716,11 +768,36 @@ int GEBayes::step(){
 void GEBayes::runBalancedAccuracyOptimization(){
 	
 	unsigned int numInds = ga->population().size();
+
+	vector<string> values;
+	float accuracy, maxAcc=0.0;
+	int bestAccInd = 0;
 	
+// 	GEObjective::setDataset(set);
+	GEObjective::setRefDataset(set);
 	for(unsigned int currInd = 0; currInd < numInds; currInd++){
+// cout << "currInd=" << currInd << " total=" << numInds << endl;
 		GEObjective::optimizeSolution(ga->population().individual(currInd));
+// cout << "finished optimize" << endl;
+		// get additional results -- second will be the training balanced accuracy
+		values = GEObjective::getAdditionalFinalOutput(ga->population().individual(currInd));
+		if(!values.empty()){
+			accuracy = Stringmanip::stringToNumber<float>(values[1]);
+			if(accuracy > maxAcc){
+				bestAccInd = currInd;
+				maxAcc = accuracy;
+			}
+		}
 	}
 	ga->evaluatePop();
+// cout << "bestAcc=" << maxAcc << " best genome index=" << bestAccInd << endl;	
+	GE1DArrayGenome bestOptGenome = (GE1DArrayGenome &)ga->population().individual(bestAccInd);
+	
+	/// get best optimized individual and create a population to hold it
+	GAPopulation tmpPop(bestOptGenome);
+	
+	/// set bestIndividual in stats to match it so it will be passed to nodes
+	ga->statistics().setBestIndividual(tmpPop, gaFalse);
 }
 
 

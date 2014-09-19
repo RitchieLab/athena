@@ -142,6 +142,8 @@ protected:
 	
 	void fillLog();
 	
+	void setBABest();
+	
 	void runBalancedAccuracyOptimization();
 	
 	BayesSolution* convertGenome(GAGenome& ind);

@@ -270,9 +270,11 @@ vector<std::string> GEObjective::getAdditionalFinalOutput(GAGenome& g){
 
 	 Phenotype const *phenotype=mapper->getPhenotype();
 	 
+	 solCreator->clearAdditionalOutput();
 // 	vector<std::string> outputValues;
 
 	 if(phenotype->getValid()){
+// cout << "valid" << endl;
 			 unsigned int phenoSize=(*phenotype).size();
 			 vector<string> symbols(phenoSize, "");     
 
@@ -294,7 +296,7 @@ vector<std::string> GEObjective::getAdditionalFinalOutput(GAGenome& g){
 			genome.setEffectiveSize(mapper->getGenotype()->getEffectiveSize());   
 
 	 }
-
+// cout << "returning " << solCreator->getAdditionalFinalOutput()[0] << " " << solCreator->getAdditionalFinalOutput()[1] << endl;
 	 return solCreator->getAdditionalFinalOutput();	
 }
 
@@ -324,6 +326,7 @@ void GEObjective::setRefDataset(data_manage::Dataset* ds){
 ///
 /// Optimizes current model using process provided by SolutionCreator
 /// @param g GAGenome to optimize
+/// @returns optimized score
 ///
 void GEObjective::optimizeSolution(GAGenome& g){
 

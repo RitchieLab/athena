@@ -103,6 +103,16 @@ void Population::clear(){
 }
 
 
+///
+/// Removes tree but preserves the Solution pointers
+///
+void Population::clearTree(){
+	if(solutions.GetCount() == 0)
+			return;
+	solutions.Clear();	
+}
+
+
 
 ///
 /// converts scores of population

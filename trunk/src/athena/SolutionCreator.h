@@ -199,6 +199,8 @@ public:
 		
 		map<int, TerminalInfo> getChangedVariables(){return changedVariables;}
 		
+		virtual void clearAdditionalOutput(){addOutputValues.clear();}
+		
 		inline bool anyChangedVariables(){return !changedVariables.empty();}
 		
 		virtual bool singleOpt(){return false;}

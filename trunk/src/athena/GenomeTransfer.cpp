@@ -40,7 +40,7 @@ void GenomeTransfer::sendAndReceiveStruct(int totalNodes, int myRank, GASimpleGA
 	GE1DArrayGenome& genome = (GE1DArrayGenome&)ga->statistics().bestIndividual();
 	// package genome Info
 	send->genomeParams[0] = genome.length();
-	send->genomeParams[1] = genome.score();;
+	send->genomeParams[1] = genome.score();
 	send->genomeParams[2] = genome.getEffectiveSize();
 	send->genomeParams[3] = genome.getNumGenes();
 	send->genomeParams[4] = genome.getNumCovars();

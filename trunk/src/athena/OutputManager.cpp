@@ -364,6 +364,7 @@ void OutputManager::outputAllModels(Population& pop, int rank, int currPop,
 	if(!outfile.is_open()){
 		throw AthenaExcept(currFileName + " unable to open for writing all models");
 	}	
+	outfile << "All Models From Final Generation\n";
 	outfile << "Model\tTraining\tTesting";
 	for(size_t i=0; i < addHeaders.size(); i++){
 		outfile << "\tTraining-" << addHeaders[i];
@@ -412,7 +413,7 @@ void OutputManager::combineAllModels(int nProcs, int currCV){
 	}
 	else{
 		// parse each one
-		string line, header;
+		string line, header1, header2;
 		vector<string> lines;
 		vector<ModelInfo> modInfo;
 		ModelInfo m;
@@ -422,7 +423,8 @@ void OutputManager::combineAllModels(int nProcs, int currCV){
 				Stringmanip::numberToString(p) + ".all";
 			ifstream infile;
 			infile.open(currFilename.c_str());
-			getline(infile, header);
+			getline(infile, header1);
+			getline(infile, header2);
 			while(getline(infile, line)){
 				lines.push_back(line);
 				linePcs = Stringmanip::split(line, '\t');
@@ -438,7 +440,7 @@ void OutputManager::combineAllModels(int nProcs, int currCV){
 		
 		ofstream outfile;
 		outfile.open(finalName.c_str(), ios::out);
-		outfile << header << "\n";
+		outfile << header1 << "\n" << header2 << "\n";
 		for(vector<ModelInfo>::iterator infoIter = modInfo.begin(); infoIter != modInfo.end();
 			++infoIter){
 			outfile << lines[infoIter->lineNo] << "\n";

@@ -104,12 +104,18 @@ public:
 		/// copy constructor
 		void copy(const Population& other);
 		
-		/// clears the population
+		/// clears the population and frees memory
 		void clear();
+		
+		/// clears tree but doesn't delete pointers
+		void clearTree();
 		
 		/// Add a solution to the tree
 		void insert(Solution* sol){solutions.Insert(sol->fitness(), sol);currNode=solutions.GetFirst();}
-				
+		
+		/// Add a solution to the tree with specified sort value
+		void insert(Solution * sol, float value){solutions.Insert(value, sol);currNode=solutions.GetFirst();}
+
 		/// outputs all solutions in tree to  check order
 		void outputTree();
 		

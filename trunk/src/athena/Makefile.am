@@ -2,7 +2,7 @@
 # DISTCHECK_CONFIGURE_FLAGS=--disable-loki
 bin_PROGRAMS = athena
 
-AM_CPPFLAGS=-I$(top_srcdir)/src/galib247 -I$(top_srcdir)/src/stat_calc -I$(top_srcdir)/src/data_manage -I$(top_srcdir)/src/libGE-0.26 -I$(top_srcdir)/src/annie
+AM_CPPFLAGS=-I$(top_srcdir)/src/galib247 -I$(top_srcdir)/src/stat_calc -I$(top_srcdir)/src/data_manage -I$(top_srcdir)/src/libGE-0.26 -I$(top_srcdir)/src/annie -DATHENA_BLOAT_CONTROL
 
 athena_SOURCES=AlgorithmFactory.cpp \
 AlgorithmFactory.h \
