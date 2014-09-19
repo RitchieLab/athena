@@ -401,10 +401,11 @@ void OutputManager::outputAllModels(Population& pop, int rank, int currPop,
 /// Renames all models file (for single) or combines all models for 
 /// multiple files
 ///
-void OutputManager::combineAllModels(int nProcs, int currCV){
+void OutputManager::combineAllModels(int nProcs, int currCV, Algorithm* alg){
 	
 	string finalName = basename + ".cv" + Stringmanip::numberToString(currCV+1) + ".all";
 	string currFilename;
+	int sortColumn = alg->allModelSortColumn();
 	
 	if(nProcs==1){
 		currFilename =  basename + ".cv" + Stringmanip::numberToString(currCV+1) + ".1.all";
@@ -429,7 +430,7 @@ void OutputManager::combineAllModels(int nProcs, int currCV){
 				lines.push_back(line);
 				linePcs = Stringmanip::split(line, '\t');
 				m.lineNo = lines.size()-1;
-				m.score = Stringmanip::stringToNumber<float>(linePcs[1]);
+				m.score = Stringmanip::stringToNumber<float>(linePcs[sortColumn]);
 				modInfo.push_back(m);
 			}
 			infile.close();

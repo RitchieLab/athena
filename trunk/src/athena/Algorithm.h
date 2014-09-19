@@ -168,6 +168,8 @@ public:
 		
 		virtual void validationIndOutput(vector<std::stringstream*>& indss, vector<Solution*>& models){}
 		
+				virtual int allModelSortColumn(){return modelSortCol;}
+		
 		#ifdef HAVE_CXX_MPI
 			virtual void setRank(int rank){myRank = rank;}
 			int getRank(){return myRank;}
@@ -284,7 +286,7 @@ protected:
 		std::string fitnessName;
 		
 		vector<AlgorithmLog*> logs;
-		int myRank;
+		int myRank, modelSortCol;
 		AthenaGrammarSI mapper;
 		GENNGrammarAdjuster adjuster;
 		

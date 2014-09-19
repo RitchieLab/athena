@@ -485,7 +485,7 @@ if(myRank==0){
 #endif
 		if(config.getSummaryOnly()==Config::All){
 			for(int cv=0; cv < numCV; cv++){
-				writer.combineAllModels(nproc, cv);
+				writer.combineAllModels(nproc, cv, alg);
 			}
 		}
 		time(&end);

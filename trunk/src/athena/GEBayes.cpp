@@ -438,6 +438,7 @@ void GEBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* training){
 /// Set final best model based on the balanced accuracy if that feature was used
 ///
 void GEBayes::setBABest(){
+	modelSortCol = 4;
 	float value;
 	vector<Solution*> sols;
 	vector<string> values;

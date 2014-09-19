@@ -167,6 +167,7 @@ void Algorithm::initializeParams(){
 	 
 	 myRank = 0;
 	 totalNodes = 1;
+	 modelSortCol = 1;
 	 minSize = 50; // Minimum size for Random Initialization
 	 maxSize = 200; // Maximum size for Random Initialization
 

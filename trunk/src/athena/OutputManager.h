@@ -106,7 +106,7 @@ public:
 		std::string getProgressFileName(){ return basename + ".progress.txt";}
 		
 		/// Combine all mmodels
-		void combineAllModels(int nProcs, int currCV);
+		void combineAllModels(int nProcs, int currCV, Algorithm* alg);
 		
 private:
 		
