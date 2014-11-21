@@ -896,6 +896,12 @@ double BayesSolutionCreator::calcMI(TerminalSymbol* v1, TerminalSymbol* v2, Data
 /// @param set Dataset to use
 ///
 float BayesSolutionCreator::evaluate(Dataset* set){
+
+	 // when only one variable in network set to worst score
+	 if(genos.size() + covars.size()==1){
+	 cout << "only one-- worst possible" << endl;
+		 return getWorst();
+	 }
 	 
 	 nIndsEvaluated = set->numInds();
 	 double score = 0.0;
