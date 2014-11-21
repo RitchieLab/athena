@@ -65,9 +65,8 @@ void BayesSolutionCreator::initialize(){
 
 
 ///
-/// Creates neural network for evaluation
-/// sets up a postfix stack for evaluation of the neural network
-/// @param pheno Phenotype from libGE that can be turned into a neural network
+/// Creates bayesian network for evaluation
+/// @param pheno Phenotype from libGE that can be turned into a bayesian network
 /// @param set Dataset
 ///
 void BayesSolutionCreator::establishSolution(vector<string>& symbols, Dataset* set){
@@ -87,6 +86,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols, Dataset* s
 		}
 		
 		establishSolution(symbols);
+		repairNetwork(set);
 }
 
 ///
@@ -97,24 +97,123 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols, Dataset* s
 ///
 void BayesSolutionCreator::establishSolutionEquation(vector<string>& symbols){
 	establishSolution(symbols);
+	repairNetwork(currentSet);
 }
-
 
 ///
 /// Creates Bayesian network for evaluation
 /// @param symbols Phenotype from libGE that can be turned into a Bayesian network
 ///
 void BayesSolutionCreator::establishSolution(vector<string>& symbols){
+	network.clearNodes();
 	
-	unsigned int varCount=0;
-	for(unsigned int i=0; i<symbols.size(); i++){
-		if(symbols[i][0] == 'G' || symbols[i][0] == 'C'){
-			varCount++;
+	// convert symbols to DAGraph
+// for(size_t i=0; i<symbols.size(); i++){
+// cout << symbols[i] << " ";
+// }
+// cout << endl;
+// throw AthenaExcept("Temporary placeholder");
+// exit(1);
+// stack based
+// push individualterminals (contin or genos) on stack
+// when reach a ')'
+// pop off terminals until reach '('
+// connect all those terminals as children of the next term on the stack
+// push that parent term back on stack as it can be used as a child
+// if the terminal is sc (means sibling connector) connect the next terminal
+// with the previous one (both pushed back on stack)
+	stack<TerminalSymbol*> terminals;
+	TerminalSymbol* currTerm, *nextTerm, *stackTerm;
+	// first terminal is a node that can be pushed on
+	for(size_t symbIndex=0; symbIndex < symbols.size(); symbIndex++){
+  	if(symbols[symbIndex]==" "){
+// 			cout << "skip blank\n";
+      continue;
+  	}
+		TerminalSymbol* currTerm = termHolder.getTerm(symbols[symbIndex]);
+// cout << "currTerm is " << currTerm->getName() << endl;
+		// when it is a connector connect the next terminal with the top
+		// of the stack
+		if(currTerm == termHolder.connector()){
+			stackTerm = terminals.top(); // it will stay on the stack for future operations
+			nextTerm = termHolder.getTerm(symbols[++symbIndex]);
+			// add network connection from stackTerm to nextTerm
+// cout << "add connection " << stackTerm->getName() << " to " << nextTerm->getName() << endl;
+			network.addConnection(stackTerm, nextTerm);
+			// add next Term to the stack
+			terminals.push(nextTerm);
 		}
+		else if(currTerm == termHolder.rightParen()){
+			// pop off terminals until reach left paren
+			// then add connections for each 
+			vector<TerminalSymbol*> toNodes;
+			stackTerm = terminals.top();
+			terminals.pop();
+			while(stackTerm != termHolder.leftParen()){
+				toNodes.push_back(stackTerm);
+				stackTerm = terminals.top();
+				terminals.pop();
+			}
+			// get from Node
+			stackTerm = terminals.top();
+			// add all connections
+// cout << "add connection " << stackTerm->getName() << " to " << currTerm->getName() << endl;
+// 			network.addConnection(stackTerm, currTerm);
+			for(vector<TerminalSymbol*>::iterator iter=toNodes.begin(); iter != toNodes.end();
+				iter++){
+// cout << "add connection " << stackTerm->getName() << " to " << (*iter)->getName() << endl;
+				network.addConnection(stackTerm, *iter);
+			}
+		}
+		else if(currTerm->getTermType() == TerminalSymbol::Genotype ||
+			currTerm->getTermType() == TerminalSymbol::Covariate ||
+			currTerm == termHolder.leftParen()){
+// cout << "push " << currTerm->getName() << endl;
+				terminals.push(currTerm);
+		} 
+		// there is a final type of terminal 'nc' that denotes no connection.  it does not
+		// need to be pushed onto the stack
 	}
-	if(varCount > currentSet->numGenos() + currentSet->numCovariates()){
-		throw AthenaExcept("not enough variables");
-	}
+	
+
+		 
+	// iterate through stack and store covars and genotypes for use in checking
+	// for missing data
+	genos.clear();
+	covars.clear();
+
+	for(GraphNodeIter iter=network.begin(); iter != network.end(); ++iter){
+		if((*iter)->term->getTermType() == TerminalSymbol::Genotype){
+			genos[(*iter)->term]=1;
+		}
+		else if((*iter)->term->getTermType() == TerminalSymbol::Covariate){
+			covars[(*iter)->term]=1;
+		}
+	} 
+
+// network.outputRstring(cout);
+// cout << endl;
+
+}
+
+
+
+///
+/// Creates Bayesian network for evaluation
+/// @param symbols Phenotype from libGE that can be turned into a Bayesian network
+///
+// void BayesSolutionCreator::establishSolution(vector<string>& symbols){
+
+// no longer needed with the repair network approach	
+// 	unsigned int varCount=0;
+// 	for(unsigned int i=0; i<symbols.size(); i++){
+// 		if(symbols[i][0] == 'G' || symbols[i][0] == 'C'){
+// 			varCount++;
+// 		}
+// 	}
+// 	if(varCount > currentSet->numGenos() + currentSet->numCovariates()){
+// 		throw AthenaExcept("not enough variables");
+// 	}
 
 // symbols.clear();
 // symbols.push_back("(");
@@ -144,12 +243,31 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 	// need to propagate changes back to the original genome -- tricky part
   // change vector of symbols	 
 	 
-	set<TerminalSymbol*> included, parentIncluded;
+// 	set<TerminalSymbol*> included, parentIncluded;
+// 
+// 	 stack<TerminalInfo> children;
+// 	 
+// 	 network.clearNodes();
+	 
+// testing the tarjan's implementation
+// string g1="G1", g2="G2", g3="G3", g4="G4";
+// TerminalSymbol* G1Term = termHolder.getTerm(g1);
+// TerminalSymbol* G2Term = termHolder.getTerm(g2);
+// TerminalSymbol* G3Term = termHolder.getTerm(g3);
+// TerminalSymbol* G4Term = termHolder.getTerm(g4);
+// network.addConnection(G2Term, G1Term);
+// network.addConnection(G1Term, G3Term);
+// network.addConnection(G3Term, G2Term);
+// network.addConnection(G1Term, G4Term);
+// network.SCC();
 
-	 stack<TerminalInfo> children;
+// cout << "fixed" << endl;
+// network.removeConnection(G3Term, G2Term);
+// network.SCC();
+
+// exit(1);	 
 	 
-	 network.clearNodes();
-	 
+/*	 
 	 // pop from holder -- should be ')'
 	 // grab the variables within -- all will go onto the children stack until reach '('
 	 // if find a '->' then grab variables until ')' 
@@ -338,10 +456,8 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 			covars[(*iter)->term]=1;
 		}
 	}
-// cout << "END establishSolution: ";
-// equationOutput(cout,NULL,false,false,false);
-// cout << endl;
-}
+*/
+// }
 
 ///
 /// placeholder for optimization method for Bayes Networks
@@ -440,7 +556,7 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 	// swap it with one of the pheno parents in the variables array
 	for(vector<IndividualTerm*>::iterator modelIter=modelTerms.begin(); modelIter != modelTerms.end();
 		++modelIter){
-		std::set<IndividualTerm*>::iterator origIter = phenoOrigParents.find(*modelIter);
+// 		std::set<IndividualTerm*>::iterator origIter = phenoOrigParents.find(*modelIter);
 		// model term not in original phenotype parents
 // 		if(origIter == phenoOrigParents.end()){
 			std::set<IndividualTerm*>::iterator swapIter = phenoOrigParents.begin();
@@ -598,6 +714,181 @@ bool BayesSolutionCreator::useInd(Individual* ind, Dataset* set){
 }
 
 
+///
+/// Repairs network by removing loops
+///
+void BayesSolutionCreator::repairNetwork(Dataset* dSet){
+	while(network.SCC()){
+		// conduct repair
+		std::vector<std::vector<GraphNode*> > loops = network.getLoops();
+		
+		TerminalSymbol* from, *to; 
+		TerminalSymbol* fromBreak, *toBreak;
+		double mutualInfo, worstMI;
+		
+		std::vector<std::vector<GraphNode*> >::iterator loopIter;
+// cout << "number of loops=" << loops.size() << endl;
+		for(loopIter = loops.begin(); loopIter != loops.end(); ++loopIter){
+			worstMI = 1e10;
+			set<TerminalSymbol*> loopTerminals;
+// cout << "LOOP terminals: ";
+			for(size_t i=0; i<(*loopIter).size(); ++i){
+				// store all terminals that are part of loop
+// cout << (*loopIter)[i]->term->getName() << " ";
+				loopTerminals.insert((*loopIter)[i]->term);
+			}
+// cout << "\n";
+				
+			// for each terminal in the set calculate MI for each connection
+			// to another terminal in the set -- future optimization is don't repeat calculations
+			for(size_t i=0; i<(*loopIter).size(); ++i){
+				for(set<GraphNode*>::iterator childIter=(*loopIter)[i]->children.begin(); childIter != (*loopIter)[i]->children.end();
+					++childIter){
+						
+						// calculate only if child is in the loop
+						if(loopTerminals.find((*childIter)->term)!=loopTerminals.end()){
+							from = ((*loopIter)[i])->term;
+							to = (*childIter)->term;
+							mutualInfo = calcMI(from, to, dSet);
+							if(mutualInfo < worstMI){
+								toBreak = to;
+								fromBreak = from;
+								worstMI = mutualInfo;
+							}
+						}
+					}
+				}
+				
+				// the two nodes will be the from node and the to node before it
+				// index 1 is the from node and index 0 is the to node for example
+// 				from = ((*loopIter)[i])->term;
+// 				to = ((*loopIter)[i-1])->term;
+// 				mutualInfo = calcMI(from, to, dSet);
+// cout << from->getLabel() << "->" << to->getLabel() << " ";
+// // cout << " worstMI=" << worstMI << " mutualInfo=" << mutualInfo << endl;
+// 				if(mutualInfo < worstMI){
+// 					toBreak = to;
+// 					fromBreak = from;
+// 					worstMI = mutualInfo;
+// 				}
+// 			}
+// cout << "removing " << toBreak->getLabel() << " from " << fromBreak->getLabel() << endl;
+			network.removeConnection(fromBreak, toBreak);
+// network.outputRstring(cout);
+// cout << "\n";
+		}
+	}
+
+// cout << "EXIT repairNetwork" << endl;
+}
+
+
+///
+/// Calculate mutual information for a pair of variables
+/// @param v1 
+/// @param v2
+///
+double BayesSolutionCreator::calcMI(TerminalSymbol* v1, TerminalSymbol* v2, Dataset* dSet){
+	double mutualInfo=0.0;
+	
+	vector<IndividualTerm*> terms(2,NULL);
+	terms[0] = static_cast<IndividualTerm*>(v1);
+	terms[1] = static_cast<IndividualTerm*>(v2);
+// 	int parentLevels = configParentData(combinedValues, terms);
+	
+	// need total of each individual 
+	// need total of combination
+	// loop through each individuals and add the individual totals
+	// add the combination total
+	// assume three levels (to hold SNP data)
+// 	int nLevels = 3; // this has to be changed also
+	
+	// set number of levels for each parent
+	vector<int> nLevels(terms.size(), 0);
+	int nl = 1;
+	for(size_t i=0; i<terms.size(); i++){
+		nLevels[i] = terms[i]->getNumLevels(currentSet);
+		nl *= nLevels[i];
+	}
+
+	vector<int> combinedTotals(nl,0);
+	size_t v1Levels = terms[0]->getNumLevels(currentSet);
+	size_t v2Levels = terms[1]->getNumLevels(currentSet);
+	vector<int> v1Totals(v1Levels, 0);
+	vector<int> v2Totals(v2Levels, 0);
+
+	
+	vector<int> cumulativeLevels(terms.size(), 1);
+	for(unsigned int i=1; i<cumulativeLevels.size(); i++){
+		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels[i-1];
+	}
+
+	deque<float> args;
+// 	unsigned int nTerms = terms.size();
+	Individual* ind;
+	unsigned int N = currentSet->numInds();
+	
+
+	
+	for(unsigned int i=0; i < currentSet->numInds(); i++){
+		ind = (*currentSet)[i];
+		IndividualTerm::setInd(ind);
+
+		int value = 0;
+// 		for(unsigned int j=0; j < terms; j++){
+		value += terms[0]->evaluate(args) * cumulativeLevels[0];
+		v1Totals[terms[0]->evaluate(args)]++;
+			
+// 		}
+		value += terms[1]->evaluate(args) * cumulativeLevels[1];
+		v2Totals[terms[1]->evaluate(args)]++;
+		
+// 		parentValues.push_back(value);
+		combinedTotals[value]++;
+	}
+
+// cout << "N=" << N << endl;
+// cout << "\t0\t1\t2\n";
+// cout << v1->getName();
+// for(size_t i=0; i<v1Totals.size(); i++){
+// 	cout << "\t" << v1Totals[i];
+// }	
+// cout << "\n";
+// cout << v2->getName();
+// for(size_t i=0; i<v2Totals.size(); i++){
+// 	cout << "\t" << v2Totals[i];
+// }
+// cout << "\n";
+// cout << "totals=" << N << endl;
+// for(size_t i=0; i<v1Totals.size(); i++){
+// 	for(size_t j=0; j<v2Totals.size(); j++){
+// 		cout << "i=" << i << " j=" << j;
+// 		int index = i * cumulativeLevels[0] + j * cumulativeLevels[1];
+// 		cout << " tot=" << combinedTotals[index] << endl;
+// 	}
+// }
+	
+	// calculate mutual information
+	// for each combination 
+	int index;
+	for(unsigned int i=0; i<v1Levels; i++){
+		for(unsigned int j=0; j<v2Levels; j++){
+			index = i * cumulativeLevels[0] + j * cumulativeLevels[1];
+// cout << "v1 " << i << "=" << v1Totals[i] << endl;
+// cout << "v2 " << j << "=" << v1Totals[j] << endl;
+			if(combinedTotals[index] > 0){
+				mutualInfo += combinedTotals[index] / double(N) * log(N*combinedTotals[index]/double(v1Totals[i]*v2Totals[j]));
+			}
+// cout << "i=" << i << " j=" << j << " tot=" << combinedTotals[index] << " mi=" << mutualInfo << endl;
+// cout << "first part=" << combinedTotals[index] / double(N) << endl;
+// cout <<  "second part without log=" << N*combinedTotals[index]/double(v1Totals[i]*v2Totals[j]) << endl;
+// cout << "second part=" << log(N*combinedTotals[index]/double(v1Totals[i]*v2Totals[j])) << endl;
+		}
+	}
+	return mutualInfo;
+}
+
+
 
 ///
 /// Evaluates the bayesian network and returns the K2 score
@@ -704,70 +995,102 @@ void BayesSolutionCreator::graphicalOutput(ostream& os, data_manage::Dataholder*
 	network.outputDot(os,holder,mapUsed,ottDummy, continMapUsed);
 }
 
+
 void BayesSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* holder,
-			bool mapUsed, bool ottDummy, bool continMapUsed){
-			
-		// traverse the network and output it
-		// find the phenotype
-		GraphNodeIter phenoIter = network.begin();
-		for(; phenoIter != network.end(); ++phenoIter){
-			if((*phenoIter)->term == termHolder.phenotype()){
-				break;
-			}
-		}
-		
-		GraphNodeIter phenoParentsEnd = (*phenoIter)->parents.end();
-		bool first = true;
-		string starter = "(", finish="";
-		// first output all the phenotype parents
-		for(GraphNodeIter iter=(*phenoIter)->parents.begin(); iter != phenoParentsEnd; 
-			++iter){
-			if(first){
-				os << starter;
-				first=false;
-			}
-			os << getLabel(iter, holder) << " ";
-			finish = ")->";
-		}
-		os << finish << "pheno";
-		if((*phenoIter)->children.size() > 0){
-			os << "->(";
-			for(GraphNodeIter childIter=(*phenoIter)->children.begin(); 
-				childIter != (*phenoIter)->children.end(); ++childIter){			
-				first = true;
-				finish ="";
-				if((*childIter)->parents.size() > 1){
-					finish = ")->";
-					for(GraphNodeIter childParentIter=(*childIter)->parents.begin(); 
-						childParentIter != (*childIter)->parents.end(); ++childParentIter){	
-						if((*childParentIter)->term == (*phenoIter)->term)
-							continue;
-						if(first){
-							os << starter;
-							first=false;
-						}
-						os << getLabel(childParentIter, holder) << " ";
-					}
-					os << finish;
+ 			bool mapUsed, bool ottDummy, bool continMapUsed){
+ 		string genoPrefix="", continPrefix="";
+ 				
+ 		for(GraphNodeIter netIter = network.begin(); netIter != network.end(); ++netIter){
+ 			os << "[" << getLabel(netIter, holder,mapUsed, continMapUsed);
+ 			if(!(*netIter)->parents.empty()){
+ 				os << "|";
+ 				GraphNodeIter parentIter=(*netIter)->parents.begin();
+ 				os << getLabel(parentIter, holder, mapUsed, continMapUsed);
+ 				++parentIter;
+				for(;parentIter != (*netIter)->parents.end(); ++parentIter){
+					os << ":" << getLabel(parentIter, holder, mapUsed, continMapUsed);
 				}
-				os << getLabel(childIter, holder) << " ";
-			}
-			os << ")";
-		}
-		
+ 			}
+ 			os << "]";
+ 		}	
 }
+
+
+// void BayesSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* holder,
+// 			bool mapUsed, bool ottDummy, bool continMapUsed){
+// 			
+// 		// traverse the network and output it
+// 		// find the phenotype
+// 		GraphNodeIter phenoIter = network.begin();
+// 		for(; phenoIter != network.end(); ++phenoIter){
+// 			if((*phenoIter)->term == termHolder.phenotype()){
+// 				break;
+// 			}
+// 		}
+// 		
+// 		GraphNodeIter phenoParentsEnd = (*phenoIter)->parents.end();
+// 		bool first = true;
+// 		string starter = "(", finish="";
+// 		// first output all the phenotype parents
+// 		for(GraphNodeIter iter=(*phenoIter)->parents.begin(); iter != phenoParentsEnd; 
+// 			++iter){
+// 			if(first){
+// 				os << starter;
+// 				first=false;
+// 			}
+// 			os << getLabel(iter, holder) << " ";
+// 			finish = ")->";
+// 		}
+// 		os << finish << "pheno";
+// 		if((*phenoIter)->children.size() > 0){
+// 			os << "->(";
+// 			for(GraphNodeIter childIter=(*phenoIter)->children.begin(); 
+// 				childIter != (*phenoIter)->children.end(); ++childIter){			
+// 				first = true;
+// 				finish ="";
+// 				if((*childIter)->parents.size() > 1){
+// 					finish = ")->";
+// 					for(GraphNodeIter childParentIter=(*childIter)->parents.begin(); 
+// 						childParentIter != (*childIter)->parents.end(); ++childParentIter){	
+// 						if((*childParentIter)->term == (*phenoIter)->term)
+// 							continue;
+// 						if(first){
+// 							os << starter;
+// 							first=false;
+// 						}
+// 						os << getLabel(childParentIter, holder) << " ";
+// 					}
+// 					os << finish;
+// 				}
+// 				os << getLabel(childIter, holder) << " ";
+// 			}
+// 			os << ")";
+// 		}
+// 		
+// }
 
 ///
 /// @param node GraphNodeIter
 /// @returns variable index
 ///
-string BayesSolutionCreator::getLabel(GraphNodeIter& node, Dataholder* holder){ 
+string BayesSolutionCreator::getLabel(GraphNodeIter& node, Dataholder* holder,
+	bool mapUsed, bool continMapUsed){ 
 	string name = (*node)->term->getName();
 	stringstream ss(name.substr(1,name.length()-1));	
 	int num;
 	ss >> num;
+// cout << "holder=" << holder << " genoname="<< holder->getGenoName(num-1) << endl;
 	if(holder != NULL)
-		return holder->getGenoName(num-1);
+		if((*node)->term->getTermType()==TerminalSymbol::Genotype)
+			if(!mapUsed)
+				return "G" +  holder->getGenoName(num-1);
+			else
+				return holder->getGenoName(num-1);
+		else
+			if(!continMapUsed)
+				return "C" + holder->getCovarName(num-1);
+			else
+				return holder->getCovarName(num-1);
 	else
 		return ss.str();
 }
@@ -836,7 +1159,7 @@ void BayesSolutionCreator::evaluateForOutput(Dataset* set, Dataset* refSet){
 
 // equationOutput(cout,NULL,false,false,false);
 // cout << endl;
-
+/*
 	// calculate balanced accuracy
 	// find pheno
 	vector<IndividualTerm*> parents;
@@ -853,6 +1176,7 @@ void BayesSolutionCreator::evaluateForOutput(Dataset* set, Dataset* refSet){
 	float balAcc = MDR::calcBalAccuracy(currentSet, refSet, parents);
 // cout << "in evaluateForOutput balAcc=" << balAcc << endl;
 	addOutputValues.push_back(Stringmanip::numberToString(balAcc));
+*/
 }
 
 
@@ -893,9 +1217,11 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		calculator->addIndScore(parentScore[term], nParams);
 		// store with penalty - will be stored as the negative value (actual score)
 		parentScore[term] = -calculator->getScore();
+// cout << term->getName() << " score=" << parentScore[term] << endl;
 		total += parentScore[term];
 	}
-	
+
+
 	// calculate continuous variable scores when no parent
 	for(unsigned int cIndex=0; cIndex < numContins; cIndex++){
 		string continName = termHolder.getContinName(cIndex);
@@ -905,17 +1231,19 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		parentParams[term]=nParams;
 		calculator->addIndScore(parentScore[term], nParams);
 		parentScore[term] = -calculator->getScore();
+// cout << term->getName() << " score=" << parentScore[term] << endl;
 		total += parentScore[term];	
 	}
+// cout << "total=" << total << endl;
 
-	term = termHolder.phenotype();
+// 	term = termHolder.phenotype();
 	// set value for Phenotype without parents
-	calculator->reset();
-	parentScore[term] = k2calcPhenoNoParent(nParams);
-	parentParams[term] = nParams;
-	calculator->addIndScore(parentScore[term], nParams);
-	parentScore[term] = -calculator->getScore();
-	total += parentScore[term];
+// 	calculator->reset();
+// 	parentScore[term] = k2calcPhenoNoParent(nParams);
+// 	parentParams[term] = nParams;
+// 	calculator->addIndScore(parentScore[term], nParams);
+// 	parentScore[term] = -calculator->getScore();
+// 	total += parentScore[term];
 	newSet->setConstant(total);
 }
 

@@ -27,7 +27,7 @@ K2AICCalculator::K2AICCalculator(){
 		name = "K2-AIC";
 		kTerm = 1.0;
 		outputNames.push_back("not-improved");
-		outputNames.push_back("bal-acc");
+// 		outputNames.push_back("bal-acc");
 }
 
 

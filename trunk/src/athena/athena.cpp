@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 	
 #endif /* end HAVE_CXX_MPI code block */
 	 
-		string versionDate = "9/15/2014";
+		string versionDate = "11/17/2014";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -363,7 +363,7 @@ int main(int argc, char** argv) {
 					pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
 			}
 			if(config.getSummaryOnly()==Config::All){
-				writer.outputAllModels(pop, myRank, currCV,scaler->outputScaleInfo(), data, 
+				writer.outputAllModels(alg, pop, myRank, currCV,scaler->outputScaleInfo(), data, 
 					mapFileUsed, config.getOttEncoded(), continMapUsed, numCV > 1);
 			}
 		}
@@ -407,6 +407,7 @@ int main(int argc, char** argv) {
 		writer.outputPareto(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(),
 			continMapUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
 		switch(config.getSummaryOnly()){
+			case Config::All:
 			case Config::False:
 				writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data, 
 					mapFileUsed, config.getOttEncoded(), continMapUsed, config.getImgWriter());

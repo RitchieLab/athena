@@ -60,7 +60,6 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 				}catch(AthenaExcept& ae){
 					fitness = solCreator->getWorst();
 	  			 genome.clearScores();
-// cout << "failed: fitness=" << fitness << endl;
 	  			 return fitness;
 				}
 

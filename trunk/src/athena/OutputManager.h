@@ -95,7 +95,7 @@ public:
 			bool continMapUsed);
 		
 		/// output all the models	from run
-		void outputAllModels(Population& pop, int rank, int currPop,
+		void outputAllModels(Algorithm* alg, Population& pop, int rank, int currPop,
 			string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
 			bool continMapUsed, bool testingDone);
 		

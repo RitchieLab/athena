@@ -167,6 +167,10 @@ protected:
 		
 		void setParentScores(Dataset* set);
 		
+		void repairNetwork(Dataset* dSet);
+		
+		double calcMI(TerminalSymbol* v1, TerminalSymbol* v2, Dataset* dSet);
+		
 		int configParentData(std::vector<int>& parentValues, 
 			std::vector<IndividualTerm*> &parents);
 		
@@ -176,7 +180,7 @@ protected:
 		double k2calcWithParent(IndividualTerm* node, std::vector<IndividualTerm*> &parents,
 			double& nP);
 		
-		std::string getLabel(GraphNodeIter& node, Dataholder* holder);
+		std::string getLabel(GraphNodeIter& node, Dataholder* holder,bool mapUsed, bool continMapUsed);
 		
 		TerminalSymbCreator termHolder;
 		

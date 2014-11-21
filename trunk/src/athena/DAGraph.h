@@ -28,6 +28,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <set>
 #include <map>
+#include <stack>
 #include "Terminals.h"
 #include <Dataholder.h>
 
@@ -48,12 +49,20 @@ public:
 	/// connects graphnode from with node containing to
 	void addConnection(TerminalSymbol* from, TerminalSymbol* to);
 	
+	/// removes connection 
+	void removeConnection(TerminalSymbol* from, TerminalSymbol* to);
+	
+	/// returns loops
+	std::vector<std::vector<GraphNode*> > getLoops(){return loops;}
+	
 	/// adds new GraphNode to graph
 	GraphNode* addNode(TerminalSymbol* term);
 	
 	/// output tree in dot language
 	void outputDot(ostream & out, data_manage::Dataholder* holder,
 		bool mapUsed, bool ottDummy, bool continMapUsed);
+	
+	void outputRstring(ostream & out);
 	
 	void clearNodes();
 	
@@ -63,13 +72,22 @@ public:
 	GraphNodeIter begin(){return nodes.begin();}
 	GraphNodeIter end(){return nodes.end();}
 	
+	/// Tarjan's strongly connected components -- adapted from http://www.geeksforgeeks.org/tarjan-algorithm-find-strongly-connected-components/
+	bool SCC();
+	
 private:
+// int u, int disc[], int low[], stack<int> *st,
+//                     bool stackMember[])
+	void SCCUtil(int u, vector<int>& disc, vector<int>& low, stack<int>* st,
+		vector<bool>& stackMember, vector<GraphNode*>& nodeVec, int* time,
+		map<GraphNode*, int>& nodeMap);
 
 	std::string alterLabel(data_manage::Dataholder* holder,
 		bool mapUsed, bool ottDummy, std::string label);
 
 	std::map<TerminalSymbol*, GraphNode*> termMap;
 	std::set<GraphNode*> nodes;
+	std::vector<std::vector<GraphNode*> > loops;
 	
 };
 

@@ -354,7 +354,7 @@ void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
 /// 
 /// Output all models for this population in one file
 ///
-void OutputManager::outputAllModels(Population& pop, int rank, int currPop,
+void OutputManager::outputAllModels(Algorithm* alg, Population& pop, int rank, int currPop,
 	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
 	bool continMapUsed, bool testingDone){
 	string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
@@ -365,7 +365,7 @@ void OutputManager::outputAllModels(Population& pop, int rank, int currPop,
 		throw AthenaExcept(currFileName + " unable to open for writing all models");
 	}	
 	outfile << "All Models From Final Generation\n";
-	outfile << "Model\tTraining\tTesting";
+	outfile << "Model\tEquation\tTraining\tTesting";
 	for(size_t i=0; i < addHeaders.size(); i++){
 		outfile << "\tTraining-" << addHeaders[i];
 	}	
@@ -379,6 +379,12 @@ void OutputManager::outputAllModels(Population& pop, int rank, int currPop,
 	for(int mod=0; mod < pop.getPopSize(); mod++){
 		bestSolution = pop[mod];
 		bestSolution->outputClean(outfile, data, mapUsed, ottDummy, continMapUsed);
+		outfile << "\t";
+		try{
+			alg->writeEquation(outfile, pop[mod], &data, mapUsed, ottDummy, continMapUsed);
+		}catch(AthenaExcept& ae){
+			outfile << "incomplete";
+		}
 		outfile << "\t" << bestSolution->fitness() << "\t" << bestSolution->testVal();
 		for(size_t i=0; i < addHeaders.size(); i++){
 			outfile << "\t";
@@ -451,7 +457,6 @@ void OutputManager::combineAllModels(int nProcs, int currCV, Algorithm* alg){
 	}
 	
 }
-
 
 ///
 /// returns a stream for writing

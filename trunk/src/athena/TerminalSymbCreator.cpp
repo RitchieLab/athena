@@ -178,6 +178,7 @@ void TerminalSymbCreator::createTerminals(int numGenotypes,
 	terminalMap["tan"] = new Tangent("Tangent", 1);
 	terminalMap["Bias"] = new BiasTerm("Bias", 0);
 	terminalMap["->"] = new TerminalSymbol("^", 0);
+	terminalMap["nc"] = new TerminalSymbol("nc",0);
 	terminalMap["pheno"] = new PhenotypeTerm("Pheno");
 	
 	// set the special terminals for quick access

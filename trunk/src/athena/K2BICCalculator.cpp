@@ -27,7 +27,7 @@ K2BICCalculator::K2BICCalculator(){
 		name = "K2-BIC";
 		kTerm = 1.0;
 		outputNames.push_back("not-improved");
-		outputNames.push_back("bal-acc");
+// 		outputNames.push_back("bal-acc");
 }
 
 

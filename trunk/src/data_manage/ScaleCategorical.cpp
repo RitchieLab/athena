@@ -51,9 +51,23 @@ void ScaleCategorical::adjustContin(Dataholder* holder){
 ///
 void ScaleCategorical::adjustContin(Dataset* dataset){
 	for(unsigned int c=0; c < dataset->numCovariates(); c++){
-cout << "adjusting contin " << c << endl;
 		adjustContin(dataset, c);
 	}
+	
+// 	Individual* ind;
+// 	for(size_t currInd = 0; currInd < dataset->numInds(); currInd++){
+// 		ind = dataset->getInd(currInd);
+// // 		if(ind->getCovariate(varIndex) == holder->getMissingCoValue()){
+// // 			continue;
+// // 		}
+// // 		int oldvalue = ind->getCovariate(varIndex);
+// // 		ind->setCovariate(varIndex, conversion[oldvalue]);		
+// 		for(unsigned int c=0; c < dataset->numCovariates(); c++){
+// 			cout << ind->getCovariate(c) << " ";
+// 		}
+// 		cout << "\n";
+// 	}		
+// exit(1);
 }
 
 
@@ -111,7 +125,6 @@ void ScaleCategorical::adjustContin(Dataholder* holder, unsigned int varIndex){
 void ScaleCategorical::adjustContin(Dataset* dataset, unsigned int varIndex){
 	unsigned int currInd, numInds = dataset->numInds();
 	Individual* ind;
-
 	set<int> uniqueValues;
 
 	for(currInd = 0; currInd < numInds; currInd++){
@@ -138,7 +151,7 @@ void ScaleCategorical::adjustContin(Dataset* dataset, unsigned int varIndex){
 			continue;
 		}
 		int oldvalue = ind->getCovariate(varIndex);
-		ind->setCovariate(varIndex, conversion[oldvalue]);		
+		ind->setCovariate(varIndex, conversion[oldvalue]);
 	}
 	dataset->setNumLevels(varIndex, conversion.size());
 }

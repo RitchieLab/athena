@@ -314,8 +314,9 @@ void GEBayes::setGAParams(vector<unsigned int>& excludedGenos,
 	 //Set maximum number of wrapping events per mapping
 	 mapper.setMaxWraps(wrapEvents);
 	 expandVariables();
-	 adjuster.setBayesianSize(minNumParents, maxNumParents, minNumChildren, 
-			maxNumChildren);
+	 // ADJUSTING GRAMMAR -- can be added back for the new discriminant network grammar
+// 	 adjuster.setBayesianSize(minNumParents, maxNumParents, minNumChildren, 
+// 			maxNumChildren);
 		// remove any excluded SNPs and/or continuous variables
 		if(!excludedGenos.empty() || !excludedContins.empty())
 			excludeVariables(excludedGenos, excludedContins);
@@ -438,7 +439,7 @@ void GEBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* training){
 /// Set final best model based on the balanced accuracy if that feature was used
 ///
 void GEBayes::setBABest(){
-	modelSortCol = 4;
+	modelSortCol = 5;
 	float value;
 	vector<Solution*> sols;
 	vector<string> values;

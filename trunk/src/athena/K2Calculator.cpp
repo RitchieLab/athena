@@ -26,7 +26,7 @@ K2Calculator::K2Calculator(){
 		reset();
 		name = "K2";
 		outputNames.push_back("not-improved");
-		outputNames.push_back("bal-acc");
+// 		outputNames.push_back("bal-acc");
 }
 
 
