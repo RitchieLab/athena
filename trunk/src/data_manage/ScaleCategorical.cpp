@@ -53,21 +53,6 @@ void ScaleCategorical::adjustContin(Dataset* dataset){
 	for(unsigned int c=0; c < dataset->numCovariates(); c++){
 		adjustContin(dataset, c);
 	}
-	
-// 	Individual* ind;
-// 	for(size_t currInd = 0; currInd < dataset->numInds(); currInd++){
-// 		ind = dataset->getInd(currInd);
-// // 		if(ind->getCovariate(varIndex) == holder->getMissingCoValue()){
-// // 			continue;
-// // 		}
-// // 		int oldvalue = ind->getCovariate(varIndex);
-// // 		ind->setCovariate(varIndex, conversion[oldvalue]);		
-// 		for(unsigned int c=0; c < dataset->numCovariates(); c++){
-// 			cout << ind->getCovariate(c) << " ";
-// 		}
-// 		cout << "\n";
-// 	}		
-// exit(1);
 }
 
 
@@ -177,6 +162,15 @@ void ScaleCategorical::adjustStatus(Dataholder* holder){
 		}
 	}
 	
+	
+	if(uniqueValues.size() ==2 && uniqueValues.find(1) != uniqueValues.end() && uniqueValues.find(0) != 
+		uniqueValues.end()){
+		return;
+	}
+	else if(uniqueValues.size()==1 && uniqueValues.find(1) != uniqueValues.end()){
+		return;
+	}
+	
 	map<int, int> conversion;
 	int conv=0;
 	for(set<int>::iterator iter=uniqueValues.begin(); iter != uniqueValues.end();
@@ -201,27 +195,31 @@ void ScaleCategorical::adjustStatus(Dataholder* holder){
 /// @param holder Dataset 
 ///
 void ScaleCategorical::adjustStatus(Dataset* dataset){
-// cout << "adjusting status" << endl;
 	unsigned int currInd, numInds = dataset->numInds();
 	Individual* ind;
 	set<int> uniqueValues;
 	originalVals.clear();
-// cout << "numInds=" << numInds << endl;	
 	for(currInd = 0; currInd < numInds; currInd++){
 		ind = dataset->getInd(currInd);
 		int value = int(ind->getStatus());
 		if(uniqueValues.find(value) == uniqueValues.end()){
-// cout << "unique value=" << value << endl;
 			uniqueValues.insert(value);
 			originalVals[value]=ind->getStatus();
 		}
 	}
 	
+	if(uniqueValues.size() ==2 && uniqueValues.find(1) != uniqueValues.end() && uniqueValues.find(0) != 
+		uniqueValues.end()){
+		return;
+	}
+	else if(uniqueValues.size()==1 && uniqueValues.find(1) != uniqueValues.end()){
+		return;
+	}	
+	
 	map<int, int> conversion;
 	int conv=0;
 	for(set<int>::iterator iter=uniqueValues.begin(); iter != uniqueValues.end();
 		++iter){
-// cout << *iter << " => " << conv << endl;
 		conversion[*iter]=conv;
 		conv++;
 	}

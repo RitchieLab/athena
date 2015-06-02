@@ -151,9 +151,13 @@ public:
 		virtual	void getAdditionalFinalOutput(Dataset* set){}
 		
 		/// Get final values for testing -- calls training one by default
-		virtual void getAdditionalFinalOutput(Dataset* testing, Dataset* training){
+// 		virtual void getAdditionalFinalOutput(Dataset* testing, Dataset* training){
+// 			getAdditionalFinalOutput(testing);
+// 		}
+		virtual void getAdditionalFinalOutput(Dataset* testing, Dataset* training,
+			data_manage::Dataholder* holder, bool mapUsed, bool ottDummy, bool continMapUsed){
 			getAdditionalFinalOutput(testing);
-		}
+		}		
 		
 		virtual void setFitnessName(std::string fname){fitnessName = fname;}
 		
@@ -173,7 +177,7 @@ public:
 		#ifdef HAVE_CXX_MPI
 			virtual void setRank(int rank){myRank = rank;}
 			int getRank(){return myRank;}
-			void setTotalNodes(int total){totalNodes = total;}
+			virtual void setTotalNodes(int total){totalNodes = total;}
 			int getTotalNodes(){return totalNodes;}
 		#endif
 		

@@ -175,8 +175,6 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 		// need to be pushed onto the stack
 	}
 	
-
-		 
 	// iterate through stack and store covars and genotypes for use in checking
 	// for missing data
 	genos.clear();
@@ -899,7 +897,7 @@ float BayesSolutionCreator::evaluate(Dataset* set){
 
 	 // when only one variable in network set to worst score
 	 if(genos.size() + covars.size()==1){
-	 cout << "only one-- worst possible" << endl;
+// 	 cout << "only one-- worst possible" << endl;
 		 return getWorst();
 	 }
 	 
@@ -1020,7 +1018,6 @@ void BayesSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* 
  			os << "]";
  		}	
 }
-
 
 // void BayesSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* holder,
 // 			bool mapUsed, bool ottDummy, bool continMapUsed){

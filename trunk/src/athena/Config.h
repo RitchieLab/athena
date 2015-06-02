@@ -179,7 +179,8 @@ public:
 			True,
 			False,
 			Best,
-			All
+			All,
+			Suppress
 		};
 		
 		inline void setSummaryOnly(std::string val){

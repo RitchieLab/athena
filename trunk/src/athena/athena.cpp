@@ -62,10 +62,9 @@ int main(int argc, char** argv) {
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-	
 #endif /* end HAVE_CXX_MPI code block */
 	 
-		string versionDate = "11/17/2014";
+		string versionDate = "5/17/2015";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -283,7 +282,7 @@ int main(int argc, char** argv) {
 		else{ 
 				
 		int currCV=config.getStartCV()-1;
-	if(currCV==0){
+	if(currCV==0 and config.getSummaryOnly()!=Config::Suppress){
 		writer.setFiles(mapFileUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
 	}
 
@@ -341,11 +340,14 @@ int main(int argc, char** argv) {
 			}
 
 		alg->closeLog();
+	
 		alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
+
 		if(numCV > 1){
 			alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
 			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()),
-				&(cvSet.getInterval(currCV).getTraining()));
+				&(cvSet.getInterval(currCV).getTraining()), &data, mapFileUsed, config.getOttEncoded(), 
+				continMapUsed);
 		}
 			
 			// check population values
@@ -402,20 +404,22 @@ int main(int argc, char** argv) {
 				nModels = nproc;
 #endif
 
-		writer.outputSummary(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(), continMapUsed,
+		if(config.getSummaryOnly()!=Config::Suppress){
+			writer.outputSummary(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(), continMapUsed,
 				 alg->getFitnessName());
-		writer.outputPareto(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(),
+			writer.outputPareto(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(),
 			continMapUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
-		switch(config.getSummaryOnly()){
-			case Config::All:
-			case Config::False:
-				writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data, 
-					mapFileUsed, config.getOttEncoded(), continMapUsed, config.getImgWriter());
-			case Config::Best:
-				writer.outputBestModels(pop, nModels, currCV,scaler->outputScaleInfo(), data, 
-					mapFileUsed, config.getOttEncoded(), continMapUsed);
-			default:
+			switch(config.getSummaryOnly()){
+				case Config::All:
+				case Config::False:
+					writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data, 
+						mapFileUsed, config.getOttEncoded(), continMapUsed, config.getImgWriter());
+				case Config::Best:
+					writer.outputBestModels(pop, nModels, currCV,scaler->outputScaleInfo(), data, 
+						mapFileUsed, config.getOttEncoded(), continMapUsed);
+				default:
 				;
+			}
 		}
 
 #ifdef HAVE_CXX_MPI
@@ -430,8 +434,10 @@ int main(int argc, char** argv) {
 #ifdef HAVE_CXX_MPI
 if(myRank==0){
 #endif
-	writer.outputEquations(alg, bestSolutions, data, mapFileUsed, config.getOttEncoded(), 
-		continMapUsed);
+	if(config.getSummaryOnly()!=Config::Suppress){
+		writer.outputEquations(alg, bestSolutions, data, mapFileUsed, config.getOttEncoded(), 
+			continMapUsed);
+	}
 #ifdef HAVE_CXX_MPI
 }
 #endif

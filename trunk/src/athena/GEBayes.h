@@ -86,7 +86,8 @@ public:
 	virtual void writeEquation(ostream& os, Solution* sol, data_manage::Dataholder* holder,
 		bool mapUsed, bool ottDummy, bool continMapUsed);
 		
-	virtual void getAdditionalFinalOutput(Dataset* testing, Dataset* training);
+	virtual void getAdditionalFinalOutput(Dataset* testing, Dataset* training,
+		data_manage::Dataholder* holder, bool mapUsed, bool ottDummy, bool continMapUsed);
 
 	virtual void produceGraphic(std::string inputGraphic, std::string outputGraphic, 
 		std::string imgWriter){}

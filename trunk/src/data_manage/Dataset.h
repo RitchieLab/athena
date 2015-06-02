@@ -105,6 +105,9 @@ public:
 	/// Sets number of levels for phenotype
 	void setNumStatusLevels(unsigned int nLevels){statusLevels=nLevels;}	
 	
+	/// Splits dataset into 2 new case/control sets
+	std::vector<Dataset*> splitCaseControl();
+	
 private:
 	std::vector<Individual*> inds;
 	std::vector<unsigned int> continLevels;

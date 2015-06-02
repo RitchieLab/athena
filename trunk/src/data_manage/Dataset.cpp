@@ -110,5 +110,22 @@ Dataset Dataset::operator+(Dataset& d){
 	return newSet;
 }
 
+///
+/// Splits dataset into 2 new ones
+///
+vector<Dataset*> Dataset::splitCaseControl(){
+	vector<Dataset*> splitSets;
+	Dataset* caseSet = new Dataset;
+	Dataset* controlSet = new Dataset;
+	splitSets.push_back(controlSet);
+	splitSets.push_back(caseSet);
+	for(unsigned int i=0; i<inds.size(); i++){
+		splitSets[int(inds[i]->getStatus())]->addInd(inds[i]);
+	}
+	
+
+	return splitSets;
+}
+
 
 }
