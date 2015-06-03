@@ -348,6 +348,7 @@ int main(int argc, char** argv) {
 			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()),
 				&(cvSet.getInterval(currCV).getTraining()), &data, mapFileUsed, config.getOttEncoded(), 
 				continMapUsed);
+// exit(1);
 		}
 			
 			// check population values

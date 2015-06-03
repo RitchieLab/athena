@@ -36,8 +36,10 @@ int GenomeTransfer::nodesCompleted(int complete){
 void GenomeTransfer::sendAndReceiveStruct(int totalNodes, int myRank, GASimpleGA* ga){
 
 	structMPI * send = new structMPI;
+// cout << "myRank=" << myRank << " sendAndReceiveStruct started totalNodes=" << totalNodes << endl;
 	GE1DArrayGenome& genome = (GE1DArrayGenome&)ga->statistics().bestIndividual();
 	// package genome Info
+// cout << "myRank=" << myRank << " best ind score=" << genome.score() << endl;
 	send->genomeParams[0] = genome.length();
 	send->genomeParams[1] = genome.score();
 	send->genomeParams[2] = genome.getEffectiveSize();
@@ -54,7 +56,9 @@ void GenomeTransfer::sendAndReceiveStruct(int totalNodes, int myRank, GASimpleGA
 	
 	// prepare receiving array
 	structMPI * recv = new structMPI[totalNodes];
+// cout << "myRank=" << myRank << " calling MPI_Allgather" << endl;	
 	MPI_Allgather (send, sizeof(*send), MPI_BYTE, recv, sizeof(*send), MPI_BYTE, MPI_COMM_WORLD);
+// cout << "myRank=" << myRank << " calling updateWithMigration" << endl;
 	updateWithMigration(recv, totalNodes, myRank, ga);
 	
 	delete send;
@@ -110,6 +114,7 @@ void GenomeTransfer::exchangeBestVariables(int totalNodes, int myRank, vector<in
 void GenomeTransfer::updateWithMigration(structMPI* mpiGenomes, int totalNodes, int myRank,
 	GASimpleGA* ga){
 	GAPopulation pop(ga->population());
+// cout << "myRank=" << myRank << " number of models in pop=" << pop.size() << endl;	
 	for(int node=0; node < totalNodes; node++){
 		if(myRank==node){
 			continue;
@@ -134,6 +139,7 @@ void GenomeTransfer::updateWithMigration(structMPI* mpiGenomes, int totalNodes, 
 		
 		delete tmpInd;
 	}
+// cout << "myRank=" << myRank << " after adding new genomes to population" << endl;
 	// remove worst individuals from population
 	for(int i=0; i < totalNodes-1; i++)
 		pop.destroy();
