@@ -433,7 +433,7 @@ if(myRank == 0){
 double GEDiscrimBayes::setPredictedScores(vector<IndResults>& indScores, map<string,modScores>& caseModels,
 	map<string,modScores>& controlModels, double caseRatio){
 	
-	double caseScore, conScore;
+	long double caseScore, conScore;
 	int sIndex, totalCount;
 	stat::TestResult tempResult;
 	std::vector<stat::TestResult> results;
@@ -446,7 +446,7 @@ double GEDiscrimBayes::setPredictedScores(vector<IndResults>& indScores, map<str
 			caseScore += indIter->scores[sIndex++] * caseModIter->second.count;
 			totalCount += caseModIter->second.count;
 		}
-		caseScore /= double(totalCount);
+		caseScore /= (long double)totalCount;
 		
 		totalCount=0;
 		for(map<string,modScores>::iterator conModIter=controlModels.begin(); conModIter != controlModels.end();
@@ -454,7 +454,7 @@ double GEDiscrimBayes::setPredictedScores(vector<IndResults>& indScores, map<str
 			conScore += indIter->scores[sIndex++] * conModIter->second.count;
 			totalCount += conModIter->second.count;
 		}
-		conScore /= double(totalCount);
+		conScore /= (long double)totalCount;
 		indIter->predicted = caseRatio * caseScore / (caseRatio * caseScore + 
 			(1-caseRatio) * conScore);
 		tempResult.score = indIter->predicted;
@@ -1009,7 +1009,13 @@ void GEDiscrimBayes::writeEquation(ostream& os, Solution* sol, data_manage::Data
 			++iter){
 			modelSend[i].score=iter->second.score;
 			modelSend[i].count=iter->second.count;
-			strcpy(modelSend[i].modelEquation, iter->first.c_str());
+			if(iter->first.length() < MAXMODELSTRING-1){
+				strcpy(modelSend[i].modelEquation, iter->first.c_str());
+			}
+			else{
+				strcpy(modelSend[i].modelEquation, iter->first.substr(0,MAXMODELSTRING-1).c_str());
+				modelSend[i].score=GEObjective::getWorstScore();
+			}
 // if(myRank==1){
 // cout << "i=" << i << " eq=" << modelSend[i].modelEquation << " count=" <<
 // modelSend[i].count << endl;

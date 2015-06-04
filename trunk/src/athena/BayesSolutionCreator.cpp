@@ -960,9 +960,9 @@ float BayesSolutionCreator::evaluate(Dataset* set){
 		// values
 		double diff = cumulativeBaseScore + calculator->getScore();	
 		score = -(set->getConstant() + diff);
-// 		if(score < 0.0){
-// 			score = 0.0;
-// 		}
+		if(score < 0.0){
+			score = 0.0;
+		}
 // cout << "diff=" << diff << " final network score=" << score << endl;
 // exit(1);
 		return score;

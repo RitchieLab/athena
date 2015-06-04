@@ -33,6 +33,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 	#include "GenomeTransfer.h"
 #endif
 
+#define MAXMODELSTRING 2048
+
 class GEDiscrimBayes:public Algorithm{
 
 public:
@@ -155,7 +157,7 @@ protected:
 	
 	struct IndResults{
 		string indID;
-		vector<double> scores;
+		vector<long double> scores;
 		int phenotype;
 		double predicted;
 	};
@@ -213,7 +215,7 @@ protected:
 	#ifdef HAVE_CXX_MPI
 		GenomeTransfer popMigrator;
 		struct uniqueModelMPI{
-			char modelEquation[512];
+			char modelEquation[MAXMODELSTRING];
 			int count;
 			float score;
 		};
