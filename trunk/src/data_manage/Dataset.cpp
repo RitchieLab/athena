@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "Dataset.h"
+#include "Dataholder.h"
 
 using namespace std;
 
@@ -122,10 +123,39 @@ vector<Dataset*> Dataset::splitCaseControl(){
 	for(unsigned int i=0; i<inds.size(); i++){
 		splitSets[int(inds[i]->getStatus())]->addInd(inds[i]);
 	}
+	splitSets[0]->setHolder(holder);
+	splitSets[1]->setHolder(holder);
+// 	splitSets[0]->setAllLevels(continLevels);
+// 	splitSets[1]->setAllLevels(continLevels);
 	
-
 	return splitSets;
 }
+
+
+/// Gets number of levels for a continuous variable
+unsigned int Dataset::getNumLevels(unsigned int varIndex){return holder->getNumLevels(varIndex);}
+
+/// Sets number of levels for a continuous variable
+void Dataset::setNumLevels(unsigned int varIndex, unsigned int nLevels){
+	holder->setNumLevels(varIndex, nLevels);
+}
+
+void Dataset::setAllLevels(std::vector<unsigned int> cLevels){
+	holder->setAllLevels(cLevels);
+}
+
+/// Returns number of levels for phenotype
+unsigned int Dataset::getNumStatusLevels(){return holder->getNumStatusLevels();}
+// 	return statusLevels;}
+
+
+/// Sets number of levels for phenotype
+void Dataset::setNumStatusLevels(unsigned int nLevels){holder->setNumStatusLevels(nLevels);}
+// 	statusLevels=nLevels;}	
+
+
+/// Set Dataholder
+void Dataset::setHolder(Dataholder* h){holder=h;}
 
 
 }

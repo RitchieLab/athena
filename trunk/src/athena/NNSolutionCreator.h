@@ -89,6 +89,8 @@ public:
  		/// writes solution out as an equation
  		virtual void equationOutput(ostream& os, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapUsed);
+			
+ 		virtual std::string getEquation();
  
 		vector<int> getGeneIndexes();
 		vector<int> getCovarIndexes();

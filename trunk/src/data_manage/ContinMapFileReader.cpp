@@ -38,17 +38,18 @@ void ContinMapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
 	string line;
 
 	string continID, groupID;
-
+cout << "read mapfile" << endl;
 	while(!mapStream.eof()){
 		getline(mapStream, line);
 
-		if(line.find_first_of("0123456789") == string::npos){
+		if(line.find_first_of("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") == string::npos){
 			continue;
 		}
 
 		stringstream ss(line);
 
 		ss >> continID;
+cout << "continID=" << continID << endl;
 		if(ss >> groupID)
 			dataholder->addCovarName(continID, groupID);
 		else

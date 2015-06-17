@@ -286,6 +286,61 @@ void ExpressionTree::outputEquation(ostream& out, data_manage::Dataholder* holde
 
 
 ///
+/// Output as mathematical expression.  
+///
+string ExpressionTree::getEquation(){
+	tree<ElementNode>::iterator iter = expressTree.begin();
+	stringstream ss;
+	getEquationTree(ss, iter);
+	return ss.str();
+}
+
+///
+/// Output as mathematical expression.  Can't be a simple equation because of the 
+/// presence of the Activation.  (also the division operator is a function that 
+/// needs to be taken into account - also boolean operators don't work well in this)
+/// 
+///
+void ExpressionTree::getEquationTree(ostream& out, tree<ElementNode>::iterator baseIter){
+	
+	int numChildren = expressTree.number_of_children(baseIter);
+	
+	string label = baseIter->el->getName();
+	
+	if(numChildren > 0){
+		// if it is a node (PADD, PSUB, PDIV or PMULT) have add activate sigmoid to output
+		
+		string op, prefix="";
+		
+		setOperators(label, op, prefix);
+		
+		// every one gets a start paren
+		out << prefix << "(";
+		
+		int endIndex = numChildren-1;
+		tree<ElementNode>::iterator childIter;
+		int child;
+		for(child=0; child < endIndex; child++){
+			childIter = expressTree.child(baseIter, child);
+			getEquationTree(out, childIter);
+			out << op;
+		}
+		childIter = expressTree.child(baseIter, child);
+		getEquationTree(out, childIter);
+		
+		// after all children do end paren
+		out << ")";
+	}
+	else{
+// 		if(!keepLabel)
+// 			label = alterLabel(holder, mapUsed, ottDummy, label, continMapUsed, true);
+		out << label;
+	}
+
+}
+
+
+///
 /// Output as mathematical expression.  Can't be a simple equation because of the 
 /// presence of the Activation.  (also the division operator is a function that 
 /// needs to be taken into account - also boolean operators don't work well in this)

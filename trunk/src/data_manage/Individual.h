@@ -53,7 +53,7 @@ public:
 
 	/// appends genotype to genotype lsit
 	inline void addGenotype(float geno){genotype.push_back(geno);numLoci++;}
-
+	
 	/// appends environmental variable to list
 	void addCovariate(float val){covariates.push_back(val);numCovars++;}
 

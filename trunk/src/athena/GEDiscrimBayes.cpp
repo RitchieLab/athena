@@ -81,6 +81,7 @@ void GEDiscrimBayes::setConfigDefaults(Config& configuration, AlgorithmParams& a
 	// algorithm will write its own output
 	configuration.setLogType("NONE");
 	configuration.setSummaryOnly("SUPPRESS");
+	configuration.setContinAdjust("MAKECATEGORIAL");
 	outputName = configuration.getOutputName();
 }
 
@@ -350,7 +351,8 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	totalModels(controlAlg, controlModels, holder, mapUsed, ottDummy, continMapUsed, false);
 // 	cout << "finished compiling control model totals" << endl;
 	
-	map<unsigned int, vector<double> > caseOrphanProbs, controlOrphanProbs;
+// 	map<unsigned int, vector<double> > caseOrphanProbs, controlOrphanProbs;
+	map<string, vector<double> > caseOrphanProbs, controlOrphanProbs;
 	// calculate probability tables for each variable in case training set
 	// for situation where there are no parents for that variable in the model
 	calcProbTables(caseDataset, caseOrphanProbs, holder);
@@ -363,7 +365,6 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	int numControls = controlDataset->numInds() + int(testing->numInds()*case2conRatio+0.5);
 	double caseMissCell = double(1) / numCases;
 	double conMissCell = double(1) / numControls;
-		
 	// loop through each model (calculate conditional probability for cases/controls)
 	// calculate conditional probabilities for case models
 	setConditionalTables(caseDataset, caseModels, holder, caseMissCell);
@@ -379,13 +380,10 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 		testingScores(testing->numInds(),emptyResult);
 	// each individual will end up with a score for each top model
 	// store results for testing and training sets
-// 	cout << "training set used" << endl;
 	setIndModScores(training, caseModels, trainingScores, caseOrphanProbs);
 	setIndModScores(training, controlModels, trainingScores, controlOrphanProbs);
-// 	cout << "testing set used" << endl;
 	setIndModScores(testing, caseModels, testingScores, caseOrphanProbs);
 	setIndModScores(testing, controlModels, testingScores, controlOrphanProbs);
-	
 	double trainingAUC = setPredictedScores(trainingScores, caseModels, controlModels, case2conRatio);
 	double testingAUC = setPredictedScores(testingScores, caseModels, controlModels, case2conRatio);
 	 
@@ -405,17 +403,66 @@ if(myRank == 0){
 	}
 	else{
 		sumstream.open(sumFile.c_str(), ios::out);
-		sumstream << "CV\tCase Models\tControl Models\tTrain AUC\tTest AUC\n";
+		sumstream << "CV\tCase Models\tCount\tControl Models\tCount\tTrain AUC\tTest AUC\n";
 	}
 	
+	// sort models by score
 	map<string, modScores>::iterator caseIter=caseModels.begin();
 	map<string, modScores>::iterator conIter=controlModels.begin();
-	sumstream << currCV << "\t" << caseIter->first << "\t" << conIter->first << "\t" <<
-		trainingAUC << "\t" << testingAUC << "\n";
-	for(int i=1; i<topModelsUsed; i++){
-		++caseIter;++conIter;
-		sumstream << "\t" << caseIter->first << "\t" << conIter->first << "\t\t\n";
+	mScores tmpScore;
+	vector<mScores> caseMods, controlMods;
+	
+	
+	for(int i=0; i<topModelsUsed; i++){
+		tmpScore.mString = caseIter->first;
+		tmpScore.mPtr = &(caseIter->second);
+		caseMods.push_back(tmpScore);
+		tmpScore.mString = conIter->first;
+		tmpScore.mPtr = &(conIter->second);		
+		controlMods.push_back(tmpScore);
+		++caseIter;
+		++conIter;
 	}
+	
+	sort(caseMods.begin(), caseMods.end(), sortByScore);
+	sort(controlMods.begin(), controlMods.end(), sortByScore);
+	
+	int modIndex=0;
+	sumstream << currCV << "\t" << getLabel(caseMods[modIndex].mString, holder,mapUsed,continMapUsed) << "\t" 
+		<< caseMods[modIndex].mPtr->count << "\t"
+		<< getLabel(controlMods[modIndex].mString, holder,mapUsed,continMapUsed) << "\t" 
+		<< controlMods[modIndex].mPtr->count << "\t"
+		<< trainingAUC << "\t" << testingAUC << "\n";
+	for(modIndex=1; modIndex<topModelsUsed; modIndex++){
+		sumstream << "\t" << getLabel(caseMods[modIndex].mString, holder,mapUsed,continMapUsed)
+		<<  "\t" << caseMods[modIndex].mPtr->count 
+		<< "\t" << getLabel(controlMods[modIndex].mString, holder,mapUsed,continMapUsed)
+		<< "\t" << controlMods[modIndex].mPtr->count << "\t\t\n";
+	}	
+	
+	
+// 	sumstream << currCV << "\t" << caseIter->first << "\t" 
+// 		<< caseIter->second.count << "\t"
+// 		<< conIter->first << "\t" 
+// 		<< conIter->second.count << "\t"
+// 		<< trainingAUC << "\t" << testingAUC << "\n";
+// 	for(int i=1; i<topModelsUsed; i++){
+// 		++caseIter;++conIter;
+// 		sumstream << "\t" << caseIter->first << "\t" << conIter->first << "\t\t\n";
+// 	}
+	
+	
+// 	map<string, modScores>::iterator caseIter=caseModels.begin();
+// 	map<string, modScores>::iterator conIter=controlModels.begin();
+// 	sumstream << currCV << "\t" << caseIter->first << "\t" 
+// 		<< caseIter->second.count << "\t"
+// 		<< conIter->first << "\t" 
+// 		<< conIter->second.count << "\t"
+// 		<< trainingAUC << "\t" << testingAUC << "\n";
+// 	for(int i=1; i<topModelsUsed; i++){
+// 		++caseIter;++conIter;
+// 		sumstream << "\t" << caseIter->first << "\t" << conIter->first << "\t\t\n";
+// 	}
 	sumstream.close();
 #ifdef HAVE_CXX_MPI
 }
@@ -424,6 +471,71 @@ if(myRank == 0){
 	
 	// below is just a placeholder
 	pop=caseAlg->getPopulation();
+}
+
+
+
+///
+/// @param node GraphNodeIter
+/// @returns variable index
+///
+string GEDiscrimBayes::getLabel(string modelString, Dataholder* holder,
+	bool mapUsed, bool continMapUsed){
+// cout << "modelString=" << modelString << endl;
+	if(!mapUsed and !continMapUsed){
+		return modelString;
+	}
+	string searchStr;	
+	if(mapUsed){
+		searchStr = "G";
+	}
+	if(continMapUsed){
+		searchStr += "C";
+	}
+	
+	// split model into pieces (could march through looking for any G or C
+	string newString;
+	size_t found=0, lastFound=0;
+	size_t endPos;
+	while((found = modelString.find_first_of(searchStr, found))!=string::npos){
+		//copy over up to the 
+		newString += modelString.substr(lastFound, found-lastFound);
+		endPos=modelString.find_first_not_of("0123456789",found+1);
+		// grab the number
+		string number = modelString.substr(found+1, endPos-found-1);
+		// get the name from the holder
+// 		holder->getGenoName(Stringmanip::stringToNumber(number));
+		if(modelString[found]=='G'){
+			newString += holder->getGenoName(Stringmanip::stringToNumber<int>(number)-1);
+		}
+		else{
+			newString += holder->getCovarName(Stringmanip::stringToNumber<int>(number)-1);
+		}
+		lastFound=endPos;
+		found++;
+	}
+	// need to copy remainder of the equation
+	newString += modelString.substr(endPos, modelString.length()-2);
+// cout  << "newString=" << newString << endl;
+	return newString;
+// 	string name = (*node)->term->getName();
+// 	stringstream ss(name.substr(1,name.length()-1));	
+// 	int num;
+// 	ss >> num;
+// // cout << "holder=" << holder << " genoname="<< holder->getGenoName(num-1) << endl;
+// 	if(holder != NULL)
+// 		if((*node)->term->getTermType()==TerminalSymbol::Genotype)
+// 			if(!mapUsed)
+// 				return "G" +  holder->getGenoName(num-1);
+// 			else
+// 				return holder->getGenoName(num-1);
+// 		else
+// 			if(!continMapUsed)
+// 				return "C" + holder->getCovarName(num-1);
+// 			else
+// 				return holder->getCovarName(num-1);
+// 	else
+// 		return ss.str();
 }
 
 ///
@@ -471,15 +583,30 @@ double GEDiscrimBayes::setPredictedScores(vector<IndResults>& indScores, map<str
 /// Sets the individual scores for every individual in set for the models passed
 ///
 void GEDiscrimBayes::setIndModScores(Dataset* dset, map<string,modScores>& models,
-	vector<IndResults>& indScores, map<unsigned int, vector<double> >& orphanProbs){
+	vector<IndResults>& indScores, map<string, vector<double> >& orphanProbs){
+	
+	
 	unsigned int totalGenos = dset->numGenos();
+	unsigned int totalCovars = dset->numCovariates();
+	
+	vector<string> genoLabels, covarLabels;
+	
+	// construct the basic labels
+	for(unsigned int i=1; i<=totalGenos; i++){
+		genoLabels.push_back("G" + Stringmanip::numberToString(i));
+	}
+	for(unsigned int i=1; i<=totalCovars; i++){
+		covarLabels.push_back("C" + Stringmanip::numberToString(i));
+	}
+	
 // vector<int> t(2,0);
 // cout << "start setIndModScores set size=" << dset->numInds() << endl;
 	for(size_t i=0; i<dset->numInds(); i++){
 		indScores[i].indID = (*dset)[i]->getID();
+// cout << "i=" << i << " indID=" << indScores[i].indID << endl;
 		indScores[i].phenotype = (*dset)[i]->getStatus();
 // t[indScores[i].phenotype]++;
-//cout << "i=" << i << " ID=" << indScores[i].indID  << " " << indScores[i].phenotype << endl;
+// cout << "i=" << i << " ID=" << indScores[i].indID  << " " << indScores[i].phenotype << endl;
 		// loop through each model and assign a value to each individual for each model
 		for(map<string, modScores>::iterator modIter=models.begin(); modIter != models.end();
 			++modIter){
@@ -489,26 +616,61 @@ void GEDiscrimBayes::setIndModScores(Dataset* dset, map<string,modScores>& model
 				tableIter != modIter->second.tables.end(); ++tableIter){
 					// have to get the probability and include it
 					int value = 0;
+// cout << "tableIter->nodeIndex=" << tableIter->nodeIndex << endl;
+// for(size_t x=0; x<tableIter->probs.size(); x++){
+// 	cout << "x=" << x;
+// 	for(size_t y=0; y<tableIter->probs.size(); y++){
+// 		cout << " y=" << y << " prob=" << tableIter->probs[x][y] << endl;
+// 	}
+// }
+
 					for(size_t j=0; j<tableIter->parentIndexes.size(); j++){
-// cout << "j=" << j << " genotype=" << (*dset)[i]->getGenotype(tableIter->parentIndexes[j]) 
+// cout << "j=" << j << " SNP=" << tableIter->parentIndexes[j] << " is genotype=>" << tableIter->parentGenos[j] << endl;
+// out << "j=" << j << " genotype=" << (*dset)[i]->getCovariate(tableIter->parentIndexes[j]) 
 // 	<< " SNP=" << tableIter->parentIndexes[j] << endl;
-						value += (*dset)[i]->getGenotype(tableIter->parentIndexes[j]) *
-							tableIter->cumulativeLevels[j]; 
+						if(tableIter->parentGenos[j])
+							value += (*dset)[i]->getGenotype(tableIter->parentIndexes[j]) *
+								tableIter->cumulativeLevels[j];
+						else
+							value += (*dset)[i]->getCovariate(tableIter->parentIndexes[j]) *
+								tableIter->cumulativeLevels[j];							
 					}
 // cout << "value=" << value << endl;
 // cout << "nodeIndex=" << tableIter->nodeIndex << endl;
 // 					indScores[i].scores.back() *= tableIter->probs[indScores[i].phenotype][index];
 // 					indScores[i].scores.back() *= tableIter->probs[tableIter->nodeIndex][value];
-					indScores[i].scores.back() *= tableIter->probs[(*dset)[i]->getGenotype(tableIter->nodeIndex)][value];
+// cout << "tableIter->genoNode=" << tableIter->genoNode << endl;
+					if(tableIter->genoNode)
+						indScores[i].scores.back() *= tableIter->probs[(*dset)[i]->getGenotype(tableIter->nodeIndex)][value];
+					else
+						indScores[i].scores.back() *= tableIter->probs[(*dset)[i]->getCovariate(tableIter->nodeIndex)][value];
 			}
+// cout << "indScores[i].scores.back()=" << indScores[i].scores.back() << endl;
+// cout << "totalGenos=" << totalGenos << endl;
 			// add in all the scores for the other variables in the set
-			for(unsigned int geno=0; geno < totalGenos; geno++){
-				if(modIter->second.varsWithParents.find(geno) == modIter->second.varsWithParents.end()){
-					indScores[i].scores.back() *= orphanProbs[geno][(*dset)[i]->getGenotype(geno)];
+// 			for(unsigned int geno=0; geno < totalGenos; geno++){
+			for(size_t geno = 0; geno < totalGenos; ++geno){
+// cout << "geno=" << geno << " genoLabel=" << genoLabels[geno] << endl;
+				if(modIter->second.varsWithParents.find(genoLabels[geno]) == modIter->second.varsWithParents.end()){
+// cout << "get score" << endl;
+					indScores[i].scores.back() *= orphanProbs[genoLabels[geno]][(*dset)[i]->getGenotype(geno)];
 				}
+// else{
+// 	cout << "no score" << endl;
+// }
+// 				if(modIter->second.varsWithParents.find(geno) == modIter->second.varsWithParents.end()){
+// 					indScores[i].scores.back() *= orphanProbs[geno][(*dset)[i]->getGenotype(geno)];
+// 				}
 			}
+// cout << "totalCovars=" << totalCovars << endl;
+			for(size_t covar = 0; covar < totalCovars; ++covar){
+				if(modIter->second.varsWithParents.find(covarLabels[covar]) == modIter->second.varsWithParents.end()){
+					indScores[i].scores.back() *= orphanProbs[covarLabels[covar]][(*dset)[i]->getCovariate(covar)];
+				}
+			}			
 		}
 	}	
+
 // cout << "cases=" << t[1] << " controls=" << t[0] << "\n";
 }
 
@@ -531,8 +693,10 @@ void GEDiscrimBayes::writeIndScores(string filename, vector<IndResults>& scores)
 ///
 void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>& topModels,
 	Dataholder* holder, double missValue){
+// cout << "start conditional table" << endl;
 	for(map<string, modScores>::iterator modIter=topModels.begin(); modIter != topModels.end();
 		++modIter){
+// cout << "model " << modIter->first << endl;
 		int tableIndex=0;
 		modIter->second.tables.clear();
 		ConditTable emptyTable;
@@ -551,42 +715,80 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 			if(cPos != string::npos){
 // cout << "node => " << *nodeIter << endl;
 				modIter->second.tables.push_back(emptyTable);
+				bool genoNode;
+				(*nodeIter)[1] == 'G' ? genoNode = true : genoNode = false;
+// cout << "*nodeIter=" << *nodeIter << " genoNode=" << genoNode << endl;
+				modIter->second.tables.back().genoNode = genoNode;
+				
 				string nodeID = (*nodeIter).substr(1, cPos-1);
 				cPos += 1;
 				string substr = nodeIter->substr(cPos, (*nodeIter).length()-cPos-1);
 				vector<string> parentIDs = data_manage::Stringmanip::split(substr, ':');
 // 				calcParentCondTable(dset, *nodeIter);
 // 				unsigned int nodeIndex = holder->getGenoIndex(nodeID.substr(1,nodeID.length()-cPos+1));
-				modIter->second.tables.back().nodeIndex = holder->getGenoIndex(nodeID.substr(1,nodeID.length()-cPos+1));
-				modIter->second.varsWithParents.insert(modIter->second.tables.back().nodeIndex);
+
+				unsigned int variableIndex;
+				if(genoNode)
+					variableIndex = modIter->second.tables.back().nodeIndex = holder->getGenoIndex(nodeID.substr(1,nodeID.length()-cPos+1));
+				else
+					variableIndex = modIter->second.tables.back().nodeIndex = holder->getCovarIndex(nodeID.substr(1,nodeID.length()-cPos+1));
+// cout << "genoNode=" << genoNode << " variableIndex = " << variableIndex << " nodeID=" << nodeID << endl;
+// exit(1);
+				modIter->second.tables.back().nodeIndex = variableIndex;
+// 				modIter->second.varsWithParents.insert(modIter->second.tables.back().nodeIndex);
+				// store string (will be G1 or C5 etc..)
+				modIter->second.varsWithParents.insert(nodeID);
+				
 // cout << nodeID.substr(1,nodeID.length()-cPos+1) <<  " nodeIndex=" << modIter->second.tables.back().nodeIndex << endl;
 // 				vector<unsigned int> parentIndexes;
 // 				modIter->second.tables[tableIndex].parentIndexes.clear();
 				// split it here and get indexes for parent genotypes
+				bool parentGeno;
 				for(vector<string>::iterator pIter=parentIDs.begin(); pIter != parentIDs.end();
 					++pIter){
 // cout << *pIter << " = " << holder->getGenoIndex((*pIter).substr(1,(*pIter).length()-1)) << endl;
-					modIter->second.tables.back().parentIndexes.push_back(holder->getGenoIndex((*pIter).substr(1,(*pIter).length()-1)));
+					(*pIter)[0] == 'G' ? parentGeno = true : parentGeno = false;
+					if(parentGeno)
+						modIter->second.tables.back().parentIndexes.push_back(holder->getGenoIndex((*pIter).substr(1,(*pIter).length()-1)));
+					else
+						modIter->second.tables.back().parentIndexes.push_back(holder->getCovarIndex((*pIter).substr(1,(*pIter).length()-1)));
+// cout << *pIter << " = " << modIter->second.tables.back().parentIndexes.back() << " parentGeno=" << parentGeno << endl;
+					modIter->second.tables.back().parentGenos.push_back(parentGeno);
 				}
 				
 				vector<int> parentValues;
+// working here
 				int parentLevels = configParentData(parentValues, modIter->second.tables.back().parentIndexes, 
+					modIter->second.tables.back().parentGenos,
 					dset, modIter->second.tables.back().cumulativeLevels);
-				
+// cout << "parentLevels=" << parentLevels << endl;
 				// for the conditional table for each identical combination of the parents
 				// calculate the occurrence of the child 
-				// will be 3 different for each parent combo
-				// scale the child to 1.0 for the 3 occurrences
-				int nodeLevels=3;
+				// will be 3 different for each parent combo for a SNP
+				// scale the child to 1.0 for the number of occurrences
+// 				int nodeLevels=3;
+				int nodeLevels;
+				if(genoNode)
+					nodeLevels=3;
+				else
+					nodeLevels = dset->getNumLevels(variableIndex);
+					
 				vector<int> inner(parentLevels,0);
 				vector<vector<int> > totals(nodeLevels, inner);
 // 				vector<int> parentTotals(parentLevels, 0);
 				vector<int> nodeTotals(nodeLevels, 0);
 				
 				// cycle through individuals and total 
+				int val;
 				for(unsigned int i=0; i<dset->numInds(); i++){
-					totals[((*dset)[i])->getGenotype(modIter->second.tables.back().nodeIndex)][parentValues[i]]++;
-					nodeTotals[((*dset)[i])->getGenotype(modIter->second.tables.back().nodeIndex)]++;
+					if(genoNode){
+						totals[((*dset)[i])->getGenotype(modIter->second.tables.back().nodeIndex)][parentValues[i]]++;
+						nodeTotals[((*dset)[i])->getGenotype(modIter->second.tables.back().nodeIndex)]++;
+					}
+					else{
+						totals[((*dset)[i])->getCovariate(modIter->second.tables.back().nodeIndex)][parentValues[i]]++;
+						nodeTotals[((*dset)[i])->getCovariate(modIter->second.tables.back().nodeIndex)]++;
+					}
 				}
 				
 				vector<double> innerProbs(parentLevels, 0.0);
@@ -604,27 +806,13 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 // nodeTotals[i] << " conditProbs=" << modIter->second.tables.back().probs[i][j]  << endl;
 					}
 				}
-				
-				// so the structure needs 1)a table for each node with parents
-				// 2) the table will have the conditProbs
-				// 3) also need the list of parent indexes
-				// 4) need node index
-				// 5) need way to convert parents to value (need cumulativeLevels to do that)
-// 				struct conditTable{
-// 					int nodeIndex;
-// 					vector<int> parentIndexes;
-// 					vector<vector<double> > probs;
-// 					vector<int> cumulativeLevels;
-// 				};
-				
-				
-// 				modIter->second.condTable[]=calcCondTable(dset, *nodeIter);
-// How to store the conditional table?  a tree structure?  top row is the child and then a parent
-// at each level below?  -- Probably better and faster to do something like the 
-// k2calcwithparent in BayesSolutionCreator
+		
 			}
-		}		
+		}	
+// exit(1);	
 	}	
+// 	cout << "end setConditionalTable" << endl;
+
 }
 
 
@@ -632,7 +820,7 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 /// calculates probability tables for every variable
 /// currently assumes using only SNPs
 ///
-void	GEDiscrimBayes::calcProbTables(Dataset* dset, map<unsigned int, vector<double> >& orphanProbs,
+void	GEDiscrimBayes::calcProbTables(Dataset* dset, map<string, vector<double> >& orphanProbs,
 	data_manage::Dataholder* holder){
 	
 	orphanProbs.clear();
@@ -646,7 +834,26 @@ void	GEDiscrimBayes::calcProbTables(Dataset* dset, map<unsigned int, vector<doub
 		for(unsigned int i=0; i<3; i++){
 			table[i] = totals[i] / allTotal;
 		}
-		orphanProbs[geno]=table;
+		orphanProbs["G" + Stringmanip::numberToString(geno+1)]=table;
+	}
+	
+	// need to create prob tables for the continuous variables
+	// need to know number of levels for the variable
+	for(unsigned int covar=0; covar < dset->numCovariates(); covar++){
+		unsigned int nLevels = dset->getNumLevels(covar);
+		vector<int> totals(nLevels,0);
+		vector<double> table(nLevels,0.0);
+		for(unsigned int ind=0; ind < dset->numInds(); ind++){
+			totals[int(dset->getInd(ind)->getCovariate(covar))]++;
+		}
+		double allTotal = 0.0;
+		for(unsigned int l=0; l<nLevels; l++){
+			allTotal += totals[l];
+		}
+		for(unsigned int i=0; i<nLevels; i++){
+			table[i] = totals[i] / allTotal;
+		}
+		orphanProbs["C" + Stringmanip::numberToString(covar+1)]=table;
 	}
 }
 
@@ -665,16 +872,22 @@ void	GEDiscrimBayes::calcProbTables(Dataset* dset, map<unsigned int, vector<doub
 /// @returns number of different levels(factors) in the parent combined values
 ///
 int GEDiscrimBayes::configParentData(vector<int>& parentValues, vector<unsigned int> &parents,
-	Dataset* dSet, vector<int>& cumulativeLevels){
+	vector<bool>& isGeno, Dataset* dSet, vector<int>& cumulativeLevels){
 	// assume three levels (to hold SNP data)
-	int constLevels = 3; // this has to be changed also
+// 	int constLevels = 3; // this has to be changed also
+	int snpLevels = 3;
 	
 	// set number of levels for each parent
 	vector<int> nLevels(parents.size(), 0);
 	int nl = 1;
 	for(size_t i=0; i<parents.size(); i++){
-// 		nLevels[i] = parents[i]->getNumLevels(currentSet);
-		nLevels[i] = constLevels;
+		if(isGeno[i])
+			nLevels[i] = snpLevels;
+		else
+			nLevels[i] = dSet->getNumLevels(parents[i]);
+// cout << "nLevels=" << dSet->getNumLevels(parents[i]) << endl;
+// 			nLevels[i] = parents[i]->getNumLevels(currentSet);	
+// 		nLevels[i] = constLevels;	
 		nl *= nLevels[i];
 	}
 	
@@ -695,7 +908,10 @@ int GEDiscrimBayes::configParentData(vector<int>& parentValues, vector<unsigned 
 		int value = 0;	
 		for(unsigned int j=0; j < nParents; j++){
 // 			value += parents[j]->evaluate(args) * cumulativeLevels[j];
-			value += (*dSet)[i]->getGenotype(parents[j]) * cumulativeLevels[j];
+			if(isGeno[j])
+				value += (*dSet)[i]->getGenotype(parents[j]) * cumulativeLevels[j];
+			else
+				value += (*dSet)[i]->getCovariate(parents[j]) * cumulativeLevels[j];
 		}
 		parentValues.push_back(value);
 	}
@@ -712,11 +928,13 @@ void GEDiscrimBayes::totalModels(Algorithm* alg,  map<string, modScores>& topMod
 // cout << "best score = " << algPop[0]->fitness() << endl;
 // cout << "number of models=" << algPop.numSolutions() << endl;
 	for(size_t i=0; i<algPop.numSolutions(); i++){
-		stringstream ss;
+		string mString;
 		try{
-			GEObjective::outputEquation(ss, algPop[i], holder, mapUsed, ottDummy, continMapUsed);
-// cout << ss.str() << " => ";
-			string sortedStr = rewriteEquation(ss.str());
+// 			GEObjective::outputEquation(ss, algPop[i], holder, mapUsed, ottDummy, continMapUsed,
+// 				true);
+			mString = GEObjective::getEquation(algPop[i]);
+// cout << mString << " => ";
+			string sortedStr = rewriteEquation(mString);
 // cout << sortedStr << "\n";
 			if(modelHolder.find(sortedStr) == modelHolder.end()){
 				modelHolder[sortedStr].count = 1;

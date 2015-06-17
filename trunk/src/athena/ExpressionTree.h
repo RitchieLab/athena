@@ -70,6 +70,7 @@ class ExpressionTree{
 		void outputEquation(ostream& out, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapused);
 			
+		std::string getEquation();
 		
 	private:
 		unsigned int incrementDepth(tree<ElementNode>::iterator baseIter, 
@@ -79,6 +80,8 @@ class ExpressionTree{
 	
 		void outputEquationTree(ostream& out, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapused, tree<ElementNode>::iterator baseIter);
+			
+		void getEquationTree(ostream& out, tree<ElementNode>::iterator baseIter);	
 	
 		std::string alterLabel(data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, std::string label, bool continMapUsed, bool equationOut);

@@ -171,6 +171,27 @@ public:
 	/// Returns list of excluded Continuous variables
 	vector<unsigned int> getExcludedContins(){return excludedContin;}
 	
+	/// Gets number of levels for a continuous variable
+	unsigned int getNumLevels(unsigned int varIndex){return continLevels[varIndex];}
+	
+	/// Sets number of levels for a continuous variable
+	void setNumLevels(unsigned int varIndex, unsigned int nLevels){
+		if(continLevels.empty())
+			continLevels.resize(numCovariates());
+		continLevels[varIndex]=nLevels;
+	}
+	void setAllLevels(std::vector<unsigned int> cLevels){
+		continLevels=cLevels;
+	}
+	
+	/// Returns number of levels for phenotype
+	unsigned int getNumStatusLevels(){return statusLevels;}
+	
+	/// Sets number of levels for phenotype
+	void setNumStatusLevels(unsigned int nLevels){statusLevels=nLevels;}
+	
+	/// Returns all levels
+	std::vector<unsigned int> getAllLevels(){return continLevels;}
 
 	
 private:
@@ -182,10 +203,12 @@ private:
 	std::map<std::string, Individual*> indsMap;
 	std::map<std::string, std::vector<int> > covarsScaleGroup;
 	std::map<unsigned int, std::map<std::string, std::vector<int> >::iterator> covarsGroup;
+	std::vector<unsigned int> continLevels;
 	unsigned int maxLocus;
 	bool anyMissing, ottEncoded, binaryStatusOnly;
 	int missingGenotype, splitNum;
 	float missingCoValue;
+	unsigned int statusLevels;
 
 };
 

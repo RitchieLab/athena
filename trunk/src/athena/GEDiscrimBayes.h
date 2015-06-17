@@ -142,8 +142,10 @@ protected:
 			vector<unsigned int>& excludedContins);
 
 	struct ConditTable{
+		bool genoNode;
 		int nodeIndex;
 		vector<unsigned int> parentIndexes;
+		vector<bool> parentGenos;
 		vector<vector<double> > probs;
 		vector<int> cumulativeLevels;
 	};
@@ -152,7 +154,7 @@ protected:
 		int count;
 		float score;
 		vector<ConditTable> tables;
-		std::set<int> varsWithParents;
+		std::set<string> varsWithParents;
 	};
 	
 	struct IndResults{
@@ -161,6 +163,15 @@ protected:
 		int phenotype;
 		double predicted;
 	};
+
+	struct mScores{
+		string mString;
+		modScores* mPtr;
+	};
+	
+	static bool sortByScore(const mScores& lhs, const mScores& rhs){
+		return lhs.mPtr->score > rhs.mPtr->score;
+	}
 
 	/// Counts unique models and stores in modelTotals set
 	void totalModels(Algorithm* alg,  std::map<string,modScores>& modelTotals, data_manage::Dataholder* holder,
@@ -173,7 +184,7 @@ protected:
   string sortParentStr(string parentString);
 
 	// calculate probability tables for each variable when no parent node
-	void calcProbTables(Dataset* dset, map<unsigned int, vector<double> >& caseOrphanProbs,
+	void calcProbTables(Dataset* dset, map<string, vector<double> >& caseOrphanProbs,
 		data_manage::Dataholder* holder);	
 	
 	/// split equation into tokens	
@@ -186,10 +197,10 @@ protected:
 		map<string, modScores>& modelHolder);
 	
 	int configParentData(vector<int>& parentValues, vector<unsigned int> &parents,
-		Dataset* dSet, vector<int>& cumulativeLevels);
+		vector<bool>& isGeno, Dataset* dSet, vector<int>& cumulativeLevels);
 		
 	void setIndModScores(Dataset* dset, map<string,modScores>& models,
-		vector<IndResults>& scores, map<unsigned int, vector<double> >& orphanProbs);
+		vector<IndResults>& scores, map<std::string, vector<double> >& orphanProbs);
 
 	/// returns AUC
 	double setPredictedScores(vector<IndResults>& indScores, map<string,modScores>& caseModels,
@@ -197,6 +208,9 @@ protected:
 			
 	/// Sets default values for parameters
 	void initializeParams();
+	
+	string getLabel(string modelString, Dataholder* holder,
+		bool mapUsed, bool continMapUsed);
 	
 	void writeIndScores(string filename, vector<IndResults>& scores);
 

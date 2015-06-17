@@ -907,7 +907,6 @@ float BayesSolutionCreator::evaluate(Dataset* set){
 	 calculator->reset();
 	 double nParams,cumulativeBaseScore=0.0;
 	 
-	 
 	 // now when a node has no parents no need to do anything as it will not
 	 // change the score of the network.  It is the same as in the reference
 	 // network where all nodes are included.
@@ -1017,6 +1016,28 @@ void BayesSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* 
  			}
  			os << "]";
  		}	
+}
+
+///
+/// returns solution as an equation
+///
+std::string BayesSolutionCreator::getEquation(){
+ 		string genoPrefix="", continPrefix="";
+ 		stringstream os;
+ 		for(GraphNodeIter netIter = network.begin(); netIter != network.end(); ++netIter){
+ 			os << "[" << (*netIter)->term->getName();//getLabel(netIter, holder,mapUsed, continMapUsed);
+ 			if(!(*netIter)->parents.empty()){
+ 				os << "|";
+ 				GraphNodeIter parentIter=(*netIter)->parents.begin();
+ 				os << (*parentIter)->term->getName(); //getLabel(parentIter, holder, mapUsed, continMapUsed);
+ 				++parentIter;
+				for(;parentIter != (*netIter)->parents.end(); ++parentIter){
+					os << ":" << (*parentIter)->term->getName(); //getLabel(parentIter, holder, mapUsed, continMapUsed);
+				}
+ 			}
+ 			os << "]";
+ 		}		
+ 		return os.str();
 }
 
 // void BayesSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* holder,

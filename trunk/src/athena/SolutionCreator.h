@@ -144,7 +144,10 @@ public:
 		/// writes solution out as an equation
  		virtual void equationOutput(ostream& os, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapUsed)=0;
-			
+
+
+		/// returns solution as an equation
+ 		virtual std::string getEquation()=0;
 		
 		virtual std::string graphicExt(){return graphicExtension;}
 		

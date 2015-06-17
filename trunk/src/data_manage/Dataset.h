@@ -20,11 +20,13 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #define DATASET_H_
 
 #include "Individual.h"
+// #include "Dataholder.h"
 #include <iostream>
+
 
 namespace data_manage
 {
-
+class Dataholder;
 ///
 ///	Dataset contains pointers to individual objects.  It can represent the entire
 /// data set or can be used for a permuted set or a training, testing or crossvalidation
@@ -90,23 +92,31 @@ public:
 	Dataset operator+(Dataset& d);
 	
 	/// Gets number of levels for a continuous variable
-	unsigned int getNumLevels(unsigned int varIndex){return continLevels[varIndex];}
+	unsigned int getNumLevels(unsigned int varIndex);//{return holder->getNumLevels(varIndex);}
 	
 	/// Sets number of levels for a continuous variable
-	void setNumLevels(unsigned int varIndex, unsigned int nLevels){
-		if(continLevels.empty())
-			continLevels.resize(numCovariates());
-		continLevels[varIndex]=nLevels;
-	}
+	void setNumLevels(unsigned int varIndex, unsigned int nLevels);// {
+// 		holder->setNumLevels(varIndex, nLevels);
+// 	}
+	
+	void setAllLevels(std::vector<unsigned int> cLevels);// {
+// 		holder->setAllLevels(cLevels);
+// 	}
 	
 	/// Returns number of levels for phenotype
-	unsigned int getNumStatusLevels(){return statusLevels;}
+	unsigned int getNumStatusLevels();//{return holder->getNumStatusLevels();}
+// 	return statusLevels;}
+	
 	
 	/// Sets number of levels for phenotype
-	void setNumStatusLevels(unsigned int nLevels){statusLevels=nLevels;}	
+	void setNumStatusLevels(unsigned int nLevels);//{holder->setNumStatusLevels(nLevels);}
+// 	statusLevels=nLevels;}	
 	
 	/// Splits dataset into 2 new case/control sets
 	std::vector<Dataset*> splitCaseControl();
+	
+	/// Set Dataholder
+	void setHolder(Dataholder* h);//{holder=h;}
 	
 private:
 	std::vector<Individual*> inds;
@@ -116,6 +126,7 @@ private:
 	bool binaryStatusOnly;
 	double constantValue;
 	unsigned int statusLevels;
+	data_manage::Dataholder* holder;
 
 };
 

@@ -96,7 +96,7 @@ void ScaleCategorical::adjustContin(Dataholder* holder, unsigned int varIndex){
 		ind->setCovariate(varIndex, conversion[oldvalue]);		
 	}
 	
-// 	holder->setNumLevels(varIndex, conversion.size());
+	holder->setNumLevels(varIndex, conversion.size());
 	
 }
 
@@ -104,7 +104,7 @@ void ScaleCategorical::adjustContin(Dataholder* holder, unsigned int varIndex){
 ///
 /// For the variable specified the number of different values are checked and
 /// then the values are re-done starting with 0
-/// @param holder Dataset with all dat
+/// @param holder Dataset with all data
 /// @param varIndex Variable to be scaled
 ///
 void ScaleCategorical::adjustContin(Dataset* dataset, unsigned int varIndex){
@@ -185,8 +185,7 @@ void ScaleCategorical::adjustStatus(Dataholder* holder){
 		ind->setStatus(conversion[oldStatus]);		
 	}
 	
-// 	holder->setNumStatusLevels(conversion.size());
-	
+	holder->setNumStatusLevels(conversion.size());
 }
 
 

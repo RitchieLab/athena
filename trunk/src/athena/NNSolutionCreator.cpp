@@ -492,6 +492,17 @@ void NNSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* hol
 }
 
 
+std::string NNSolutionCreator::getEquation(){
+			
+	ExpressionTree extree;
+	extree.convertPostFix(postFixStack);
+	string equation = extree.getEquation();
+	extree.clearConstants();
+	return equation;
+}
+
+
+
 /// 
 /// Performs evaluation on the dataset.  Each individual has their result passed
 /// to the output stream provided.

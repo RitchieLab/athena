@@ -89,6 +89,10 @@ CVSet CrossValidator::createSet(unsigned int numCrossVal, Dataholder* holder){
 			CVInterval interval;
 			training.calcSSTotal();
 			testing.calcSSTotal();
+			training.setHolder(holder);
+			testing.setHolder(holder);
+// 			training.setAllLevels(holder->getAllLevels());
+// 			testing.setAllLevels(holder->getAllLevels());
 			interval.addSet(training);
 			interval.addSet(testing);
 			set.addInterval(interval);
@@ -100,6 +104,8 @@ CVSet CrossValidator::createSet(unsigned int numCrossVal, Dataholder* holder){
 			holder->isCaseControl());
 		training.addInds(splits[0]);
 		training.calcSSTotal();
+// 		training.setAllLevels(holder->getAllLevels());
+		training.setHolder(holder);
 		interval.addSet(training);
 		set.addInterval(interval);
 	}	

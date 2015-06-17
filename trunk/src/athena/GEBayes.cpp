@@ -98,6 +98,8 @@ void GEBayes::setConfigDefaults(Config& configuration, AlgorithmParams& algParam
 //   if(algParam.params["CALCTYPE"].compare("RSQUARED")==0){
 //     configuration.setStatusAdjust("MINMAX");
 //   }
+	configuration.setContinAdjust("MAKECATEGORIAL");
+	configuration.setStatusAdjust("MAKECATEGORIAL");
 }
 
 
@@ -183,9 +185,9 @@ void GEBayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 /// 
 void GEBayes::setDataset(Dataset* newSet){
 	 set = newSet;
-	 ScaleCategorical scaler;
-	 scaler.adjustContin(set);
-	 scaler.adjustStatus(set);
+// 	 ScaleCategorical scaler;
+// 	 scaler.adjustContin(set);
+// 	 scaler.adjustStatus(set);
 	 GEObjective::setDataset(set);
 }
 
@@ -222,7 +224,6 @@ void GEBayes::initialize(){
 		else{
 				genome.crossover(GE1DArrayGenome::effCrossover);
 		}
-		
 		// use point mutator for GEListGenome
 		genome.mutator(GE1DArrayGenome::codonMutator);
 		
@@ -265,7 +266,7 @@ void GEBayes::initialize(){
 		ga->scaling(GANoScaling());
 		// individuals in population
 		ga->populationSize(popSize);
-		ga->pMutation(probMut);        
+		ga->pMutation(probMut);
 		ga->pCrossover(probCross);
 		ga->nGenerations(numGenerations);
 
@@ -279,11 +280,11 @@ void GEBayes::initialize(){
 			maxBest = false;
 // 			geLog->setMaxBest(GEObjective::logMaxBest());
 		}
-	 
 		mapper.resetGrammarModels();
 		
 		mapper.setVariableCodonMap();
 		GE1DArrayGenome::setMapper(&mapper);
+
 		ga->initialize();
 		baNextOpt = balAccStart;
 		// run optimization after initialization when indicated
@@ -291,7 +292,7 @@ void GEBayes::initialize(){
 			runBalancedAccuracyOptimization();
 			baNextOpt += balAccFreq;
 		}
-		
+			
 		fillPopulation();
 		fillLog();
 }
@@ -818,9 +819,9 @@ void GEBayes::runBalancedAccuracyOptimization(){
 void GEBayes::testSolution(Dataset* testSet, int nproc){
 	 
 	 // make sure test set is categorical
-	 ScaleCategorical scaler;
-	 scaler.adjustContin(testSet);
-	 scaler.adjustStatus(testSet);
+// 	 ScaleCategorical scaler;
+// 	 scaler.adjustContin(testSet);
+// 	 scaler.adjustStatus(testSet);
 	 
 	 // use first dataset
 	 set = testSet;

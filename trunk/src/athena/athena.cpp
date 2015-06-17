@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
 	 
-		string versionDate = "6/3/2015";
+		string versionDate = "6/10/2015";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -143,6 +143,7 @@ int main(int argc, char** argv) {
 				if(config.getContinMapName().size() > 0){
 						continMapUsed = true;
 						data_manage::ContinMapFileReader continMapReader;
+cout << "parse map file " << config.getContinMapName() << endl;
 						continMapReader.parseMapFile(config.getContinMapName(), &data);
 				}
 				else{
@@ -304,7 +305,6 @@ int main(int argc, char** argv) {
 			}catch(AthenaExcept& ae){
 				exitApp(ae, myRank);
 			}
-
 #ifdef HAVE_CXX_MPI
 		if(myRank==0){  // only have master output cv when desired
 #endif
@@ -332,7 +332,6 @@ int main(int argc, char** argv) {
 		}catch(AthenaExcept& ae){
 				exitApp(ae, myRank);
 		}
-			
 			for(int step=0; step < config.getNumExchanges(); step++){
 				 if(alg->step()){
 						break; // can complete early

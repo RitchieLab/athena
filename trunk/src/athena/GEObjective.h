@@ -110,6 +110,13 @@ public:
 			solCreator->freeSolution();
 		}
 		
+		static std::string getEquation(Solution* sol){
+			solCreator->establishSolutionEquation(sol->getSymbols());
+			std::string equation=solCreator->getEquation();
+			solCreator->freeSolution();
+			return equation;
+		}
+		
 		static void GEObjectiveInit(GAGenome& g);
 
 		/// Return additional column names for output
