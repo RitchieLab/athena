@@ -119,8 +119,8 @@ void BayesSolution::outputClean(std::ostream& os, data_manage::Dataholder& data,
 			bool mapUsed, bool ottDummy, bool continMapUsed){
 
 	// concatenate numbers and output rest without spaces
-	os << symbols[0];
-	for(unsigned int symb=1; symb < symbols.size(); symb++){
+// 	os << symbols[0];
+	for(unsigned int symb=0; symb < symbols.size(); symb++){
 		if(symbols[symb].compare("Concat")!=0){
 			if(symbols[symb].compare("W")==0 || symbols[symb][0] == 'P'){
 				os << " ";
