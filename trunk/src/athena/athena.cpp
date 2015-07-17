@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
 	 
-		string versionDate = "6/10/2015";
+		string versionDate = "7/17/2015";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -143,7 +143,6 @@ int main(int argc, char** argv) {
 				if(config.getContinMapName().size() > 0){
 						continMapUsed = true;
 						data_manage::ContinMapFileReader continMapReader;
-cout << "parse map file " << config.getContinMapName() << endl;
 						continMapReader.parseMapFile(config.getContinMapName(), &data);
 				}
 				else{
@@ -341,7 +340,6 @@ cout << "parse map file " << config.getContinMapName() << endl;
 		alg->closeLog();
 	
 		alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
-
 		if(numCV > 1){
 			alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
 			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()),
@@ -354,7 +352,6 @@ cout << "parse map file " << config.getContinMapName() << endl;
 	  pops.push_back(alg->getPopulation());
 	  Population& pop = pops.back();
 	  bestSolutions.push_back(pop[0]->clone());
-
 		// update output when needed
 		if(myRank ==0 or config.getSummaryOnly()==Config::All){
 			if(pop.getConvertScores()){

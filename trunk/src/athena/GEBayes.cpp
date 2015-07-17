@@ -396,7 +396,6 @@ vector<string> GEBayes::getAdditionalOutputNames(){
 void GEBayes::getAdditionalFinalOutput(Dataset* set){
 	GEObjective::setDataset(set);
 	GEObjective::setRefDataset(set);
-// cout << "getAdditionalFinalOutput" << endl;
 
 	unsigned int numInds = ga->population().size();
   for(unsigned int currInd = 0; currInd < numInds; currInd++){
@@ -723,14 +722,17 @@ void GEBayes::run(){
 int GEBayes::step(){
 		int completed =0;
 		GE1DArrayGenome::myRank = myRank;
-// cout << "myRank=" << myRank << " in GEBayes step()" << endl;
+//if(myRank==0)
+//cout << "myRank=" << myRank << " in GEBayes step()" << endl;
 		for(unsigned int i=0; i < stepSize; i++){
-// cout << "myRank=" << myRank << " step i=" << i;
+//if(myRank==0)
+// cout << "myRank=" << myRank << " start step i=" << i;
 				if(!ga->done()){
 					if(logTypeSelected!=LogNone){
 						geLog->addGeneration();
 					}
 					ga->step();
+//if(myRank==0)
 // cout << " completed" << endl;
 				 restrictStepsDone++;
 				 // check for need to change crossovers
@@ -764,8 +766,8 @@ int GEBayes::step(){
 // 				setRestrictedGrammar(resetRestrictedAtMigration);
 // 			}
 		#endif
-		
-// cout << "myRank=" <<  myRank << " after sendAndReceive" << endl;
+//if(myRank==0)		
+//cout << "myRank=" <<  myRank << " after sendAndReceive" << endl;
 		// only need to fill population at this point not at end of each generation
 		fillPopulation();
 // cout << "myRank=" <<  myRank << " after filling population" << endl;

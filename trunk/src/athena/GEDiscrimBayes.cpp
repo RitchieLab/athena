@@ -298,7 +298,9 @@ void GEDiscrimBayes::prepareLog(string basename, int cv){
 
 /// Initializes the algorithm for each new dataset to test
 void GEDiscrimBayes::initialize(){
+//cout << "initialize caseAlg" << endl;
 	caseAlg->initialize();
+//cout << "initialize controlAlg" << endl;
 	controlAlg->initialize();
 	
 	// initialize structures here for next CV
@@ -314,10 +316,10 @@ void GEDiscrimBayes::initialize(){
 int GEDiscrimBayes::step(){
 		int completed =0;
 		// run each separately
-// cout << "myRank=" << myRank << "run case step" << endl;
+//cout << "myRank=" << myRank << "run case step" << endl;
 		GEObjective::setDataset(caseDataset);
 		caseAlg->step();
-// cout << "myRank=" << myRank << "run control step" << endl;		
+//cout << "myRank=" << myRank << "run control step" << endl;		
 		GEObjective::setDataset(controlDataset); 
 		controlAlg->step();
 // cout << "myRank=" << myRank << "finished case and control steps" << endl;
@@ -376,6 +378,7 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	// when model is a case use the case probs and when model is a control use
 	// the control probabilities no matter the status of the individual
 	IndResults emptyResult;
+
 	vector<IndResults> trainingScores(training->numInds(),emptyResult), 
 		testingScores(testing->numInds(),emptyResult);
 	// each individual will end up with a score for each top model
@@ -383,6 +386,7 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	setIndModScores(training, caseModels, trainingScores, caseOrphanProbs);
 	setIndModScores(training, controlModels, trainingScores, controlOrphanProbs);
 	setIndModScores(testing, caseModels, testingScores, caseOrphanProbs);
+//cout << "testing set control models used" << endl;	
 	setIndModScores(testing, controlModels, testingScores, controlOrphanProbs);
 	double trainingAUC = setPredictedScores(trainingScores, caseModels, controlModels, case2conRatio);
 	double testingAUC = setPredictedScores(testingScores, caseModels, controlModels, case2conRatio);
@@ -600,7 +604,7 @@ void GEDiscrimBayes::setIndModScores(Dataset* dset, map<string,modScores>& model
 	}
 	
 // vector<int> t(2,0);
-// cout << "start setIndModScores set size=" << dset->numInds() << endl;
+//cout << "start setIndModScores set size=" << dset->numInds() << endl;
 	for(size_t i=0; i<dset->numInds(); i++){
 		indScores[i].indID = (*dset)[i]->getID();
 // cout << "i=" << i << " indID=" << indScores[i].indID << endl;
@@ -610,7 +614,7 @@ void GEDiscrimBayes::setIndModScores(Dataset* dset, map<string,modScores>& model
 		// loop through each model and assign a value to each individual for each model
 		for(map<string, modScores>::iterator modIter=models.begin(); modIter != models.end();
 			++modIter){
-// cout << "model is " << modIter->first << endl;
+//cout << "model is " << modIter->first << endl;
 			indScores[i].scores.push_back(1.0);
 			for(vector<ConditTable>::iterator tableIter=modIter->second.tables.begin();
 				tableIter != modIter->second.tables.end(); ++tableIter){
@@ -635,7 +639,7 @@ void GEDiscrimBayes::setIndModScores(Dataset* dset, map<string,modScores>& model
 							value += (*dset)[i]->getCovariate(tableIter->parentIndexes[j]) *
 								tableIter->cumulativeLevels[j];							
 					}
-// cout << "value=" << value << endl;
+//cout << "value=" << value << endl;
 // cout << "nodeIndex=" << tableIter->nodeIndex << endl;
 // 					indScores[i].scores.back() *= tableIter->probs[indScores[i].phenotype][index];
 // 					indScores[i].scores.back() *= tableIter->probs[tableIter->nodeIndex][value];

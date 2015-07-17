@@ -38,7 +38,6 @@ void ContinMapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
 	string line;
 
 	string continID, groupID;
-cout << "read mapfile" << endl;
 	while(!mapStream.eof()){
 		getline(mapStream, line);
 
@@ -49,7 +48,6 @@ cout << "read mapfile" << endl;
 		stringstream ss(line);
 
 		ss >> continID;
-cout << "continID=" << continID << endl;
 		if(ss >> groupID)
 			dataholder->addCovarName(continID, groupID);
 		else

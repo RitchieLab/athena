@@ -20,6 +20,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <sstream>
 #include <fstream>
 
+#include <cstdlib>
+
 namespace data_manage
 {
 
@@ -38,18 +40,18 @@ void MapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
 	string line;
 
 	string snpID;
-	unsigned int chrom;
-	unsigned int pos;
+//	unsigned int chrom;
+//	unsigned int pos;
+string chrom,pos;
 
 	while(!mapStream.eof()){
 		getline(mapStream, line);
 
-		if(line.find_first_of("0123456789") == string::npos){
+		if(line.find_first_of("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz") == string::npos){
 			continue;
 		}
 
 		stringstream ss(line);
-
 		ss >> chrom >> snpID >> pos;
 		dataholder->addGenoName(snpID);
 	}

@@ -374,7 +374,8 @@ void OutputManager::outputAllModels(Algorithm* alg, Population& pop, int rank, i
 			outfile << "\tTesting-" << addHeaders[i];
 		}
 	}
-	outfile << "\n";
+//	outfile << "\n";
+outfile << endl;
 	Solution* bestSolution;
 	for(int mod=0; mod < pop.getPopSize(); mod++){
 		bestSolution = pop[mod];
@@ -398,7 +399,8 @@ void OutputManager::outputAllModels(Algorithm* alg, Population& pop, int rank, i
 					outfile << bestSolution->getAdditionalOutput()[i + addHeaders.size()];
 			}
 		}
-		outfile << "\n";
+//		outfile << "\n";
+outfile << endl;
 	}
 }
 

@@ -117,8 +117,7 @@ vector<int> BayesSolution::getCovariates(){
 /// 
 void BayesSolution::outputClean(std::ostream& os, data_manage::Dataholder& data,
 			bool mapUsed, bool ottDummy, bool continMapUsed){
-
-	// concatenate numbers and output rest without spaces
+	// concatenate numbers and output rest without space
 // 	os << symbols[0];
 	for(unsigned int symb=0; symb < symbols.size(); symb++){
 		if(symbols[symb].compare("Concat")!=0){
@@ -134,7 +133,6 @@ void BayesSolution::outputClean(std::ostream& os, data_manage::Dataholder& data,
 					num = (num-1)/2;
 				else
 					num -= 1;
-
 				os << data.getGenoName(num);
 			}
 			else if(continMapUsed && symbols[symb][0] == 'C'){
@@ -185,7 +183,6 @@ void BayesSolution::outputClean(std::ostream& os, data_manage::Dataholder& data,
 /// @param tes
 ///
 void BayesSolution::adjustScoreOut(Dataset* trainSet, Dataset* testSet){
-cout << "in adjustScoreOut 2" << endl;
 	solFitness = alterScore(solFitness, trainSet->getConstant());
 	testScore = alterScore(testScore, testSet->getConstant());
 }
@@ -197,7 +194,6 @@ cout << "in adjustScoreOut 2" << endl;
 /// @param trainSet Dataset
 ///
 void BayesSolution::adjustScoreOut(Dataset* trainSet){
-cout << "in adjustScoreOut" << endl;
 	solFitness = alterScore(solFitness, trainSet->getConstant());
 }
 
