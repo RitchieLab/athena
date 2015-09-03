@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   AlgorithmFactory.h
  * Author: dudeksm
  *
@@ -29,11 +29,11 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Algorithm.h"
 
 class AlgorithmFactory{
-		
+
 public:
 		/// Creates and returns the Algorithm
 		static Algorithm* createAlgorithm(std::string algName);
-		
+
 		/// Enumeration for algorithm types
 		enum AlgorithmType{
 				/// Enum for missing
@@ -45,16 +45,18 @@ public:
 				/// Enum for Bayesian
 				GEBayesAlgorithm,
 				/// Enum for Bayesian Discriminant
-				GEDiscrimBayesAlgorithm
+				GEDiscrimBayesAlgorithm,
+				/// Enum for Bayesian Discriminant using GA
+				GADiscrimBayesAlgorithm
 		};
-		
+
 private:
-		
+
 		/// Sets map for Algorithm creation
 		static void setAlgorithmMap();
-		
+
 		static std::map<std::string, AlgorithmType> AlgorithmMap;
-		
+
 };
 
 

@@ -25,7 +25,7 @@ GEDiscrimBayes::~GEDiscrimBayes(){
 	if(caseDataset != NULL)
 		delete caseDataset;
 	if(controlDataset != NULL)
-		delete controlDataset;		
+		delete controlDataset;
 }
 
 
@@ -34,38 +34,38 @@ GEDiscrimBayes::~GEDiscrimBayes(){
 /// can be modified using the set_params function
 ///
 void GEDiscrimBayes::initializeParams(){
- 
+
  	caseAlg = new GEBayes;
  	controlAlg = new GEBayes;
  	topModelsUsed = 5;
-  
+
 // 	calculatorName = "K2";
 // 	logTypeSelected = LogNone;
 // 	geLog = NULL;
 	ga = NULL;
 	caseDataset = controlDataset = NULL;
 	currCV=1;
-	
+
 	paramMap["NUMTOPMODELS"] = modelsToUse;
-// 	  
+//
 // 	minNumParents = 1;
 // 	minNumChildren = 1;
 // 	maxNumParents = 3;
 // 	maxNumChildren = 2;
 // 	balAccStart=-1;
 // 	balAccFreq=0;
-// 
+//
 // 	paramMap["CHILDRANGE"] = childRange;
 // 	paramMap["PARENTRANGE"] = parentRange;
 // 	paramMap["BAFREQ"] = bafreq;
 // 	paramMap["BABEGIN"] = bastart;
-	
+
 }
 
 
 ///
-/// Sets random seed 
-/// @param seed 
+/// Sets random seed
+/// @param seed
 ///
 void GEDiscrimBayes::setRand(unsigned int seed){
 	GARandomSeed(seed);
@@ -73,7 +73,7 @@ void GEDiscrimBayes::setRand(unsigned int seed){
 }
 
 ///
-/// Sets values in main configuration to defaults needed by 
+/// Sets values in main configuration to defaults needed by
 /// GEDiscrimBayes Algorithm
 /// @param configuration Config
 ///
@@ -97,29 +97,29 @@ void GEDiscrimBayes::setDummyEncoding(bool ottDummyEncoded){
 
 
 ///
-/// Sets parameters within the algorithm for the 
+/// Sets parameters within the algorithm for the
 /// analysis.
 /// @param algParam AlgorithmParams
 /// @param numExchanges total number of times the best model will be passed to other algorithms
 /// when more than one algorithm
 /// @param numGenos number of Genotypes in set
 /// @param numContin number of Continuous variables in set
-/// 
-void GEDiscrimBayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, 
+///
+void GEDiscrimBayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos,
 	int numContin, vector<unsigned int>& excludedGenos, vector<unsigned int>& excludedContins){
-// cout << "setting params" << endl;	
+// cout << "setting params" << endl;
 		caseAlg->setParams(algParam, numExchanges, numGenos, numContin, excludedGenos, excludedContins);
 		controlAlg->setParams(algParam, numExchanges, numGenos, numContin, excludedGenos, excludedContins);
-		
+
 		Algorithm::setParams(algParam, numExchanges, numGenos, numContin, excludedGenos,
 			excludedContins);
-		
+
 // cout << "call params here" << endl;
 		map<string, string>::iterator mapIter;
 		vector<string> tokens;
-		
-		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end(); 
-			mapIter++){     
+
+		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end();
+			mapIter++){
 				switch(paramMap[mapIter->first]){
 					case noMatchParam:
 						break;
@@ -162,14 +162,14 @@ void GEDiscrimBayes::setParams(AlgorithmParams& algParam, int numExchanges, int 
 						default:
 							if(paramMap.find(mapIter->first) == paramMap.end())
 								throw AthenaExcept("No match for parameter " + mapIter->first +
-												" in Algorithm GEBayes");               
+												" in Algorithm GEBayes");
 				}
 		}
-		
-		// first optimization of backpropagation 
+
+		// first optimization of backpropagation
 // 		bpNextOpt = bpFirstGen;
 		baNextOpt = balAccStart;
-			 
+
 		setGAParams(excludedGenos, excludedContins);
 		*/
 }
@@ -180,28 +180,28 @@ void GEDiscrimBayes::setParams(AlgorithmParams& algParam, int numExchanges, int 
 /// @param alg_params AlgorithmParams
 /// @throws AthenaExcept on error
 ///
-void GEDiscrimBayes::setGAParams(vector<unsigned int>& excludedGenos, 
+void GEDiscrimBayes::setGAParams(vector<unsigned int>& excludedGenos,
 			vector<unsigned int>& excludedContins){
     /*
 		GARandomSeed(randSeed);
-		srand(randSeed);   
+		srand(randSeed);
 		// first free ga memory if already run
 		freeMemory();
-		
+
 		//Initialize the GE mapper
 	 //Set maximum number of wrapping events per mapping
 	 mapper.setMaxWraps(wrapEvents);
 	 expandVariables();
 	 // ADJUSTING GRAMMAR -- can be added back for the new discriminant network grammar
-// 	 adjuster.setBayesianSize(minNumParents, maxNumParents, minNumChildren, 
+// 	 adjuster.setBayesianSize(minNumParents, maxNumParents, minNumChildren,
 // 			maxNumChildren);
 		// remove any excluded SNPs and/or continuous variables
 		if(!excludedGenos.empty() || !excludedContins.empty())
 			excludeVariables(excludedGenos, excludedContins);
-			
+
 		adjuster.setMapper(mapper);
 		setMapperPrefs(mapper);
-			
+
 		GEObjective::setSolutionType("BAYES", calculatorName);
 
 	 if(calculatorName.find("K2") != string::npos){
@@ -214,7 +214,7 @@ void GEDiscrimBayes::setGAParams(vector<unsigned int>& excludedGenos,
 		 GEObjective::addLogging(false);
 	 else
 		 GEObjective::addLogging(true);
-		 
+
 		// can probably drop this
     setInitParams();
     */
@@ -233,11 +233,11 @@ void GEDiscrimBayes::setDataset(Dataset* newSet){
 		delete caseDataset;
 	if(controlDataset != NULL)
 		delete controlDataset;
-		
-// cout << z[0] << " " << z[1] << endl;		
-// cout << "first => " << (*newSet)[0]->getStatus() << "\n";		
+
+// cout << z[0] << " " << z[1] << endl;
+// cout << "first => " << (*newSet)[0]->getStatus() << "\n";
 	vector<Dataset*> splitSets = newSet->splitCaseControl();
-// cout << "first immediate=> " << (*newSet)[0]->getStatus() << "\n";	
+// cout << "first immediate=> " << (*newSet)[0]->getStatus() << "\n";
 	controlAlg->setDataset(splitSets[0]);
 // cout << "first after set=> " << (*newSet)[0]->getStatus() << "\n";
 	caseAlg->setDataset(splitSets[1]);
@@ -246,13 +246,13 @@ void GEDiscrimBayes::setDataset(Dataset* newSet){
 	controlDataset = splitSets[0];
 // cout << "caseDataset has " << caseDataset->numInds() << endl;
 // cout << "controlDataset has " << controlDataset->numInds() << endl;
-	
+
 // cout << "first after => " << (*newSet)[0]->getStatus() << "\n";
-	
+
 }
 
 ///
-/// Starts fresh log 
+/// Starts fresh log
 ///
 void GEDiscrimBayes::startLog(int numSnps){
 	caseAlg->startLog(numSnps);
@@ -264,7 +264,7 @@ void GEDiscrimBayes::startLog(int numSnps){
 /// @param filename File with biofilter models
 /// @param bioFileType Type of biological filter file (BINARY or TEXT)
 /// @param holder Dataholder that contains map file info to convert model names
-/// into indexes in the 
+/// into indexes in the
 ///
 void GEDiscrimBayes::getBioModels(std::string filename, std::string bioFileType, data_manage::Dataholder* holder){
 	caseAlg->getBioModels(filename, bioFileType, holder);
@@ -274,7 +274,7 @@ void GEDiscrimBayes::getBioModels(std::string filename, std::string bioFileType,
 
 
 ///
-/// Fills biomodel collection from archive files 
+/// Fills biomodel collection from archive files
 /// @param genegeneFile genegene filename
 /// @param archiveFile arcchive filename
 /// @param holder Dataholder that contains map file info to convert model names
@@ -302,16 +302,16 @@ void GEDiscrimBayes::initialize(){
 	caseAlg->initialize();
 //cout << "initialize controlAlg" << endl;
 	controlAlg->initialize();
-	
+
 	// initialize structures here for next CV
 	// to do after
-	
+
 }
 
 
 ///
 /// Runs an indicated interval for the algorithm. This interval is set
-/// in the stepSize variable.  
+/// in the stepSize variable.
 ///
 int GEDiscrimBayes::step(){
 		int completed =0;
@@ -319,8 +319,8 @@ int GEDiscrimBayes::step(){
 //cout << "myRank=" << myRank << "run case step" << endl;
 		GEObjective::setDataset(caseDataset);
 		caseAlg->step();
-//cout << "myRank=" << myRank << "run control step" << endl;		
-		GEObjective::setDataset(controlDataset); 
+// cout << "myRank=" << myRank << "run control step" << endl;
+		GEObjective::setDataset(controlDataset);
 		controlAlg->step();
 // cout << "myRank=" << myRank << "finished case and control steps" << endl;
 		return completed;
@@ -328,7 +328,7 @@ int GEDiscrimBayes::step(){
 
 
 ///
-/// Starts fresh log 
+/// Starts fresh log
 ///
 void GEDiscrimBayes::closeLog(){
 	caseAlg->closeLog();
@@ -344,7 +344,7 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 // 	cout << "Fill getAdditionalFinalOutput here" << endl;
 
 	// store in set -- use model equation as the key (sorted?)
-	// get each model convert to model equation 
+	// get each model convert to model equation
 	// store in set and increment counter
 	map<string, modScores> caseModels;
 	map<string, modScores> controlModels;
@@ -352,7 +352,7 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 // 	cout << "finished compiling case model totals" << endl;
 	totalModels(controlAlg, controlModels, holder, mapUsed, ottDummy, continMapUsed, false);
 // 	cout << "finished compiling control model totals" << endl;
-	
+
 // 	map<unsigned int, vector<double> > caseOrphanProbs, controlOrphanProbs;
 	map<string, vector<double> > caseOrphanProbs, controlOrphanProbs;
 	// calculate probability tables for each variable in case training set
@@ -361,7 +361,7 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	// calculate probability tables for each variable in control training set
 	// for situation where there are no parents in model
 	calcProbTables(controlDataset, controlOrphanProbs, holder);
-	
+
 	double case2conRatio = caseDataset->numInds() / double(controlDataset->numInds()+caseDataset->numInds());
 	int numCases = caseDataset->numInds() + int(testing->numInds()*case2conRatio+0.5);
 	int numControls = controlDataset->numInds() + int(testing->numInds()*case2conRatio+0.5);
@@ -372,14 +372,13 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	setConditionalTables(caseDataset, caseModels, holder, caseMissCell);
 	// calculate conditional probabilities for control models
 	setConditionalTables(controlDataset, controlModels, holder, conMissCell);
-	
+
 	// for each individual calculate total probability score by multiplying all the probabilities
 	// for all variables in set (using conditional probs where appropriate)
 	// when model is a case use the case probs and when model is a control use
 	// the control probabilities no matter the status of the individual
 	IndResults emptyResult;
-
-	vector<IndResults> trainingScores(training->numInds(),emptyResult), 
+	vector<IndResults> trainingScores(training->numInds(),emptyResult),
 		testingScores(testing->numInds(),emptyResult);
 	// each individual will end up with a score for each top model
 	// store results for testing and training sets
@@ -390,15 +389,15 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	setIndModScores(testing, controlModels, testingScores, controlOrphanProbs);
 	double trainingAUC = setPredictedScores(trainingScores, caseModels, controlModels, case2conRatio);
 	double testingAUC = setPredictedScores(testingScores, caseModels, controlModels, case2conRatio);
-	 
+
 #ifdef HAVE_CXX_MPI
 if(myRank == 0){
-#endif	 
+#endif
 	string trainingFile = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".train.inds.txt";
 	writeIndScores(trainingFile, trainingScores);
 	string testingFile = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".test.inds.txt";
 	writeIndScores(testingFile, testingScores);
-	
+
 	// add this CV result to .sum file
 	string sumFile = outputName + ".GEBN.sum";
 	ofstream sumstream;
@@ -409,58 +408,58 @@ if(myRank == 0){
 		sumstream.open(sumFile.c_str(), ios::out);
 		sumstream << "CV\tCase Models\tCount\tControl Models\tCount\tTrain AUC\tTest AUC\n";
 	}
-	
+
 	// sort models by score
 	map<string, modScores>::iterator caseIter=caseModels.begin();
 	map<string, modScores>::iterator conIter=controlModels.begin();
 	mScores tmpScore;
 	vector<mScores> caseMods, controlMods;
-	
-	
+
+
 	for(int i=0; i<topModelsUsed; i++){
 		tmpScore.mString = caseIter->first;
 		tmpScore.mPtr = &(caseIter->second);
 		caseMods.push_back(tmpScore);
 		tmpScore.mString = conIter->first;
-		tmpScore.mPtr = &(conIter->second);		
+		tmpScore.mPtr = &(conIter->second);
 		controlMods.push_back(tmpScore);
 		++caseIter;
 		++conIter;
 	}
-	
+
 	sort(caseMods.begin(), caseMods.end(), sortByScore);
 	sort(controlMods.begin(), controlMods.end(), sortByScore);
-	
+
 	int modIndex=0;
-	sumstream << currCV << "\t" << getLabel(caseMods[modIndex].mString, holder,mapUsed,continMapUsed) << "\t" 
+	sumstream << currCV << "\t" << getLabel(caseMods[modIndex].mString, holder,mapUsed,continMapUsed) << "\t"
 		<< caseMods[modIndex].mPtr->count << "\t"
-		<< getLabel(controlMods[modIndex].mString, holder,mapUsed,continMapUsed) << "\t" 
+		<< getLabel(controlMods[modIndex].mString, holder,mapUsed,continMapUsed) << "\t"
 		<< controlMods[modIndex].mPtr->count << "\t"
 		<< trainingAUC << "\t" << testingAUC << "\n";
 	for(modIndex=1; modIndex<topModelsUsed; modIndex++){
 		sumstream << "\t" << getLabel(caseMods[modIndex].mString, holder,mapUsed,continMapUsed)
-		<<  "\t" << caseMods[modIndex].mPtr->count 
+		<<  "\t" << caseMods[modIndex].mPtr->count
 		<< "\t" << getLabel(controlMods[modIndex].mString, holder,mapUsed,continMapUsed)
 		<< "\t" << controlMods[modIndex].mPtr->count << "\t\t\n";
-	}	
-	
-	
-// 	sumstream << currCV << "\t" << caseIter->first << "\t" 
+	}
+
+
+// 	sumstream << currCV << "\t" << caseIter->first << "\t"
 // 		<< caseIter->second.count << "\t"
-// 		<< conIter->first << "\t" 
+// 		<< conIter->first << "\t"
 // 		<< conIter->second.count << "\t"
 // 		<< trainingAUC << "\t" << testingAUC << "\n";
 // 	for(int i=1; i<topModelsUsed; i++){
 // 		++caseIter;++conIter;
 // 		sumstream << "\t" << caseIter->first << "\t" << conIter->first << "\t\t\n";
 // 	}
-	
-	
+
+
 // 	map<string, modScores>::iterator caseIter=caseModels.begin();
 // 	map<string, modScores>::iterator conIter=controlModels.begin();
-// 	sumstream << currCV << "\t" << caseIter->first << "\t" 
+// 	sumstream << currCV << "\t" << caseIter->first << "\t"
 // 		<< caseIter->second.count << "\t"
-// 		<< conIter->first << "\t" 
+// 		<< conIter->first << "\t"
 // 		<< conIter->second.count << "\t"
 // 		<< trainingAUC << "\t" << testingAUC << "\n";
 // 	for(int i=1; i<topModelsUsed; i++){
@@ -472,7 +471,7 @@ if(myRank == 0){
 }
 #endif
 	currCV++;
-	
+
 	// below is just a placeholder
 	pop=caseAlg->getPopulation();
 }
@@ -489,20 +488,20 @@ string GEDiscrimBayes::getLabel(string modelString, Dataholder* holder,
 	if(!mapUsed and !continMapUsed){
 		return modelString;
 	}
-	string searchStr;	
+	string searchStr;
 	if(mapUsed){
 		searchStr = "G";
 	}
 	if(continMapUsed){
 		searchStr += "C";
 	}
-	
+
 	// split model into pieces (could march through looking for any G or C
 	string newString;
 	size_t found=0, lastFound=0;
 	size_t endPos;
 	while((found = modelString.find_first_of(searchStr, found))!=string::npos){
-		//copy over up to the 
+		//copy over up to the
 		newString += modelString.substr(lastFound, found-lastFound);
 		endPos=modelString.find_first_not_of("0123456789",found+1);
 		// grab the number
@@ -523,7 +522,7 @@ string GEDiscrimBayes::getLabel(string modelString, Dataholder* holder,
 // cout  << "newString=" << newString << endl;
 	return newString;
 // 	string name = (*node)->term->getName();
-// 	stringstream ss(name.substr(1,name.length()-1));	
+// 	stringstream ss(name.substr(1,name.length()-1));
 // 	int num;
 // 	ss >> num;
 // // cout << "holder=" << holder << " genoname="<< holder->getGenoName(num-1) << endl;
@@ -548,7 +547,7 @@ string GEDiscrimBayes::getLabel(string modelString, Dataholder* holder,
 ///
 double GEDiscrimBayes::setPredictedScores(vector<IndResults>& indScores, map<string,modScores>& caseModels,
 	map<string,modScores>& controlModels, double caseRatio){
-	
+
 	long double caseScore, conScore;
 	int sIndex, totalCount;
 	stat::TestResult tempResult;
@@ -563,7 +562,7 @@ double GEDiscrimBayes::setPredictedScores(vector<IndResults>& indScores, map<str
 			totalCount += caseModIter->second.count;
 		}
 		caseScore /= (long double)totalCount;
-		
+
 		totalCount=0;
 		for(map<string,modScores>::iterator conModIter=controlModels.begin(); conModIter != controlModels.end();
 			++conModIter){
@@ -571,13 +570,13 @@ double GEDiscrimBayes::setPredictedScores(vector<IndResults>& indScores, map<str
 			totalCount += conModIter->second.count;
 		}
 		conScore /= (long double)totalCount;
-		indIter->predicted = caseRatio * caseScore / (caseRatio * caseScore + 
+		indIter->predicted = caseRatio * caseScore / (caseRatio * caseScore +
 			(1-caseRatio) * conScore);
 		tempResult.score = indIter->predicted;
 		tempResult.status = indIter->phenotype;
 		results.push_back(tempResult);
-	} 
-	
+	}
+
 	//calculate and return AUC
 	return stat::AUCCalc::calculateAUC(results);
 }
@@ -588,13 +587,13 @@ double GEDiscrimBayes::setPredictedScores(vector<IndResults>& indScores, map<str
 ///
 void GEDiscrimBayes::setIndModScores(Dataset* dset, map<string,modScores>& models,
 	vector<IndResults>& indScores, map<string, vector<double> >& orphanProbs){
-	
-	
+
+
 	unsigned int totalGenos = dset->numGenos();
 	unsigned int totalCovars = dset->numCovariates();
-	
+
 	vector<string> genoLabels, covarLabels;
-	
+
 	// construct the basic labels
 	for(unsigned int i=1; i<=totalGenos; i++){
 		genoLabels.push_back("G" + Stringmanip::numberToString(i));
@@ -602,7 +601,7 @@ void GEDiscrimBayes::setIndModScores(Dataset* dset, map<string,modScores>& model
 	for(unsigned int i=1; i<=totalCovars; i++){
 		covarLabels.push_back("C" + Stringmanip::numberToString(i));
 	}
-	
+
 // vector<int> t(2,0);
 //cout << "start setIndModScores set size=" << dset->numInds() << endl;
 	for(size_t i=0; i<dset->numInds(); i++){
@@ -629,51 +628,32 @@ void GEDiscrimBayes::setIndModScores(Dataset* dset, map<string,modScores>& model
 // }
 
 					for(size_t j=0; j<tableIter->parentIndexes.size(); j++){
-// cout << "j=" << j << " SNP=" << tableIter->parentIndexes[j] << " is genotype=>" << tableIter->parentGenos[j] << endl;
-// out << "j=" << j << " genotype=" << (*dset)[i]->getCovariate(tableIter->parentIndexes[j]) 
-// 	<< " SNP=" << tableIter->parentIndexes[j] << endl;
 						if(tableIter->parentGenos[j])
 							value += (*dset)[i]->getGenotype(tableIter->parentIndexes[j]) *
 								tableIter->cumulativeLevels[j];
 						else
 							value += (*dset)[i]->getCovariate(tableIter->parentIndexes[j]) *
-								tableIter->cumulativeLevels[j];							
+								tableIter->cumulativeLevels[j];
 					}
-//cout << "value=" << value << endl;
-// cout << "nodeIndex=" << tableIter->nodeIndex << endl;
-// 					indScores[i].scores.back() *= tableIter->probs[indScores[i].phenotype][index];
-// 					indScores[i].scores.back() *= tableIter->probs[tableIter->nodeIndex][value];
-// cout << "tableIter->genoNode=" << tableIter->genoNode << endl;
 					if(tableIter->genoNode)
 						indScores[i].scores.back() *= tableIter->probs[(*dset)[i]->getGenotype(tableIter->nodeIndex)][value];
 					else
 						indScores[i].scores.back() *= tableIter->probs[(*dset)[i]->getCovariate(tableIter->nodeIndex)][value];
 			}
-// cout << "indScores[i].scores.back()=" << indScores[i].scores.back() << endl;
-// cout << "totalGenos=" << totalGenos << endl;
 			// add in all the scores for the other variables in the set
-// 			for(unsigned int geno=0; geno < totalGenos; geno++){
 			for(size_t geno = 0; geno < totalGenos; ++geno){
-// cout << "geno=" << geno << " genoLabel=" << genoLabels[geno] << endl;
 				if(modIter->second.varsWithParents.find(genoLabels[geno]) == modIter->second.varsWithParents.end()){
-// cout << "get score" << endl;
 					indScores[i].scores.back() *= orphanProbs[genoLabels[geno]][(*dset)[i]->getGenotype(geno)];
 				}
-// else{
-// 	cout << "no score" << endl;
-// }
-// 				if(modIter->second.varsWithParents.find(geno) == modIter->second.varsWithParents.end()){
-// 					indScores[i].scores.back() *= orphanProbs[geno][(*dset)[i]->getGenotype(geno)];
-// 				}
 			}
 // cout << "totalCovars=" << totalCovars << endl;
 			for(size_t covar = 0; covar < totalCovars; ++covar){
 				if(modIter->second.varsWithParents.find(covarLabels[covar]) == modIter->second.varsWithParents.end()){
 					indScores[i].scores.back() *= orphanProbs[covarLabels[covar]][(*dset)[i]->getCovariate(covar)];
 				}
-			}			
+			}
 		}
-	}	
+	}
 
 // cout << "cases=" << t[1] << " controls=" << t[0] << "\n";
 }
@@ -688,7 +668,7 @@ void GEDiscrimBayes::writeIndScores(string filename, vector<IndResults>& scores)
 	for(vector<IndResults>::iterator iter=scores.begin(); iter != scores.end();
 		++iter){
 		out << iter->indID << "\t" << iter->phenotype << "\t" << iter->predicted << "\n";
-	}	
+	}
 	out.close();
 }
 
@@ -709,7 +689,7 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 // 	cout << "i=" << i << " genoname=" << holder->getGenoName(i) << endl;
 // }
 // exit(1);
-		
+
 		// need to split model string and then use only those that have parents
 		vector<string> nodes = tokenizeEquation(modIter->first);
 		for(vector<string>::iterator nodeIter=nodes.begin(); nodeIter != nodes.end();
@@ -723,7 +703,7 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 				(*nodeIter)[1] == 'G' ? genoNode = true : genoNode = false;
 // cout << "*nodeIter=" << *nodeIter << " genoNode=" << genoNode << endl;
 				modIter->second.tables.back().genoNode = genoNode;
-				
+
 				string nodeID = (*nodeIter).substr(1, cPos-1);
 				cPos += 1;
 				string substr = nodeIter->substr(cPos, (*nodeIter).length()-cPos-1);
@@ -742,7 +722,7 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 // 				modIter->second.varsWithParents.insert(modIter->second.tables.back().nodeIndex);
 				// store string (will be G1 or C5 etc..)
 				modIter->second.varsWithParents.insert(nodeID);
-				
+
 // cout << nodeID.substr(1,nodeID.length()-cPos+1) <<  " nodeIndex=" << modIter->second.tables.back().nodeIndex << endl;
 // 				vector<unsigned int> parentIndexes;
 // 				modIter->second.tables[tableIndex].parentIndexes.clear();
@@ -759,15 +739,15 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 // cout << *pIter << " = " << modIter->second.tables.back().parentIndexes.back() << " parentGeno=" << parentGeno << endl;
 					modIter->second.tables.back().parentGenos.push_back(parentGeno);
 				}
-				
+
 				vector<int> parentValues;
 // working here
-				int parentLevels = configParentData(parentValues, modIter->second.tables.back().parentIndexes, 
+				int parentLevels = configParentData(parentValues, modIter->second.tables.back().parentIndexes,
 					modIter->second.tables.back().parentGenos,
 					dset, modIter->second.tables.back().cumulativeLevels);
 // cout << "parentLevels=" << parentLevels << endl;
 				// for the conditional table for each identical combination of the parents
-				// calculate the occurrence of the child 
+				// calculate the occurrence of the child
 				// will be 3 different for each parent combo for a SNP
 				// scale the child to 1.0 for the number of occurrences
 // 				int nodeLevels=3;
@@ -776,13 +756,13 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 					nodeLevels=3;
 				else
 					nodeLevels = dset->getNumLevels(variableIndex);
-					
+
 				vector<int> inner(parentLevels,0);
 				vector<vector<int> > totals(nodeLevels, inner);
 // 				vector<int> parentTotals(parentLevels, 0);
 				vector<int> nodeTotals(nodeLevels, 0);
-				
-				// cycle through individuals and total 
+
+				// cycle through individuals and total
 				int val;
 				for(unsigned int i=0; i<dset->numInds(); i++){
 					if(genoNode){
@@ -794,7 +774,7 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 						nodeTotals[((*dset)[i])->getCovariate(modIter->second.tables.back().nodeIndex)]++;
 					}
 				}
-				
+
 				vector<double> innerProbs(parentLevels, 0.0);
 // 				vector<vector<double> > conditProbs(nodeLevels, innerProbs);
 				modIter->second.tables.back().probs.assign(nodeLevels, innerProbs);
@@ -806,15 +786,15 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 							modIter->second.tables.back().probs[i][j] = totals[i][j]/double(nodeTotals[i]);
 						else
 							modIter->second.tables.back().probs[i][j] = missValue;
-// cout << "i=" << i << " j=" << j << " total=" << totals[i][j] << " nodeTotals=" << 
+// cout << "i=" << i << " j=" << j << " total=" << totals[i][j] << " nodeTotals=" <<
 // nodeTotals[i] << " conditProbs=" << modIter->second.tables.back().probs[i][j]  << endl;
 					}
 				}
-		
+
 			}
-		}	
-// exit(1);	
-	}	
+		}
+// exit(1);
+	}
 // 	cout << "end setConditionalTable" << endl;
 
 }
@@ -826,7 +806,7 @@ void GEDiscrimBayes::setConditionalTables(Dataset* dset, map<string, modScores>&
 ///
 void	GEDiscrimBayes::calcProbTables(Dataset* dset, map<string, vector<double> >& orphanProbs,
 	data_manage::Dataholder* holder){
-	
+
 	orphanProbs.clear();
 	for(unsigned int geno=0; geno < dset->numGenos(); geno++){
 		vector<int> totals(3,0);
@@ -840,7 +820,7 @@ void	GEDiscrimBayes::calcProbTables(Dataset* dset, map<string, vector<double> >&
 		}
 		orphanProbs["G" + Stringmanip::numberToString(geno+1)]=table;
 	}
-	
+
 	// need to create prob tables for the continuous variables
 	// need to know number of levels for the variable
 	for(unsigned int covar=0; covar < dset->numCovariates(); covar++){
@@ -866,11 +846,11 @@ void	GEDiscrimBayes::calcProbTables(Dataset* dset, map<string, vector<double> >&
 /// Calculates conditional probability table for node that has parents
 ///
 // void GEDiscrimBayes::calcParentCondTable(){
-// 	
+//
 // }
 
 ///
-/// Create parent data combination 
+/// Create parent data combination
 /// @param parentValues
 /// @param parents contains indexes to parent genotypes
 /// @returns number of different levels(factors) in the parent combined values
@@ -880,7 +860,7 @@ int GEDiscrimBayes::configParentData(vector<int>& parentValues, vector<unsigned 
 	// assume three levels (to hold SNP data)
 // 	int constLevels = 3; // this has to be changed also
 	int snpLevels = 3;
-	
+
 	// set number of levels for each parent
 	vector<int> nLevels(parents.size(), 0);
 	int nl = 1;
@@ -890,11 +870,11 @@ int GEDiscrimBayes::configParentData(vector<int>& parentValues, vector<unsigned 
 		else
 			nLevels[i] = dSet->getNumLevels(parents[i]);
 // cout << "nLevels=" << dSet->getNumLevels(parents[i]) << endl;
-// 			nLevels[i] = parents[i]->getNumLevels(currentSet);	
-// 		nLevels[i] = constLevels;	
+// 			nLevels[i] = parents[i]->getNumLevels(currentSet);
+// 		nLevels[i] = constLevels;
 		nl *= nLevels[i];
 	}
-	
+
 	cumulativeLevels.assign(parents.size(), 1);
 	for(unsigned int i=1; i<cumulativeLevels.size(); i++){
 // 		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels;
@@ -904,12 +884,12 @@ int GEDiscrimBayes::configParentData(vector<int>& parentValues, vector<unsigned 
 	deque<float> args;
 	unsigned int nParents = parents.size();
 	Individual* ind;
-	
+
 	for(unsigned int i=0; i < dSet->numInds(); i++){
 // 		ind = (*currentSet)[i];
 // 		IndividualTerm::setInd(ind);
 
-		int value = 0;	
+		int value = 0;
 		for(unsigned int j=0; j < nParents; j++){
 // 			value += parents[j]->evaluate(args) * cumulativeLevels[j];
 			if(isGeno[j])
@@ -925,8 +905,8 @@ int GEDiscrimBayes::configParentData(vector<int>& parentValues, vector<unsigned 
 
 void GEDiscrimBayes::totalModels(Algorithm* alg,  map<string, modScores>& topModels, data_manage::Dataholder* holder,
 		bool mapUsed, bool ottDummy, bool continMapUsed, bool caseMods){
-// cout << "myRank=" << myRank << endl;		
-	topModels.clear();	
+// cout << "myRank=" << myRank << endl;
+	topModels.clear();
 	map<string, modScores> modelHolder;
 	Population algPop = alg->getPopulation();
 // cout << "best score = " << algPop[0]->fitness() << endl;
@@ -953,13 +933,13 @@ void GEDiscrimBayes::totalModels(Algorithm* alg,  map<string, modScores>& topMod
 // 			cout << "incomplete model -- not counted" << endl;
 		}
 	}
-	
-	// gather all models 
+
+	// gather all models
 	#ifdef HAVE_CXX_MPI
 // cout << "myRank=" << myRank << " about to call gatherModelInformation for caseModels=" << caseMods << endl;
 		gatherModelInformation(modelHolder);
 	#endif
-	
+
 	// insert into map with score as key
 	map<float, vector<string> > sortedModels;
 	for(map<string, modScores>::iterator iter=modelHolder.begin(); iter != modelHolder.end();
@@ -969,7 +949,7 @@ void GEDiscrimBayes::totalModels(Algorithm* alg,  map<string, modScores>& topMod
 
 #ifdef HAVE_CXX_MPI
 if(myRank == 0){
-#endif	
+#endif
 // cout << "myRank=" << myRank  << "sorted models" << endl;
 	string outName;
 	if(caseMods){
@@ -985,7 +965,7 @@ if(myRank == 0){
 #ifdef HAVE_CXX_MPI
 }
 #endif
-	
+
 // now iterate through models and save only the top N results
 // cout << "Model\tscore\tcount\n";
 // for(map<float, vector<string> >::reverse_iterator iter=sortedModels.rbegin(); iter!= sortedModels.rend();
@@ -999,10 +979,10 @@ if(myRank == 0){
 // 	int i=0;
 // 	map<float, vector<string> >::iterator sortedIter=sortedModels.begin();
 // 	while(i<topModelsUsed){
-// 		for(vector<string>::iterator modIter=sortedIter->second.begin(); 
+// 		for(vector<string>::iterator modIter=sortedIter->second.begin();
 // 			modIter != sortedIter->second.end(); ++modIter){
 // 			if(i++ < topModelsUsed){
-// 				topModels[*modIter] = modelHolder[*modIter];			
+// 				topModels[*modIter] = modelHolder[*modIter];
 // 			}
 // 			else{
 // 				break;
@@ -1010,22 +990,22 @@ if(myRank == 0){
 // 		}
 // 		++sortedIter;
 // 	}
-	
+
 	int i=0;
 	map<float, vector<string> >::reverse_iterator sortedIter=sortedModels.rbegin();
 	while(i<topModelsUsed){
-		for(vector<string>::iterator modIter=sortedIter->second.begin(); 
+		for(vector<string>::iterator modIter=sortedIter->second.begin();
 			modIter != sortedIter->second.end(); ++modIter){
 			if(i++ < topModelsUsed){
-				topModels[*modIter] = modelHolder[*modIter];			
+				topModels[*modIter] = modelHolder[*modIter];
 			}
 			else{
 				break;
 			}
 		}
 		++sortedIter;
-	}	
-	
+	}
+
 // cout << "myRank=" << myRank << " number top models=" << topModels.size() << endl;
 
 }
@@ -1059,7 +1039,7 @@ vector<string> GEDiscrimBayes::tokenizeEquation(string equation){
 
 ///
 ///  Writes list of all unique models and counts
-/// 
+///
 void GEDiscrimBayes::writeUniqueFiles(ostream& outstream, map<float, vector<string> >& sortedModels,
 	map<string, modScores>& modelHolder){
 
@@ -1097,7 +1077,7 @@ string GEDiscrimBayes::rewriteEquation(string equation){
 // 			tok += equation[i];
 // 		}
 // 	}
-	
+
 	string sortedStr;
 	//sort tokens
 	sort(tokens.begin(), tokens.end());
@@ -1111,7 +1091,7 @@ string GEDiscrimBayes::rewriteEquation(string equation){
 
 ///
 /// sorts parent string in bayesian equation
-/// @return string with parents sorted 
+/// @return string with parents sorted
 ///
 string GEDiscrimBayes::sortParentStr(string parentString){
 // cout << "sorting parents " << parentString << endl;
@@ -1164,17 +1144,17 @@ void GEDiscrimBayes::finishLog(string basename, int cv){
 				}
 				vector<string> filenames;
 				for(int rank=0; rank < totalNodes; rank++){
-						string modelLogName = basename + ".rank." + Stringmanip::numberToString<int>(rank) + ".cv." + 
-								Stringmanip::numberToString<int>(cv) + ".models.log";        
+						string modelLogName = basename + ".rank." + Stringmanip::numberToString<int>(rank) + ".cv." +
+								Stringmanip::numberToString<int>(cv) + ".models.log";
 						filenames.push_back(modelLogName);
 				}
-				string outName = basename + ".cv." + 
-								Stringmanip::numberToString<int>(cv) + ".models.log"; 
+				string outName = basename + ".cv." +
+								Stringmanip::numberToString<int>(cv) + ".models.log";
 				ModelLogParser parser;
 				if(logTypeSelected == LogVariables)
 					parser.compileVariableFiles(filenames, outName);
 				else if(logTypeSelected != LogOverview)
-					parser.compileFiles(filenames, outName, GEObjective::getWorstScore());					
+					parser.compileFiles(filenames, outName, GEObjective::getWorstScore());
 		}
 }
 
@@ -1249,16 +1229,16 @@ void GEDiscrimBayes::writeEquation(ostream& os, Solution* sol, data_manage::Data
 			modelSend[i].count=0;
 			i++;
 		}
-// cout << "rank=" << myRank << " gatherModelInformation built send array" << endl;		
+// cout << "rank=" << myRank << " gatherModelInformation built send array" << endl;
 		uniqueModelMPI* modelRecv=NULL;
 		int recvSize = popSize * totalNodes;
 		if(myRank==0){
 			modelRecv = new uniqueModelMPI[recvSize];
 		}
-// cout << "rank=" << myRank << " calling MPI_Gather " << endl;		
+// cout << "rank=" << myRank << " calling MPI_Gather " << endl;
 		MPI_Gather(modelSend, sizeof(empty)*popSize, MPI_BYTE, modelRecv, sizeof(empty)*popSize, MPI_BYTE, 0, MPI_COMM_WORLD);
 // cout << "rank=" << myRank << " finished MPI_Gather " << endl;
-		// merge all 
+		// merge all
 		if(myRank==0){
 			models.clear();
 // cout << "recvSize=" << recvSize << endl;
@@ -1274,9 +1254,9 @@ void GEDiscrimBayes::writeEquation(ostream& os, Solution* sol, data_manage::Data
 					}
 				}
 			}
-// cout << "rank=" << myRank << " finished merging models " << endl;	
+// cout << "rank=" << myRank << " finished merging models " << endl;
 		}
-		
+
 		delete [] modelSend;
 		if(myRank==0){
 			delete [] modelRecv;

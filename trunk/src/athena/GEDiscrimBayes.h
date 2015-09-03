@@ -16,18 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
- 
+
 #ifndef _GEDISCRIMBAYES_H
 #define	_GEDISCRIMBAYES_H
 
 #include "GEBayes.h"
-// #include "Algorithm.h"
-// #include "AlgorithmFactory.h"
-// #include "BioFilterModelCollection.h"
-// #include "Config.h"
-// #include "BayesSolution.h"
-// #include "NNLog.h"
-// #include "BayesModelLog.h"
 
 #ifdef HAVE_CXX_MPI
 	#include "GenomeTransfer.h"
@@ -40,87 +33,87 @@ class GEDiscrimBayes:public Algorithm{
 public:
 
 	GEDiscrimBayes();
-		
+
 	~GEDiscrimBayes();
 
 	/// Sets random seed
 	void setRand(unsigned int seed);
-	
+
 	void setDummyEncoding(bool ottDummyEncoded);
-	
+
 	/// Set the parameters for the algorithm
-	virtual void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, 
-		int numContin, vector<unsigned int>& excludedGenos, 
+	virtual void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos,
+		int numContin, vector<unsigned int>& excludedGenos,
 		vector<unsigned int>& excludedContins);
-		
-	void setDataset(Dataset* newSet);	
-	
+
+	void setDataset(Dataset* newSet);
+
 	/// Starts log
 	virtual void startLog(int num_snps);
 
 	/// Prepares log files
 	void prepareLog(std::string basename, int cv);
-	
+
 	/// closes logs
 	void closeLog();
-	
+
 	/// Runs a step of the algorithm
 	virtual int step();
-	
+
 	/// Unused in this algorithm
 	virtual	void getAdditionalFinalOutput(Dataset* set){}
-	
+
 	/// Selects best models and does discriminant analysis
 	virtual void getAdditionalFinalOutput(Dataset* testing, Dataset* training,
 		data_manage::Dataholder* holder, bool mapUsed, bool ottDummy, bool continMapUsed);
-	
+
 	/// Unused in this algorithm
 	void testSolution(Dataset* testSet, int nproc){}
-	
+
 	/// For setting any defaults
 	void setConfigDefaults(Config& configuration, AlgorithmParams& algParam);
-	
+
 	/// Retrieves the models from BioFilter and stores the information in the algorithm
-	void getBioModels(std::string fileName, std::string bioFileType, 
+	void getBioModels(std::string fileName, std::string bioFileType,
 			data_manage::Dataholder* holder);
-		
+
 	/// Retrieves the models from BioFilter archive and stores in algorithm
-	void getBioModelsArchive(string geneGeneFile, string archiveFile, 
-			data_manage::Dataholder* holder);	
-	
+	void getBioModelsArchive(string geneGeneFile, string archiveFile,
+			data_manage::Dataholder* holder);
+
 	/// Initializes the algorithm for each new dataset to test
 	void initialize();
-	
+
 	/// Select best model from models passed and return
 	virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
 		Dataset* set, Config& configuration){}
-		
-	virtual vector<Solution*> runValidation(std::string sumFile);		
-	
+
+	virtual vector<Solution*> runValidation(std::string sumFile);
+
 		/// Saves the log
 	virtual void saveLog(){};
-	
+
 	/// Finish log and pulls together model information
 	virtual void finishLog(std::string basename, int cv);
-	
+
 	/// Returns extension for graphical representation
-	virtual std::string getGraphicalFileExt();	
-	
-	/// Run algorithm 
+	virtual std::string getGraphicalFileExt();
+
+	/// Run algorithm
 	void run();
-	
+
 	/// Outputs individual evaluations to stream
 	virtual void outputIndEvals(Dataset* set, ostream& os, int model){}
-	
+
 	/// Writes output to stream
 	virtual void writeGraphical(ostream& os, Solution* sol, data_manage::Dataholder* holder,
-		bool mapUsed, bool ottDummy, bool continMapUsed);	
+		bool mapUsed, bool ottDummy, bool continMapUsed);
 
 	virtual void writeEquation(ostream& os, Solution* sol, data_manage::Dataholder* holder,
 		bool mapUsed, bool ottDummy, bool continMapUsed);
-		
-	virtual void produceGraphic(std::string inputGraphic, std::string outputGraphic, 
-		std::string imgWriter){}		
+
+	virtual void produceGraphic(std::string inputGraphic, std::string outputGraphic,
+		std::string imgWriter){}
 
 	#ifdef HAVE_CXX_MPI
 		virtual void setRank(int rank){myRank = rank; caseAlg->setRank(rank);
@@ -133,12 +126,12 @@ public:
 			}
 		virtual int getTotalNodes(){return totalNodes;}
 	#endif
-	
-	
+
+
 protected:
 
 	/// Sets GA for run
-	virtual void setGAParams(vector<unsigned int>& excludedGenos, 
+	virtual void setGAParams(vector<unsigned int>& excludedGenos,
 			vector<unsigned int>& excludedContins);
 
 	struct ConditTable{
@@ -156,7 +149,7 @@ protected:
 		vector<ConditTable> tables;
 		std::set<string> varsWithParents;
 	};
-	
+
 	struct IndResults{
 		string indID;
 		vector<long double> scores;
@@ -168,7 +161,7 @@ protected:
 		string mString;
 		modScores* mPtr;
 	};
-	
+
 	static bool sortByScore(const mScores& lhs, const mScores& rhs){
 		return lhs.mPtr->score > rhs.mPtr->score;
 	}
@@ -176,56 +169,56 @@ protected:
 	/// Counts unique models and stores in modelTotals set
 	void totalModels(Algorithm* alg,  std::map<string,modScores>& modelTotals, data_manage::Dataholder* holder,
 		bool mapUsed, bool ottDummy, bool continMapUsed, bool caseMods);
-		
+
   /// Re-write equation string in sorted order so identical equations are matched
   std::string rewriteEquation(string equation);
-  
+
   /// Sorts parent string from bayesian equation
   string sortParentStr(string parentString);
 
 	// calculate probability tables for each variable when no parent node
 	void calcProbTables(Dataset* dset, map<string, vector<double> >& caseOrphanProbs,
-		data_manage::Dataholder* holder);	
-	
-	/// split equation into tokens	
+		data_manage::Dataholder* holder);
+
+	/// split equation into tokens
 	vector<string> tokenizeEquation(string equation);
-	
+
 	void setConditionalTables(Dataset* dset, map<string, modScores>& topModels,
 		Dataholder* holder, double missValue);
-		
+
 	void writeUniqueFiles(ostream& outstream, map<float, vector<string> >& sortedModels,
 		map<string, modScores>& modelHolder);
-	
+
 	int configParentData(vector<int>& parentValues, vector<unsigned int> &parents,
 		vector<bool>& isGeno, Dataset* dSet, vector<int>& cumulativeLevels);
-		
+
 	void setIndModScores(Dataset* dset, map<string,modScores>& models,
 		vector<IndResults>& scores, map<std::string, vector<double> >& orphanProbs);
 
 	/// returns AUC
 	double setPredictedScores(vector<IndResults>& indScores, map<string,modScores>& caseModels,
 		map<string,modScores>& controlModels, double caseRatio);
-			
+
 	/// Sets default values for parameters
 	void initializeParams();
-	
+
 	string getLabel(string modelString, Dataholder* holder,
 		bool mapUsed, bool continMapUsed);
-	
+
 	void writeIndScores(string filename, vector<IndResults>& scores);
 
 	GEBayes* caseAlg, *controlAlg;
-	Dataset * caseDataset, *controlDataset;	
+	Dataset * caseDataset, *controlDataset;
 	int topModelsUsed, currCV;
 	string outputName;
-	
+
 	enum GEDiscrimBayesParams{
 		noMatchParam,
 		modelsToUse
 	};
 
 	std::map<std::string, GEDiscrimBayesParams> paramMap;
-	
+
 	#ifdef HAVE_CXX_MPI
 		GenomeTransfer popMigrator;
 		struct uniqueModelMPI{
@@ -233,7 +226,7 @@ protected:
 			int count;
 			float score;
 		};
-		
+
 			void gatherModelInformation(map<string, modScores>& models);
 	#endif
 

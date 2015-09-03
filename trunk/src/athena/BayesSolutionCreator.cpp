@@ -56,7 +56,7 @@ void BayesSolutionCreator::initialize(){
 	graphicExtension = ".dot";
 	startOpt = "<v>";
 // 	optSymbols.insert("<v>");
-	
+
 	leftOptBound = '(';
 	rightOptBound = ')';
 	numNodes=0;
@@ -72,10 +72,10 @@ void BayesSolutionCreator::initialize(){
 void BayesSolutionCreator::establishSolution(vector<string>& symbols, Dataset* set){
 		if(!terminalsSet)
 			setVariables(set);
-			
+
 		// sets values for this set for all variables
 		// the map will be key of pointer and score values as the value of map
-		// parentScoresSet will reset to false every the dataset changes		
+		// parentScoresSet will reset to false every the dataset changes
 		if(currentSet != set){
 			currentSet = set;
 			setParentScores(set);
@@ -84,7 +84,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols, Dataset* s
 // 			worstScore.key = "";
 // 			worstScore.sc = 1.01;
 		}
-		
+
 		establishSolution(symbols);
 		repairNetwork(set);
 }
@@ -106,7 +106,7 @@ void BayesSolutionCreator::establishSolutionEquation(vector<string>& symbols){
 ///
 void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 	network.clearNodes();
-	
+
 	// convert symbols to DAGraph
 // for(size_t i=0; i<symbols.size(); i++){
 // cout << symbols[i] << " ";
@@ -145,7 +145,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 		}
 		else if(currTerm == termHolder.rightParen()){
 			// pop off terminals until reach left paren
-			// then add connections for each 
+			// then add connections for each
 			vector<TerminalSymbol*> toNodes;
 			stackTerm = terminals.top();
 			terminals.pop();
@@ -170,11 +170,11 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 			currTerm == termHolder.leftParen()){
 // cout << "push " << currTerm->getName() << endl;
 				terminals.push(currTerm);
-		} 
+		}
 		// there is a final type of terminal 'nc' that denotes no connection.  it does not
 		// need to be pushed onto the stack
 	}
-	
+
 	// iterate through stack and store covars and genotypes for use in checking
 	// for missing data
 	genos.clear();
@@ -187,7 +187,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 		else if((*iter)->term->getTermType() == TerminalSymbol::Covariate){
 			covars[(*iter)->term]=1;
 		}
-	} 
+	}
 
 // network.outputRstring(cout);
 // cout << endl;
@@ -202,7 +202,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 ///
 // void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 
-// no longer needed with the repair network approach	
+// no longer needed with the repair network approach
 // 	unsigned int varCount=0;
 // 	for(unsigned int i=0; i<symbols.size(); i++){
 // 		if(symbols[i][0] == 'G' || symbols[i][0] == 'C'){
@@ -228,7 +228,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 // symbols.push_back("G11");
 // symbols.push_back(")");
 
-// 
+//
 // cout << "START:";
 // for(unsigned int i=0; i<symbols.size(); i++){
 // cout << symbols[i];
@@ -239,14 +239,14 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 	// to a second variable
 	// also can't have duplicate parents or children -- switch those to new variable
 	// need to propagate changes back to the original genome -- tricky part
-  // change vector of symbols	 
-	 
+  // change vector of symbols
+
 // 	set<TerminalSymbol*> included, parentIncluded;
-// 
+//
 // 	 stack<TerminalInfo> children;
-// 	 
+//
 // 	 network.clearNodes();
-	 
+
 // testing the tarjan's implementation
 // string g1="G1", g2="G2", g3="G3", g4="G4";
 // TerminalSymbol* G1Term = termHolder.getTerm(g1);
@@ -263,12 +263,12 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 // network.removeConnection(G3Term, G2Term);
 // network.SCC();
 
-// exit(1);	 
-	 
-/*	 
+// exit(1);
+
+/*
 	 // pop from holder -- should be ')'
 	 // grab the variables within -- all will go onto the children stack until reach '('
-	 // if find a '->' then grab variables until ')' 
+	 // if find a '->' then grab variables until ')'
 	 // point any of these to the child in question (top of children stack)
 	 // after terminating '(' for children should have a list of children on stack
 
@@ -276,14 +276,14 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 	TerminalSymbol* currTerm = termHolder.getTerm(symbols[currPheno]);
 	children.push(TerminalInfo(currTerm, currPheno));
 	--currPheno;
-	
+
 	set<TerminalSymbol*> phenoChildren;
 	// key is original phenotype position
 	changedVariables.clear();
-	
+
 	while(currPheno >= 0){
-		currTerm = termHolder.getTerm(symbols[currPheno]);	
-		if(currTerm->getTermType() == TerminalSymbol::Genotype or 
+		currTerm = termHolder.getTerm(symbols[currPheno]);
+		if(currTerm->getTermType() == TerminalSymbol::Genotype or
 			currTerm->getTermType() == TerminalSymbol::Covariate or
 			currTerm->getTermType() == TerminalSymbol::Phenotype){
 			children.push(TerminalInfo(currTerm, currPheno));
@@ -300,7 +300,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 				--currPheno;
 				currTerm = termHolder.getTerm(symbols[currPheno]);
 			}
-			
+
 			// here -- need to replace any duplicates with another variable for the parents
 			if(parents.size() > 1){
 				parentIncluded.clear();
@@ -309,7 +309,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 					if(parentIncluded.find(parents[i].term) != parentIncluded.end()){
 						// need to get another parent to include
 						TerminalSymbol* newTerm;
-						int newCodon; 
+						int newCodon;
 						do{
  						 string newSymb = mapper->getNewVariable(newCodon);
  						 newTerm = termHolder.getTerm(newSymb);
@@ -322,7 +322,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 					parentIncluded.insert(parents[i].term);
 				}
 			}
-		
+
 			// get children
 			TerminalInfo child = children.top();
 			children.pop();
@@ -338,14 +338,14 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 			}
 			else{
 				tmpchildren.push_back(child);
-			}	
+			}
 			// replace any tmpchildren duplicates with another variable
 			if(tmpchildren.size() > 1){
 				included.clear();
 				included.insert(tmpchildren.back().term);
 				for(int i=int(tmpchildren.size()-2); i>=0; i--){
 					if(included.find(tmpchildren[i].term) != included.end()){
-						TerminalSymbol* newTerm; 
+						TerminalSymbol* newTerm;
 							int newCodon;
 						do{
 							string newSymb = mapper->getNewVariable(newCodon);
@@ -356,11 +356,11 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 						changedVariables[tmpchildren[i].phenoIndex] = tmpchildren[i];
 					}
  					// whether changed or not insert here
-					included.insert(tmpchildren[i].term);			
-				}	
+					included.insert(tmpchildren[i].term);
+				}
 			}
 
-		
+
 			// check that parents and children are not the same
 			for(vector<TerminalInfo>::iterator parIter=parents.begin(); parIter != parents.end();
 				++parIter){
@@ -369,7 +369,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 					// pick new variable when a variable is pointing to itself
 					if(parIter->term == childIter->term){
 						TerminalSymbol* newTerm;
-						int newCodon; 
+						int newCodon;
 						do{
  						 string newSymb = mapper->getNewVariable(newCodon);
  						 newTerm = termHolder.getTerm(newSymb);
@@ -380,14 +380,14 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 					}
 				}
 			}
-	
-	
+
+
 			set<TerminalSymbol*> parentSet;
 			for(vector<TerminalInfo>::iterator parIter=parents.begin(); parIter != parents.end();
 				++parIter){
 				parentSet.insert(parIter->term);
 			}
-			
+
 			// set parents to point to children
 			// CODE HERE
 			for(vector<TerminalInfo>::iterator parIter=parents.begin(); parIter != parents.end();
@@ -399,7 +399,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 						}
 						else if(childIter->term->getTermType()==TerminalSymbol::Phenotype){
 							// can't be both a child and a parent of the phenotype
-							if(phenoChildren.find(parIter->term) != phenoChildren.end()){ 
+							if(phenoChildren.find(parIter->term) != phenoChildren.end()){
 							// select new parent here to replace one already used
 								TerminalSymbol* newTerm;
 								int newCodon;
@@ -418,12 +418,12 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 							}
 						}
 						else{ // non-pheno parent and child
-							
-						}				
+
+						}
 						network.addConnection(parIter->term, childIter->term);
 				}
 			}
-		
+
 
 			// if only one child place back on stack
 			if(tmpchildren.size()==1)
@@ -432,15 +432,15 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 			if(currPheno-1 >= 0 && (termHolder.getTerm(symbols[currPheno-1]) == termHolder.connector())){
 				children.push(parents[0]);
 			}
-			
+
 		}
 		else if(currTerm == termHolder.leftParen()){
 			children.push(TerminalInfo(currTerm, currPheno));
 		}
 		--currPheno;
 	}
- 
-		
+
+
 	// iterate through stack and store covars and genotypes for use in checking
 	// for missing data
 	genos.clear();
@@ -466,7 +466,7 @@ void BayesSolutionCreator::establishSolution(vector<string>& symbols){
 int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Dataset* set){
 	// clear old symbols
 	optValSymbols.clear();
-	
+
 // 	unsigned int varCount=0;
 // 	for(unsigned int i=0; i<symbols.size(); i++){
 // 		if(symbols[i][0] == 'G' || symbols[i][0] == 'C'){
@@ -476,12 +476,12 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 // 	if(varCount > currentSet->numGenos() + currentSet->numCovariates()){
 // 		throw AthenaExcept("not enough variables");
 // 	}
-	
+
 
 	vector<IndividualTerm*> variables;
 	std::set<IndividualTerm*> phenoOrigParents;
 	size_t combinationSize;
-	
+
 	for(size_t i=0; i<symbols.size(); i++){
 // cout << symbols[i] << " ";
 		TerminalSymbol* currTerm = termHolder.getTerm(symbols[i]);
@@ -503,7 +503,7 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 		optimizedScore = 1e9;
 		return 0;
 	}
-	
+
 	// set up combination generator
 	stat::KnuthComboGenerator generator;
 	// set size of models to generate
@@ -515,14 +515,14 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
   bool combosDone = false;
   vector<IndividualTerm*> modelTerms(combinationSize, NULL), bestTerms;
   float bestBalAcc=0.0;
-	
+
   while(!combosDone){
   	combosDone = generator.GenerateCombinations();
   	for(vector<vector<unsigned int> >::iterator iter=generator.ComboList.begin(); iter != generator.ComboList.end();
   		++iter){
   		for(size_t i=0; i<iter->size(); i++){
   			modelTerms[i]=variables[(*iter)[i]-1];
-  		} 		
+  		}
 //     float balAcc = MDR::calcBalAccuracy(currentSet, currentSet, modelTerms);
     float balAcc = getBalAccuracy(currentSet, modelTerms);
     if(balAcc > bestBalAcc){
@@ -543,7 +543,7 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 		else{
 			modelTerms.push_back(*modelIter);
 		}
-		
+
 	}
 
 // for(size_t i=0; i<bestTerms.size(); i++){
@@ -558,39 +558,39 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 		// model term not in original phenotype parents
 // 		if(origIter == phenoOrigParents.end()){
 			std::set<IndividualTerm*>::iterator swapIter = phenoOrigParents.begin();
-			
+
 // cout << "new var=" << (*modelIter)->getLabel() << " swap var=" << (*swapIter)->getLabel() << endl;
 			// in variables find both new and old variables
 			vector<IndividualTerm*>::iterator v1 =  find(variables.begin(), variables.end(), *modelIter);
 			IndividualTerm* tempTerm = *v1;
-			
+
 			vector<vector<IndividualTerm*>::iterator> v1iters;
 			vector<vector<IndividualTerm*>::iterator> v2iters;
-			
+
 			while(v1 != variables.end()){
 // cout << (*v1)->getLabel() << endl;
 // cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;
 // 				*v1 = *v2;
 // 				*v2 = tempTerm;
-// cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;				
+// cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;
 // cout << "look for another " << (*modelIter)->getLabel() << endl;
 				v1iters.push_back(v1);
 				v1 = find(v1+1, variables.end(), *modelIter);
 			}
-			
+
 			vector<IndividualTerm*>::iterator v2 = find(variables.begin(), variables.end(), *swapIter);
 			while(v2 != variables.end()){
 // cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;
 // 				*v1 = *v2;
 // 				*v2 = tempTerm;
-// cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;				
+// cout << "v1=" << (*v1)->getLabel() << " v2=" << (*v2)->getLabel() << endl;
 // cout << "look for another " << (*modelIter)->getLabel() << endl;
 				v2iters.push_back(v2);
-				v2 = find(v2+1, variables.end(), *swapIter);				
+				v2 = find(v2+1, variables.end(), *swapIter);
 			}
 			IndividualTerm* newv2 = *(v1iters[0]);
 			IndividualTerm* newv1 = *(v2iters[0]);
-			
+
 		  for(vector<vector<IndividualTerm*>::iterator>::iterator iter=v1iters.begin();
 		  	iter != v1iters.end(); ++iter){
 		  	*(*iter) = newv1;
@@ -598,8 +598,8 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 		  for(vector<vector<IndividualTerm*>::iterator>::iterator iter=v2iters.begin();
 		  	iter != v2iters.end(); ++iter){
 		  	*(*iter) = newv2;
-		  }		  
-			
+		  }
+
 			phenoOrigParents.erase(swapIter);
 // 		}
 	}
@@ -610,7 +610,7 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 	newSymbols.push_back(tempSymbol);
 	tempSymbol.noNT=false;
 	for(vector<IndividualTerm*>::iterator iter=variables.begin(); iter != variables.end();
-		++iter){		
+		++iter){
 		newSymbols[0].symbol = (*iter)->getLabel();
 		optValSymbols.push_back(newSymbols);
 // cout << "newSymbols=>" << newSymbols[0].symbol << endl;
@@ -619,7 +619,7 @@ int BayesSolutionCreator::optimizeSolution(std::vector<std::string>& symbols, Da
 	// force replacement in original network
 	// switch this later to reflect need or lack thereof to change
 	optimizedScore = 0.0;
-	
+
 	return 0;
 }
 
@@ -655,7 +655,7 @@ inline vector<int> BayesSolutionCreator::getCovarIndexes(){
 		for(i=0; i<iter->second; i++){
 			indexes.push_back(c->getIndex());
 		}
-	}  
+	}
 	return indexes;
 }
 
@@ -680,7 +680,7 @@ void BayesSolutionCreator::setVariables(Dataset* set){
 float BayesSolutionCreator::evaluateInd(Individual* ind){
 
 		termHolder.setInd(ind);
-		
+
 		return 0.0; // temporary placeholder
 }
 
@@ -693,15 +693,15 @@ float BayesSolutionCreator::evaluateInd(Individual* ind){
 ///
 bool BayesSolutionCreator::useInd(Individual* ind, Dataset* set){
 		deque<float> args;
-		
+
 		map<TerminalSymbol*, int>::iterator iter;
- 
+
 		for(iter=covars.begin(); iter != covars.end(); iter++){
 			if(iter->first->evaluate(args) == set->getMissingCoValue()){
 				return false;
 			}
 		}
-		
+
 		for(iter=genos.begin(); iter != genos.end(); iter++){
 			if(iter->first->evaluate(args) == set->getMissingGenotype()){
 				return false;
@@ -719,11 +719,11 @@ void BayesSolutionCreator::repairNetwork(Dataset* dSet){
 	while(network.SCC()){
 		// conduct repair
 		std::vector<std::vector<GraphNode*> > loops = network.getLoops();
-		
-		TerminalSymbol* from, *to; 
+
+		TerminalSymbol* from, *to;
 		TerminalSymbol* fromBreak, *toBreak;
 		double mutualInfo, worstMI;
-		
+
 		std::vector<std::vector<GraphNode*> >::iterator loopIter;
 // cout << "number of loops=" << loops.size() << endl;
 		for(loopIter = loops.begin(); loopIter != loops.end(); ++loopIter){
@@ -736,13 +736,13 @@ void BayesSolutionCreator::repairNetwork(Dataset* dSet){
 				loopTerminals.insert((*loopIter)[i]->term);
 			}
 // cout << "\n";
-				
+
 			// for each terminal in the set calculate MI for each connection
 			// to another terminal in the set -- future optimization is don't repeat calculations
 			for(size_t i=0; i<(*loopIter).size(); ++i){
 				for(set<GraphNode*>::iterator childIter=(*loopIter)[i]->children.begin(); childIter != (*loopIter)[i]->children.end();
 					++childIter){
-						
+
 						// calculate only if child is in the loop
 						if(loopTerminals.find((*childIter)->term)!=loopTerminals.end()){
 							from = ((*loopIter)[i])->term;
@@ -756,7 +756,7 @@ void BayesSolutionCreator::repairNetwork(Dataset* dSet){
 						}
 					}
 				}
-				
+
 				// the two nodes will be the from node and the to node before it
 				// index 1 is the from node and index 0 is the to node for example
 // 				from = ((*loopIter)[i])->term;
@@ -783,24 +783,24 @@ void BayesSolutionCreator::repairNetwork(Dataset* dSet){
 
 ///
 /// Calculate mutual information for a pair of variables
-/// @param v1 
+/// @param v1
 /// @param v2
 ///
 double BayesSolutionCreator::calcMI(TerminalSymbol* v1, TerminalSymbol* v2, Dataset* dSet){
 	double mutualInfo=0.0;
-	
+
 	vector<IndividualTerm*> terms(2,NULL);
 	terms[0] = static_cast<IndividualTerm*>(v1);
 	terms[1] = static_cast<IndividualTerm*>(v2);
 // 	int parentLevels = configParentData(combinedValues, terms);
-	
-	// need total of each individual 
+
+	// need total of each individual
 	// need total of combination
 	// loop through each individuals and add the individual totals
 	// add the combination total
 	// assume three levels (to hold SNP data)
 // 	int nLevels = 3; // this has to be changed also
-	
+
 	// set number of levels for each parent
 	vector<int> nLevels(terms.size(), 0);
 	int nl = 1;
@@ -815,7 +815,7 @@ double BayesSolutionCreator::calcMI(TerminalSymbol* v1, TerminalSymbol* v2, Data
 	vector<int> v1Totals(v1Levels, 0);
 	vector<int> v2Totals(v2Levels, 0);
 
-	
+
 	vector<int> cumulativeLevels(terms.size(), 1);
 	for(unsigned int i=1; i<cumulativeLevels.size(); i++){
 		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels[i-1];
@@ -825,9 +825,9 @@ double BayesSolutionCreator::calcMI(TerminalSymbol* v1, TerminalSymbol* v2, Data
 // 	unsigned int nTerms = terms.size();
 	Individual* ind;
 	unsigned int N = currentSet->numInds();
-	
 
-	
+
+
 	for(unsigned int i=0; i < currentSet->numInds(); i++){
 		ind = (*currentSet)[i];
 		IndividualTerm::setInd(ind);
@@ -836,11 +836,11 @@ double BayesSolutionCreator::calcMI(TerminalSymbol* v1, TerminalSymbol* v2, Data
 // 		for(unsigned int j=0; j < terms; j++){
 		value += terms[0]->evaluate(args) * cumulativeLevels[0];
 		v1Totals[terms[0]->evaluate(args)]++;
-			
+
 // 		}
 		value += terms[1]->evaluate(args) * cumulativeLevels[1];
 		v2Totals[terms[1]->evaluate(args)]++;
-		
+
 // 		parentValues.push_back(value);
 		combinedTotals[value]++;
 	}
@@ -850,7 +850,7 @@ double BayesSolutionCreator::calcMI(TerminalSymbol* v1, TerminalSymbol* v2, Data
 // cout << v1->getName();
 // for(size_t i=0; i<v1Totals.size(); i++){
 // 	cout << "\t" << v1Totals[i];
-// }	
+// }
 // cout << "\n";
 // cout << v2->getName();
 // for(size_t i=0; i<v2Totals.size(); i++){
@@ -865,9 +865,9 @@ double BayesSolutionCreator::calcMI(TerminalSymbol* v1, TerminalSymbol* v2, Data
 // 		cout << " tot=" << combinedTotals[index] << endl;
 // 	}
 // }
-	
+
 	// calculate mutual information
-	// for each combination 
+	// for each combination
 	int index;
 	for(unsigned int i=0; i<v1Levels; i++){
 		for(unsigned int j=0; j<v2Levels; j++){
@@ -900,17 +900,17 @@ float BayesSolutionCreator::evaluate(Dataset* set){
 // 	 cout << "only one-- worst possible" << endl;
 		 return getWorst();
 	 }
-	 
+
 	 nIndsEvaluated = set->numInds();
 	 double score = 0.0;
 	 vector<IndividualTerm*> parents;
 	 calculator->reset();
 	 double nParams,cumulativeBaseScore=0.0;
-	 
+
 	 // now when a node has no parents no need to do anything as it will not
 	 // change the score of the network.  It is the same as in the reference
 	 // network where all nodes are included.
-	 
+
 	 for(GraphNodeIter iter=network.begin(); iter != network.end();
 	 	++iter){
 	 		// values for nodes without parents are cached to speed evaluation
@@ -937,7 +937,7 @@ float BayesSolutionCreator::evaluate(Dataset* set){
 	 }
 
 // change score to be the - of the actual score
-// include the total score 
+// include the total score
 // cout << "cumulativeBaseScore=" << cumulativeBaseScore << " actual score=" << calculator->getScore() << endl;
 // cout <<  "total=" << set->getConstant() << " difference is " << cumulativeBaseScore + calculator->getScore() << endl;
 // cout << "------------------------------------" << endl;
@@ -957,7 +957,7 @@ float BayesSolutionCreator::evaluate(Dataset* set){
 		// It will be scaled so that the better scores are greater for the fitness
 		// The final score report will alter it so that the scores are the correct negative
 		// values
-		double diff = cumulativeBaseScore + calculator->getScore();	
+		double diff = cumulativeBaseScore + calculator->getScore();
 		score = -(set->getConstant() + diff);
 		if(score < 0.0){
 			score = 0.0;
@@ -970,7 +970,7 @@ float BayesSolutionCreator::evaluate(Dataset* set){
 
 
 ///
-/// For Networks, the detailed logging involves any 
+/// For Networks, the detailed logging involves any
 /// additional processing needed.
 ///
 void BayesSolutionCreator::detailedLogging(){
@@ -980,7 +980,7 @@ void BayesSolutionCreator::detailedLogging(){
 }
 
 ///
-/// Return detailed information 
+/// Return detailed information
 ///
 unsigned int BayesSolutionCreator::getDetailedLog(){
 // 		return nnDepth;
@@ -993,7 +993,7 @@ unsigned int BayesSolutionCreator::getDetailedLog(){
 ///
 void BayesSolutionCreator::graphicalOutput(ostream& os, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapUsed){
-	
+
 	// network will be part of this tree
 	network.outputDot(os,holder,mapUsed,ottDummy, continMapUsed);
 }
@@ -1002,7 +1002,7 @@ void BayesSolutionCreator::graphicalOutput(ostream& os, data_manage::Dataholder*
 void BayesSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* holder,
  			bool mapUsed, bool ottDummy, bool continMapUsed){
  		string genoPrefix="", continPrefix="";
- 				
+
  		for(GraphNodeIter netIter = network.begin(); netIter != network.end(); ++netIter){
  			os << "[" << getLabel(netIter, holder,mapUsed, continMapUsed);
  			if(!(*netIter)->parents.empty()){
@@ -1015,7 +1015,7 @@ void BayesSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* 
 				}
  			}
  			os << "]";
- 		}	
+ 		}
 }
 
 ///
@@ -1036,13 +1036,13 @@ std::string BayesSolutionCreator::getEquation(){
 				}
  			}
  			os << "]";
- 		}		
+ 		}
  		return os.str();
 }
 
 // void BayesSolutionCreator::equationOutput(ostream& os, data_manage::Dataholder* holder,
 // 			bool mapUsed, bool ottDummy, bool continMapUsed){
-// 			
+//
 // 		// traverse the network and output it
 // 		// find the phenotype
 // 		GraphNodeIter phenoIter = network.begin();
@@ -1051,12 +1051,12 @@ std::string BayesSolutionCreator::getEquation(){
 // 				break;
 // 			}
 // 		}
-// 		
+//
 // 		GraphNodeIter phenoParentsEnd = (*phenoIter)->parents.end();
 // 		bool first = true;
 // 		string starter = "(", finish="";
 // 		// first output all the phenotype parents
-// 		for(GraphNodeIter iter=(*phenoIter)->parents.begin(); iter != phenoParentsEnd; 
+// 		for(GraphNodeIter iter=(*phenoIter)->parents.begin(); iter != phenoParentsEnd;
 // 			++iter){
 // 			if(first){
 // 				os << starter;
@@ -1068,14 +1068,14 @@ std::string BayesSolutionCreator::getEquation(){
 // 		os << finish << "pheno";
 // 		if((*phenoIter)->children.size() > 0){
 // 			os << "->(";
-// 			for(GraphNodeIter childIter=(*phenoIter)->children.begin(); 
-// 				childIter != (*phenoIter)->children.end(); ++childIter){			
+// 			for(GraphNodeIter childIter=(*phenoIter)->children.begin();
+// 				childIter != (*phenoIter)->children.end(); ++childIter){
 // 				first = true;
 // 				finish ="";
 // 				if((*childIter)->parents.size() > 1){
 // 					finish = ")->";
-// 					for(GraphNodeIter childParentIter=(*childIter)->parents.begin(); 
-// 						childParentIter != (*childIter)->parents.end(); ++childParentIter){	
+// 					for(GraphNodeIter childParentIter=(*childIter)->parents.begin();
+// 						childParentIter != (*childIter)->parents.end(); ++childParentIter){
 // 						if((*childParentIter)->term == (*phenoIter)->term)
 // 							continue;
 // 						if(first){
@@ -1090,7 +1090,7 @@ std::string BayesSolutionCreator::getEquation(){
 // 			}
 // 			os << ")";
 // 		}
-// 		
+//
 // }
 
 ///
@@ -1098,9 +1098,9 @@ std::string BayesSolutionCreator::getEquation(){
 /// @returns variable index
 ///
 string BayesSolutionCreator::getLabel(GraphNodeIter& node, Dataholder* holder,
-	bool mapUsed, bool continMapUsed){ 
+	bool mapUsed, bool continMapUsed){
 	string name = (*node)->term->getName();
-	stringstream ss(name.substr(1,name.length()-1));	
+	stringstream ss(name.substr(1,name.length()-1));
 	int num;
 	ss >> num;
 // cout << "holder=" << holder << " genoname="<< holder->getGenoName(num-1) << endl;
@@ -1119,11 +1119,11 @@ string BayesSolutionCreator::getLabel(GraphNodeIter& node, Dataholder* holder,
 		return ss.str();
 }
 
-/// 
+///
 /// Performs evaluation on the dataset.  Each individual has their result passed
 /// to the output stream provided.
-/// @param set Dataset 
-/// @param os ostream 
+/// @param set Dataset
+/// @param os ostream
 /// @param results TestResult vector for holding result values
 ///
 float BayesSolutionCreator::evaluateWithOutput(Dataset* set, ostream& os){
@@ -1134,13 +1134,13 @@ float BayesSolutionCreator::evaluateWithOutput(Dataset* set, ostream& os){
 		Individual * ind;
 
 		calculator->reset();
-		
+
 		// when missing skip that ind
 		for(unsigned int i=0; i < set->numInds(); i++){
 				ind = (*set)[i];
-							 
+
 				ContinVariable::setInd(ind);
-				GenotypeTerm::setInd(ind);       
+				GenotypeTerm::setInd(ind);
 				if(!useInd(ind, set)){
 						os << ind->getID() << "\tMissing data\t" << ind->getStatus() << endl;
 						continue;
@@ -1149,7 +1149,7 @@ float BayesSolutionCreator::evaluateWithOutput(Dataset* set, ostream& os){
 				os << ind->getID() << "\t" << score << "\t" << ind->getStatus() << endl;
 				calculator->addIndScore(score, ind->getStatus());
 		}
- 
+
 		return calculator->getScore();
 }
 
@@ -1171,12 +1171,12 @@ void BayesSolutionCreator::evaluateForOutput(Dataset* set){
 ///
 void BayesSolutionCreator::evaluateForOutput(Dataset* set, Dataset* refSet){
 	float score = evaluate(set);
-	
+
 	addOutputValues.clear();
-	
-	if(score + set->getConstant() > 0){	
+
+	if(score + set->getConstant() > 0){
 		addOutputValues.push_back("+");
-	} 
+	}
 	else{
 		addOutputValues.push_back("-");
 	}
@@ -1220,17 +1220,17 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 
 	// check that all variables are genos (or any value that fits in a geno variable)
 // 	if(newSet->numCovariates() > 0){
-// 		throw AthenaExcept("Data set includes " + Stringmanip::numberToString(newSet->numCovariates()) + 
+// 		throw AthenaExcept("Data set includes " + Stringmanip::numberToString(newSet->numCovariates()) +
 // 			"  continuous variables and GEBN requires that all values be in the data file.");
 // 	}
-	
-	double total=0.0;	
+
+	double total=0.0;
 	unsigned int numGenos = newSet->numGenos(), numContins = newSet->numCovariates();
 	parentScore.clear();
-	
+
 	TerminalSymbol * term;
 	double nParams;
-	
+
 	// calculate genos scores when no parent
 	for(unsigned int gIndex=0; gIndex < numGenos; gIndex++){
 		string genoName = termHolder.getGenoName(gIndex);
@@ -1245,7 +1245,6 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		total += parentScore[term];
 	}
 
-
 	// calculate continuous variable scores when no parent
 	for(unsigned int cIndex=0; cIndex < numContins; cIndex++){
 		string continName = termHolder.getContinName(cIndex);
@@ -1256,7 +1255,7 @@ void BayesSolutionCreator::setParentScores(Dataset* newSet){
 		calculator->addIndScore(parentScore[term], nParams);
 		parentScore[term] = -calculator->getScore();
 // cout << term->getName() << " score=" << parentScore[term] << endl;
-		total += parentScore[term];	
+		total += parentScore[term];
 	}
 // cout << "total=" << total << endl;
 
@@ -1299,7 +1298,7 @@ double BayesSolutionCreator::k2calcPhenoNoParent(double& nP){
 	}
 	result += lgamma(imaginary) - lgamma(imaginary + nInds);
 	return result;
-	
+
 }
 
 
@@ -1310,15 +1309,15 @@ double BayesSolutionCreator::k2calcPhenoNoParent(double& nP){
 /// @returns k2 score for node
 ///
 double BayesSolutionCreator::k2calcNoParent(unsigned int gIndex, double& nP){
-	
+
 	vector<unsigned int> totals(3,0);
 	unsigned int nInds = currentSet->numInds();
 	double result = 0.0;
-	
+
 	for(unsigned int i=0; i < nInds; i++){
 		totals[int(currentSet->getInd(i)->getGenotype(gIndex))]++;
 	}
-	
+
 	nP =-1;
 	// alpha = 1
 	// imaginary is simply number of levels of totals for K2
@@ -1343,16 +1342,16 @@ double BayesSolutionCreator::k2calcNoParent(unsigned int gIndex, double& nP){
 /// @returns k2 score for node
 ///
 double BayesSolutionCreator::k2calcNoParentContin(unsigned int cIndex, double& nP){
-	
+
 	// create empty vector to hold totals
 	vector<unsigned int> totals(currentSet->getNumLevels(cIndex),0);
 	unsigned int nInds = currentSet->numInds();
 	double result = 0.0;
-	
+
 	for(unsigned int i=0; i < nInds; i++){
 		totals[int(currentSet->getInd(i)->getCovariate(cIndex))]++;
 	}
-	
+
 	nP =-1;
 	// alpha = 1
 	// imaginary is simply number of levels of totals for K2
@@ -1372,7 +1371,7 @@ double BayesSolutionCreator::k2calcNoParentContin(unsigned int cIndex, double& n
 
 
 ///
-/// Create parent data combination 
+/// Create parent data combination
 /// @param parentValues
 /// @param parents
 /// @returns number of different levels(factors) in the parent combined values
@@ -1380,7 +1379,7 @@ double BayesSolutionCreator::k2calcNoParentContin(unsigned int cIndex, double& n
 int BayesSolutionCreator::configParentData(vector<int>& parentValues, vector<IndividualTerm*> &parents){
 	// assume three levels (to hold SNP data)
 // 	int nLevels = 3; // this has to be changed also
-	
+
 	// set number of levels for each parent
 	vector<int> nLevels(parents.size(), 0);
 	int nl = 1;
@@ -1388,7 +1387,7 @@ int BayesSolutionCreator::configParentData(vector<int>& parentValues, vector<Ind
 		nLevels[i] = parents[i]->getNumLevels(currentSet);
 		nl *= nLevels[i];
 	}
-	
+
 	vector<int> cumulativeLevels(parents.size(), 1);
 	for(unsigned int i=1; i<cumulativeLevels.size(); i++){
 // 		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels;
@@ -1398,12 +1397,12 @@ int BayesSolutionCreator::configParentData(vector<int>& parentValues, vector<Ind
 	deque<float> args;
 	unsigned int nParents = parents.size();
 	Individual* ind;
-	
+
 	for(unsigned int i=0; i < currentSet->numInds(); i++){
 		ind = (*currentSet)[i];
 		IndividualTerm::setInd(ind);
 
-		int value = 0;	
+		int value = 0;
 		for(unsigned int j=0; j < nParents; j++){
 			value += parents[j]->evaluate(args) * cumulativeLevels[j];
 		}
@@ -1427,18 +1426,18 @@ double BayesSolutionCreator::k2calcWithParent(IndividualTerm* node, vector<Indiv
 	int parentLevels = configParentData(parentValues, parents);
 // 	int nodeLevels = 3; // default value assuming SNP data -- need to adjust calculation here
 	int nodeLevels = node->getNumLevels(currentSet);
-	 
+
 	int imaginary = 0;
 	float alpha = 1.0;
 	unsigned int numInds = currentSet->numInds();
 	deque<float> args;
-	
+
 	vector<int> inner(parentLevels,0);
 	vector<vector<int> > totals(nodeLevels, inner);
 	vector<int> parentTotals(parentLevels, 0);
 	vector<int> nodeTotals(nodeLevels, 0);
 	Individual* ind;
-	
+
 	for(unsigned int i=0; i < numInds; i++){
 		ind = (*currentSet)[i];
 		IndividualTerm::setInd(ind);
@@ -1446,7 +1445,7 @@ double BayesSolutionCreator::k2calcWithParent(IndividualTerm* node, vector<Indiv
 		parentTotals[parentValues[i]]++;
 		nodeTotals[node->evaluate(args)]++;
 	}
-	
+
 	// calculate conditional posterior probability
 	double score = 0.0;
 	for(int i=0; i<nodeLevels; i++){
@@ -1454,7 +1453,7 @@ double BayesSolutionCreator::k2calcWithParent(IndividualTerm* node, vector<Indiv
 			score += lgamma(totals[i][j] + alpha); // - lgamma(alpha) /* always zero for k2 */
 		}
 	}
-	
+
 	int finalParentLevels = parentLevels;
 	for(int j=0; j < parentLevels; j++){
 		if(parentTotals[j] == 0){
@@ -1469,7 +1468,7 @@ double BayesSolutionCreator::k2calcWithParent(IndividualTerm* node, vector<Indiv
 
 	imaginary = finalNodeLevels * finalParentLevels;
 	nP = (finalNodeLevels-1) * finalParentLevels;
-	
+
 	for(int j=0; j < parentLevels; j++){
 		if(parentTotals[j] > 0){
 			score += lgamma(double(imaginary)/finalParentLevels) -
@@ -1486,7 +1485,7 @@ void BayesSolutionCreator::setMapper(AthenaGrammarSI* m){
 
 ///
 /// Generates and return balanced accuracy output
-///@return additional output 
+///@return additional output
 ///
 vector<std::string> BayesSolutionCreator::getAdditionalFinalOutput(){
 // 	vector<std::string> returnValues;
@@ -1496,20 +1495,20 @@ vector<std::string> BayesSolutionCreator::getAdditionalFinalOutput(){
 // 	else{
 // 		returnValues.push_back(" ");
 // 	}
-// 	
+//
 // 	// placeholder for balanced accuracy results
-// 	returnValues.push_back(" ");		
+// 	returnValues.push_back(" ");
 	return addOutputValues;
 }
 
 // float BayesSolutionCreator::getBalAccuracy(Dataset* calcSet, vector<IndividualTerm*>& modelTerms){
-// 
+//
 // 	string key;
 // 	for(vector<IndividualTerm*>::iterator iter=modelTerms.begin(); iter != modelTerms.end();
 // 		++iter){
 // 			key += (*iter)->getLabel() + ":";
 // 	}
-// 	
+//
 // 	OptScore newScore(1.01, key);
 // 	float balAcc;
 // 	std::set<OptScore>::iterator scoreIter = scoreSet.find(newScore);
@@ -1535,8 +1534,8 @@ float BayesSolutionCreator::getBalAccuracy(Dataset* calcSet, vector<IndividualTe
 // cout << modelTerms[i]->getLabel() << " ";
 // }
 
-sort(modelTerms.begin(), modelTerms.end());	
-	
+sort(modelTerms.begin(), modelTerms.end());
+
 	ScoreHolder::ScoreNode* scNode = savedScores.getScore(modelTerms);
 // cout << "score=" << scNode->sc; //<< endl;
 	if(scNode->sc == ScoreHolder::notFound()){
@@ -1546,7 +1545,7 @@ sort(modelTerms.begin(), modelTerms.end());
 // else{
 // 	cout << " FOUND ";
 // }
-// 
+//
 // cout << scNode->sc << endl;
 	return scNode->sc;
 }

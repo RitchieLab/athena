@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   athena.cpp
  * Author: dudeksm
  *
@@ -56,21 +56,21 @@ int main(int argc, char** argv) {
 
  bool mapFileUsed = false, continMapUsed = false;
  int myRank = 0;
-	 
+
 #ifdef HAVE_CXX_MPI
 	// set up MPI
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
-	 
-		string versionDate = "7/17/2015";
+
+		string versionDate = "8/31/2015";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
-		 
+
 		if(argc < 2){
-				AthenaExcept he("\n\tATHENA\n\tv" + version + "\n\t" + versionDate +  
+				AthenaExcept he("\n\tATHENA\n\tv" + version + "\n\t" + versionDate +
 						"\n\n\tUsage: ATHENA <config>\n\n");
 				exitApp(he, myRank);
 		}
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
 				}
 #endif
 		}
-		
+
 		string configFile = argv[1];
 		ConfigFileReader configRead;
 		Config config;
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
 		}catch(AthenaExcept he){
 				exitApp(he, myRank);
 		}
-		
+
 		vector<AlgorithmParams> algParams= config.getAlgorithmParams();
 		Algorithm* alg = AlgorithmFactory::createAlgorithm(algParams[0].name);
 		alg->setConfigDefaults(config,algParams[0]);
@@ -113,22 +113,22 @@ int main(int argc, char** argv) {
 					mdrReader.parseFile(config.getDataSetName(), &data, config.getMissingValue(),
 							 config.getStatusMissingValue(),config.getIDinData());
 				else
-					mdrReader.parseFile(config.getTrainFile(), config.getTestFile(), 
-						&data, config.getMissingValue(), config.getStatusMissingValue(), 
+					mdrReader.parseFile(config.getTrainFile(), config.getTestFile(),
+						&data, config.getMissingValue(), config.getStatusMissingValue(),
 						config.getIDinData());
-				
+
 				// read in continuous data if any
 				if(config.getContinTrainFile().size() > 0){
 					data_manage::ContinFileReader continReader;
 					continReader.readContinFile(config.getContinTrainFile(), config.getContinTestFile(),
-						&data, config.getContinMiss(), config.getIDinData());          
+						&data, config.getContinMiss(), config.getIDinData());
 				}
 				else if(config.getContinFileName().size() > 0){
 						data_manage::ContinFileReader continReader;
 						continReader.readContinFile(config.getContinFileName(), &data,
 										config.getContinMiss(), config.getIDinData());
 				}
-				
+
 				// if present read map file
 				if(config.getMapName().size() > 0){
 						mapFileUsed = true;
@@ -139,10 +139,11 @@ int main(int argc, char** argv) {
 						mapFileUsed = false;
 						data.addDefaultSnps();
 				}
-				
+
 				if(config.getContinMapName().size() > 0){
 						continMapUsed = true;
 						data_manage::ContinMapFileReader continMapReader;
+
 						continMapReader.parseMapFile(config.getContinMapName(), &data);
 				}
 				else{
@@ -176,7 +177,7 @@ int main(int argc, char** argv) {
 // 				exitApp(de, myRank);
 // 		}
 	}
-	
+
 	// check variance of input variables
 				data.checkVariance(cvSet);
 #ifdef HAVE_CXX_MPI
@@ -188,7 +189,7 @@ int main(int argc, char** argv) {
 #ifdef HAVE_CXX_MPI
 }
 #endif
-			 
+
 				// convert data if needed
 				try{
 					data_manage::DummyConvert * encoder = data_manage::EncodingFactory::createEncoder(config.getEncodeType());
@@ -206,17 +207,17 @@ int main(int argc, char** argv) {
 		catch(DataExcept& de){
 			exitApp(de, myRank);
 		}
-	
+
 					// alter continuous variables and status value
 				scaler = data_manage::ScaledDataFactory::createScaler(config.getStatusAdjust());
 				scaler->adjustStatus(&data);
 				continScaler = data_manage::ScaledDataFactory::createScaler(config.getContinAdjust());
 				continScaler->adjustContin(&data);
-	
-	
+
+
 		// run crossvalidations and store the populations
 		int numCV = cvSet.numIntervals();
-			 
+
 		// create algorithm
 #ifdef HAVE_CXX_MPI
 		alg->setRank(myRank);
@@ -225,11 +226,11 @@ int main(int argc, char** argv) {
 		alg->setRand(config.getRandSeed());
 		alg->setDummyEncoding(config.getOttEncoded());
 		alg->setLogType(config.getLogType());
-		
+
 		try{
 			vector<unsigned int> exGenos=data.getExcludedGenotypes();
 			vector<unsigned int> exContins=data.getExcludedContins();
-			alg->setParams(algParams[0], config.getNumExchanges(), 
+			alg->setParams(algParams[0], config.getNumExchanges(),
 				data.numGenos(), data.numCovariates(), exGenos, exContins);
 		}
 		catch(AthenaExcept ex){
@@ -243,7 +244,7 @@ int main(int argc, char** argv) {
 
 		OutputManager writer;
 		writer.setBasename(config.getOutputName());
-		
+
 				// for validation of existing models
 		if(!config.getValidationSumFile().empty()){
 #ifdef HAVE_CXX_MPI
@@ -279,8 +280,8 @@ int main(int argc, char** argv) {
 			}
 #endif
 		}
-		else{ 
-				
+		else{
+
 		int currCV=config.getStartCV()-1;
 	if(currCV==0 and config.getSummaryOnly()!=Config::Suppress){
 		writer.setFiles(mapFileUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
@@ -338,16 +339,16 @@ int main(int argc, char** argv) {
 			}
 
 		alg->closeLog();
-	
+
 		alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
+
 		if(numCV > 1){
 			alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
 			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()),
-				&(cvSet.getInterval(currCV).getTraining()), &data, mapFileUsed, config.getOttEncoded(), 
+				&(cvSet.getInterval(currCV).getTraining()), &data, mapFileUsed, config.getOttEncoded(),
 				continMapUsed);
 // exit(1);
 		}
-			
 			// check population values
 	  pops.push_back(alg->getPopulation());
 	  Population& pop = pops.back();
@@ -356,13 +357,13 @@ int main(int argc, char** argv) {
 		if(myRank ==0 or config.getSummaryOnly()==Config::All){
 			if(pop.getConvertScores()){
 				if(numCV > 1)
-						pop.convertScores(&(cvSet.getInterval(currCV).getTraining()), 
+						pop.convertScores(&(cvSet.getInterval(currCV).getTraining()),
 							&(cvSet.getInterval(currCV).getTesting()), alg->getFitnessName());
 				else
 					pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
 			}
 			if(config.getSummaryOnly()==Config::All){
-				writer.outputAllModels(alg, pop, myRank, currCV,scaler->outputScaleInfo(), data, 
+				writer.outputAllModels(alg, pop, myRank, currCV,scaler->outputScaleInfo(), data,
 					mapFileUsed, config.getOttEncoded(), continMapUsed, numCV > 1);
 			}
 		}
@@ -383,17 +384,17 @@ int main(int argc, char** argv) {
 					performanceStream << "Testing" << endl;
 					alg->outputIndEvals(&(cvSet.getInterval(currCV).getTesting()), performanceStream, currProc);
 				}
-				
+
 			}
 #ifdef HAVE_CXX_MPI
 	}
-#endif 
+#endif
 		cout << " Completed" << endl;
 	alg->finishLog(config.getOutputName(),currCV+1);
 		int nModels=1;
 
 
-		
+
  #ifdef HAVE_CXX_MPI
 		if(myRank==0){
 
@@ -409,10 +410,10 @@ int main(int argc, char** argv) {
 			switch(config.getSummaryOnly()){
 				case Config::All:
 				case Config::False:
-					writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data, 
+					writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data,
 						mapFileUsed, config.getOttEncoded(), continMapUsed, config.getImgWriter());
 				case Config::Best:
-					writer.outputBestModels(pop, nModels, currCV,scaler->outputScaleInfo(), data, 
+					writer.outputBestModels(pop, nModels, currCV,scaler->outputScaleInfo(), data,
 						mapFileUsed, config.getOttEncoded(), continMapUsed);
 				default:
 				;
@@ -426,19 +427,19 @@ int main(int argc, char** argv) {
 		}   /* ends master processing of output */
 #endif
 		}
-		
-	// add equation output to summary	
+
+	// add equation output to summary
 #ifdef HAVE_CXX_MPI
 if(myRank==0){
 #endif
 	if(config.getSummaryOnly()!=Config::Suppress){
-		writer.outputEquations(alg, bestSolutions, data, mapFileUsed, config.getOttEncoded(), 
+		writer.outputEquations(alg, bestSolutions, data, mapFileUsed, config.getOttEncoded(),
 			continMapUsed);
 	}
 #ifdef HAVE_CXX_MPI
 }
 #endif
-		
+
 	// if chosen run best model selection from list of best models
 	try{
 	if(config.selectBestModel()){
@@ -471,7 +472,7 @@ if(myRank==0){
 #endif
 		cout << ae.what() << endl;
 	}
-	
+
 #ifdef HAVE_CXX_MPI
 		if(myRank==0)
 #endif
@@ -534,8 +535,8 @@ void exitApp(AthenaExcept& he, int myRank){
 #ifdef HAVE_CXX_MPI
 	MPI_Finalize();
 #endif
-	exit(EXIT_FAILURE);    
-} 
+	exit(EXIT_FAILURE);
+}
 
 ///
 /// Outputs message in exception and exits program
@@ -547,8 +548,8 @@ void exitApp(DataExcept& de, int myRank){
 #ifdef HAVE_CXX_MPI
 	MPI_Finalize();
 #endif
-	exit(EXIT_FAILURE);    
-} 
+	exit(EXIT_FAILURE);
+}
 
 
 ///
@@ -578,7 +579,7 @@ void reportExcluded(vector<unsigned int> genotypes, vector<unsigned int> contins
 	for(iter=contins.begin(); iter != contins.end(); ++iter){
 		excluded.insert("C" + Stringmanip::numberToString(*iter+1));
 	}
-	
+
 	for(set<string>::iterator iter=excluded.begin(); iter != excluded.end();
 		++iter){
 		cout << " " << *iter;
