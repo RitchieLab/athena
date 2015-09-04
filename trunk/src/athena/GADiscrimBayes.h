@@ -187,8 +187,8 @@ protected:
 			float score;
 		};
 		void constructModelVec(vector<vector<int> >& model, short* modelSeq, int seqSize);
-		bool constructTransferSeq(vector<vector<int> > model, short* seq,	int seqSize)
-		void gatherModelInformation(map<string, modScores>& models);
+		bool constructTransferSeq(vector<vector<int> > model, short* seq,	int seqSize);
+		void gatherModelInformation(map<vector<vector<int> >, ModelScores>& models);
 	#endif
 
 	std::map<std::string, GABayesParams> paramMap;

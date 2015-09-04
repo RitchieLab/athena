@@ -3,6 +3,8 @@
 #include <set>
 #include "ModelLogParser.h"
 #include "SumFileReader.h"
+#include <algorithm>
+#include <unistd.h>
 using namespace std;
 
 ///
@@ -960,26 +962,47 @@ void GADiscrimBayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleG
 	int height = genome.height();
 	int width = genome.width();
 	int sendSize = height * width;
+
+// if(myRank==1){
+// cout << "totalnodes=" << totalNodes << endl;
+// for(int i=0; i<genome.height(); i++){
+// 	cout << " " << i;
+// }
+// cout << "\n-------- SENT ---------------\n";
+// for(int i=0; i<genome.height(); i++){
+// 	cout << "i=" << i << " ";
+// 	for(int j=0; j<genome.width(); j++){
+// 	cout <<  genome.gene(i,j) << " ";
+// 	}
+// 	cout << endl;
+// }
+// }
+
 	// transfer entire binary genome
 	unsigned char* send = new unsigned char[sendSize];
 	// send new scores
 	float sendScore = genome.score();
 	float * recvScore = new float[totalNodes];
-	MPI_Allgather(&sendScore, 1, MPI_FLOAT, recvScore, totalNodes, MPI_FLOAT, MPI_COMM_WORLD);
+	MPI_Allgather(&sendScore, 1, MPI_FLOAT, recvScore, 1, MPI_FLOAT, MPI_COMM_WORLD);
 
+
+// if(myRank==1){
+// 	cout << myRank << " recvScore=>" << recvScore[0] << " " << recvScore[1] << endl;
+// 	cout << myRank << " creating genome to send" << endl;
+// }
 	int index=0;
 	// fill send buffer
 	for(int i=0; i<height; i++){
 		for(int j=0; j<width; j++){
 			send[index]=genome.gene(i,j);
-			send++;
+			index++;
 		}
 	}
 	int recvSize = sendSize * totalNodes;
-	unsigned char* recv = new unsigned char[recvSzie];
-	MPI_Allgather(send, sendSize, MPI_UNSIGNED_CHAR, recv, recvSize, MPI_UNSIGNED_CHAR, MPI_COMM_WORLD);
+	unsigned char* recv = new unsigned char[recvSize];
+	MPI_Allgather(send, sendSize, MPI_UNSIGNED_CHAR, recv, sendSize, MPI_UNSIGNED_CHAR, MPI_COMM_WORLD);
 
-	updateWithMigration(recv, recvScores, sendSize, totalNodes, myRank, ga);
+	updateWithMigration(recv, recvScore, sendSize, totalNodes, myRank, ga);
 
 	delete [] recvScore;
 	delete [] send;
@@ -989,7 +1012,6 @@ void GADiscrimBayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleG
 
 void GADiscrimBayes::updateWithMigration(unsigned char* newGenes, float * recvScores,
 	int genomeSize,	int totalNodes, int myRank, GASimpleGA* ga){
-
 	GAPopulation pop(ga->population());
 	int geneIndex=0;
 
@@ -1001,7 +1023,6 @@ void GADiscrimBayes::updateWithMigration(unsigned char* newGenes, float * recvSc
 		GAGenome *tmpInd = ga->population().individual(0).clone();
 		GA2DBinaryStringGenome& genome = (GA2DBinaryStringGenome&)*tmpInd;
 		genome.score(recvScores[node]);
-
 		for(int i=0; i<genome.height(); i++){
 			for(int j=0; j<genome.width(); j++){
 				genome.gene(i,j,newGenes[geneIndex]);
@@ -1009,10 +1030,25 @@ void GADiscrimBayes::updateWithMigration(unsigned char* newGenes, float * recvSc
 			}
 		}
 
-		for(int i=0; i<genomeSize; i++){
-			genome.gene(i, mpiGenomes[node].codons[i]);
-		}
+// 		for(int i=0; i<genomeSize; i++){
+// 			genome.gene(i, mpiGenomes[node].codons[i]);
+// 		}
 		pop.add(genome);
+
+
+// if(myRank==0){
+// for(int i=0; i<genome.height(); i++){
+// 	cout << " " << i;
+// }
+// cout << "\n-------- RECEIVED ---------------\n";
+// for(int i=0; i<genome.height(); i++){
+// 	cout << "i=" << i << " ";
+// 	for(int j=0; j<genome.width(); j++){
+// 	cout <<  genome.gene(i,j) << " ";
+// 	}
+// 	cout << endl;
+// }
+// }
 
 		delete tmpInd;
 	}
@@ -1031,26 +1067,45 @@ void GADiscrimBayes::updateWithMigration(unsigned char* newGenes, float * recvSc
 ///
 bool GADiscrimBayes::constructTransferSeq(vector<vector<int> > model, short* seq,
 	int seqSize){
+
 	int seqIndex=0;
 	size_t i=0;
 	for(; i<model.size(); i++){
 		if(model[i].empty())
 			continue;
 		seq[seqIndex++]=i;
-		if(seq == seqSize)
+		if(seqIndex == seqSize)
 			return false;
 		for(size_t j=0; j<model[i].size(); j++){
-			seq[seqIndex++]=j;
-			if(seq == seqSize)
+			seq[seqIndex++]=model[i][j];
+			if(seqIndex == seqSize)
 				return false;
 		}
-		seq[seqIndex]=-1;
-		if(seq == seqSize)
+		seq[seqIndex++]=-1;
+		if(seqIndex == seqSize)
 			return false;
 	}
-	for(;i<seqSize;i++){
-		seq[i]=-1;
+// if(myRank==1){
+// cout << "SENT" << endl;
+// for(int x=0; x<seqIndex; x++){
+// 	cout << seq[x] << " ";
+// }
+// cout << endl;
+// for(size_t i=0; i<model.size(); i++){
+// 	cout << i << "=>";
+// 	for(size_t j=0; j<model[i].size(); j++){
+// 			cout << model[i][j] << ",";
+// 	}
+// 	cout << "|";
+// }
+// cout << "-=======" << endl;
+// }
+	for(;seqIndex<seqSize;seqIndex++){
+		seq[seqIndex]=-1;
 	}
+
+
+
 	return true;
 }
 
@@ -1075,48 +1130,69 @@ void GADiscrimBayes::constructModelVec(vector<vector<int> >& model, short* model
 		}
 	}
 
+
+// cout << "RECEIVED" << endl;
+// for(int x=0; x<seqSize; x++){
+// 	cout << modelSeq[x] << " ";
+// }
+// cout << endl;
+// for(size_t i=0; i<model.size(); i++){
+// 	cout << i << "=>";
+// 	for(size_t j=0; j<model[i].size(); j++){
+// 			cout << model[i][j] << ",";
+// 	}
+// 	cout << "|";
+// }
+// cout << "-=======" << endl;
+
+
 }
 
 
 void GADiscrimBayes::gatherModelInformation(map<vector<vector<int> >, ModelScores>& models){
 	modelMPI empty;
-	modelMPI* modelSend = new uniqueModelMPI[popSize];
+	modelMPI* modelSend = new modelMPI[popSize];
 
 	int i=0;
-	for(map<string, modScores>::iterator iter=models.begin(); iter != models.end();
+	for(map<vector<vector<int> >, ModelScores>::iterator iter=models.begin(); iter != models.end();
 		++iter){
 		modelSend[i].score=iter->second.score;
 		modelSend[i].count=iter->second.count;
 		if(!constructTransferSeq(iter->first,modelSend[i].modelSeq, MAXMODELTRANSFER)){
-			modelSend[i].score=GAObjective::getWorstScore();
+			modelSend[i].score=GAFunct::getWorstScore();
 		}
 		i++;
 	}
 
-	uniqueModelMPI* modelRecv=NULL;
+	modelMPI* modelRecv=NULL;
 	int recvSize = popSize * totalNodes;
 	if(myRank==0){
 		modelRecv = new modelMPI[recvSize];
 	}
 
 	MPI_Gather(modelSend, sizeof(empty)*popSize, MPI_BYTE, modelRecv, sizeof(empty)*popSize, MPI_BYTE, 0, MPI_COMM_WORLD);
+
+if(myRank==0)
+sleep(1);
+
 	// merge all
 	if(myRank==0){
 		models.clear();
 		for(int modIndex=0; modIndex < recvSize; modIndex++){
-			<vector<vector<int> > modVec;
+			vector<vector<int> > modVec;
 			ModelScores modScore;
-			constructModelVec(modVec, modelRecv[modIndex].modelSeq);
+			constructModelVec(modVec, modelRecv[modIndex].modelSeq,MAXMODELTRANSFER);
 			if(modelRecv[modIndex].count > 0){
 				if(models.find(modVec) == models.end()){
 					models[modVec].count = modelRecv[modIndex].count;
-					models[modVec].score = modelRect[modIndex].score;
+					models[modVec].score = modelRecv[modIndex].score;
 				}
 				else{
 					models[modVec].count += modelRecv[modIndex].count;
 				}
-		}
+			}
 // cout << "rank=" << myRank << " finished merging models " << endl;
+		}
 	}
 
 	delete [] modelSend;
