@@ -97,6 +97,40 @@ void GABayesSolutionCreator::fixLoops(GA2DBinaryStringGenome& genome){
 // }
 }
 
+/// write out equation
+void GABayesSolutionCreator::writeGenoNet(vector<vector<int> >& eq){
+	for(size_t i=0; i<eq.size(); i++){
+		cout << "[G" << i+1;
+		if(!eq[i].empty()){
+			cout << "|G" << (eq[i][0]+1);
+		}
+		for(size_t j=1; j<eq[i].size(); j++){
+			cout << ":G" << (eq[i][j]+1);
+		}
+		cout << "]";
+	}
+	cout << "\n";
+}
+
+///
+/// Construct equation string from genome
+/// @genome GA2DBinaryStringGenome
+///
+vector<vector<int> > GABayesSolutionCreator::constructEquation(GA2DBinaryStringGenome& genome,
+	 std::vector<Variable*> varList){
+	vector<int> empty;
+	vector<vector<int> > conns(varList.size(), empty);
+	for(int i=0; i<genome.height(); i++){
+		for(int j=0; j<genome.width(); j++){
+			if(genome.gene(i,j)==1){
+				conns[j].push_back(i);
+			}
+		}
+	}
+	return conns;
+}
+
+
 
 ///
 /// Calculate and return network score
@@ -125,9 +159,19 @@ double GABayesSolutionCreator::calcScore(GA2DBinaryStringGenome& genome, vector<
 // 	}
 // 	cout << "\n";
 // }
+//
+// vector<vector<int> > eq = constructEquation(genome,varList);
+// writeGenoNet(eq);
 
+
+// int j=1;
+// vector<int>pars;
+// pars.push_back(2);
+// cout << k2Calc(j,pars,varList,dSet,nParams) << endl;
+// exit(1);
 	for(int j=0; j<genome.width(); j++){
 		vector<int> parents;
+// cout << "j=" << j << endl;
 		for(int i=0; i<genome.height(); i++){
 			// connection
 			if(genome.gene(i,j)){
@@ -135,17 +179,25 @@ double GABayesSolutionCreator::calcScore(GA2DBinaryStringGenome& genome, vector<
 				parents.push_back(i);
 			}
 		}
+
+// cout << "ch=G" << j+1 << " parents: ";
+// for(size_t p=0; p<parents.size(); p++){
+// cout << "G" << parents[p] << " ";
+// }
+
 		if(parents.empty()){
 			// the additional parameter term (if any) is already included in noParentScores
 			calculator->addIndScore(noParentScores[j],0);
+// cout << "score=" << noParentScores[j] << "\n";
 		}
 		else{
 			score = k2Calc(j,parents,varList,dSet,nParams);
-// cout << "score=" << score << " nParams=" << nParams << endl;
+// cout << "score=" << score << "\n";
 			calculator->addIndScore(score, nParams);
 		}
 	}
-// cout << "final score=" << calculator->getScore();
+//exit(1);
+// cout << "final score=" << -calculator->getScore() << "\n";
 	return -calculator->getScore();
 }
 
@@ -372,7 +424,7 @@ void GABayesSolutionCreator::setNoParentScores(data_manage::Dataset* ds, vector<
 		calculator->addIndScore(noParentScores.back(), nP);
 		noParentScores.back() = -calculator->getScore();
 		total += noParentScores.back();
-// cout  << "K2 score=" << noParentScores.back()<< endl;
+// cout  << "var " << (*varIter)->getIndex() << " K2 score=" << noParentScores.back()<< endl;
 	}
 // cout << "total=" << total << endl;
 	ds->setConstant(total);

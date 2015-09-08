@@ -385,7 +385,7 @@ void GEDiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	setIndModScores(training, caseModels, trainingScores, caseOrphanProbs);
 	setIndModScores(training, controlModels, trainingScores, controlOrphanProbs);
 	setIndModScores(testing, caseModels, testingScores, caseOrphanProbs);
-//cout << "testing set control models used" << endl;	
+//cout << "testing set control models used" << endl;
 	setIndModScores(testing, controlModels, testingScores, controlOrphanProbs);
 	double trainingAUC = setPredictedScores(trainingScores, caseModels, controlModels, case2conRatio);
 	double testingAUC = setPredictedScores(testingScores, caseModels, controlModels, case2conRatio);

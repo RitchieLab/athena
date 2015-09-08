@@ -35,6 +35,21 @@ float GAFunct::GACaseObjective(GAGenome& g){
   removeSelfConns(genome);
   caseBayesCreator.fixLoops(genome);
 // cout << "calculating case fitness" << endl;
+// float score=caseBayesCreator.calcScore(genome, varList, caseDataset);
+// cout << "final score=" << score << endl;
+
+
+// cout << "output test case set" << endl;
+// for(unsigned int i=0; i<caseDataset->numInds(); i++){
+// 	for(unsigned int j=0; j<caseDataset->numGenos(); j++){
+// 	  cout << caseDataset->getInd(i)->getGenotype(j) << " ";
+// 	}
+// 	cout << endl;
+// }
+// cout << "==================" << endl;
+// exit(1);
+
+// return score;
 	return caseBayesCreator.calcScore(genome, varList, caseDataset);
 }
 
@@ -126,6 +141,17 @@ void GAFunct::setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* co
 
 	controlBayesCreator.setMIScores(controlDataset,vList);
 	controlBayesCreator.setNoParentScores(controlDataset, vList);
+
+// cout << "output test case set" << endl;
+// for(unsigned int i=0; i<caseDS->numInds(); i++){
+// 	for(unsigned int j=0; j<caseDS->numGenos(); j++){
+// 	  cout << caseDS->getInd(i)->getGenotype(j) << " ";
+// 	}
+// 	cout << endl;
+// }
+// cout << "==================" << endl;
+
+
 
 // 	if(!set->isCaseControl() && solCreator->getCalculator()->requiresCaseControl()){
 // 		throw AthenaExcept(solCreator->getCalculator()->getName() + " requires a case-control dataset");

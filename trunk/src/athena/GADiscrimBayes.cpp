@@ -60,6 +60,7 @@ void GADiscrimBayes::initializeParams(){
 
 	 // establish map for parameters
 	 paramMap["INITCONNECTP"] = initConnectProb;
+	 paramMap["NUMTOPMODELS"] = modelsToUse;
 
 	 gaSelectorMap["ROULETTE"] = RouletteWheelSelection;
 	 gaSelectorMap["PARETO"] = ParetoFrontSelection;
@@ -106,6 +107,10 @@ void GADiscrimBayes::setParams(AlgorithmParams& algParam, int numExchanges, int 
 							if(paramMap.find(mapIter->first) == paramMap.end())
 								throw AthenaExcept("No match for parameter " + mapIter->first +
 												" in Algorithm GADescrimBayes");
+								break;
+							case modelsToUse:
+								topModelsUsed = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
+// cout << "topModelsUsed=" << topModelsUsed << endl;
 								break;
 // 						case parentRange:
 // 							// split on ':' for min:max
@@ -283,6 +288,12 @@ void GADiscrimBayes::initialize(){
 		controlGenome.initializer(GAFunct::initControl);
 
 		caseGA = new GASimpleGA(caseGenome);
+// GA2DBinaryStringGenome genome = (GA2DBinaryStringGenome&)caseGA->population().best(0);
+// vector<vector<int> > eq = constructEquation(genome);
+// writeGenoNet(eq);
+// cout << "best init score=" << genome.score();
+// exit(1);
+
 		controlGA = new GASimpleGA(controlGenome);
 
 		configGA(caseGA);
@@ -348,6 +359,10 @@ int GADiscrimBayes::step(){
 		// run each separately
 	for(unsigned int i=0; i < stepSize; i++){
 		caseGA->step();
+// GA2DBinaryStringGenome genome = (GA2DBinaryStringGenome&)caseGA->population().best(0);
+// vector<vector<int> > eq = constructEquation(genome);
+// writeGenoNet(eq);
+// cout << "step=" << i << " case best score=" << genome.score() << "\n";
 		controlGA->step();
 	}
 
@@ -358,6 +373,21 @@ int GADiscrimBayes::step(){
 #endif
 
 		return completed;
+}
+
+/// write out equation
+void GADiscrimBayes::writeGenoNet(vector<vector<int> >& eq){
+	for(size_t i=0; i<eq.size(); i++){
+		cout << "[G" << i+1;
+		if(!eq[i].empty()){
+			cout << "|G" << (eq[i][0]+1);
+		}
+		for(size_t j=1; j<eq[i].size(); j++){
+			cout << ":G" << (eq[i][j]+1);
+		}
+		cout << "]";
+	}
+	cout << "\n";
 }
 
 ///
@@ -466,6 +496,16 @@ void GADiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	data_manage::Dataholder* holder, bool mapUsed, bool ottDummy, bool continMapUsed){
 	map<vector<vector<int> >, ModelScores> caseModels;
 	map<vector<vector<int> >, ModelScores> controlModels;
+
+
+// for(int i=0; i<popSize; i++){
+// 	GA2DBinaryStringGenome genome = (GA2DBinaryStringGenome&)caseGA->population().best(i);
+// 	cout << "i=" << i << " score=" << genome.score() << endl;
+// 	break;
+// }
+// cout << "end pop" << endl;
+
+
 	totalModels(caseGA, caseModels, holder, true, mapUsed, continMapUsed);
 	totalModels(controlGA, controlModels, holder, false, mapUsed, continMapUsed);
 
@@ -738,7 +778,7 @@ vector<vector<int> > GADiscrimBayes::constructEquation(GA2DBinaryStringGenome& g
 	for(int i=0; i<genome.height(); i++){
 		for(int j=0; j<genome.width(); j++){
 			if(genome.gene(i,j)==1){
-				conns[i].push_back(j);
+				conns[j].push_back(i);
 			}
 		}
 	}
@@ -828,7 +868,7 @@ void GADiscrimBayes::setConditionalTables(Dataset* dset, map<vector<vector<int> 
 		int tableIndex=0;
 		modIter->second.tables.clear();
 
-// vector<vector<int> > v=modIter->first;
+// vector<vector<int> > v=modIter->firscondt;
 // cout << constructBayesStr(v,holder,false,false) << endl;
 // cout << "score=" << modIter->second.score << endl;
 		ConditionalTable emptyTable;
@@ -848,7 +888,6 @@ void GADiscrimBayes::setConditionalTables(Dataset* dset, map<vector<vector<int> 
 				parentIter!=parentVec.end(); ++parentIter){
 				// get each parent
 				modIter->second.tables.back().parentIndexes.push_back(*parentIter);
-// cout << "parent=" << *parentIter << endl;
 			}
 
 
@@ -864,7 +903,7 @@ void GADiscrimBayes::setConditionalTables(Dataset* dset, map<vector<vector<int> 
 			for(unsigned int i=0; i<dset->numInds(); i++){
 				ind=(*dset)[i];
 				totals[int(childVar->getValue(ind))][parentValues[i]]++;
-				nodeTotals[childVar->getValue(ind)]++;
+				nodeTotals[int(childVar->getValue(ind))]++;
 			}
 			vector<double> innerProbs(parentLevels, 0.0);
 			modIter->second.tables.back().probs.assign(nodeLevels, innerProbs);
@@ -882,6 +921,7 @@ void GADiscrimBayes::setConditionalTables(Dataset* dset, map<vector<vector<int> 
 // 		cout << "i=" << i << " j=" << j << " p=" << modIter->second.tables.back().probs[i][j] << endl;
 // 	}
 // }
+// exit(1);
 		}
 // exit(1);
 	}

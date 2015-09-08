@@ -111,7 +111,8 @@ protected:
 
 	enum GABayesParams{
 		noMatchParam,
-		initConnectProb
+		initConnectProb,
+		modelsToUse
 	};
 
 	struct ConditionalTable{
@@ -176,6 +177,8 @@ protected:
 
 	void setIndModScores(Dataset* dset, map<vector<vector<int> >,ModelScores>& models,
 		vector<IndivResults>& indScores, vector<vector<double> >& orphanProbs);
+
+void writeGenoNet(vector<vector<int> >& eq);
 
 	#ifdef HAVE_CXX_MPI
 		void sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga);

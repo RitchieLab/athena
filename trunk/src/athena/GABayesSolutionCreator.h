@@ -71,6 +71,9 @@ private:
 
 	double k2CalcNoParent(Variable* var, data_manage::Dataset* ds, int& nP);
 
+	vector<vector<int> > constructEquation(GA2DBinaryStringGenome& genome, std::vector<Variable*> varList);
+	void writeGenoNet(vector<vector<int> >& eq);
+
 	std::vector<std::vector<double> > miScores;
 	std::vector<double> noParentScores;
 	std::vector<int> varParams;
