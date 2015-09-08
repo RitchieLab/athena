@@ -26,6 +26,7 @@ namespace data_manage
 
 Dataset::Dataset()
 {
+	holder=NULL;
 	ssTotal = 0;
 	binaryStatusOnly = false;
 	constantValue=0.0;
@@ -65,10 +66,10 @@ ostream& operator<<(ostream& os, Dataset& d){
 		for(unsigned int cov=0; cov < d.numCovariates(); cov++){
 			os << " " << ind->getCovariate(cov);
 		}
-		
+
 		os << endl;
 	}
-	
+
 	return os;
 }
 
@@ -77,21 +78,21 @@ ostream& operator<<(ostream& os, Dataset& d){
 /// Calculates SSTotal on this set
 ///
 void Dataset::calcSSTotal(){
-	
+
 	float diff=0.0;
 	float meanVal;
 	float statTotal = 0.0;
-	
+
 	for(unsigned int i=0; i < inds.size(); i++){
 		statTotal += inds[i]->getStatus();
 	}
-	
+
 	meanVal = statTotal/inds.size();
-	
+
 	for(unsigned int i=0; i<inds.size(); i++){
 		diff = diff + (inds[i]->getStatus() - meanVal) * (inds[i]->getStatus() - meanVal);
 	}
-	
+
 	ssTotal = diff;
 }
 
@@ -127,7 +128,7 @@ vector<Dataset*> Dataset::splitCaseControl(){
 	splitSets[1]->setHolder(holder);
 // 	splitSets[0]->setAllLevels(continLevels);
 // 	splitSets[1]->setAllLevels(continLevels);
-	
+
 	return splitSets;
 }
 
@@ -151,7 +152,7 @@ unsigned int Dataset::getNumStatusLevels(){return holder->getNumStatusLevels();}
 
 /// Sets number of levels for phenotype
 void Dataset::setNumStatusLevels(unsigned int nLevels){holder->setNumStatusLevels(nLevels);}
-// 	statusLevels=nLevels;}	
+// 	statusLevels=nLevels;}
 
 
 /// Set Dataholder

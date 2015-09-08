@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
 
-		string versionDate = "8/31/2015";
+		string versionDate = "9/8/2015";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -128,7 +128,6 @@ int main(int argc, char** argv) {
 						continReader.readContinFile(config.getContinFileName(), &data,
 										config.getContinMiss(), config.getIDinData());
 				}
-
 				// if present read map file
 				if(config.getMapName().size() > 0){
 						mapFileUsed = true;
@@ -214,7 +213,6 @@ int main(int argc, char** argv) {
 				continScaler = data_manage::ScaledDataFactory::createScaler(config.getContinAdjust());
 				continScaler->adjustContin(&data);
 
-
 		// run crossvalidations and store the populations
 		int numCV = cvSet.numIntervals();
 
@@ -244,7 +242,6 @@ int main(int argc, char** argv) {
 
 		OutputManager writer;
 		writer.setBasename(config.getOutputName());
-
 				// for validation of existing models
 		if(!config.getValidationSumFile().empty()){
 #ifdef HAVE_CXX_MPI

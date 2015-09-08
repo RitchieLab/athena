@@ -23,7 +23,9 @@ GADiscrimBayes::~GADiscrimBayes(){
 // 				geLog=NULL;
 // 		}
 // 		freeMemory();
+	if(caseGA != NULL)
 		delete caseGA;
+	if(controlGA != NULL)
 		delete controlGA;
 	if(caseDataset != NULL)
 		delete caseDataset;
@@ -74,7 +76,7 @@ void GADiscrimBayes::initializeParams(){
 	 maxBest = true;
 	 gaSelector = RouletteWheelSelection;
 	 caseDataset = controlDataset = NULL;
-
+	 caseGA=controlGA=NULL;
 	 BayesSolution* sol = (BayesSolution*)GAFunct::getBlankSolution();
 	 pop.insert(sol);
 
@@ -96,7 +98,6 @@ void GADiscrimBayes::setParams(AlgorithmParams& algParam, int numExchanges, int 
 
 		Algorithm::setParams(algParam, numExchanges, numGenos, numContin, excludedGenos,
 			excludedContins);
-
 		map<string, string>::iterator mapIter;
 		vector<string> tokens;
 
@@ -142,9 +143,7 @@ void GADiscrimBayes::setParams(AlgorithmParams& algParam, int numExchanges, int 
 
 		// first optimization of backpropagation
 // 		baNextOpt = balAccStart;
-
 		setGAParams(excludedGenos, excludedContins);
-
 }
 
 
@@ -156,7 +155,6 @@ void GADiscrimBayes::setParams(AlgorithmParams& algParam, int numExchanges, int 
 ///
 void GADiscrimBayes::setGAParams(vector<unsigned int>& excludedGenos,
 			vector<unsigned int>& excludedContins){
-
 		GARandomSeed(randSeed);
 		srand(randSeed);
 		// first free ga memory if already run
@@ -165,7 +163,6 @@ void GADiscrimBayes::setGAParams(vector<unsigned int>& excludedGenos,
 
 		addGenotypes(excludedGenos, numGenotypes);
 		addContin(excludedContins, numContinuous);
-
 		GAFunct::setSolutionType(calculatorName);
 
 	 if(calculatorName.find("K2") != string::npos){
@@ -211,7 +208,7 @@ void GADiscrimBayes::addContin(vector<unsigned int>& excludedContin,
 			for(int i=0; i<nVars; i++){
 				if(excluded.find(i) == excluded.end()){
 					varList.push_back(new ConVariable(i));
-					varList.back()->setNumLevels(controlDataset->getNumLevels(i));
+// 					varList.back()->setNumLevels(controlDataset->getNumLevels(i));
 				}
 			}
 }
@@ -232,6 +229,11 @@ void GADiscrimBayes::setDataset(Dataset* newSet){
 	vector<Dataset*> splitSets = newSet->splitCaseControl();
 	controlDataset=splitSets[0];
 	caseDataset = splitSets[1];
+	for(size_t i=0; i<varList.size(); i++){
+		if(!varList[i]->isGeno()){
+			varList[i]->setNumLevels(caseDataset->getNumLevels(varList[i]->getIndex()));
+		}
+	}
 	GAFunct::setDatasets(caseDataset, controlDataset, varList);
 }
 
@@ -259,11 +261,9 @@ void GADiscrimBayes::configGA(GASimpleGA* ga){
 		ga->pMutation(probMut);
 		ga->pCrossover(probCross);
 		ga->nGenerations(numGenerations);
-// 		if(GEObjective::maxBest()){
 		// always maximize these scores
 			ga->maximize();
 			maxBest = true;
-// 		}
 		ga->initialize();
 }
 
@@ -272,7 +272,6 @@ void GADiscrimBayes::configGA(GASimpleGA* ga){
 /// Initializes the algorithm
 ///
 void GADiscrimBayes::initialize(){
-
 // 		restrictStepsDone=0;
 		// free ga if already established
 		freeMemory();

@@ -147,11 +147,12 @@ void GAFunct::setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* co
 // 	for(unsigned int j=0; j<caseDS->numGenos(); j++){
 // 	  cout << caseDS->getInd(i)->getGenotype(j) << " ";
 // 	}
+// 	for(unsigned int j=0; j<caseDS->numCovariates(); j++){
+// 	  cout << caseDS->getInd(i)->getCovariate(j) << " ";
+// 	}
 // 	cout << endl;
 // }
 // cout << "==================" << endl;
-
-
 
 // 	if(!set->isCaseControl() && solCreator->getCalculator()->requiresCaseControl()){
 // 		throw AthenaExcept(solCreator->getCalculator()->getName() + " requires a case-control dataset");
