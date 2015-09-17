@@ -38,16 +38,18 @@ public:
 		enum AlgorithmType{
 				/// Enum for missing
 				NoAlgorithm,
-				/// Enum for GENN
+				/// GENN
 				GENNAlgorithm,
-				/// Enum for Symbolic Regression
+				/// GE Symbolic Regression
 				GESymbRegAlgorithm,
 				/// Enum for Bayesian
 				GEBayesAlgorithm,
-				/// Enum for Bayesian Discriminant
+				/// GE Bayesian Discriminant
 				GEDiscrimBayesAlgorithm,
-				/// Enum for Bayesian Discriminant using GA
-				GADiscrimBayesAlgorithm
+				/// Bayesian Discriminant using GA
+				GADiscrimBayesAlgorithm,
+				/// GA Bayesian
+				GABayesAlgorithm
 		};
 
 private:

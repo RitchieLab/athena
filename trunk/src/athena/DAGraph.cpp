@@ -4,11 +4,11 @@ using namespace std;
 #include <iostream>
 #define NIL -1
 
-#include <stdlib.h> 
+#include <stdlib.h>
 
 DAGraph::DAGraph(){
 }
-	
+
 ///
 /// Destructor deletes all the nodes
 ///
@@ -44,7 +44,7 @@ void DAGraph::addConnection(TerminalSymbol* from, TerminalSymbol* to){
 	else{
 		fromNode = fromIter->second;
 	}
-	
+
 	map<TerminalSymbol*, GraphNode*>::iterator toIter = termMap.find(to);
 	if(toIter == termMap.end()){
 		toNode = addNode(to);
@@ -52,16 +52,16 @@ void DAGraph::addConnection(TerminalSymbol* from, TerminalSymbol* to){
 	else{
 		toNode = toIter->second;
 	}
-// cout << "add connection " << from->getName() << " to " << to->getName() << endl;	
+// cout << "add connection " << from->getName() << " to " << to->getName() << endl;
 	// check that node isn't same
 	if(fromNode == toNode){
 // cout <<  "skip connection" << endl;
 		return;
 	}
-	
+
 	fromNode->children.insert(toNode);
 	toNode->parents.insert(fromNode);
-	
+
 	//don't allow nodes to point to each other -- now have repair operator so can
 	// allow this situation
 // 	if(fromNode->parents.find(toNode) == fromNode->parents.end()){
@@ -70,10 +70,10 @@ void DAGraph::addConnection(TerminalSymbol* from, TerminalSymbol* to){
 // 	}
 
 }
-	
+
 ///
 /// Removes an edge from the graph
-/// @param from node 
+/// @param from node
 /// @param to node
 ///
 void DAGraph::removeConnection(TerminalSymbol* from, TerminalSymbol* to){
@@ -88,11 +88,11 @@ void DAGraph::removeConnection(TerminalSymbol* from, TerminalSymbol* to){
 // cout << "can't find parent " << fromNode->term->getName() <<  endl;
 // exit(1);
 // }
-// 	
+//
 	fromNode->children.erase(toNode);
 	toNode->parents.erase(fromNode);
-}	
-	
+}
+
 /// adds new GraphNode to graph
 GraphNode* DAGraph::addNode(TerminalSymbol* term){
 	GraphNode * newNode = new GraphNode;
@@ -105,8 +105,8 @@ GraphNode* DAGraph::addNode(TerminalSymbol* term){
 
 string DAGraph::alterLabel(data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, string label){
-	
-	string newLabel;	
+
+	string newLabel;
 	if(label[0]=='G'){
 		stringstream ss(label.substr(1,label.length()-1));
 		int num, numOrig;
@@ -131,7 +131,7 @@ string DAGraph::alterLabel(data_manage::Dataholder* holder,
 	else{
 		newLabel = label;
 	}
-	
+
 	return newLabel;
 }
 
@@ -142,25 +142,25 @@ string DAGraph::alterLabel(data_manage::Dataholder* holder,
 ///
 void DAGraph::outputDot(ostream & out, data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, bool continMapUsed){
-			
+
 	out << "digraph G{\n";
 	out << "\tgraph [ dpi = 300 ];\n";
 	out << "\tsize=\"8.5,11.0\";\n";
 	out << "\tdir=\"none\";\n";
 	out << "\trankdir=\"LR\";\n";
 	out << "\torientation=\"portrait\";\n";
-	
+
 	// list all nodes and have parents point to children
 	for(GraphNodeIter iter = begin(); iter != nodes.end(); ++iter){
 		string label = alterLabel(holder, mapUsed, ottDummy, (*iter)->term->getLabel());
-		out << "\t" <<  label << " [shape=\"" << (*iter)->term->getShape() << "\" style=\"" << 
+		out << "\t" <<  label << " [shape=\"" << (*iter)->term->getShape() << "\" style=\"" <<
 			(*iter)->term->getStyle() << "\" label=\"" << label << "\"];" << endl;
 		for(GraphNodeIter childIter = (*iter)->children.begin(); childIter != (*iter)->children.end();
 			++childIter){
 			string childLabel = alterLabel(holder, mapUsed, ottDummy, (*childIter)->term->getLabel());
 			out << "\t" << label << "->" << childLabel << ";" << endl;
-		}	
-			
+		}
+
 	}
 	out << "}" << endl;
 }
@@ -179,7 +179,7 @@ void DAGraph::outputRstring(ostream & out){
 			}
 		}
 		out << "]";
-	}	
+	}
 }
 
 
@@ -189,7 +189,7 @@ void DAGraph::outputRstring(ostream & out){
 ///
 bool DAGraph::SCC(){
 	loops.clear();
-	
+
 // temporary show all parents and all children of the nodes
 // for(GraphNodeIter iter = begin(); iter != nodes.end(); ++iter){
 // cout << (*iter)->term->getName() << " children:";
@@ -202,10 +202,10 @@ bool DAGraph::SCC(){
 // }
 // cout << "\n";
 // }
-	
-	
+
+
 	size_t nNodes = nodes.size();
-// cout << "in DAGraph SCC " << nodes.size() << endl;	
+// cout << "in DAGraph SCC " << nodes.size() << endl;
 	vector<GraphNode*> nodeVec(nNodes,NULL);
 	map<GraphNode*, int> nodeMap;
 	size_t i=0;
@@ -214,8 +214,8 @@ bool DAGraph::SCC(){
 		nodeMap[*iter] = i;
 // cout << "graphnode " << (*iter)->term->getName() << " has index=" << i << endl;
 		i++;
-	}	
-	
+	}
+
 // temporary show all parents and all children of the nodes as indexes
 // for(GraphNodeIter iter = begin(); iter != nodes.end(); ++iter){
 // cout << (*iter)->term->getName() << " children:";
@@ -227,9 +227,9 @@ bool DAGraph::SCC(){
 // cout << " " << (*pIter)->term->getName() << "-" << nodeMap[*pIter];
 // }
 // cout << "\n";
-// }	
-	
-	
+// }
+
+
 	vector<int> disc(nNodes,NIL);
 	vector<int> low(nNodes,NIL);
 	vector<bool> stackMember(nNodes, false);
@@ -241,7 +241,7 @@ bool DAGraph::SCC(){
 		}
 	}
  	delete st;
- 	
+
  	// report any loops
 //  cout << "in DAGraph SCC loops.size=" << loops.size() << endl;
  	if(loops.empty()){
@@ -252,7 +252,7 @@ bool DAGraph::SCC(){
 //   cout << loops.back().size() << endl;
  		return true;
  	}
- 	
+
 }
 
 ///
@@ -273,7 +273,7 @@ bool DAGraph::SCC(){
 void DAGraph::SCCUtil(int u, vector<int>& disc, vector<int>& low, stack<int>* st,
 		vector<bool>& stackMember, vector<GraphNode*>& nodeVec, int* time,
 		map<GraphNode*, int>& nodeMap){
-		
+
 		// Initialize discovery time and low value
 		disc[u] = low[u] = ++(*time);
 		st->push(u);
@@ -299,29 +299,29 @@ void DAGraph::SCCUtil(int u, vector<int>& disc, vector<int>& low, stack<int>* st
     	else if(stackMember[v]==true){
     		low[u] = min(low[u], disc[v]);
     	}
-    	
+
     }
-    
+
 //     for (i = adj[u].begin(); i != adj[u].end(); ++i)
 //     {
 //         int v = *i;  // v is current adjacent of 'u'
-//  
+//
 //         // If v is not visited yet, then recur for it
 //         if (disc[v] == -1)
 //         {
 //             SCCUtil(v, disc, low, st, stackMember);
-//  
+//
 //             // Check if the subtree rooted with 'v' has a
 //             // connection to one of the ancestors of 'u'
 //             low[u]  = min(low[u], low[v]);
 //         }
-//  
+//
 //         // Update low value of 'u' only of 'v' is still in stack
 //         // (i.e. it's a back edge, not cross edge).
 //         else if (stackMember[v] == true)
 //             low[u]  = min(low[u], disc[v]);
 //     }
-    
+
     // head node found, pop the stack and print an SCC
     int w = 0;  // To store stack extracted vertices
     if (low[u] == disc[u])
@@ -344,7 +344,7 @@ void DAGraph::SCCUtil(int u, vector<int>& disc, vector<int>& low, stack<int>* st
         stackMember[w] = false;
         st->pop();
     }
-		
+
 }
 
 

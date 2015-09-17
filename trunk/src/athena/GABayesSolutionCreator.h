@@ -24,7 +24,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <Dataset.h>
 #include "Variable.h"
 #include "SolutionCalculator.h"
-#include "BayesSolution.h"
+#include "GABayesSolution.h"
 
 ///
 /// Provides objective function for use with GALIb and GE library
@@ -57,7 +57,7 @@ public:
 		inline float getWorst(){return calculator->getWorst();}
 
 		virtual Solution* createNewSolution(){
-				BayesSolution* sol = new BayesSolution;
+				GABayesSolution* sol = new GABayesSolution;
 				return sol;}
 
 private:

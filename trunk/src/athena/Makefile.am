@@ -146,7 +146,11 @@ Variable.h \
 Tarjans.h \
 Tarjans.cpp \
 GABayesSolutionCreator.h \
-GABayesSolutionCreator.cpp
+GABayesSolutionCreator.cpp \
+GABayes.h \
+GABayes.cpp \
+GABayesSolution.h \
+GABayesSolution.cpp
 
 athena_LDADD=../libGE-0.26/libGE.la ../galib247/libga.la ../annie/libannie.la ../stat_calc/libstat_calc.la ../data_manage/libdata_manage.la
 

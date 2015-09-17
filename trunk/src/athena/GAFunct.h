@@ -60,6 +60,12 @@ public:
 
 	static Solution* getBlankSolution(){return caseBayesCreator.createNewSolution();}
 
+	static vector<std::string> getAdditionalFinalOutput(GAGenome& g);
+
+	static vector<std::string>  getAdditionalOutputNames();
+
+	static void setDataset(data_manage::Dataset* caseDS, std::vector<Variable*> vList);
+
 private:
 	static void init(GAGenome &g, GABayesSolutionCreator& gaBayesCreator);
 	static void removeSelfConns(GA2DBinaryStringGenome& genome);

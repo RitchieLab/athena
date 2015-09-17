@@ -66,6 +66,25 @@ float GAFunct::GAControlObjective(GAGenome& g){
 }
 
 
+vector<std::string> GAFunct::getAdditionalFinalOutput(GAGenome& g){
+	vector<std::string> addOutputValues;
+	if(g.score() > caseDataset->getConstant() ){
+		addOutputValues.push_back("+");
+	}
+	else{
+		addOutputValues.push_back("-");
+	}
+	return addOutputValues;
+}
+
+///
+/// Return additional column names for output
+///
+vector<std::string>  GAFunct::getAdditionalOutputNames(){
+	vector<std::string> names(1, "not-improved");
+	return names;
+}
+
 /// conducts random initialization of genomes
 void GAFunct::initCase(GAGenome &g){
 	init(g, caseBayesCreator);
@@ -160,7 +179,16 @@ void GAFunct::setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* co
 // 	solCreator->setCalculatorConstant(ds);
 }
 
+///
+/// sets the Dataset for objective function to work with
+///
+void GAFunct::setDataset(data_manage::Dataset* caseDS, std::vector<Variable*> vList){
+	caseDataset = caseDS;
+	varList=vList;
 
+	caseBayesCreator.setMIScores(caseDataset,vList);
+	caseBayesCreator.setNoParentScores(caseDataset,vList);
+}
 
 
 

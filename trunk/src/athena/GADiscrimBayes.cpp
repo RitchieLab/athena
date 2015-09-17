@@ -77,7 +77,7 @@ void GADiscrimBayes::initializeParams(){
 	 gaSelector = RouletteWheelSelection;
 	 caseDataset = controlDataset = NULL;
 	 caseGA=controlGA=NULL;
-	 BayesSolution* sol = (BayesSolution*)GAFunct::getBlankSolution();
+	 GABayesSolution* sol = (GABayesSolution*)GAFunct::getBlankSolution();
 	 pop.insert(sol);
 
 }
