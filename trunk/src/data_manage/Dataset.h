@@ -54,70 +54,73 @@ public:
 	inline Individual* operator[](unsigned int index){return inds[index];}
 
 	inline Individual* getInd(unsigned int index){return inds[index];}
-	
+
 	/// Returns number of genotypes in set
 	inline unsigned int numGenos(){return inds[0]->numGenotypes();}
-	
+
 	/// Returns number of covariates in set
 	inline unsigned int numCovariates(){return inds[0]->numCovariates();}
 
 	void addInds(std::vector<Individual* >& new_inds);
 
 	inline float getMissingCoValue(){return missingCoValue;}
-	
+
 	inline void setMissingCoValue(float miss){missingCoValue = miss;}
-	
+
 	inline int getMissingGenotype(){return missingGenotype;}
-	
+
 	inline void setMissingGenotype(int miss){missingGenotype = miss;}
-	
+
 	/// returns SStotal for this set (used in r-squared calculations)
 	float getSSTotal(){return ssTotal;}
-	
+
 	/// Calculates SStotal
 	void calcSSTotal();
-	
+
 	/// Sets constant value used in converting scores
 	void setConstant(double c){constantValue = c;}
-	
-	/// Returns constant value 
+
+	/// Returns constant value
 	double getConstant(){return constantValue;}
-	
+
 	/// Returns whether set is case/control
 	bool isCaseControl(){return binaryStatusOnly;}
-	
+
 	/// Sets case/control status
 	void setCaseControlStatus(bool tf){binaryStatusOnly=tf;}
-	
+
 	Dataset operator+(Dataset& d);
-	
+
 	/// Gets number of levels for a continuous variable
 	unsigned int getNumLevels(unsigned int varIndex);//{return holder->getNumLevels(varIndex);}
-	
+
 	/// Sets number of levels for a continuous variable
 	void setNumLevels(unsigned int varIndex, unsigned int nLevels);// {
 // 		holder->setNumLevels(varIndex, nLevels);
 // 	}
-	
+
 	void setAllLevels(std::vector<unsigned int> cLevels);// {
 // 		holder->setAllLevels(cLevels);
 // 	}
-	
+
 	/// Returns number of levels for phenotype
 	unsigned int getNumStatusLevels();//{return holder->getNumStatusLevels();}
 // 	return statusLevels;}
-	
-	
+
+
 	/// Sets number of levels for phenotype
 	void setNumStatusLevels(unsigned int nLevels);//{holder->setNumStatusLevels(nLevels);}
-// 	statusLevels=nLevels;}	
-	
+// 	statusLevels=nLevels;}
+
 	/// Splits dataset into 2 new case/control sets
 	std::vector<Dataset*> splitCaseControl();
-	
+
 	/// Set Dataholder
 	void setHolder(Dataholder* h);//{holder=h;}
-	
+
+	/// Return Dataholder
+	Dataholder* getHolder(){return holder;}
+
 private:
 	std::vector<Individual*> inds;
 	std::vector<unsigned int> continLevels;
