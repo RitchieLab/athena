@@ -530,7 +530,8 @@ void GABayes::getAdditionalFinalOutput(Dataset* testing, Dataset* training,
 	data_manage::Dataholder* holder, bool mapUsed, bool ottDummy, bool continMapUsed){
 
 	GABayes::setDataset(testing);
-  for(unsigned int currInd = 0; currInd < testing->numInds(); currInd++){
+	unsigned int numInds = ga->population().size();
+  for(unsigned int currInd = 0; currInd < numInds; currInd++){
 		pop[currInd]->setAdditionalOutput(GAFunct::getAdditionalFinalOutput(ga->population().individual(currInd)));
 	}
 
