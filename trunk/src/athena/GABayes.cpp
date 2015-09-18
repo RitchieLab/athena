@@ -532,7 +532,7 @@ void GABayes::getAdditionalFinalOutput(Dataset* testing, Dataset* training,
 	GABayes::setDataset(testing);
 	unsigned int numInds = ga->population().size();
   for(unsigned int currInd = 0; currInd < numInds; currInd++){
-		pop[currInd]->setAdditionalOutput(GAFunct::getAdditionalFinalOutput(ga->population().individual(currInd)));
+		pop[currInd]->setAdditionalOutput(GAFunct::getAdditionalFinalOutput(pop[currInd]->testVal()));
 	}
 
 }
@@ -546,7 +546,7 @@ void GABayes::getAdditionalFinalOutput(Dataset* set){
 
 	unsigned int numInds = ga->population().size();
   for(unsigned int currInd = 0; currInd < numInds; currInd++){
-		pop[currInd]->setAdditionalOutput(GAFunct::getAdditionalFinalOutput(ga->population().individual(currInd)));
+		pop[currInd]->setAdditionalOutput(GAFunct::getAdditionalFinalOutput(ga->population().individual(currInd).score()));
 	}
 }
 
@@ -569,7 +569,7 @@ vector<vector<int> > GABayes::constructEquation(GA2DBinaryStringGenome& genome){
 }
 
 ///
-/// Constructs bnnlearn compatible symbols only for nodes thare
+/// Constructs bnlearn compatible symbols only for nodes thare
 /// have either parents or children (or both)
 /// @param genome
 /// @param solution

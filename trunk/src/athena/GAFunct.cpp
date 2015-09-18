@@ -66,9 +66,9 @@ float GAFunct::GAControlObjective(GAGenome& g){
 }
 
 
-vector<std::string> GAFunct::getAdditionalFinalOutput(GAGenome& g){
+vector<std::string> GAFunct::getAdditionalFinalOutput(float score){
 	vector<std::string> addOutputValues;
-	if(g.score() > caseDataset->getConstant() ){
+	if(score > caseDataset->getConstant() ){
 		addOutputValues.push_back("+");
 	}
 	else{

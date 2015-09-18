@@ -1211,9 +1211,6 @@ void GADiscrimBayes::gatherModelInformation(map<vector<vector<int> >, ModelScore
 
 	MPI_Gather(modelSend, sizeof(empty)*popSize, MPI_BYTE, modelRecv, sizeof(empty)*popSize, MPI_BYTE, 0, MPI_COMM_WORLD);
 
-if(myRank==0)
-sleep(1);
-
 	// merge all
 	if(myRank==0){
 		models.clear();

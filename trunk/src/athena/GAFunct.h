@@ -60,7 +60,7 @@ public:
 
 	static Solution* getBlankSolution(){return caseBayesCreator.createNewSolution();}
 
-	static vector<std::string> getAdditionalFinalOutput(GAGenome& g);
+	static vector<std::string> getAdditionalFinalOutput(float score);
 
 	static vector<std::string>  getAdditionalOutputNames();
 
