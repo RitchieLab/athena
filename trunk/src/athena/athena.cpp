@@ -497,6 +497,10 @@ if(myRank==0){
 		}
 #endif
 
+	for(size_t i=0; i<bestSolutions.size(); i++){
+		delete bestSolutions[i];
+	}
+
 		return (EXIT_SUCCESS);
 }
 

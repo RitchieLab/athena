@@ -29,6 +29,7 @@ class Variable{
 
 public:
 	Variable(int idx);
+	virtual ~Variable(){}
 	virtual float getValue(data_manage::Individual* ind)=0;
 	int getIndex(){return index;}
 	virtual bool isGeno(){return gType;}

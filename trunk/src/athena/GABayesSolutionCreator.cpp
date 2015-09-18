@@ -25,6 +25,12 @@ GABayesSolutionCreator::GABayesSolutionCreator(){
 	calculator=NULL;
 }
 
+GABayesSolutionCreator::~GABayesSolutionCreator(){
+	if(calculator != NULL){
+		delete calculator;
+	}
+}
+
 ///
 /// Fix loops in bayesian network by breaking the lowest information ones
 /// @param g GA2DVinStrGenome g

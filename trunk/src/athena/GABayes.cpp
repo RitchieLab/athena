@@ -19,6 +19,9 @@ GABayes::GABayes(){
 ///
 GABayes::~GABayes(){
 		freeMemory();
+		for(size_t i=0; i<varList.size(); i++){
+			delete varList[i];
+		}
 }
 
 

@@ -35,6 +35,8 @@ public:
 
 	GABayesSolutionCreator();
 
+	~GABayesSolutionCreator();
+
 	void fixLoops(GA2DBinaryStringGenome& g);
 
 	void setMIScores(data_manage::Dataset* ds, std::vector<Variable*>&  vList);
