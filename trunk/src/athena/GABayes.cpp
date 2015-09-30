@@ -323,7 +323,12 @@ void GABayes::run(){
 int GABayes::step(){
 		int completed =0;
 		// run each separately
+//cout << "before step...";
+//cout.flush();
+//sleep(10);
+//cout << endl;
 	for(unsigned int i=0; i < stepSize; i++){
+//cout << "rank=" << myRank << " step=" << i << endl;
 		ga->step();
 	}
 
@@ -331,7 +336,10 @@ int GABayes::step(){
 	// perform migration
 	sendAndReceiveGenomes(totalNodes,myRank,ga);
 #endif
-
+//cout << "after step...";
+//cout.flush();
+//sleep(10);
+//cout << endl;
 		fillPopulation();
 		return completed;
 }

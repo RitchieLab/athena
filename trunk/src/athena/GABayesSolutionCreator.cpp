@@ -20,6 +20,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "GABayesSolutionCreator.h"
 #include "Tarjans.h"
 #include <cmath>
+#include <algorithm>
 
 GABayesSolutionCreator::GABayesSolutionCreator(){
 	calculator=NULL;
@@ -601,7 +602,6 @@ void GABayesSolutionCreator::setNoParentScores(data_manage::Dataset* ds, vector<
 		total += noParentScores.back();
 // cout  << "var " << (*varIter)->getIndex() << " K2 score=" << noParentScores.back()<< endl;
 	}
-// cout << "total=" << total << endl;
 	ds->setConstant(total);
 }
 

@@ -40,6 +40,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <ScaledDataFactory.h>
 #include <EncodingFactory.h>
 #include <time.h>
+#include <unistd.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -334,7 +335,7 @@ int main(int argc, char** argv) {
 						break; // can complete early
 				 }
 			}
-
+//sleep(10);
 		alg->closeLog();
 
 		alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
