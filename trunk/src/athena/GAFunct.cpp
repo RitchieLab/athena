@@ -33,6 +33,7 @@ GABayesSolutionCreator GAFunct::controlBayesCreator;
 float GAFunct::GACaseObjective(GAGenome& g){
   GA2DBinaryStringGenome & genome = (GA2DBinaryStringGenome &)g;
   removeSelfConns(genome);
+  caseBayesCreator.checkNodeLimits(genome);
   caseBayesCreator.fixLoops(genome);
 // cout << "calculating case fitness" << endl;
 // float score=caseBayesCreator.calcScore(genome, varList, caseDataset);
@@ -60,6 +61,7 @@ float GAFunct::GACaseObjective(GAGenome& g){
 float GAFunct::GAControlObjective(GAGenome& g){
   GA2DBinaryStringGenome & genome = (GA2DBinaryStringGenome &)g;
   removeSelfConns(genome);
+  controlBayesCreator.checkNodeLimits(genome);
   controlBayesCreator.fixLoops(genome);
 // cout << "calculating control fitness" << endl;
 	return controlBayesCreator.calcScore(genome, varList, controlDataset);
@@ -110,10 +112,10 @@ void GAFunct::init(GAGenome &g, GABayesSolutionCreator& gaBayesCreator){
 
 	for(int i=0; i<genome.height(); i++){
 		for(int j=0;j< genome.width(); j++){
-float r=GARandomFloat();
+// float r=GARandomFloat();
 // cout << r << endl;
-// 			if(GARandomFloat() > connProb)
-			if(r > connProb)
+			if(GARandomFloat() > connProb)
+// 			if(r > connProb)
 				genome.gene(i,j,0);
 			else{
 				genome.gene(i,j,1);

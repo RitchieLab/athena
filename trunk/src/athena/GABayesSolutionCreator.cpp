@@ -23,11 +23,29 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 GABayesSolutionCreator::GABayesSolutionCreator(){
 	calculator=NULL;
+	maxParents=maxChildren=0;
+	limitPtr=&GABayesSolutionCreator::removeLowMI;
+	childLimitPtr=&GABayesSolutionCreator::removeLowChildMI;
 }
 
 GABayesSolutionCreator::~GABayesSolutionCreator(){
 	if(calculator != NULL){
 		delete calculator;
+	}
+}
+
+
+void GABayesSolutionCreator::setNodeLimitMethod(string method){
+	if(method.compare("BESTMI")==0){
+		limitPtr=&GABayesSolutionCreator::removeLowMI;
+		childLimitPtr=&GABayesSolutionCreator::removeLowChildMI;
+	}
+	else if(method.compare("RANDOM")==0){
+		limitPtr=&GABayesSolutionCreator::removeRandom;
+		childLimitPtr=&GABayesSolutionCreator::removeRandom;
+	}
+	else{
+		throw AthenaExcept("No match for node limit method " + method);
 	}
 }
 
@@ -102,6 +120,157 @@ void GABayesSolutionCreator::fixLoops(GA2DBinaryStringGenome& genome){
 // 	cout << "\n";
 // }
 }
+
+
+void GABayesSolutionCreator::checkNodeLimits(GA2DBinaryStringGenome& genome){
+	vector<int> parents;
+	int genomeWidth=genome.width();
+	int genomeHeight=genome.height();
+
+
+// for(int i=0; i<genomeHeight; i++){
+// 	cout << i+1;
+// 	for(int j=0; j<1; j++){
+// 		cout << " " << genome.gene(i,j);
+// 	}
+// 	cout << endl;
+// }
+
+	// check for limits on number of parents
+	if(maxParents > 0){
+		for(int j=0; j<genomeWidth;j++){
+			parents.clear();
+			for(int i=0; i<genomeHeight; i++){
+				if(genome.gene(i,j)){
+					parents.push_back(i);
+				}
+			}
+// cout << parents.size() << endl;
+			if(parents.size() > maxParents){
+// 				vector<int> keep=removeLowMI(j,parents,maxParents);
+				set<int> keep = (this->*limitPtr)(j,parents,maxParents);
+				for(vector<int>::iterator iter=parents.begin(); iter!=parents.end();
+					++iter){
+					if(keep.find(*iter)==keep.end()){
+						genome.gene(*iter,j,0);
+// cout << "removing " << *iter << " now=" << genome.gene(*iter,j) << endl;
+					}
+				}
+// exit(1);
+			}
+		}
+	}
+
+
+// for(int i=0; i<1; i++){
+// 	cout << i+1;
+// 	for(int j=0; j<genomeWidth; j++){
+// 		cout << " " << genome.gene(i,j);
+// 	}
+// 	cout << endl;
+// }
+	vector<int> children;
+	if(maxChildren > 0){
+		for(int i=0; i<genomeHeight; i++){
+// cout << "parent=" << i << endl;
+			children.clear();
+			for(int j=0; j<genomeWidth; j++){
+				if(genome.gene(i,j)){
+					children.push_back(j);
+				}
+			}
+// cout << "children=" << children.size() << endl;
+			if(children.size() > maxChildren){
+				set<int> keep=(this->*childLimitPtr)(i,children,maxChildren);
+// cout << "keep size=" << keep.size() << endl;
+				for(vector<int>::iterator iter=children.begin(); iter!=children.end();
+					++iter){
+					if(keep.find(*iter)==keep.end()){
+						genome.gene(i,*iter,0);
+// cout << "removing " << *iter << " now=" << genome.gene(i,*iter) << endl;
+					}
+				}
+// exit(1);
+			}
+		}
+	}
+// exit(1);
+
+}
+
+
+set<int> GABayesSolutionCreator::removeRandom(int childIndex,vector<int>& parents,int maxConn){
+	std::random_shuffle(parents.begin(), parents.end());
+	std::set<int> keep;
+	for(size_t i=0; i<maxConn; i++){
+		keep.insert(parents[i]);
+	}
+	return keep;
+}
+
+set<int> GABayesSolutionCreator::removeLowMI(int childIndex,vector<int>& parents,int maxConn){
+	// need to map the parents by MI score
+	set<int> keep;
+	int worstScore;
+
+	map<float,int> parentsToKeep;
+// cout << "removeLowMI" << endl;
+	for(vector<int>::iterator iter=parents.begin(); iter != parents.end(); ++iter){
+// cout << "parent=" << *iter << endl;
+		if(parentsToKeep.size() < maxConn){
+// cout << "added " << *iter << endl;
+			parentsToKeep[miScores[*iter][childIndex]]=*iter;
+		}
+		// need to track scores with elements (need a map)
+		// have to redo this part
+		else{
+		map<float,int>::iterator worstIter= parentsToKeep.begin();
+// cout << "worst score=" << worstIter->first << " best score=" << parentsToKeep.rbegin()->first << endl;
+// cout << "this score=" << miScores[*iter][childIndex] << endl;
+			if(miScores[*iter][childIndex]>=worstIter->first){
+// cout << "keep" << endl;
+				parentsToKeep.erase(worstIter);
+				parentsToKeep[miScores[*iter][childIndex]]=*iter;
+			}
+		}
+	}
+	for(map<float,int>::iterator mapIter=parentsToKeep.begin(); mapIter != parentsToKeep.end();
+		++mapIter){
+// cout << "final keep " << mapIter->second << endl;
+		keep.insert(mapIter->second);
+	}
+
+	return keep;
+}
+
+
+set<int> GABayesSolutionCreator::removeLowChildMI(int parentIndex,vector<int>& children,int maxConn){
+	set<int> keep;
+	int worstScore;
+
+	map<float,int> childrenToKeep;
+
+	for(vector<int>::iterator iter=children.begin(); iter != children.end(); ++iter){
+		if(childrenToKeep.size() < maxConn){
+			childrenToKeep[miScores[parentIndex][*iter]]=*iter;
+		}
+		// need to track scores with elements (need a map)
+		// have to redo this part
+		else{
+			map<float,int>::iterator worstIter = childrenToKeep.begin();
+			if(miScores[parentIndex][*iter] >= worstIter->first){
+				childrenToKeep.erase(worstIter);
+				childrenToKeep[miScores[parentIndex][*iter]]=*iter;
+			}
+		}
+	}
+	for(map<float,int>::iterator mapIter=childrenToKeep.begin(); mapIter != childrenToKeep.end();
+		++mapIter){
+		keep.insert(mapIter->second);
+	}
+	return keep;
+}
+
 
 /// write out equation
 void GABayesSolutionCreator::writeGenoNet(vector<vector<int> >& eq){
@@ -198,7 +367,6 @@ double GABayesSolutionCreator::calcScore(GA2DBinaryStringGenome& genome, vector<
 		}
 		else{
 			score = k2Calc(j,parents,varList,dSet,nParams);
-// cout << "score=" << score << "\n";
 			calculator->addIndScore(score, nParams);
 		}
 	}
@@ -227,7 +395,9 @@ double GABayesSolutionCreator::k2Calc(int childIdx, vector<int>& parIndexes,
 
 	// construct table with node values and the values for the parent combinations
 	vector<int> parentValues;
+// cout << " start configPar "; cout.flush();
 	int parentLevels = configParentData(parentValues, parents, dSet);
+// cout << " end configPar "; cout.flush();
 	int nodeLevels = node->getNumLevels();
 	int imaginary = 0;
 	float alpha = 1.0;
@@ -237,14 +407,13 @@ double GABayesSolutionCreator::k2Calc(int childIdx, vector<int>& parIndexes,
 	vector<int> parentTotals(parentLevels, 0);
 	vector<int> nodeTotals(nodeLevels, 0);
 	data_manage::Individual* ind;
-
 	for(unsigned int i=0; i < numInds; i++){
 		ind = (*dSet)[i];
 		totals[node->getValue(ind)][parentValues[i]]++;
 		parentTotals[parentValues[i]]++;
 		nodeTotals[node->getValue(ind)]++;
 	}
-
+// cout << " start condit "; cout.flush();
 	// calculate conditional posterior probability
 	double score = 0.0;
 	for(int i=0; i<nodeLevels; i++){

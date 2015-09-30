@@ -123,8 +123,16 @@ protected:
 
 	enum GABayesParams{
 		noMatchParam,
-		initConnectProb
+		initConnectProb,
+		maximumChildren,
+		maximumParents,
+		limitMethod
 	};
+
+// 	enum NodeLimitMethods{
+// 		limitRandom,
+// 		limitMI
+// 	};
 
 	struct ConditionalTable{
 		bool genoNode;
@@ -183,14 +191,14 @@ void writeGenoNet(vector<vector<int> >& eq);
 	#endif
 
 	std::map<std::string, GABayesParams> paramMap;
-
+// 	std::map<std::string, NodeLimitMethods> limitMethodMap;
 	vector<Variable*> varList;
 	float initProbConn;
 	size_t totalVars;
-	string outputName;
-	int currCV;
+	string outputName, limitMethodType;
+	int currCV, maxChildren, maxParents;
 	bool mapfileUsed, continMapfileUsed;
-
+// 	NodeLimitMethods limitMethodType;
 };
 
 #endif

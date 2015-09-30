@@ -52,10 +52,20 @@ void GABayes::initializeParams(){
 
 	 // establish map for parameters
 	 paramMap["INITCONNECTP"] = initConnectProb;
+	 paramMap["MAXPARENTS"] = maximumParents;
+	 paramMap["MAXCHILDREN"] = maximumChildren;
+	 paramMap["LIMITMETHOD"] =limitMethod;
+
+		maxChildren = 0;
+		maxParents = 3;
 
 	 gaSelectorMap["ROULETTE"] = RouletteWheelSelection;
 	 gaSelectorMap["PARETO"] = ParetoFrontSelection;
 	 gaSelectorMap["PARETORANK"] = ParetoRankSelection;
+
+// 	 limitMethodMap["RANDOM"] = limitRandom;
+// 	 limitMethodMap["BESTMI"] = limitMI;
+	 limitMethodType = "BESTMI"; // "RANDOM" is also valid
 
 	 useAllVars = false;
 	 numGenotypes = 0;
@@ -116,9 +126,15 @@ void GABayes::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 						case initConnectProb:
 							initProbConn = Stringmanip::stringToNumber<float>(mapIter->second);
 							break;
-// 						case bastart:
-// 							balAccStart = Stringmanip::stringToNumber<int>(mapIter->second);
-// 							break;
+						case maximumChildren:
+							maxChildren = Stringmanip::stringToNumber<int>(mapIter->second);
+							break;
+						case maximumParents:
+							maxParents = Stringmanip::stringToNumber<int>(mapIter->second);
+							break;
+						case limitMethod:
+							limitMethodType = mapIter->second;
+							break;
 						default:
 							if(paramMap.find(mapIter->first) == paramMap.end())
 								throw AthenaExcept("No match for parameter " + mapIter->first +
@@ -149,6 +165,8 @@ void GABayes::setGAParams(vector<unsigned int>& excludedGenos,
 		addGenotypes(excludedGenos, numGenotypes);
 		addContin(excludedContins, numContinuous);
 		GAFunct::setSolutionType(calculatorName);
+		GAFunct::setNodeMaximums(maxParents,maxChildren);
+		GAFunct::setNodeLimitMethod(limitMethodType);
 
 	 if(calculatorName.find("K2") != string::npos){
 		 pop.setConvertScores(false);

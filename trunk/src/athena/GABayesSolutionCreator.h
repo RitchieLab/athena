@@ -25,6 +25,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Variable.h"
 #include "SolutionCalculator.h"
 #include "GABayesSolution.h"
+#include <set>
 
 ///
 /// Provides objective function for use with GALIb and GE library
@@ -38,6 +39,8 @@ public:
 	~GABayesSolutionCreator();
 
 	void fixLoops(GA2DBinaryStringGenome& g);
+
+	void checkNodeLimits(GA2DBinaryStringGenome& g);
 
 	void setMIScores(data_manage::Dataset* ds, std::vector<Variable*>&  vList);
 
@@ -61,6 +64,12 @@ public:
 		virtual Solution* createNewSolution(){
 				GABayesSolution* sol = new GABayesSolution;
 				return sol;}
+	void setNodeMax(int maxP, int maxC){
+		maxParents=maxP;
+		maxChildren=maxC;
+	}
+
+	void setNodeLimitMethod(std::string method);
 
 private:
 	double calcMI(Variable* parentVar, Variable* childVar, data_manage::Dataset* ds);
@@ -76,10 +85,17 @@ private:
 	vector<vector<int> > constructEquation(GA2DBinaryStringGenome& genome, std::vector<Variable*> varList);
 	void writeGenoNet(vector<vector<int> >& eq);
 
+	std::set<int> removeLowMI(int childIndex,vector<int>& parents,int maxConn);
+	std::set<int> removeLowChildMI(int childIndex,vector<int>& parents,int maxConn);
+	std::set<int> removeRandom(int childIndex,vector<int>& parents,int maxConn);
+
 	std::vector<std::vector<double> > miScores;
 	std::vector<double> noParentScores;
 	std::vector<int> varParams;
 	SolutionCalculator * calculator;
+	int maxParents, maxChildren;
+	std::set<int> (GABayesSolutionCreator::*limitPtr)(int,vector<int>&,int);
+	std::set<int> (GABayesSolutionCreator::*childLimitPtr)(int,vector<int>&,int);
 
 
 };

@@ -66,6 +66,16 @@ public:
 
 	static void setDataset(data_manage::Dataset* caseDS, std::vector<Variable*> vList);
 
+	static void setNodeMaximums(int maxP, int maxC){
+		caseBayesCreator.setNodeMax(maxP,maxC);
+		controlBayesCreator.setNodeMax(maxP,maxC);
+	}
+
+	static void setNodeLimitMethod(std::string method){
+		caseBayesCreator.setNodeLimitMethod(method);
+		controlBayesCreator.setNodeLimitMethod(method);
+	}
+
 private:
 	static void init(GAGenome &g, GABayesSolutionCreator& gaBayesCreator);
 	static void removeSelfConns(GA2DBinaryStringGenome& genome);
