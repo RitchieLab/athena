@@ -19,24 +19,46 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "GAFunct.h"
 
-float	GAFunct::connProb =0.5;
+float	GAFunct::connProb =0.1;
 data_manage::Dataset* GAFunct::caseDataset = NULL;
 data_manage::Dataset* GAFunct::controlDataset = NULL;
 vector<Variable*> GAFunct::varList;
 GABayesSolutionCreator GAFunct::caseBayesCreator;
 GABayesSolutionCreator GAFunct::controlBayesCreator;
+double GAFunct::fitnessTime = 0.0;
+double GAFunct::loopTime = 0.0;
+double GAFunct::maxCheckTime = 0.0;
 
 ///
 /// Used to assign fitness values in GA
 /// @param g Genome to evaluate
 ///
 float GAFunct::GACaseObjective(GAGenome& g){
+
+	time_t startTime, endTime;
+
   GA2DBinaryStringGenome & genome = (GA2DBinaryStringGenome &)g;
   removeSelfConns(genome);
+time (&startTime);
   caseBayesCreator.checkNodeLimits(genome);
-  caseBayesCreator.fixLoops(genome);
+time (&endTime);
+double dif = difftime (endTime,startTime);
+maxCheckTime += dif;
+
+time (&startTime);
+//   caseBayesCreator.fixLoops(genome);
+	caseBayesCreator.breakLoops(genome);
+
+time(&endTime);
+dif = difftime (endTime,startTime);
+loopTime += dif;
+
 // cout << "calculating case fitness" << endl;
-// float score=caseBayesCreator.calcScore(genome, varList, caseDataset);
+time(&startTime);
+float score=caseBayesCreator.calcScore(genome, varList, caseDataset);
+time(&endTime);
+dif = difftime (endTime,startTime);
+fitnessTime += dif;
 // cout << "final score=" << score << endl;
 
 
@@ -50,8 +72,8 @@ float GAFunct::GACaseObjective(GAGenome& g){
 // cout << "==================" << endl;
 // exit(1);
 
-// return score;
-	return caseBayesCreator.calcScore(genome, varList, caseDataset);
+return score;
+// 	return caseBayesCreator.calcScore(genome, varList, caseDataset);
 }
 
 ///
@@ -62,7 +84,8 @@ float GAFunct::GAControlObjective(GAGenome& g){
   GA2DBinaryStringGenome & genome = (GA2DBinaryStringGenome &)g;
   removeSelfConns(genome);
   controlBayesCreator.checkNodeLimits(genome);
-  controlBayesCreator.fixLoops(genome);
+//   controlBayesCreator.fixLoops(genome);
+  controlBayesCreator.breakLoops(genome);
 // cout << "calculating control fitness" << endl;
 	return controlBayesCreator.calcScore(genome, varList, controlDataset);
 }

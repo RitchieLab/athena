@@ -182,6 +182,8 @@ protected:
 	void totalModels(GASimpleGA* alg,  map<vector<vector<int> >, ModelScores>& topModels,
 		data_manage::Dataholder* holder,bool caseMods,bool genoMapUsed, bool continMapUsed);
 
+std::string timeDiff(double dif);
+
 void writeGenoNet(vector<vector<int> >& eq);
 
 	#ifdef HAVE_CXX_MPI

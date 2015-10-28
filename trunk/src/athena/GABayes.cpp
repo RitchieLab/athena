@@ -330,6 +330,7 @@ int GABayes::step(){
 	for(unsigned int i=0; i < stepSize; i++){
 //cout << "rank=" << myRank << " step=" << i << endl;
 		ga->step();
+// exit(1);
 	}
 
 #ifdef HAVE_CXX_MPI
@@ -340,8 +341,35 @@ int GABayes::step(){
 //cout.flush();
 //sleep(10);
 //cout << endl;
+cout << "\nfitnessTime=" << timeDiff(GAFunct::fitnessTime) << endl;
+cout << "loopTime=" << timeDiff(GAFunct::loopTime) << endl;
+cout << "maxCheckTime=" << timeDiff(GAFunct::maxCheckTime) << endl;
+
 		fillPopulation();
 		return completed;
+}
+
+
+///
+/// Returns string formatted to indicate passage of time
+/// @param dif time in seconds
+///
+std::string GABayes::timeDiff(double dif){
+		double elapsed;
+		string period;
+		if(dif < 60){
+				elapsed = dif;
+				period = " seconds";
+		}
+		else if(dif < 3600){
+				elapsed = dif/60;
+				period = " minutes";
+		}
+		else{
+				elapsed = dif/3600;
+				period = " hours";
+		}
+		return Stringmanip::numberToString(elapsed) + period;
 }
 
 ///
@@ -657,7 +685,7 @@ void GABayes::constructSymbols(GA2DBinaryStringGenome& genome,
 						prefix=genoPrefix;
 					else
 						prefix=continPrefix;
-					symb += ":" + varList[parents[par]]->getName(holder);
+					symb += ":" + prefix + varList[parents[par]]->getName(holder);
 				}
 			}
 			symb += "]";

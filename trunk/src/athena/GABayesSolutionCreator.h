@@ -71,6 +71,8 @@ public:
 
 	void setNodeLimitMethod(std::string method);
 
+	void breakLoops(GA2DBinaryStringGenome& genome);
+
 private:
 	double calcMI(Variable* parentVar, Variable* childVar, data_manage::Dataset* ds);
 

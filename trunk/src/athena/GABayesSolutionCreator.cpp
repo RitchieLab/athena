@@ -21,6 +21,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Tarjans.h"
 #include <cmath>
 #include <algorithm>
+#include "CycleBreaker.h"
 
 GABayesSolutionCreator::GABayesSolutionCreator(){
 	calculator=NULL;
@@ -50,6 +51,31 @@ void GABayesSolutionCreator::setNodeLimitMethod(string method){
 	}
 }
 
+
+void GABayesSolutionCreator::breakLoops(GA2DBinaryStringGenome& genome){
+	CycleBreaker breaker;
+
+// for(int i=0; i<genome.height(); i++){
+// 	for(int j=0; j<genome.width(); j++){
+// 		cout << " " << genome.gene(i,j);
+// 	}
+// 	cout << endl;
+// }
+
+	int cycBroken=breaker.breakCycles(genome);
+// 	cout << "broke " << cycBroken << endl;
+// if(cycBroken > 0){
+// for(int i=0; i<genome.height(); i++){
+// 	for(int j=0; j<genome.width(); j++){
+// 		cout << " " << genome.gene(i,j);
+// 	}
+// 	cout << endl;
+// }
+// 	cout << "============================" << endl;
+// }
+
+}
+
 ///
 /// Fix loops in bayesian network by breaking the lowest information ones
 /// @param g GA2DVinStrGenome g
@@ -59,6 +85,18 @@ void GABayesSolutionCreator::fixLoops(GA2DBinaryStringGenome& genome){
 	// genome is a matrix and width=height
 	Tarjans tarj(genome.width());
 
+cout << endl;
+for(int i=0; i<genome.height(); i++){
+// 	cout << "i=" << i << " ";
+	for(int j=0; j<genome.width(); j++){
+// 	cout <<  genome.gene(i,j) << " ";
+		if(genome.gene(i,j))
+		cout << "adjMatrix[" << i << "][" << j << "] = true;\n";
+	}
+// 	cout << "\n";
+}
+cout << "\n";
+exit(1);
 	// add edges
 	for(int i=0; i<genome.height(); i++){
 		for(int j=0; j<genome.width(); j++){
@@ -74,13 +112,14 @@ void GABayesSolutionCreator::fixLoops(GA2DBinaryStringGenome& genome){
 	while(tarj.SCC()){
 		 std::vector<std::vector<int> > loops =tarj.getLoops();
 
-// cout << "loops size=" << loops.size() << endl;
-// for(size_t i=0; i<loops.size(); i++){
-// for(size_t j=0; j<loops[i].size(); j++){
-// cout << loops[i][j] << " ";
-// }
-// cout << endl;
-// }
+cout << "loops size=" << loops.size() << endl;
+for(size_t i=0; i<loops.size(); i++){
+cout << "loop " << i+1 << " => ";
+for(size_t j=0; j<loops[i].size(); j++){
+ cout << loops[i][j] << " ";
+}
+cout << endl;
+}
 
 			int parIdx, childIdx;
 
@@ -111,7 +150,7 @@ void GABayesSolutionCreator::fixLoops(GA2DBinaryStringGenome& genome){
 		genome.gene(parIdx, childIdx, 0);
 		tarj.removeEdge(parIdx, childIdx);
 	}
-// cout << "done fixing loops" << endl;
+cout << "done fixing loops" << endl;
 
 // for(int i=0; i<genome.height(); i++){
 // 	cout << "i=" << i << " ";
@@ -120,6 +159,7 @@ void GABayesSolutionCreator::fixLoops(GA2DBinaryStringGenome& genome){
 // 	}
 // 	cout << "\n";
 // }
+exit(1);
 }
 
 

@@ -150,7 +150,9 @@ GABayesSolutionCreator.cpp \
 GABayes.h \
 GABayes.cpp \
 GABayesSolution.h \
-GABayesSolution.cpp
+GABayesSolution.cpp \
+CycleBreaker.h \
+CycleBreaker.cpp
 
 athena_LDADD=../libGE-0.26/libGE.la ../galib247/libga.la ../annie/libannie.la ../stat_calc/libstat_calc.la ../data_manage/libdata_manage.la
 
