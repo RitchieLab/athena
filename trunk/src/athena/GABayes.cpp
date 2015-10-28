@@ -341,9 +341,9 @@ int GABayes::step(){
 //cout.flush();
 //sleep(10);
 //cout << endl;
-cout << "\nfitnessTime=" << timeDiff(GAFunct::fitnessTime) << endl;
-cout << "loopTime=" << timeDiff(GAFunct::loopTime) << endl;
-cout << "maxCheckTime=" << timeDiff(GAFunct::maxCheckTime) << endl;
+// cout << "\nfitnessTime=" << timeDiff(GAFunct::fitnessTime) << endl;
+// cout << "loopTime=" << timeDiff(GAFunct::loopTime) << endl;
+// cout << "maxCheckTime=" << timeDiff(GAFunct::maxCheckTime) << endl;
 
 		fillPopulation();
 		return completed;

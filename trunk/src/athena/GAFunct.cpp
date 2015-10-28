@@ -25,9 +25,9 @@ data_manage::Dataset* GAFunct::controlDataset = NULL;
 vector<Variable*> GAFunct::varList;
 GABayesSolutionCreator GAFunct::caseBayesCreator;
 GABayesSolutionCreator GAFunct::controlBayesCreator;
-double GAFunct::fitnessTime = 0.0;
-double GAFunct::loopTime = 0.0;
-double GAFunct::maxCheckTime = 0.0;
+// double GAFunct::fitnessTime = 0.0;
+// double GAFunct::loopTime = 0.0;
+// double GAFunct::maxCheckTime = 0.0;
 
 ///
 /// Used to assign fitness values in GA
@@ -39,26 +39,26 @@ float GAFunct::GACaseObjective(GAGenome& g){
 
   GA2DBinaryStringGenome & genome = (GA2DBinaryStringGenome &)g;
   removeSelfConns(genome);
-time (&startTime);
+// time (&startTime);
   caseBayesCreator.checkNodeLimits(genome);
-time (&endTime);
-double dif = difftime (endTime,startTime);
-maxCheckTime += dif;
+// time (&endTime);
+// double dif = difftime (endTime,startTime);
+// maxCheckTime += dif;
 
-time (&startTime);
+// time (&startTime);
 //   caseBayesCreator.fixLoops(genome);
 	caseBayesCreator.breakLoops(genome);
 
-time(&endTime);
-dif = difftime (endTime,startTime);
-loopTime += dif;
+// time(&endTime);
+// dif = difftime (endTime,startTime);
+// loopTime += dif;
 
 // cout << "calculating case fitness" << endl;
-time(&startTime);
+// time(&startTime);
 float score=caseBayesCreator.calcScore(genome, varList, caseDataset);
-time(&endTime);
-dif = difftime (endTime,startTime);
-fitnessTime += dif;
+// time(&endTime);
+// dif = difftime (endTime,startTime);
+// fitnessTime += dif;
 // cout << "final score=" << score << endl;
 
 

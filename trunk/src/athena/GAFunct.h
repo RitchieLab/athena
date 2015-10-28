@@ -75,7 +75,7 @@ public:
 		caseBayesCreator.setNodeLimitMethod(method);
 		controlBayesCreator.setNodeLimitMethod(method);
 	}
-static double fitnessTime, loopTime, maxCheckTime;
+// static double fitnessTime, loopTime, maxCheckTime;
 
 private:
 	static void init(GAGenome &g, GABayesSolutionCreator& gaBayesCreator);
