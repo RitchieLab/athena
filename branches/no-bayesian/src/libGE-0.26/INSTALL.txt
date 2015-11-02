@@ -1,0 +1,5 @@
+run the following to configure and make the library
+
+./configure --with-MITGALIBINCLUDES=../galib247/ga/ --with-MITGALIBLIBS=../galib247/ga/libga.a --enable-GE_ILLIGALSGA=no
+
+make 

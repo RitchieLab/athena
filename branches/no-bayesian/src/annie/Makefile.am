@@ -1,0 +1,47 @@
+noinst_LTLIBRARIES=libannie.la
+libannie_la_SOURCES=AbstractNeuron.cpp \
+AbstractNeuron.h \
+File.cpp \
+File.h \
+Layer.cpp \
+Layer.h \
+Network.cpp \
+Network.h \
+SimpleNeuron.cpp \
+SimpleNeuron.h \
+CenterNeuron.cpp \
+CenterNeuron.h \
+InputNeuron.cpp \
+InputNeuron.h \
+MultiLayerNetwork.cpp \
+MultiLayerNetwork.h \
+Neuron.cpp \
+Neuron.h \
+Exception.cpp \
+Exception.h \
+Link.cpp \
+Link.h \
+Control.cpp \
+Control.h \
+Vector.cpp \
+Vector.h \
+random.cpp \
+random.h \
+auxf.cpp \
+auxf.h \
+InputLayer.cpp \
+InputLayer.h \
+TrainingSet.cpp \
+TrainingSet.h \
+examples.cpp \
+examples.h \
+TwoLayerNetwork.cpp \
+TwoLayerNetwork.h \
+args.cpp \
+args.h \
+listeners.cpp \
+listeners.h \
+annie.h \
+config.h \
+defines.h 
+

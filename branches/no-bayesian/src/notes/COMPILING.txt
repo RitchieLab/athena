@@ -1,0 +1,14 @@
+1.  run ranlib on mac os x for libga to get compilation
+--------
+ranlib libga.a
+ranlib libstat_calc.a
+ranlib 
+--------
+
+2.  configure the libGE for current system
+
+--------
+./configure --with-MITGALIBINCLUDES=../galib247/ga/ --with-MITGALIBLIBS=../galib247/ga/libga.a --enable-GE_ILLIGALSGA=no
+--------
+
+
