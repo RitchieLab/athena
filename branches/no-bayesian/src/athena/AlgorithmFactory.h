@@ -41,15 +41,7 @@ public:
 				/// GENN
 				GENNAlgorithm,
 				/// GE Symbolic Regression
-				GESymbRegAlgorithm,
-				/// Enum for Bayesian
-				GEBayesAlgorithm,
-				/// GE Bayesian Discriminant
-				GEDiscrimBayesAlgorithm,
-				/// Bayesian Discriminant using GA
-				GADiscrimBayesAlgorithm,
-				/// GA Bayesian
-				GABayesAlgorithm
+				GESymbRegAlgorithm
 		};
 
 private:

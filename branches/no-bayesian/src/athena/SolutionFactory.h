@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   SolutionFactory.h
  * Author: dudeksm
  *
@@ -26,8 +26,6 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _SOLUTIONFACTORY_H
 #define	_SOLUTIONFACTORY_H
 
-using namespace std;
-
 #include <map>
 #include "SolutionCreator.h"
 #include "AthenaExcept.h"
@@ -36,14 +34,14 @@ using namespace std;
 /// Creates and returns solution based on name passed
 ///
 class SolutionFactory{
-		
+
 public:
-		
-		static SolutionCreator* createSolution(string solution_name);
-		static SolutionCreator* createSolution(string solution_name, vector<string>& vars);
-		
+
+		static SolutionCreator* createSolution(std::string solution_name);
+		static SolutionCreator* createSolution(std::string solution_name, std::vector<std::string>& vars);
+
 private:
-		
+
 		enum SolutionType{
 				/// For no match
 				MissingSolutionType,
@@ -53,17 +51,15 @@ private:
 				NNSolutionAllType,
 				/// For neural network restricting the networks to only one occurrence of each variable
 				NNSolutionOnceType,
-				/// For Symbolic Regression 
-				SymRegressSolutionType,
-				/// For Bayes Network
-				BayesSolutionType
+				/// For Symbolic Regression
+				SymRegressSolutionType
 		};
-		
-		static map<string, SolutionType> solutionMap;
-		
+
+		static std::map<std::string, SolutionType> solutionMap;
+
 		/// Sets map for use in Solution creation
 		static void setSolutionMap();
-		
+
 };
 
 #endif	/* _SOLUTIONFACTORY_H */

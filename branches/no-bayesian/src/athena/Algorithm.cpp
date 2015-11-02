@@ -35,21 +35,17 @@ Algorithm::~Algorithm(){
 }
 
 
-void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, 
+void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos,
 	int numContin, vector<unsigned int>& excludedGenos, vector<unsigned int>& excludedContins){
 		map<string, string>::iterator mapIter;
 		vector<string> tokens;
-		
+
 		numGenotypes = numGenos;
 		numContinuous = numContin;
-		
-		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end(); 
-			mapIter++){     
+
+		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end();
+			mapIter++){
 				switch(algParamMap[mapIter->first]){
-// 						case noMatchParam:
-// 								throw AthenaExcept("No match for parameter " + mapIter->first +
-// 												" in Algorithm");
-// 								break;
 						case minSizeParam:
 								minSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
 								break;
@@ -57,7 +53,7 @@ void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 								maxSize = Stringmanip::stringToNumber<unsigned int>(mapIter->second);
 								#ifdef HAVE_CXX_MPI
 									if(maxSize > MAX_GENOME_SIZE)
-										throw AthenaExcept(mapIter->first + " can be no more than " + 
+										throw AthenaExcept(mapIter->first + " can be no more than " +
 											Stringmanip::numberToString<int>(MAX_GENOME_SIZE));
 								#endif
 								break;
@@ -83,7 +79,7 @@ void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 								probCross = Stringmanip::stringToNumber<double>(mapIter->second);
 								break;
 						case bioModelSelection:
-								if(bioModelSelectionMap.find(Stringmanip::to_upper(mapIter->second)) == 
+								if(bioModelSelectionMap.find(Stringmanip::to_upper(mapIter->second)) ==
 										bioModelSelectionMap.end())
 									throw AthenaExcept("No match for bio model selection type " + mapIter->second);
 								else
@@ -100,7 +96,7 @@ void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 								break;
 						case calcType:
 								calculatorName = Stringmanip::to_upper(mapIter->second);
-								break;        
+								break;
 						case useEffectiveXO:
 								effectiveXO = Stringmanip::check_true_false(mapIter->second);
 								break;
@@ -144,17 +140,14 @@ void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 						case prunePlantFract:
 								break;
 #endif
-// 						default:
-// 								throw AthenaExcept("No match for parameter " + mapIter->first +
-// 												" in Algorithm GENN");               
 				}
 		}
-		
+
 		if(stepSize > numGenerations){
 				stepSize = numGenerations;
 		}
 		numGenerations = stepSize * numExchanges;
-		
+
 		setFitnessName(calculatorName);
 }
 
@@ -164,7 +157,7 @@ void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 /// can be modified using the set_params function
 ///
 void Algorithm::initializeParams(){
-	 
+
 	 myRank = 0;
 	 totalNodes = 1;
 	 modelSortCol = 2;
@@ -188,14 +181,14 @@ void Algorithm::initializeParams(){
 	 fitnessGoal = 1.0;
 	 bestCorrThreshold = 0.8;
 	 bestCVThreshold = 2;
-	 
+
 	 stepSize = 100;
 
 	 effectiveXO = false;
 	 randSeed = 7;
- 
+
 	 calculatorName = "BALANCEDACC";
-	 
+
 	 // establish map for parameters
 	 algParamMap["MINSIZE"] = minSizeParam;
 	 algParamMap["MAXSIZE"] = maxSizeParam;
@@ -224,14 +217,12 @@ void Algorithm::initializeParams(){
 	 algParamMap["DOUBTOURNFITFIRST"] = doubleTournFitFirst;
 	 algParamMap["PRUNEPLANT"] = prunePlantFract;
 #endif
-	 
+
 #ifdef ATHENA_BLOAT_CONTROL
 	 gaSelectorMap["DOUBLE"] = DoubleTournamentSelection;
 #endif
 	 gaSelectorMap["ROULETTE"] = RouletteWheelSelection;
-	 gaSelectorMap["PARETO"] = ParetoFrontSelection;
-	 gaSelectorMap["PARETORANK"] = ParetoRankSelection;
-	 
+
 // 	 biofilterSelectorType = orderedSelect;
 #ifdef ATHENA_BLOAT_CONTROL
 	 pruneAndPlantFract = 0.0;
@@ -242,17 +233,17 @@ void Algorithm::initializeParams(){
 	 numContinuous = 0;
 	 // default is to add any additional variables to migration instead of replacing
 	 ngensBlockCross = 0;
-	 
+
 	 ga = NULL;
 	 maxBest = true;
-	 
+
 	 gaSelector = RouletteWheelSelection;
 #ifdef ATHENA_BLOAT_CONTROL
 	 fitFirst = false;
 	 doubleTourneyF = 7;
 	 doubleTourneyD = 1.4;
 #endif
-	 
+
 }
 
 
@@ -291,9 +282,9 @@ void Algorithm::expandVariables(){
 ///
 /// Exclude variables from grammar so they will not appear in any model
 ///
-void Algorithm::excludeVariables(vector<unsigned int>& excludedGenos, 
+void Algorithm::excludeVariables(vector<unsigned int>& excludedGenos,
 			vector<unsigned int>& excludedContins){
-	
+
 	std::set<string> varSet;
 	string name;
 	// construct a map of all excluded variables
@@ -302,7 +293,7 @@ void Algorithm::excludeVariables(vector<unsigned int>& excludedGenos,
 		name = "C" + Stringmanip::numberToString(*iter+1);
 		varSet.insert(name);
 	}
-	
+
 	for(vector<unsigned int>::iterator iter=excludedGenos.begin();
 		 iter!=excludedGenos.end(); ++iter){
 		if(dummyEncoded){
@@ -317,9 +308,9 @@ void Algorithm::excludeVariables(vector<unsigned int>& excludedGenos,
 			varSet.insert(name);
 		}
 	}
-	
+
 	adjuster.excludeVariables(varSet);
-	
+
 }
 
 
@@ -327,13 +318,13 @@ void Algorithm::excludeVariables(vector<unsigned int>& excludedGenos,
 /// @param alg_params AlgorithmParams
 /// @throws AthenaExcept on error
 ///
-void Algorithm::setGAParams(vector<unsigned int>& excludedGenos, 
-	vector<unsigned int>& excludedContins){   
+void Algorithm::setGAParams(vector<unsigned int>& excludedGenos,
+	vector<unsigned int>& excludedContins){
 	GARandomSeed(randSeed);
-	srand(randSeed);   
+	srand(randSeed);
 	// first free ga memory if already run
 	freeMemory();
-		
+
 	//Initialize the GE mapper
 	//Set maximum number of wrapping events per mapping
 	mapper.setMaxWraps(wrapEvents);
@@ -359,7 +350,7 @@ void Algorithm::setMapperPrefs(AthenaGrammarSI& athenaMapper){
 	  athenaMapper.setPopSize(popSize);
 	  athenaMapper.setGrow(growRate);
 	  athenaMapper.setMaxDepth(maxDepth);
-	  
+
 	  if(tailSize){
 		  athenaMapper.setTailSize(tailSize);
 	  }
@@ -367,7 +358,7 @@ void Algorithm::setMapperPrefs(AthenaGrammarSI& athenaMapper){
 		  athenaMapper.setTailRatio(tailRatio);
 	  }
 	  athenaMapper.setRestrictRule("<v>");
-	  
+
 	  // set up reverse grammar that can be used with resetting genome based
 	  // on optimization (such as backpropagation)
 		athenaMapper.constructReverseGrammar();
@@ -380,7 +371,7 @@ void Algorithm::setMapperPrefs(AthenaGrammarSI& athenaMapper){
 /// @param filename File with biofilter models
 /// @param bioFileType Type of biological filter file (BINARY or TEXT)
 /// @param holder Dataholder that contains map file info to convert model names
-/// into indexes in the 
+/// into indexes in the
 ///
 void Algorithm::getBioModels(std::string filename, std::string bioFileType, data_manage::Dataholder* holder){
 	BioFilterModelCollection collection(filename, 100000, bioFileType);
@@ -390,7 +381,7 @@ void Algorithm::getBioModels(std::string filename, std::string bioFileType, data
 
 
 ///
-/// Fills biomodel collection from archive files 
+/// Fills biomodel collection from archive files
 /// @param genegeneFile genegene filename
 /// @param archiveFile arcchive filename
 /// @param holder Dataholder that contains map file info to convert model names
@@ -411,13 +402,13 @@ void Algorithm::setBioModels(BioFilterModelCollection& collection, data_manage::
 	vector<BioModel> bioModels;
 	int numModelsNeeded = (unsigned int)(initBioFract * popSize);
 
-	if(biofilterSelectorType == rouletteSelect){  
+	if(biofilterSelectorType == rouletteSelect){
 		for(int i=0; i<numModelsNeeded; i++){
 			bioModels.push_back(collection.getRandomModel());
 		}
 	}
 	else{
-		// set starting point for this algorithm -- in parallel mode this will give each 
+		// set starting point for this algorithm -- in parallel mode this will give each
 		// node a different set
 		collection.setStartModel(myRank * numModelsNeeded);
 		for(int i=0; i<numModelsNeeded; i++){

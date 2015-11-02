@@ -83,32 +83,12 @@ AUCCalculator.cpp \
 AUCCalculator.h \
 BestModelSelector.cpp \
 BestModelSelector.h \
-GAParetoSelector.cpp \
-GAParetoSelector.h \
-GAParetoRankSelector.cpp \
-GAParetoRankSelector.h \
 OptGrammarFactory.cpp \
 OptGrammarFactory.h \
 SimpleOptGrammar.cpp \
 SimpleOptGrammar.h \
 ComplexOptGrammar.cpp \
 ComplexOptGrammar.h \
-BayesSolution.cpp \
-BayesSolution.h \
-DAGraph.cpp \
-DAGraph.h \
-BayesSolutionCreator.cpp \
-BayesSolutionCreator.h \
-GEBayes.cpp \
-GEBayes.h \
-K2Calculator.cpp \
-K2Calculator.h \
-K2BICCalculator.cpp \
-K2BICCalculator.h \
-K2AICCalculator.cpp \
-K2AICCalculator.h \
-BayesModelLog.cpp \
-BayesModelLog.h \
 SumFileReader.cpp \
 SumFileReader.h \
 MeanAbsErrCalculator.cpp \
@@ -134,25 +114,7 @@ snpholder.h \
 snpsnpmodel.h \
 Tree.hh \
 GenomeTransfer.cpp \
-GenomeTransfer.h \
-GEDiscrimBayes.cpp \
-GEDiscrimBayes.h \
-GADiscrimBayes.cpp \
-GADiscrimBayes.h \
-GAFunct.cpp \
-GAFunct.h \
-Variable.cpp \
-Variable.h \
-Tarjans.h \
-Tarjans.cpp \
-GABayesSolutionCreator.h \
-GABayesSolutionCreator.cpp \
-GABayes.h \
-GABayes.cpp \
-GABayesSolution.h \
-GABayesSolution.cpp \
-CycleBreaker.h \
-CycleBreaker.cpp
+GenomeTransfer.h 
 
 athena_LDADD=../libGE-0.26/libGE.la ../galib247/libga.la ../annie/libannie.la ../stat_calc/libstat_calc.la ../data_manage/libdata_manage.la
 

@@ -21,20 +21,21 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "NNSolutionCreatorIncludeAll.h"
 #include "NNSolutionCreatorIncludeOnce.h"
 #include "SymRegressSolutionCreator.h"
-#include "BayesSolutionCreator.h"
 
-#include <iostream>
+using namespace std;
+// #include <iostream>
+
 
 map<string, SolutionFactory::SolutionType> SolutionFactory::solutionMap;
 
 ///
-/// Function that creates a solution based on the name 
+/// Function that creates a solution based on the name
 /// @param solutionName name of solution
 /// @return pointer to new Solution object
 /// @throws AthenaExcept if not a valid solution name
 ///
 SolutionCreator* SolutionFactory::createSolution(string solutionName){
-		
+
 	if(solutionMap.empty()){
 		setSolutionMap();
 	}
@@ -56,13 +57,10 @@ SolutionCreator* SolutionFactory::createSolution(string solutionName){
 			case NNSolutionOnceType:
 					newSolution = new NNSolutionCreatorIncludeOnce;
 					break;
-			case BayesSolutionType:
-					newSolution = new BayesSolutionCreator;
-					break;
 			default:
-					throw AthenaExcept("No solution matching " + solutionName); 
+					throw AthenaExcept("No solution matching " + solutionName);
 	}
-	
+
 	return newSolution;
 }
 
@@ -83,13 +81,12 @@ SolutionCreator* SolutionFactory::createSolution(string solutionName, vector<str
 
 ///
 /// Establishes the map for use in creating solutions
-/// @return 
+/// @return
 ///
 void SolutionFactory::setSolutionMap(){
 	solutionMap["NN"]=NNSolutionType;
 	solutionMap["NNALL"]=NNSolutionAllType;
 	solutionMap["NNONCE"] = NNSolutionOnceType;
 	solutionMap["SYMBREG"]=SymRegressSolutionType;
-	solutionMap["BAYES"]=BayesSolutionType;
 }
 
