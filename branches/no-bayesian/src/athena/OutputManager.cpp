@@ -32,23 +32,23 @@ using namespace std;
 ///
 /// Sets up new files with appropriate headers for output
 ///
-void OutputManager::setFiles(bool mapFileUsed, string fitnessName, 
+void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 	std::vector<std::string> additionalHeaders){
 
 	addHeaders = additionalHeaders;
 	string summaryName = getSummaryFileName();
 	string progressFileName = getProgressFileName();
-	
+
 	// create blank progress file as this is a run from start
 	ofstream progOut;
 	progOut.open(progressFileName.c_str(), ios::out);
 	progOut.close();
-	
+
 	int width = 30;
 		if(!mapFileUsed){
 			width = 20;
 		}
-	
+
 	ofstream outfile;
 	outfile.open(summaryName.c_str(), ios::out);
 // 	outfile << setw(5) << left << "CV" << setw(width) << "Variables" << " " << setw(20) << fitnessName + " Training"
@@ -60,7 +60,7 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 	for(unsigned int i=0; i<additionalHeaders.size(); i++){
 		outfile <<  "\tTesting-" << additionalHeaders[i];
 	}
-	
+
 	outfile << endl;
 	outfile.close();
 }
@@ -70,16 +70,16 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 // /// when a CV restart is being performed
 // ///
 // void OutputManager::storeSumInfo(){
-// 	
+//
 // 	string summaryName = getSummaryFileName();
-// 	
+//
 // 	ifstream infile;
 // 	infile.open(summaryName.c_str(), std::ifstream::in);
-// 	
+//
 // 	if(infile.is_open()){
 // 		equationLines.clear();
 // 		modelLines.clear();
-// 		
+//
 // 		string line;
 // 		while(getline(infile, line)){
 // 			if(line.find("Model") != string::npos){
@@ -87,15 +87,15 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 // 			else if(line.find("Internal") != string::npos){
 // 			}
 // 		}
-// 	
+//
 // 	}
-// 	
+//
 // 	infile.close();
 // }
 
 
 // void OutputManager::storeLines(ifstream& is, vector<string>& storedLines){
-// 	
+//
 // 	string line;
 // 	while(getline(is, line){
 // 	  // store until blank line reached
@@ -103,7 +103,7 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 // 			break;
 // 		}
 // 	}
-// 	
+//
 // }
 
 
@@ -117,18 +117,18 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 /// original genotype positions
 ///
 void OutputManager::outputSummary(Population& pop, int currPop,
-	data_manage::Dataholder& data,  Algorithm* alg, bool mapFileUsed, 
+	data_manage::Dataholder& data,  Algorithm* alg, bool mapFileUsed,
 	bool dummyEncoded, bool continMapUsed,
 	std::string fitnessName){
 
 		string summaryName = getSummaryFileName();
 		string progressFileName = getProgressFileName();
-		
+
 		ofstream outfile;
 		outfile.open(summaryName.c_str(), ios::app);
-		
+
 		Solution* bestSolution;
-		
+
 		string prefix, continPrefix;
 		if(!mapFileUsed){
 			prefix = "G";
@@ -140,7 +140,7 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 				bestSolution = pop.best();
 				vector<int> genos = bestSolution->getGenotypes(dummyEncoded);
 				vector<int> covars = bestSolution->getCovariates();
-				
+
 				outfile << setw(5) << left << currPop+1;
 				stringstream ss;
 				for(unsigned int g=0; g < genos.size(); g++){
@@ -150,22 +150,22 @@ void OutputManager::outputSummary(Population& pop, int currPop,
 				for(unsigned int c=0; c < covars.size(); c++){
 						cs << continPrefix << data.getCovarName(covars[c]-1) << " ";
 				}
-				
+
 		outfile << "\t" << ss.str() + cs.str() << "\t" << bestSolution->fitness() <<
 			"\t" << bestSolution->testVal();
-			
-		for(std::vector<string>::iterator iter=bestSolution->getAdditionalOutput().begin(); 
+
+		for(std::vector<string>::iterator iter=bestSolution->getAdditionalOutput().begin();
 			iter != bestSolution->getAdditionalOutput().end();
 			++iter){
 			outfile << "\t" << *iter;
 		}
 		outfile << endl;
 		outfile.close();
-		
+
 		// write to progress file
 		ofstream progFile;
 		progFile.open(progressFileName.c_str(), ios::app);
-		
+
 		// each model will take up 2 lines with the first being the equation and the
 		// second being the internal representation
 		progFile << currPop+1 << "\t";
@@ -184,7 +184,7 @@ void OutputManager::fillProgress(){
 	string progressFileName = getProgressFileName();
 	ifstream progFile;
 	progFile.open(progressFileName.c_str(), ios::in);
-	
+
 	equationLines.clear();
 	modelLines.clear();
 	string line;
@@ -193,70 +193,9 @@ void OutputManager::fillProgress(){
 		getline(progFile, line);
 		modelLines.push_back(line);
 	}
-	
+
 	progFile.close();
 	remove(progressFileName.c_str());
-}
-
-///
-/// outputs pareto front of population by reporting best model for each complexity in
-/// the population
-/// @param pop Population containing best model
-/// @param data Dataholder that can translate the snps back to original IDs
-/// @param mapFileUsed true when an actual map file was used and there are original
-/// names to output
-/// @param dummyEncoded when true genotypes need to be adjusted back to reflect
-/// original genotype positions
-///
-void OutputManager::outputPareto(Population& pop, int currPop, data_manage::Dataholder& data,
-			Algorithm* alg, bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
-			std::string fitnessName, std::vector<std::string> additionalHeaders){
-			
-			// complexity 
-			string filename = basename + ".cv." + Stringmanip::numberToString(currPop+1) + ".pareto.txt";	
-			// output complexity -- then scores (including missing info)
-			std::map<int, Solution*> solutionMap;
-			std::set<int> complexitySizes;
-			Solution* nn = pop.GetFirst();
-			while(nn != NULL){
-				int complexity = nn->getComplexity();
-				if(complexity != 0 && solutionMap.find(complexity)==solutionMap.end()){
-					solutionMap[complexity]=nn;
-					complexitySizes.insert(complexity);
-				}
-				nn = pop.GetNext();
-		  }
-
-			ofstream outfile;
-			outfile.open(filename.c_str(), ios::out);
-			
-			outfile << "Complexity\t" + fitnessName + " Training\tTesting";
-			for(unsigned int i=0; i<additionalHeaders.size(); i++){
-				outfile << "\tTraining-" << additionalHeaders[i];
-			}
-			for(unsigned int i=0; i<additionalHeaders.size(); i++){
-				outfile <<  "\tTesting-" << additionalHeaders[i];
-			}
-			outfile << "\tModel\n";
-			
-			std::map<int, Solution*>::iterator solIter;
-			for(std::set<int>::iterator iter=complexitySizes.begin(); iter != complexitySizes.end();
-				++iter){
-				solIter = solutionMap.find(*iter);
-		  	outfile << solIter->first << "\t" << solIter->second->fitness() << "\t" << solIter->second->testVal()
-		  		<< "\t";
-				for(std::vector<string>::iterator iter=solIter->second->getAdditionalOutput().begin(); 
-					iter != solIter->second->getAdditionalOutput().end();
-					++iter){
-					outfile << "\t" << *iter;
-				}
-		  	
-		  	outfile << "\t";
-		  	alg->writeEquation(outfile, solIter->second, &data,
-					mapFileUsed, dummyEncoded, continMapUsed);
-				outfile << "\n";
-			}
-			outfile.close();
 }
 
 
@@ -264,9 +203,9 @@ void OutputManager::outputPareto(Population& pop, int currPop, data_manage::Data
 void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& data,
 	bool mapFileUsed, bool dummyEncoded, bool continMapUsed,
 	std::string fitnessName){
-	
+
 		string filename = basename + ".overall.best";
-		
+
 		string prefix, continPrefix;
 	 	if(!mapFileUsed){
 			prefix = "G";
@@ -274,12 +213,12 @@ void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& 
 		if(!continMapUsed){
 			continPrefix = "C";
 		}
-		
+
 		ofstream outfile;
 		outfile.open(filename.c_str(), ios::out);
 		vector<int> genos = bestSolution->getGenotypes(dummyEncoded);
 		vector<int> covars = bestSolution->getCovariates();
-		
+
 		stringstream ss;
 		for(unsigned int g=0; g < genos.size(); g++){
 			ss << prefix << data.getGenoName(genos[g]-1) << " ";
@@ -287,20 +226,20 @@ void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& 
 		stringstream cs;
 		for(unsigned int c=0; c < covars.size(); c++){
 			cs << continPrefix << data.getCovarName(covars[c]-1) << " ";
-		}		
-		
+		}
+
 		outfile << "Variables:\t" << ss.str() + cs.str() << endl;
 		outfile << fitnessName << ":\t" << bestSolution->fitness() << endl;
 		if(!addHeaders.empty()){
 			for(unsigned int i=0; i<addHeaders.size(); i++){
 				outfile << addHeaders[i] << ":\t" << bestSolution->getAdditionalOutput()[i] << endl;
 			}
-		}		
-		
+		}
+
 		outfile << "\nModel:" << endl;
 		bestSolution->outputClean(outfile, data, mapFileUsed, dummyEncoded, continMapUsed);
 		outfile.close();
-	
+
 }
 
 
@@ -309,29 +248,29 @@ void OutputManager::outputBest(Solution* bestSolution, data_manage::Dataholder& 
 /// outputs a file for each best model
 /// @param pops Population vector
 /// @param nmodels Number of models to output
-/// @param currPop population number matching the cross-validation 
+/// @param currPop population number matching the cross-validation
 /// @param scaleInfo Information on the scaling done in model
 /// @param data
 /// @param mapUsed
 ///
 void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
-	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy,
 	bool continMapUsed){
-	
+
 		Solution* bestSolution;
 			for(int mod=0; mod < nmodels; mod++){
 				ofstream outfile;
-				
-				string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
+
+				string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." +
 					Stringmanip::numberToString(mod+1) + ".best";
-					
+
 				cout << "Writing best model file: " << currFileName << endl;
 				outfile.open(currFileName.c_str(), ios::out);
 				if(!outfile.is_open()){
 						throw AthenaExcept(currFileName + " unable to open for writing best model");
 				}
 				bestSolution = pop[mod];
-				
+
 				outfile << "CV: " << currPop+1 << endl;
 				outfile << "Model Rank: " << mod + 1 << endl;
 				outfile << "Training result: " << bestSolution->fitness() << endl;
@@ -346,29 +285,29 @@ void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
 				}
 				outfile << "Model:" << endl;
 				bestSolution->outputClean(outfile, data, mapUsed, ottDummy, continMapUsed);
-				
+
 				outfile.close();
 			}
 }
 
-/// 
+///
 /// Output all models for this population in one file
 ///
 void OutputManager::outputAllModels(Algorithm* alg, Population& pop, int rank, int currPop,
-	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+	string scaleInfo, data_manage::Dataholder& data, bool mapUsed, bool ottDummy,
 	bool continMapUsed, bool testingDone){
-	string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
-		Stringmanip::numberToString(rank+1) + ".all";	
+	string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." +
+		Stringmanip::numberToString(rank+1) + ".all";
 	ofstream outfile;
 	outfile.open(currFileName.c_str(), ios::out);
 	if(!outfile.is_open()){
 		throw AthenaExcept(currFileName + " unable to open for writing all models");
-	}	
+	}
 	outfile << "All Models From Final Generation\n";
 	outfile << "Model\tEquation\tTraining\tTesting";
 	for(size_t i=0; i < addHeaders.size(); i++){
 		outfile << "\tTraining-" << addHeaders[i];
-	}	
+	}
 	if(testingDone){
 		for(size_t i=0; i < addHeaders.size(); i++){
 			outfile << "\tTesting-" << addHeaders[i];
@@ -406,15 +345,15 @@ outfile << endl;
 
 
 ///
-/// Renames all models file (for single) or combines all models for 
+/// Renames all models file (for single) or combines all models for
 /// multiple files
 ///
 void OutputManager::combineAllModels(int nProcs, int currCV, Algorithm* alg){
-	
+
 	string finalName = basename + ".cv" + Stringmanip::numberToString(currCV+1) + ".all";
 	string currFilename;
 	int sortColumn = alg->allModelSortColumn();
-	
+
 	if(nProcs==1){
 		currFilename =  basename + ".cv" + Stringmanip::numberToString(currCV+1) + ".1.all";
 		string command = "mv " + currFilename + " " + finalName;
@@ -446,7 +385,7 @@ void OutputManager::combineAllModels(int nProcs, int currCV, Algorithm* alg){
 		}
 		// sort the lines
 		sort(modInfo.begin(), modInfo.end(), mySorter);
-		
+
 		ofstream outfile;
 		outfile.open(finalName.c_str(), ios::out);
 		outfile << header1 << "\n" << header2 << "\n";
@@ -455,24 +394,24 @@ void OutputManager::combineAllModels(int nProcs, int currCV, Algorithm* alg){
 			outfile << lines[infoIter->lineNo] << "\n";
 		}
 		outfile.close();
-		
+
 	}
-	
+
 }
 
 ///
 /// returns a stream for writing
 /// @param filename
-/// @return ostream to write to 
+/// @return ostream to write to
 ///
 std::ostream& OutputManager::getStream(std::string filename){
 	logStream.open(filename.c_str(), ios::out);
 	if(!logStream.is_open()){
 		throw AthenaExcept(filename + " unable to open for writing results");
 	}
-	
+
 	return logStream;
-	
+
 }
 
 
@@ -487,11 +426,11 @@ void OutputManager::writeValidation(string fitnessName, std::vector<std::string>
 	if(!mapUsed){
 		width = 20;
 	}
-		
+
 	string filename = basename + ".validation";
 	ofstream outfile;
 	outfile.open(filename.c_str(), ios::out);
-		
+
 	outfile << "Model\tVariables\t"  << fitnessName + " Training\tTesting";
 	for(unsigned int i=0; i<additionalHeaders.size(); i++){
 		outfile << "\tTraining-" << additionalHeaders[i];
@@ -500,7 +439,7 @@ void OutputManager::writeValidation(string fitnessName, std::vector<std::string>
 		outfile <<  "\tTesting-" << additionalHeaders[i];
 	}
 	outfile << "\n";
-	
+
 	string prefix, continPrefix;
 	if(!mapUsed){
 		prefix = "G";
@@ -508,7 +447,7 @@ void OutputManager::writeValidation(string fitnessName, std::vector<std::string>
 	if(!continMapUsed){
 		continPrefix = "C";
 	}
-	
+
 	Solution* bestSolution;
 	for(size_t i=0; i<models.size(); i++){
 		bestSolution = models[i];
@@ -536,7 +475,7 @@ void OutputManager::writeValidation(string fitnessName, std::vector<std::string>
 		}
 		outfile << endl;
 	}
-	
+
 	outfile << "\nModel\tEquation\n";
 
 	for(size_t i=0; i < models.size(); i++){
@@ -545,14 +484,14 @@ void OutputManager::writeValidation(string fitnessName, std::vector<std::string>
 			mapUsed, dummyEncoded, continMapUsed);
 		outfile << endl;
 	}
-	
+
 	outfile << "\n\n**** For use by ATHENA when running models with independent datasets ****\n";
 	outfile << "\nModel\tInternal ATHENA representation\n";
 	for(size_t i=0; i<models.size(); i++){
 			outfile << i+1 << "\t";
 			models[i]->outputSolution(outfile);
 	}
-	
+
 	outfile.close();
 }
 
@@ -560,41 +499,41 @@ void OutputManager::writeValidation(string fitnessName, std::vector<std::string>
 ///
 /// returns a stream for writing
 /// @param filename
-/// @return ostream to write to 
+/// @return ostream to write to
 ///
-void OutputManager::outputEquations(Algorithm* alg, vector<Solution*>& bestSolutions, 
-			data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+void OutputManager::outputEquations(Algorithm* alg, vector<Solution*>& bestSolutions,
+			data_manage::Dataholder& data, bool mapUsed, bool ottDummy,
 			bool continMapUsed){
-	
+
 	string summaryName = getSummaryFileName();
 	fillProgress();
 	ofstream outfile;
 	outfile.open(summaryName.c_str(), ios::app);
 	outfile << "\nCV\tModel\n";
-	
+
 	vector<string>::iterator strIter;
 	for(strIter=equationLines.begin(); strIter != equationLines.end(); ++strIter){
 		outfile << *strIter << "\n";
 	}
-		
+
 	outfile << "\n\n**** For use by ATHENA when running models with independent datasets ****\n";
 	outfile << "\nCV\tInternal ATHENA representation\n";
 	for(strIter=modelLines.begin(); strIter != modelLines.end(); ++strIter){
 		outfile << *strIter << "\n";
 	}
-	
+
 	outfile.close();
-	
+
 }
 
 
 ///
 /// Outputs graphical representation of model
 /// @param filename
-/// @return ostream to write to 
+/// @return ostream to write to
 ///
 void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, std::string basename,
-	int nmodels, data_manage::Dataholder& data, bool mapUsed, bool ottDummy, 
+	int nmodels, data_manage::Dataholder& data, bool mapUsed, bool ottDummy,
 	bool continMapUsed, std::string imgWriter){
 
 	Solution* currSolution;
@@ -603,17 +542,17 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 	if(ext.length() > 0){
 		for(int mod=0; mod < nmodels; mod++){
 			ofstream outfile;
-// 			string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
+// 			string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." +
 // 					Stringmanip::numberToString(mod+1) + ext;
-			string imgFileBaseName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." + 
+			string imgFileBaseName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." +
 					Stringmanip::numberToString(mod+1);
 			string currFileName = imgFileBaseName + ext;
-			cout << "Writing file " << currFileName << endl;         
+			cout << "Writing file " << currFileName << endl;
 			outfile.open(currFileName.c_str(), ios::out);
 			if(!outfile.is_open()){
 					throw AthenaExcept(currFileName + " unable to open for writing " + ext + " file.");
 			}
-			
+
 			currSolution = pop[mod];
 			alg->writeGraphical(outfile, currSolution, &data, mapUsed, ottDummy, continMapUsed);
 			outfile.close();
@@ -635,7 +574,7 @@ int OutputManager::scoreConversion(float score){
 
 ///
 /// outputs list of individuals with scores for best model
-/// @param is istream 
+/// @param is istream
 /// @param base base portion of output file name
 ///
 void OutputManager::validationIndOutput(vector<std::stringstream*>& ss, std::string base){
@@ -653,13 +592,13 @@ void OutputManager::validationIndOutput(vector<std::stringstream*>& ss, std::str
 ///
 /// outputs list of individuals with scores for best model
 /// divided into training and testing sets
-/// @param is istream 
+/// @param is istream
 /// @param base base portion of output file name
 ///
 void OutputManager::outputInds(std::istream &is, std::string base, string fitnessName){
-	
+
 	std::multiset<indOutScores,scoreComp> empty;
-	 
+
 	vector<multiset<indOutScores,scoreComp> > trainingSet;
 	vector<multiset<indOutScores,scoreComp> > testingSet;
 	multiset<indOutScores,scoreComp> bestSet;
@@ -668,13 +607,13 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 	bool balacc=false;
 	if(fitnessName.find("BALANCEDACC") != string::npos)
 		balacc = true;
-	
+
 	string line;
 	string temp, id, scoreStr, finalScore, diffStr, predStatus="";
 	int cv;
 	bool useTrain=true, useTest=false;
 	double score, obs, diff, missDiffValue=-1000.0;
-	
+
 	while(getline(is, line)){
 		stringstream ss(line);
 		if(line.find("CV") != string::npos){
@@ -717,15 +656,15 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 				if(balacc)
 					predStatus = "\t" + Stringmanip::numberToString(scoreConversion(score));
 			}
-			
+
 			indOutScores newOutput;
 			newOutput.output = id + "\t" + scoreStr + predStatus + "\t" + Stringmanip::numberToString(obs);
 
 			newOutput.diff = diff;
-			
-			if(useTrain){	
+
+			if(useTrain){
 					trainingSet[currTrain].insert(newOutput);
-			}	
+			}
 			else if(useTest){
 					testingSet[currTest].insert(newOutput);
 			}
@@ -734,7 +673,7 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 			}
 		}
 	}
-	
+
 	vector<string> best, emptyVec;
 	vector<vector<string> > training, testing;
 	std::multiset<indOutScores,scoreComp>::iterator setIter;
@@ -753,13 +692,13 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 	for(setIter=bestSet.begin(); setIter!=bestSet.end(); ++setIter){
 		best.push_back(setIter->output);
 	}
-	
+
 	string addHeader="", trainTestHeader="";
 	if(balacc){
 		addHeader="\tPred-Status";
 		trainTestHeader="\t";
 	}
-	
+
 	// write to output file
 	string currFileName = base + ".indscores.txt";
 	ofstream of(currFileName.c_str());
@@ -774,11 +713,11 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 		of << endl;
 		of << "CV#1-ID\tPred" + addHeader + "\tObs\tCV#1-ID\tPred" + addHeader + "\tObs";
 		for(int j=1; j<cv; j++){
-			of << "\tCV#" << j+1 << "-ID\tPred" + addHeader + "\tObs\tCV#" << j+1 << "-ID\tPred" 
+			of << "\tCV#" << j+1 << "-ID\tPred" + addHeader + "\tObs\tCV#" << j+1 << "-ID\tPred"
 				+ addHeader + "\tObs";
 		}
 		of << endl;
-	
+
 		for(unsigned int i=0; i<training[0].size(); i++){
 			for(int j=0; j<cv; j++){
 					if(i < training[j].size()){
@@ -798,11 +737,11 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 							of << "\t";
 					}
 				}
-			of << endl;	
+			of << endl;
 			}
 	}
 	else{
-	
+
 		of << "Entire Set";
 		for(int j=1; j<cv+1; j++){
 			of << "\t\t\tTraining\t\t\t" + trainTestHeader + "Testing";
@@ -812,8 +751,8 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 		for(int j=0; j<cv; j++){
 			of << "\tCV#" << j+1 << "-ID\tPred" + addHeader + "\tObs\tCV#" << j+1 << "-ID\tPred" + addHeader + "\tObs";
 		}
-		of << endl;	
-	
+		of << endl;
+
 		for(unsigned int i=0; i<best.size(); i++){
 			of << best[i] << "\t";
 			for(int j=0; j<cv; j++){
@@ -836,6 +775,6 @@ void OutputManager::outputInds(std::istream &is, std::string base, string fitnes
 			}
 			of << endl;
 		}
-	}	
+	}
 	of.close();
 }

@@ -393,7 +393,6 @@ void Algorithm::getBioModelsArchive(string genegeneFile, string archiveFile, dat
 }
 
 
-
 ///
 /// Sets the bio models based on collection passed
 ///

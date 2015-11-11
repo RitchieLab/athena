@@ -31,14 +31,13 @@ void Config::initialize(){
 		dataType = "TEXT";
 		outName = "athena";
 		mapName = "";
-		statusChange = "";
 		randSeed = 1;
 		dataFile = "";
 		idIncluded = false;
 		continFile = "";
 		continMiss = -9999;
 		ottDummyEncoded = false;
-		numExchanges = 2;
+		numExchanges = 1;
 		cvOut = false;
 		statusChange = "NONE";
 		continChange = "NONE";
@@ -73,7 +72,7 @@ void Config::initialize(){
 		selectBest=false;
 }
 
-/// /// Checks configuration parameters for errors /// @throws AthenaExcept /// void 
+/// /// Checks configuration parameters for errors /// @throws AthenaExcept /// void
 void Config::checkConfig(){
 	if(numExchanges < 0)
 		throw AthenaExcept("NUMEXCHANGES must be greater than zero");
