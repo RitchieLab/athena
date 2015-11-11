@@ -92,31 +92,24 @@ public:
 	Dataset operator+(Dataset& d);
 
 	/// Gets number of levels for a continuous variable
-	unsigned int getNumLevels(unsigned int varIndex);//{return holder->getNumLevels(varIndex);}
+	unsigned int getNumLevels(unsigned int varIndex);
 
 	/// Sets number of levels for a continuous variable
-	void setNumLevels(unsigned int varIndex, unsigned int nLevels);// {
-// 		holder->setNumLevels(varIndex, nLevels);
-// 	}
+	void setNumLevels(unsigned int varIndex, unsigned int nLevels);
 
-	void setAllLevels(std::vector<unsigned int> cLevels);// {
-// 		holder->setAllLevels(cLevels);
-// 	}
+	void setAllLevels(std::vector<unsigned int> cLevels);
 
 	/// Returns number of levels for phenotype
-	unsigned int getNumStatusLevels();//{return holder->getNumStatusLevels();}
-// 	return statusLevels;}
-
+	unsigned int getNumStatusLevels();
 
 	/// Sets number of levels for phenotype
-	void setNumStatusLevels(unsigned int nLevels);//{holder->setNumStatusLevels(nLevels);}
-// 	statusLevels=nLevels;}
+	void setNumStatusLevels(unsigned int nLevels);
 
 	/// Splits dataset into 2 new case/control sets
 	std::vector<Dataset*> splitCaseControl();
 
 	/// Set Dataholder
-	void setHolder(Dataholder* h);//{holder=h;}
+	void setHolder(Dataholder* h);
 
 	/// Return Dataholder
 	Dataholder* getHolder(){return holder;}

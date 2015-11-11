@@ -40,7 +40,7 @@ Constant::Constant(string symbol, int numberArgs)
 		style = "bold";
 		type = "const";
 }
-	
+
 
 Constant::Constant(float value)
 	:TerminalSymbol("", 0, TerminalSymbol::Constant){
@@ -52,13 +52,13 @@ Constant::Constant(float value)
 	name = label;
 	priority = 0;
 	shape = "box";
-	style = "bold";   
+	style = "bold";
 	type = "const";
 }
 
-float Constant::evaluate(deque<float> & args){ 
+float Constant::evaluate(deque<float> & args){
 	return constantValue;
-} 
+}
 
 
 ///////////////////////////////////////
@@ -69,7 +69,7 @@ BiasTerm::BiasTerm(string symbol, int numberArgs)
 	numArgs=numberArgs;
 	label = symbol;
 	style = "filled";
-	shape = "box"; 
+	shape = "box";
 	type = symbol;
 }
 
@@ -95,18 +95,6 @@ IndividualTerm::IndividualTerm(string gname, int varIndex, TerminalType tType)
 }
 
 ///
-/// Returns value for the individual at the indicated location
-/// @param args deque not used in this evaluation
-/// @return value of the variable
-/// @throws AthenaExcept when missing variable data at the indicated
-/// locus for the indicated individual
-///
-// float GenotypeTerm::evaluate(deque<float> & args){ 
-// 	return ind->getGenotype(indexValue);
-// } 
-
-
-///
 /// Set Individual pointer for class
 /// @param i Individual*
 ///
@@ -124,14 +112,6 @@ void IndividualTerm::setInd(Individual* i){
 // 	:TerminalSymbol(gname, 0, TerminalSymbol::Genotype){
 GenotypeTerm::GenotypeTerm(string gname, int varIndex)
 	:IndividualTerm(gname,varIndex, TerminalSymbol::Genotype){
-// 		numArgs = 0;
-// 		name = gname;
-// 		// must convert symbol into value
-// 		indexValue = varIndex-1;
-// 		label = gname;
-// 		style = "filled";
-// 		shape = "box";
-// 		type = label;
 }
 
 ///
@@ -141,18 +121,11 @@ GenotypeTerm::GenotypeTerm(string gname, int varIndex)
 /// @throws AthenaExcept when missing variable data at the indicated
 /// locus for the indicated individual
 ///
-float GenotypeTerm::evaluate(deque<float> & args){ 
+float GenotypeTerm::evaluate(deque<float> & args){
 	return ind->getGenotype(indexValue);
-} 
+}
 
 
-///
-/// Set Individual pointer for class
-/// @param i Individual*
-///
-// void GenotypeTerm::setInd(Individual* i){
-// 		ind = i;
-// }
 
 //////////////////////////////////////
 // Continuous variable (covariate) class
@@ -161,14 +134,6 @@ float GenotypeTerm::evaluate(deque<float> & args){
 // 	:TerminalSymbol(gname, 0, TerminalSymbol::Covariate){
 ContinVariable::ContinVariable(string gname, int varIndex)
 	:IndividualTerm(gname,varIndex,TerminalSymbol::Covariate){
-// 		numArgs = 0;
-// 		name = gname;
-// 		// must convert symbol into value
-// 		label = gname;
-// 		indexValue = varIndex-1;
-// 		style = "filled";
-// 		shape = "box";
-// 		type = label;
 }
 
 
@@ -179,18 +144,10 @@ ContinVariable::ContinVariable(string gname, int varIndex)
 /// @throws AthenaExcept when missing variable data at the indicated
 /// locus for the indicated individual
 ///
-float ContinVariable::evaluate(deque<float> & args){ 
+float ContinVariable::evaluate(deque<float> & args){
 	return ind->getCovariate(indexValue);
 }
 
-
-///
-/// Set Individual pointer for class
-/// @param i Individual*
-///
-// void ContinVariable::setInd(Individual* i){
-// 		ind = i;
-// }
 
 //////////////////////////////////////
 // Phenotype class
@@ -214,18 +171,9 @@ PhenotypeTerm::PhenotypeTerm(string gname, int varIndex)
 /// @param args deque not used in this evaluation
 /// @return value of the variable
 ///
-float PhenotypeTerm::evaluate(deque<float> & args){ 
+float PhenotypeTerm::evaluate(deque<float> & args){
 	return ind->status();
-} 
-
-
-///
-/// Set Individual pointer for class
-/// @param i Individual*
-///
-// void ContinVariable::setInd(Individual* i){
-// 		ind = i;
-// }
+}
 
 //////////////////////////////////////
 // Addition class
@@ -239,15 +187,15 @@ Addition::Addition(string symbol, int numberArgs)
 		label = "+";
 		type = "Add";
 }
-		
+
 float Addition::evaluate(deque<float> & args){
 	float result = args[0];
-	
+
 	for(int i=1; i<numArgs; i++){
 		result += args[i];
 	}
 	return AdjustResult(result);
-} 
+}
 
 //////////////////////////////////////
 // Subtraction class
@@ -261,15 +209,15 @@ Subtraction::Subtraction(string symbol, int numberArgs)
 		label = "-";
 		type = "Sub";
 }
-		
+
 float Subtraction::evaluate(deque<float> & args){
 	float result = args[0];
-	
+
 	for(int i=1; i<numArgs; i++){
 		result -= args[i];
 	}
 	return AdjustResult(result);
-} 
+}
 
 //////////////////////////////////////
 // Multiplication class
@@ -283,19 +231,19 @@ Multiplication::Multiplication(string symbol, int numberArgs)
 		label = "*";
 		type = "Mult";
 }
-		
+
 float Multiplication::evaluate(deque<float> & args){
 	float result = args[0];
-	
+
 	for(int i=1; i<numArgs; i++){
 		if(args[i] == 0){
 			result = 0;
 			break;
-		} 
+		}
 		result *= args[i];
 	}
 	return AdjustResult(result);
-} 
+}
 
 //////////////////////////////////////
 // Division class
@@ -305,21 +253,21 @@ Division::Division(string symbol, int numberArgs)
 		numArgs = numberArgs;
 		shape = "diamond";
 		style = "bold";
-		label = "/";  
+		label = "/";
 		type = "Div";
 }
-		
+
 float Division::evaluate(deque<float> & args){
 	float result = args[0];
-	
+
 	for(int i=1; i<numArgs; i++){
 		if(args[i] == 0)
 			return 1.0;
 		result /= args[i];
 	}
-	
+
 	return AdjustResult(result);
-} 
+}
 
 
 //////////////////////////////////////
@@ -334,10 +282,10 @@ Power::Power(string symbol, int numberArgs)
 		label = "^";
 		type = "Pow";
 }
-		
+
 float Power::evaluate(deque<float> & args){
 	return AdjustResult(pow(args[0], args[1]));
-} 
+}
 
 //////////////////////////////////////
 // pAdd class
@@ -348,7 +296,7 @@ pAdd::pAdd(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "doublecircle";
 		style = "bold";
-		label = "PADD";    
+		label = "PADD";
 		type = label;
 }
 
@@ -357,11 +305,11 @@ float pAdd::evaluate(deque<float> & args){
 	for(unsigned int i=1; i<args.size(); i++){
 		result += args[i];
 	}
-	
+
 	result = AdjustResult(result);
- 
+
 	return ActivateSigmoid(result);
-} 
+}
 
 //////////////////////////////////////
 // pSub class
@@ -377,12 +325,12 @@ pSub::pSub(string symbol, int numberArgs)
 }
 
 float pSub::evaluate(deque<float> & args){
-	float result = args[0]; 
+	float result = args[0];
 	for(unsigned int i=1; i<args.size(); i++){
 		result -= args[i];
 	}
 	result = AdjustResult(result);
-	
+
 	return ActivateSigmoid(result);
 }
 
@@ -401,11 +349,11 @@ pMult::pMult(string symbol, int numberArgs)
 
 float pMult::evaluate(deque<float> & args){
 	float result = args[0];
-	
+
 	for(unsigned int i=1; i<args.size(); i++){
 		result *= args[i];
 	}
-	
+
 	result = AdjustResult(result);
 	return ActivateSigmoid(result);
 }
@@ -419,24 +367,22 @@ pDiv::pDiv(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "doublecircle";
 		style = "bold";
-		label = "PDIV";    
+		label = "PDIV";
 		type = label;
 }
 
 float pDiv::evaluate(deque<float> & args){
 	float result = args[0];
-	
+
 	for(unsigned int i=1; i<args.size(); i++){
 		if(args[i] == 0){
-//      result = 1.1;
-// 			result = 10000000;
 			return ActivateSigmoid(1000);
 		}
 		result /= args[i];
 	}
-	
+
 	result = AdjustResult(result);
-	
+
 	return ActivateSigmoid(result);
 }
 
@@ -451,18 +397,18 @@ pAnd::pAnd(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "doublecircle";
 		style = "bold";
-		label = "PAND";    
+		label = "PAND";
 		type = label;
 }
 
-float pAnd::evaluate(deque<float> & args){  
+float pAnd::evaluate(deque<float> & args){
 	for(unsigned int i=0; i<args.size(); i++){
 		if(args[i] <= 0){
 			return 0.0;
 		}
 	}
 	return 1.0;
-	
+
 }
 
 //////////////////////////////////////
@@ -475,11 +421,11 @@ pNand::pNand(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "doublecircle";
 		style = "bold";
-		label = "PNAND";    
+		label = "PNAND";
 		type = label;
 }
 
-float pNand::evaluate(deque<float> & args){  
+float pNand::evaluate(deque<float> & args){
 	for(unsigned int i=0; i<args.size(); i++){
 		if(args[i] > 0){
 			return 0.0;
@@ -498,11 +444,11 @@ pOr::pOr(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "doublecircle";
 		style = "bold";
-		label = "POR";    
+		label = "POR";
 		type = label;
 }
 
-float pOr::evaluate(deque<float> & args){  
+float pOr::evaluate(deque<float> & args){
 	for(unsigned int i=0; i<args.size(); i++){
 		if(args[i] > 0){
 			return 1.0;
@@ -522,11 +468,11 @@ pNor::pNor(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "doublecircle";
 		style = "bold";
-		label = "PNOR";    
+		label = "PNOR";
 		type = label;
 }
 
-float pNor::evaluate(deque<float> & args){  
+float pNor::evaluate(deque<float> & args){
 	for(unsigned int i=0; i<args.size(); i++){
 		if(args[i] > 0){
 			return 0.0;
@@ -546,14 +492,14 @@ pXor::pXor(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "doublecircle";
 		style = "bold";
-		label = "PXOR";   
+		label = "PXOR";
 		type = label;
 }
 
-float pXor::evaluate(deque<float> & args){ 
+float pXor::evaluate(deque<float> & args){
 	int value = (int)(args[0] > 0)?1:0;
 	int nextval;
-	
+
 	for(unsigned int i=1; i<args.size(); i++){
 		nextval = (int)(args[i] > 0)?1:0;
 		if(nextval != value){
@@ -563,7 +509,7 @@ float pXor::evaluate(deque<float> & args){
 			value = 0;
 		}
 	}
-	return (float) value;  
+	return (float) value;
 }
 
 
@@ -582,15 +528,15 @@ Weight::Weight(string symbol, int numberArgs)
 
 float Weight::evaluate(deque<float> & args){
 		float result = args[0];
-	
+
 	for(int i=1; i<numArgs; i++){
 		if(args[i] == 0){
 			result = 0;
 			break;
-		} 
+		}
 		result *= args[i];
 	}
-	
+
 	return AdjustResult(result);
 }
 
@@ -608,23 +554,23 @@ ConCat::ConCat(string symbol, int numberArgs)
 // '.' is 46 so that class has a value of -2
 float ConCat::evaluate(deque<float> & args){
 	float result;
-	
+
 	string newnumber;
-	
-	// check for negative value 
+
+	// check for negative value
 	if(args[0] < 0 && int(args[0]) != -2){
 		newnumber += '-';
 		// convert negative to positive
 		args[0] = fabs(args[0]);
 	}
-	
+
 	for(unsigned int i=0; i<args.size(); i++)
 		newnumber += char(48+args[i]);
 
 	// convert to float
 	stringstream in(newnumber);
 	in >> result;
-	
+
 	return result;
 }
 
@@ -638,18 +584,18 @@ LogF::LogF(string symbol, int numberArgs)
 		shape = "diamond";
 		style = "bold";
 		label = "log";
-		type = "log";    
+		type = "log";
 	}
-	
+
 float LogF::evaluate(deque<float> & args){
-		
+
 	if(args[0] < 0){
 		return 0;
 	}
 	else{
 		return AdjustResult(log10(args[0]));
 	}
-}   
+}
 
 
 //////////////////////////////////////
@@ -661,12 +607,12 @@ Sine::Sine(string symbol, int numberArgs)
 		shape = "diamond";
 		style = "bold";
 		label = "sine";
-		type = "sine";    
+		type = "sine";
 	}
-	
-float Sine::evaluate(deque<float> & args){  
+
+float Sine::evaluate(deque<float> & args){
 	return AdjustResult(sin(args[0]));
-} 
+}
 
 
 //////////////////////////////////////
@@ -678,12 +624,12 @@ Cosine::Cosine(string symbol, int numberArgs)
 		shape = "diamond";
 		style = "bold";
 		label = "cosine";
-		type = "cosine";    
+		type = "cosine";
 	}
-	
-float Cosine::evaluate(deque<float> & args){  
+
+float Cosine::evaluate(deque<float> & args){
 	return AdjustResult(cos(args[0]));
-} 
+}
 
 //////////////////////////////////////
 // Tangent class
@@ -694,12 +640,12 @@ Tangent::Tangent(string symbol, int numberArgs)
 		shape = "diamond";
 		style = "bold";
 		label = "cosine";
-		type = "cosine";    
+		type = "cosine";
 	}
-	
-float Tangent::evaluate(deque<float> & args){  
+
+float Tangent::evaluate(deque<float> & args){
 	return AdjustResult(tan(args[0]));
-} 
+}
 
 
 
@@ -712,7 +658,7 @@ Dot::Dot(string symbol, int numberArgs)
 		varArgs = true;
 }
 
-// -2 is the offset to be used with the 
+// -2 is the offset to be used with the
 // ConCat operator to generate a '.'
 float Dot::evaluate(deque<float> & args){
 		return -2.0;
@@ -728,18 +674,18 @@ And::And(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "diamond";
 		style = "bold";
-		label = "and";  
+		label = "and";
 		type = label;
 }
 
-float And::evaluate(deque<float> & args){  
+float And::evaluate(deque<float> & args){
 	for(unsigned int i=0; i<args.size(); i++){
 		if(args[i] <= 0){
 			return 0.0;
 		}
 	}
 	return 1.0;
-	
+
 }
 
 //////////////////////////////////////
@@ -752,11 +698,11 @@ Nand::Nand(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "diamond";
 		style = "bold";
-		label = "nand";  
+		label = "nand";
 		type = label;
 }
 
-float Nand::evaluate(deque<float> & args){  
+float Nand::evaluate(deque<float> & args){
 	for(unsigned int i=0; i<args.size(); i++){
 		if(args[i] > 0){
 			return 0.0;
@@ -775,11 +721,11 @@ Or::Or(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "diamond";
 		style = "bold";
-		label = "or";  
+		label = "or";
 		type = label;
 }
 
-float Or::evaluate(deque<float> & args){  
+float Or::evaluate(deque<float> & args){
 	for(unsigned int i=0; i<args.size(); i++){
 		if(args[i] > 0){
 			return 1.0;
@@ -799,11 +745,11 @@ Nor::Nor(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "diamond";
 		style = "bold";
-		label = "nor";  
+		label = "nor";
 		type = label;
 }
 
-float Nor::evaluate(deque<float> & args){  
+float Nor::evaluate(deque<float> & args){
 	for(unsigned int i=0; i<args.size(); i++){
 		if(args[i] > 0){
 			return 0.0;
@@ -823,14 +769,14 @@ Xor::Xor(string symbol, int numberArgs)
 		varArgs = true;
 		shape = "diamond";
 		style = "bold";
-		label = "xor";  
+		label = "xor";
 		type = label;
 }
 
-float Xor::evaluate(deque<float> & args){ 
+float Xor::evaluate(deque<float> & args){
 	int value = (int)(args[0] > 0)?1:0;
 	int nextval;
-	
+
 	for(unsigned int i=1; i<args.size(); i++){
 		nextval = (int)(args[i] > 0)?1:0;
 		if(nextval != value){
@@ -840,6 +786,6 @@ float Xor::evaluate(deque<float> & args){
 			value = 0;
 		}
 	}
-	return (float) value;  
+	return (float) value;
 }
 

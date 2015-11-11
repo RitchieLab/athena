@@ -126,8 +126,6 @@ vector<Dataset*> Dataset::splitCaseControl(){
 	}
 	splitSets[0]->setHolder(holder);
 	splitSets[1]->setHolder(holder);
-// 	splitSets[0]->setAllLevels(continLevels);
-// 	splitSets[1]->setAllLevels(continLevels);
 
 	return splitSets;
 }

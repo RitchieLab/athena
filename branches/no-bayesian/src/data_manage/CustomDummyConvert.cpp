@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "CustomDummyConvert.h"
-#include <algorithm>  
+#include <algorithm>
 
 using namespace std;
 
@@ -41,7 +41,7 @@ CustomDummyConvert::~CustomDummyConvert()
 
 
 ///
-/// Converts genotypes to ott dummy ones
+/// Converts genotypes to custom ones
 ///
 void CustomDummyConvert::convertGenotypes(Dataholder* holder){
 
@@ -52,7 +52,7 @@ void CustomDummyConvert::convertGenotypes(Dataholder* holder){
 	int missingGeno = holder->getMissingGenotype();
 	int newMissing = missingGeno;
 
-	// if the current missing genotype is part of conversion 
+	// if the current missing genotype is part of conversion
 	// need to select a value that isn't part of it
 	if(find(convertor.begin(), convertor.end(), missingGeno) != convertor.end()){
 		newMissing = -255;
@@ -77,7 +77,7 @@ void CustomDummyConvert::convertGenotypes(Dataholder* holder){
 	// in this case we still only use one variable
 	holder->ottDummyEncoding(false);
 	holder->setMissingGenotype(newMissing);
-	
+
 }
 
 

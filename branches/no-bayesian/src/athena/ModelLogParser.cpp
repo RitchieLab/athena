@@ -37,9 +37,9 @@ bool compareLogModels(logModel first, logModel second){
 
 logModel ModelLogParser::getModel(string& line){
 
-		logModel mod;    
+		logModel mod;
 		stringstream is(line);
-		is >> mod.gen >> mod.rank >> mod.fitness;// >> mod.gramDepth >> mod.nnDepth 
+		is >> mod.gen >> mod.rank >> mod.fitness;// >> mod.gramDepth >> mod.nnDepth
 //				>> mod.n_g >> mod.n_c;
 		getline(is, mod.remainder);
 		return mod;
@@ -47,27 +47,27 @@ logModel ModelLogParser::getModel(string& line){
 
 
 void ModelLogParser::compileVariableFiles(std::vector<std::string>& filenames, std::string outFilename){
-		// when only a single file 
+		// when only a single file
 		// only need to change name of the filename to match the output name
 		if(filenames.size()==1){
 				string command = "mv " + filenames[0] + " " + outFilename;
 				system(command.c_str());
 				return;
 		}
-		
+
 		// compile all files into a single file
-		// open filehandle for each and then read each 
+		// open filehandle for each and then read each
 		deque<ifstream*> inputFH;
-		
+
 		vector<string>::iterator iter;
 		for(iter=filenames.begin(); iter != filenames.end(); iter++){
 			ifstream * newStream = new ifstream;
 			newStream->open(iter->c_str(), ios::in);
 			inputFH.push_back(newStream);
 		}
-		
+
 		ofstream outStream(outFilename.c_str(), ios::out);
-		
+
 		bool done=false;
 		vector<string> lines;
 		string nextGen, gen = "";
@@ -77,7 +77,7 @@ void ModelLogParser::compileVariableFiles(std::vector<std::string>& filenames, s
 				done=getNextGen(*iter, lines, nextGen);
 			}
 			if(gen.length() > 0)
-			outputVariables(outStream, lines, gen);	
+			outputVariables(outStream, lines, gen);
 			gen = nextGen;
 		}
 
@@ -86,31 +86,31 @@ void ModelLogParser::compileVariableFiles(std::vector<std::string>& filenames, s
 			delete *iter;
 		}
 		outStream.close();
-		
-		
+
+
 		//delete temporary files
 		for(iter=filenames.begin(); iter != filenames.end(); iter++){
 			remove(iter->c_str());
 		}
-		
+
 }
 
 
 void ModelLogParser::outputVariables(ofstream& outStream, vector<string>& lines, string& gen){
-	
+
 	outStream << gen << "\n";
 	for(vector<string>::iterator iter=lines.begin(); iter != lines.end(); iter++){
 		outStream << *iter << "\n";
 	}
-	
+
 }
 
 
 bool ModelLogParser::getNextGen(ifstream* in, vector<string>& lines, string& nextGen){
-	
+
 	string line;
 	bool endGen = false;
-	
+
 	while(!endGen){
 		getline(*in, line);
 		if(in->eof() || line.find("Gen")!=string::npos){
@@ -120,9 +120,9 @@ bool ModelLogParser::getNextGen(ifstream* in, vector<string>& lines, string& nex
 		else{
 			lines.push_back(line);
 		}
-		
+
 	}
-	
+
 	if(in->eof())
 		return true;
 	else
@@ -132,7 +132,7 @@ bool ModelLogParser::getNextGen(ifstream* in, vector<string>& lines, string& nex
 
 void ModelLogParser::compileFiles(vector<string>& filenames, string outFilename, float notValid){
 
-		// when only a single file 
+		// when only a single file
 		// only need to change name of the filename to match the output name
 		if(filenames.size()==1){
 				string command = "mv " + filenames[0] + " " + outFilename;
@@ -141,7 +141,7 @@ void ModelLogParser::compileFiles(vector<string>& filenames, string outFilename,
 		}
 		else
 			return;
-		
+
 		vector<vector<logModel> > allModels;
 
 		// alternatively pull together all models at each generation,
@@ -151,16 +151,16 @@ void ModelLogParser::compileFiles(vector<string>& filenames, string outFilename,
 				// add an additional generation when needed
 				parseFile(*fileIter, allModels);
 		}
-		
+
 		// sort each generation by fitness
 		for(vector<vector<logModel> >::iterator iter=allModels.begin(); iter != allModels.end(); ++iter){
 				sort(iter->begin(), iter->end(), compareLogModels);
 		}
-		
+
 		// output the sorted models to the combined file
 		ofstream outStream(outFilename.c_str(), ios::out);
-		
-		writeOutput(outStream, allModels, notValid);   
+
+		writeOutput(outStream, allModels, notValid);
 }
 
 
@@ -175,7 +175,7 @@ void ModelLogParser::parseFile(string filename, vector<vector<logModel> >& model
 		 string header;
 		 getline(logStream, headerLine);
 		 vector<logModel> temp;
-		 
+
 		 // get all the models
 		 while(!logStream.eof()){
 				string line;
@@ -191,7 +191,6 @@ void ModelLogParser::parseFile(string filename, vector<vector<logModel> >& model
 
 void ModelLogParser::writeOutput(ostream & os, vector<vector<logModel> >& models,
 		float notValid){
-//		os << "GEN\tRANK\tFITNESS\tGRAM_DEPTH\tNN_DEPTH\tNUM_G\tNUM_C\tMODEL\n";
 		os << headerLine << "\n";
 		int gen=0;
 
@@ -204,9 +203,6 @@ void ModelLogParser::writeOutput(ostream & os, vector<vector<logModel> >& models
 						else
 								os << modIter->fitness;
 						os << modIter->remainder << "\n";
-// 						os << "\t" << modIter->gramDepth <<
-// 							"\t" << modIter->nnDepth << "\t" << modIter->n_g << "\t" << modIter->n_c << "\t" 
-// 							<< modIter->model << endl;
 						rank++;
 				}
 				gen++;

@@ -40,7 +40,7 @@ void AthenaGrammarSI::setRestrictRule(std::string ruleString){
 ///
 /// Adds vector representing model by indexes in original genotype dataset array
 /// @param indexes vector contain indexes with positions in original geno array of the dataset
-/// 
+///
 void AthenaGrammarSI::addModel(std::vector<int> indexes){
 	GrammarModel mod;
 	mod.datasetIndexes = indexes;
@@ -50,45 +50,45 @@ void AthenaGrammarSI::addModel(std::vector<int> indexes){
 
 
 ///
-/// After grammar is read, the models can be adjusted to have the codon values set 
+/// After grammar is read, the models can be adjusted to have the codon values set
 /// for them rather than the original dataset indexes.  These codons can then be used
 /// in initialization to replace the variables that were randomly selected.
 /// @param dummyEncoded when true the codons can be either of two different choices
 ///
 void AthenaGrammarSI::setModelCodons(bool dummyEncoded){
-	
+
 	// construct map with value being the codon value for the rule
 	map<string, int> genoLocMap;
 	for(unsigned int i=0; i<restrictRulePtr->size(); i++){
 		genoLocMap[*((*restrictRulePtr)[i][0])] = i;
 	}
-	
+
 	map<string, int>::iterator mapiter;
-	
-	for(vector<GrammarModel>::iterator iter=gramModels.begin(); iter != gramModels.end(); iter++){   
+
+	for(vector<GrammarModel>::iterator iter=gramModels.begin(); iter != gramModels.end(); iter++){
 		for(unsigned int i=0; i < iter->datasetIndexes.size(); i++){
 			// construct string to look for symbol (codon value) that matches
 			if(dummyEncoded)
 				iter->datasetIndexes[i] = iter->datasetIndexes[i] * 2;
-			
+
 			iter->datasetIndexes[i]++; // offset to start with V1 then V2 etc
-			
+
 			// 'coin flip' to see if take first or second entry when dummy encoded
 			if(dummyEncoded && rand()/(RAND_MAX+1.0) > 0.5){
 				iter->datasetIndexes[i]++;
 			}
-			
+
 			stringstream ss;
 			ss << "G" << iter->datasetIndexes[i];
 
 			// now find codon for it by searching for match in productions of the restricted rule
 			if((mapiter=genoLocMap.find(ss.str())) == genoLocMap.end()){
 				throw AthenaExcept(ss.str() + " is not a valid genotype in grammar for initialization");
-			}	
-			
+			}
+
 			iter->codonValues.push_back(mapiter->second);
 		}
-		
+
 	}
 
 }
@@ -112,7 +112,7 @@ bool AthenaGrammarSI::growTree(DerivationTree &tree,const bool &growMethod,const
 	}
 
 	Rule *rulePtr;
-	
+
 	if(!(rulePtr=findRule(*(tree.getData())))){// No definition for the current non-terminal found
 		if((*(tree.getData())).substr(0,strlen("<GECodonValue"))=="<GECodonValue"){
 			genotype.push_back(static_cast<CodonType>(genotype.getMaxCodonValue()*(static_cast<float>(rand())/RAND_MAX)));
@@ -154,9 +154,9 @@ bool AthenaGrammarSI::growTree(DerivationTree &tree,const bool &growMethod,const
 			return false;
 		}
 		else if(rulePtr->size()>1){
-		
+
 		  // If this is a variable from the grammar (represented by <v>)
-		  // and there is a model to be used from the biofilter 
+		  // and there is a model to be used from the biofilter
 		  // and all codons haven't been taken from the model
 		  if( rulePtr == restrictRulePtr && currGramModel != gramModels.end() &&
 		    currGramModel->codonValues.size() > currModelCodonIndex){
@@ -168,7 +168,7 @@ bool AthenaGrammarSI::growTree(DerivationTree &tree,const bool &growMethod,const
 			// is more than 1 production associated with current rule
 			  genotype.push_back(possibleRules[static_cast<CodonType>(possibleRules.size()*(rand()/(RAND_MAX+1.0)))]);
 			}
-			
+
 			// Save choice
 			prodIt=rulePtr->begin()+genotype.back();
 			// Perform "unmod" on choice
@@ -262,7 +262,7 @@ bool AthenaGrammarSI::init(const unsigned int index){
 			cerr << "WARNING: invalid phenotype structure produced with Sensible Initialisation\n";
 		}
 	}
-	
+
 	// Create tails if required
 	unsigned int tailsize=0;
 	if(getTailRatio()>0.0){
@@ -278,18 +278,18 @@ bool AthenaGrammarSI::init(const unsigned int index){
 		}
 	}
 	setIndex(getIndex()+1);
-	
+
 	// increment currGramModel iterator if not already at end
 	if(currGramModel != gramModels.end())
-		++currGramModel;	
-			
+		++currGramModel;
+
 	return returnValue;
 }
 
 
 
 ///
-/// Establishes variable_codon_map for use in transferring genomes from 
+/// Establishes variable_codon_map for use in transferring genomes from
 /// one grammar to another.  The restrictRulePtr needs to be set first.
 ///
 void AthenaGrammarSI::setVariableCodonMap(){
@@ -302,13 +302,13 @@ void AthenaGrammarSI::setVariableCodonMap(){
 
 
 ///
-/// Returns codon value associated with variable.  Codon is randomly chosen 
+/// Returns codon value associated with variable.  Codon is randomly chosen
 /// @param variable string matching terminal to find
 /// @param maxCodonValue maximum possible codon value (get from genotype.getMaxCodonValue)
 /// @return codon value
 ///
 int AthenaGrammarSI::getCodonVarValue(std::string variable, int maxCodonValue){
-	return variableCodonMap[variable] + 
+	return variableCodonMap[variable] +
 		(static_cast<CodonType>((maxCodonValue/restrictRulePtr->size()*(rand()/(RAND_MAX+1.0))))*restrictRulePtr->size());
 }
 
@@ -316,7 +316,7 @@ int AthenaGrammarSI::getCodonVarValue(std::string variable, int maxCodonValue){
 ///
 /// Takes a genome translates it using current rules and then alters the variables for new mapper rules
 ///
-void AthenaGrammarSI::convertGenomeVariables(AthenaGrammarSI& newMapper, 
+void AthenaGrammarSI::convertGenomeVariables(AthenaGrammarSI& newMapper,
 	const GA1DArrayGenome<int> &genome){
 
 	setGenotype(genome);
@@ -345,7 +345,6 @@ bool AthenaGrammarSI::genotype2PhenotypeConvert(AthenaGrammarSI& newMapper, cons
 		productions.clear();
 	}
 	// Quick safety checks
-	//if((!getValidGrammar())||(!genotype.getValid())||(!getGenotype()->size())){
 	if(!getValidGrammar()){
 		phenotype.clear();
 		phenotype.setValid(false);
@@ -382,7 +381,7 @@ bool AthenaGrammarSI::genotype2PhenotypeConvert(AthenaGrammarSI& newMapper, cons
 					wraps++;
 					gotToUseWrap=false;
 				}
-		
+
 				// Check if wrap is needed
 				if(genoIt==genotype.end()){
 					genoIt=genotype.begin();
@@ -432,7 +431,7 @@ bool AthenaGrammarSI::genotype2PhenotypeConvert(AthenaGrammarSI& newMapper, cons
 /// @param buildDerivationTree
 /// @return number of codons consumed, -1 if not successful
 ///
-int AthenaGrammarSI::genotype2PhenotypeStepConvert(AthenaGrammarSI& newMapper, 
+int AthenaGrammarSI::genotype2PhenotypeStepConvert(AthenaGrammarSI& newMapper,
 	stack<const Symbol*> &nonTerminals, Genotype::iterator genoIt, bool buildDerivationTree){
 	#if (DEBUG_LEVEL >= 2)
 	cerr << "'bool GEGrammar::genotype2PhenotypeStep(stack<const Symbol*>&,Genotype::iterator&,bool)' called\n";
@@ -573,7 +572,7 @@ int AthenaGrammarSI::genotype2PhenotypeStepConvert(AthenaGrammarSI& newMapper,
 		phenoIter--;
 	  *genoIt = newMapper.getCodonVarValue(*(*phenoIter), genotype.getMaxCodonValue());
 	}
-	
+
 	return returnValue;
 }
 
@@ -584,21 +583,21 @@ int AthenaGrammarSI::genotype2PhenotypeStepConvert(AthenaGrammarSI& newMapper,
 int AthenaGrammarSI::determineBlockLength(int startCodon){
 
 	int blockSize = 0;
-	
+
 	stack<const Symbol*> nonTerminals;
-	
+
 	Symbol * startSymbol = new Symbol(codonVector[startCodon], NTSymbol);
 	nonTerminals.push(startSymbol);
-	
+
 	unsigned int wraps=0;
 	bool buildDerivationTree = false;
-	
-	// set genotype iterator to point 
+
+	// set genotype iterator to point
 	Genotype::iterator genoIt=genotype.begin();
 	for(int i=0; i<startCodon; i++){
 		genoIt++;
 	}
-	
+
 	bool gotToUseWrap=false;
 	// Get rid of all non-terminal symbols
 	while((!nonTerminals.empty())&&(wraps<=getMaxWraps())){
@@ -608,7 +607,7 @@ int AthenaGrammarSI::determineBlockLength(int startCodon){
 				break;
 			case 0:	; // no codon consumed here so don't update the multimap or vector
 				break;
-			case 1:	
+			case 1:
 			  // consumed a codon so need record block size increase
 				blockSize++;
 			  genoIt++;
@@ -616,7 +615,7 @@ int AthenaGrammarSI::determineBlockLength(int startCodon){
 					wraps++;
 					gotToUseWrap=false;
 				}
-		
+
 				// Check if wrap is needed
 				if(genoIt==genotype.end()){
 					genoIt=genotype.begin();
@@ -627,9 +626,9 @@ int AthenaGrammarSI::determineBlockLength(int startCodon){
 				cerr << "Execution aborted.\n";
 				exit(0);
 		}
-	}  
-	
-	delete startSymbol;  
+	}
+
+	delete startSymbol;
 	return blockSize;
 }
 
@@ -677,14 +676,14 @@ int AthenaGrammarSI::fillCodons(){
 	// Get rid of all non-terminal symbols
 	while((!nonTerminals.empty())&&(wraps<=getMaxWraps())){
 	  const Symbol* currentNonTerminal = nonTerminals.top();
-	  
+
 		// Do a mapping step
 		switch(genotype2PhenotypeStep(nonTerminals,genoIt,buildDerivationTree)){
 			case -1:returnValue=false;
 				break;
 			case 0:	; // no codon consumed here so don't update the multimap or vector
 				break;
-			case 1:	
+			case 1:
 			  // consumed a codon so need to store the nonterminal
 			  codonVector.push_back(*currentNonTerminal);
 			  codonMap.insert(pair<string, int>(*currentNonTerminal, newEffectiveSize));
@@ -694,7 +693,7 @@ int AthenaGrammarSI::fillCodons(){
 					wraps++;
 					gotToUseWrap=false;
 				}
-							
+
 				// Check if wrap is needed
 				if(genoIt==genotype.end()){
 					genoIt=genotype.begin();
@@ -724,8 +723,8 @@ int AthenaGrammarSI::fillCodons(){
 
 
 
-///    
-/// Returns codon matching by randomly selecting one of the 
+///
+/// Returns codon matching by randomly selecting one of the
 /// codons associated with the string indicating the rule choice (nonterminal)
 /// @param rule string
 /// @return index of codon that matches
@@ -738,7 +737,7 @@ int AthenaGrammarSI::getMatchingCodon(string rule){
 	if(count > 0){
 		pair<multimap<string, int>::iterator, multimap<string, int>::iterator> range =
 				codonMap.equal_range(rule);
-		// randomly select one of them and return that index for start 
+		// randomly select one of them and return that index for start
 		// of matching codon
 		multimap<string, int>::iterator chosenIt = range.first;
 		int chosenIterator = (rand() % count);
@@ -748,14 +747,14 @@ int AthenaGrammarSI::getMatchingCodon(string rule){
 		}
 		returnIndex = chosenIt->second;
 	}
-		
+
 	return returnIndex;
 }
 
 
 
 ///
-/// Sets genotype for use in optimization.  Marks start and end of 
+/// Sets genotype for use in optimization.  Marks start and end of
 /// every set of codons that specify a constant (weight) in the network.
 /// @param genome GA1DArrayGenome to convert for optimization
 /// @return vector with struct marking start and end of codons for
@@ -766,7 +765,7 @@ vector<AthenaGrammarSI::codonBlocks> AthenaGrammarSI::setGenotypeOpt(const GA1DA
 	// similar to original but tracks the location of blocks corresponding to the
 	// optimized values (in GENN, those are the weights -- optimized by backpropagation)
 	genotype.clear();
-	
+
 	if(genome.size()){
 		// Copy elements of GAGenome onto genotype
 		int ii=0;
@@ -780,19 +779,19 @@ vector<AthenaGrammarSI::codonBlocks> AthenaGrammarSI::setGenotypeOpt(const GA1DA
 	// call genotype2PhenotypeOpt -- sets block vector
 	genotype2PhenotypeOpt(blocks);
 
-	return blocks;  
+	return blocks;
 }
 
 
 
 ///
-/// Sets genotype for use in optimization.  Marks start and end of 
+/// Sets genotype for use in optimization.  Marks start and end of
 /// every set of codons that specify a constant (weight) in the network.
 /// @param genome GA1DArrayGenome to convert for optimization
-/// @param compressed_symbols Symbols that will be part of the 
+/// @param compressed_symbols Symbols that will be part of the
 /// compression.  So the end of the compressed codons will be the last one
 /// before a codon that is not part of this set.
-/// @param startSymbol symbol marking start of compression 
+/// @param startSymbol symbol marking start of compression
 /// @return vector with struct marking start and end of codons for
 /// later conversion
 ///
@@ -849,7 +848,6 @@ bool AthenaGrammarSI::genotype2PhenotypeOpt(vector<AthenaGrammarSI::codonBlocks>
 	bool gotToUseWrap=false;
 	// Get rid of all non-terminal symbols
 	while((!nonTerminals.empty())&&(wraps<=getMaxWraps())){
-// cout << "non terminals top=" << *(nonTerminals.top()) << endl;
 		// check top of nonTerminals to see if it is the start symbol for optimization
 		if(!inOpt){
 			if(startOptSymbol == nonTerminals.top()){
@@ -866,9 +864,8 @@ bool AthenaGrammarSI::genotype2PhenotypeOpt(vector<AthenaGrammarSI::codonBlocks>
 		else{ // currently running through optimized section of solution
 			// check to see if top of nonTerminals is still in optimized set
 			string ntString = *(nonTerminals.top());
-// cout << "ntString=" << ntString << endl;
 			if(optSymbols.find(ntString) == optSymbols.end()){
-				// found end of the current optimized 
+				// found end of the current optimized
 				inOpt=false;
 				newBlock.start = startOptSite;
 				newBlock.end = newEffectiveSize;
@@ -925,7 +922,7 @@ bool AthenaGrammarSI::genotype2PhenotypeOpt(vector<AthenaGrammarSI::codonBlocks>
 // Returns number of codons consumed, -1 if not successful
 int AthenaGrammarSI::genotype2PhenotypeStepOpt(stack<const Symbol*> &nonTerminals,
 		Genotype::iterator genoIt){
-		
+
 	#if (DEBUG_LEVEL >= 2)
 	cerr << "'bool GEGrammar::genotype2PhenotypeStep(stack<const Symbol*>&,Genotype::iterator&,bool)' called\n";
 	#endif
@@ -1053,35 +1050,33 @@ int AthenaGrammarSI::genotype2PhenotypeStepOpt(stack<const Symbol*> &nonTerminal
 	}
 
 	return returnValue;
-	
+
 }
 
 
 
 ///
-/// Returns vector of ints corresponding to block 
+/// Returns vector of ints corresponding to block
 /// @param opt_value Value that needs to be converted into grammar representation
 /// @return vector of int with values of codons needed
 ///
 vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
-	 
+
 	if(optimizedSymb.size() == 1){
 	  // find rhs that matches the value needed then return a codon for it
 	  int codon;
 	  string lhstr;
 	  vector<int> codons(1,0);
-// cout << "get codon for " << optimizedSymb[0].symbol << endl;
 	  getRuleFromProduction(optimizedSymb[0].symbol, lhstr, codons[0]);
 	  return codons;
-	} 
-	 
+	}
+
 	stack<GramElement> terms;
 	stack<GramElement> workingStack;
 	GramElement tempGram;
 	// set up stack of terminal characters
-	for(vector<optSymbol>::reverse_iterator symbIter = optimizedSymb.rbegin(); 
+	for(vector<optSymbol>::reverse_iterator symbIter = optimizedSymb.rbegin();
 		symbIter != optimizedSymb.rend(); ++symbIter){
-// cout << symbIter->symbol << " " << symbIter->noNT << endl;		 
 			tempGram.symbol = symbIter->symbol;
 			tempGram.noNT = symbIter->noNT;
 			terms.push(tempGram);
@@ -1090,10 +1085,10 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 	// have left marker and right marker set already (left_opt_bound, right_opt_bound)
 	GramElement currTerm;
 	GramElement tempTerm;
- 
+
 	// continue loop until working stack is empty (will be empty on the first pass)
 	do{
-	
+
 	while(terms.size()){
 		currTerm = terms.top();
 		terms.pop();
@@ -1102,7 +1097,7 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 			// now should check to see if the last one was a right_opt_bound character
 			// -- ')' -- that marks the end of a functional set
 			if(currTerm.symbol[0] == rightOptBound){
-				// marks the end of a set of elements -- will pop off stack until reach the 
+				// marks the end of a set of elements -- will pop off stack until reach the
 				// left hand element that marks the end -- '(' -- usually
 				GramElement workingGram = workingStack.top();
 				string workingItem = workingGram.symbol;
@@ -1110,17 +1105,17 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 				tempTerm.codons.clear();
 				tempTerm.codons.insert(tempTerm.codons.begin(), workingGram.codons.begin(), workingGram.codons.end());
 				workingStack.pop();
-				
+
 				do{
 					newProduction = workingItem + newProduction;
 					workingGram = workingStack.top();
 					workingStack.pop();
 					workingItem = workingGram.symbol;
-					// carry over codons 
+					// carry over codons
 					tempTerm.codons.insert(tempTerm.codons.begin(), workingGram.codons.begin(), workingGram.codons.end());
-				}while(workingItem[0] != leftOptBound || workingItem.size() > 1);			
+				}while(workingItem[0] != leftOptBound || workingItem.size() > 1);
 				// now check for the rule made out of these parameters
-				string leftSide;			
+				string leftSide;
 				// check to see if it needs another element from working stack
 				if(isArg.find(newProduction) != isArg.end()){
 					workingGram = workingStack.top();
@@ -1128,19 +1123,19 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 					workingItem = workingGram.symbol;
 					tempTerm.codons.insert(tempTerm.codons.begin(), workingGram.codons.begin(), workingGram.codons.end());
 					newProduction = workingItem + newProduction;
-				}				
+				}
 				int codonValue;
 				bool ruleFound = getRuleFromProduction(newProduction, leftSide, codonValue);
 				if(codonValue >= 0){
 					// insert at beginning
 					tempTerm.codons.insert(tempTerm.codons.begin(), codonValue);
 				}
-								
+
 				if(leftSide.size() > 0)
 					tempTerm.symbol = leftOptBound + leftSide + rightOptBound;
 				else
 					tempTerm.symbol = leftOptBound + newProduction + rightOptBound;
-					
+
 				// push onto terms so it will be evaluated next time through the loop
 				tempTerm.noNT = false;
 				terms.push(tempTerm);
@@ -1153,17 +1148,17 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 		}
 		else{
 			// may have a non-terminal
-			string leftSide, current=currTerm.symbol;	
-			// if the element is an argument to another element -- (<num>) for Concat -- take that element 
-			// from the working stack and check the new combined element to see if it can be 
+			string leftSide, current=currTerm.symbol;
+			// if the element is an argument to another element -- (<num>) for Concat -- take that element
+			// from the working stack and check the new combined element to see if it can be
 			// defined by a rule
 			if(isArg.find(current) != isArg.end()){
-				currTerm.codons.insert(currTerm.codons.begin(), workingStack.top().codons.begin(), 
+				currTerm.codons.insert(currTerm.codons.begin(), workingStack.top().codons.begin(),
 					workingStack.top().codons.end());
 				current = workingStack.top().symbol + current;
 				workingStack.pop();
 			}
-			
+
 			int codonValue;
 			bool rule_found = getRuleFromProduction(current, leftSide, codonValue);
 			// repeat this loop as long as the path can be followed up the rules
@@ -1174,7 +1169,7 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 				current = leftSide;
 				rule_found = getRuleFromProduction(current, leftSide, codonValue);
 			}
-			
+
 			// place last value on to workingStack for later conversion
 			workingStack.push(currTerm);
 		}
@@ -1199,7 +1194,7 @@ vector<int> AthenaGrammarSI::translateOptValue(symbVector& optimizedSymb){
 }
 
 
-/// 
+///
 /// Returns rule (left hand side) that gives the production_string passed
 /// @param production_string
 /// @param left_hand
@@ -1213,7 +1208,7 @@ bool AthenaGrammarSI::getRuleFromProduction(string& productionString, string& le
 	if(revIter != reverseRules.end()){
 
 		leftHand = revIter->second.rule;
-		
+
 		// adjust codon by unmodding it
 		if(revIter->second.codon >= 0)
 			 codon = revIter->second.codon + static_cast<CodonType>((genotype.getMaxCodonValue()/revIter->second.numCodons*(rand()/(RAND_MAX+1.0))))*revIter->second.numCodons;
@@ -1241,14 +1236,14 @@ void AthenaGrammarSI::constructReverseGrammar(){
 
 	reverseRules.clear();
 	reverseRule reverse;
-	
+
 	// iterate through the grammar
 	for(vector<Rule>::iterator ruleIter = begin(); ruleIter != end(); ++ruleIter){
 		string ruleString = *(ruleIter->lhs.front());
 		for(unsigned int prod=0; prod < ruleIter->size(); prod++){
 			// construct the right-side string that will be used to map back which codon to use
 			string rightSideString;
-			for(vector<Symbol*>::iterator symbIter=ruleIter->at(prod).begin(); 
+			for(vector<Symbol*>::iterator symbIter=ruleIter->at(prod).begin();
 				symbIter!=ruleIter->at(prod).end(); ++symbIter){
 					rightSideString += **symbIter;
 			}
@@ -1257,7 +1252,7 @@ void AthenaGrammarSI::constructReverseGrammar(){
 				reverse.codon=-1;
 			else
 				reverse.codon = prod;
-					 
+
 			reverse.numCodons = int(ruleIter->size());
 			reverseRules[rightSideString] = reverse;
 		}
@@ -1276,7 +1271,7 @@ int AthenaGrammarSI::buildDerivationTree(){
 
 		// have to fill the production vector
 		productions.clear();
-		
+
 		derivationTree.setData(getStartSymbol());
 	// Wraps counter and nonTerminals stack
 	unsigned int wraps=0;
@@ -1286,13 +1281,13 @@ int AthenaGrammarSI::buildDerivationTree(){
 	iterator ruleIt;
 	Rule::iterator prodIt;
 	Genotype::iterator genoIt=genotype.begin();
-	
+
 		// Start with the start symbol
 	nonTerminals.push(getStartSymbol());
 	bool gotToUseWrap=false;
-	
+
 	derivationTree.setData(getStartSymbol());
-	
+
 	// Get rid of all non-terminal symbols
 	while((!nonTerminals.empty())&&(wraps<=getMaxWraps())){
 		// Do a mapping step
@@ -1318,8 +1313,8 @@ int AthenaGrammarSI::buildDerivationTree(){
 				cerr << "Execution aborted.\n";
 				exit(0);
 		}
-	}	
-	
+	}
+
 		if((wraps>getMaxWraps())||(!nonTerminals.empty())){
 		returnValue=false;
 		// Add remaining symbols in noerminals queue to phenotype
@@ -1328,18 +1323,18 @@ int AthenaGrammarSI::buildDerivationTree(){
 			nonTerminals.pop();
 		}
 	}
-	
+
 		phenotype.setValid(returnValue);
 	  genotype.setEffectiveSize(newEffectiveSize);
-	  genotype.setWraps(wraps); 
-		
+	  genotype.setWraps(wraps);
+
 		derivationTree.clear();
 		derivationTree.setData(getStartSymbol());
 		derivationTree.setCurrentLevel(1);
 		derivationTree.setDepth(1);
 		vector<Production*>::iterator prodIterator=productions.begin();
 		buildDTree(derivationTree,prodIterator);
-		
+
 		return getMax(derivationTree);
 }
 
@@ -1400,7 +1395,7 @@ void AthenaGrammarSI::changeVariables(GA1DArrayGenome<int>& genome, map<int, Sol
 	iterator ruleIt;
 	Rule::iterator prodIt;
 	int genoIt=0;
-	
+
 	// Start with the start symbol
 	nonterminals.push(getStartSymbol());
 
@@ -1559,7 +1554,7 @@ int AthenaGrammarSI::genotype2PhenotypeStepReplaceVar(stack<const Symbol*> &nont
 				  // change genotype
 				  genome.gene(genoIt, variableMap[phenoIndex].newValue);
 				}
-				
+
 				s_start++;
 			}
 			// Push all remaining symbols from production onto nonterminals queue, backwards

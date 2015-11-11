@@ -51,8 +51,6 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 
 	ofstream outfile;
 	outfile.open(summaryName.c_str(), ios::out);
-// 	outfile << setw(5) << left << "CV" << setw(width) << "Variables" << " " << setw(20) << fitnessName + " Training"
-// 						<< " " << setw(10) << "Testing" << endl;
 		outfile << "CV\tVariables\t"  << fitnessName + " Training\tTesting";
 	for(unsigned int i=0; i<additionalHeaders.size(); i++){
 		outfile << "\tTraining-" << additionalHeaders[i];
@@ -64,48 +62,6 @@ void OutputManager::setFiles(bool mapFileUsed, string fitnessName,
 	outfile << endl;
 	outfile.close();
 }
-
-// ///
-// /// Checks existing summary file and stores lines for output
-// /// when a CV restart is being performed
-// ///
-// void OutputManager::storeSumInfo(){
-//
-// 	string summaryName = getSummaryFileName();
-//
-// 	ifstream infile;
-// 	infile.open(summaryName.c_str(), std::ifstream::in);
-//
-// 	if(infile.is_open()){
-// 		equationLines.clear();
-// 		modelLines.clear();
-//
-// 		string line;
-// 		while(getline(infile, line)){
-// 			if(line.find("Model") != string::npos){
-// 			}
-// 			else if(line.find("Internal") != string::npos){
-// 			}
-// 		}
-//
-// 	}
-//
-// 	infile.close();
-// }
-
-
-// void OutputManager::storeLines(ifstream& is, vector<string>& storedLines){
-//
-// 	string line;
-// 	while(getline(is, line){
-// 	  // store until blank line reached
-// 		if(line.find_first_of("1234567890ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz") == string::npos){
-// 			break;
-// 		}
-// 	}
-//
-// }
-
 
 ///
 /// outputs summary of best models
@@ -279,9 +235,6 @@ void OutputManager::outputBestModels(Population& pop, int nmodels, int currPop,
 					for(unsigned int i=0; i<addHeaders.size(); i++){
 						outfile << "Training-" << addHeaders[i] << ":\t" << bestSolution->getAdditionalOutput()[i] << endl;
 					}
-// 					for(unsigned int i=0; i<addHeaders.size(); i++){
-// 						outfile <<  "Testing-" << addHeaders[i] << ":\t" << bestSolution->getAdditionalOutput()[i + addHeaders.size()] << endl;
-// 					}
 				}
 				outfile << "Model:" << endl;
 				bestSolution->outputClean(outfile, data, mapUsed, ottDummy, continMapUsed);
@@ -313,8 +266,7 @@ void OutputManager::outputAllModels(Algorithm* alg, Population& pop, int rank, i
 			outfile << "\tTesting-" << addHeaders[i];
 		}
 	}
-//	outfile << "\n";
-outfile << endl;
+	outfile << "\n";
 	Solution* bestSolution;
 	for(int mod=0; mod < pop.getPopSize(); mod++){
 		bestSolution = pop[mod];
@@ -338,8 +290,7 @@ outfile << endl;
 					outfile << bestSolution->getAdditionalOutput()[i + addHeaders.size()];
 			}
 		}
-//		outfile << "\n";
-outfile << endl;
+	outfile << "\n";
 	}
 }
 
@@ -542,8 +493,6 @@ void OutputManager::outputGraphic(Algorithm* alg, Population& pop, int currPop, 
 	if(ext.length() > 0){
 		for(int mod=0; mod < nmodels; mod++){
 			ofstream outfile;
-// 			string currFileName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." +
-// 					Stringmanip::numberToString(mod+1) + ext;
 			string imgFileBaseName = basename + ".cv" + Stringmanip::numberToString(currPop+1) + "." +
 					Stringmanip::numberToString(mod+1);
 			string currFileName = imgFileBaseName + ext;

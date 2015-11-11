@@ -73,7 +73,6 @@ void Dataholder::addInd(Individual* ind){
 void Dataholder::addDefaultSnps(){
 	 unsigned int total = numGenos();
 	 for(unsigned int i=1; i<=total; i++){
-// 		 addGenoName(Stringmanip::itos(i));
 		 addGenoName(Stringmanip::numberToString(i));
 	 }
 }
@@ -84,7 +83,6 @@ void Dataholder::addDefaultSnps(){
 void Dataholder::addDefaultCovars(){
 		unsigned int total = inds[0]->numCovariates();
 		for(unsigned int i=1; i<=total; i++){
-// 			addCovarName(Stringmanip::itos(i));
 			addCovarName(Stringmanip::numberToString(i));
 		}
 }
@@ -97,7 +95,7 @@ void Dataholder::addDefaultCovars(){
 void Dataholder::checkVariance(CVSet& cvSet){
 
 	unsigned int nIntervals = cvSet.numIntervals();
-	
+
 	if(nIntervals == 1){
 		// check entire set at one time
 		checkVariance();
@@ -110,10 +108,10 @@ void Dataholder::checkVariance(CVSet& cvSet){
 			Dataset trainSet = cvInt.getTraining();
 			Dataset testSet = cvInt.getTesting();
 			checkVariance(trainSet);
-			checkVariance(testSet);	
+			checkVariance(testSet);
 		}
 	}
-	
+
 }
 
 
@@ -126,7 +124,7 @@ void Dataholder::checkVariance(Dataset& dataSet){
 	unsigned int nContin = dataSet.numCovariates();
 	stat::Descriptive devCalculator;
 	vector<float> vals(nInds, 0.0);
-	
+
 	// check each geno
 	for(unsigned int i=0; i<nGenos; i++){
 		for(unsigned int j=0; j<nInds; j++){
@@ -137,7 +135,7 @@ void Dataholder::checkVariance(Dataset& dataSet){
 			excludedGenos.push_back(i);
 		}
 	}
-	
+
 	// check each continuous variable
 	for(unsigned int i=0; i<nContin; i++){
 		for(unsigned int j=0; j<nInds; j++){
@@ -147,7 +145,7 @@ void Dataholder::checkVariance(Dataset& dataSet){
 		if(stdDev == 0){
 			excludedContin.push_back(i);
 		}
-	}		
+	}
 }
 
 
@@ -164,7 +162,7 @@ void Dataholder::checkVariance(){
 	unsigned int nContin = numCovariates();
 	stat::Descriptive devCalculator;
 	vector<float> vals(nInds, 0.0);
-	
+
 	// check each geno
 	for(unsigned int i=0; i<nGenos; i++){
 		for(unsigned int j=0; j<nInds; j++){
@@ -175,7 +173,7 @@ void Dataholder::checkVariance(){
 			excludedGenos.push_back(i);
 		}
 	}
-	
+
 	// check each continuous variable
 	for(unsigned int i=0; i<nContin; i++){
 		for(unsigned int j=0; j<nInds; j++){
@@ -185,7 +183,7 @@ void Dataholder::checkVariance(){
 		if(stdDev == 0){
 			excludedContin.push_back(i);
 		}
-	}	
+	}
 }
 
 

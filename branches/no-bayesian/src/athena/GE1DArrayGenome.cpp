@@ -54,7 +54,7 @@ void GE1DArrayGenome::copy(const GAGenome& source)
 	if (&source != this)
 	{
 		GA1DArrayGenome<int>::copy(source);
-		const GE1DArrayGenome& ge1DArrayGenome = 
+		const GE1DArrayGenome& ge1DArrayGenome =
 			static_cast<const GE1DArrayGenome&>(source);
 		this->helpCopy(ge1DArrayGenome);
 	}
@@ -62,20 +62,20 @@ void GE1DArrayGenome::copy(const GAGenome& source)
 
 void GE1DArrayGenome::copy(const GE1DArrayGenome& orig,
 	int r, int x, unsigned int& l){
-	
+
 	const GA1DArrayGenome<int>& g = DYN_CAST(const GA1DArrayGenome<int>&, orig);
-	
+
 	GA1DArrayGenome<int>::copy(g,r,x,l);
-	
-	
+
+
 }
 
 
 void GE1DArrayGenome::copy(GE1DArrayGenome& orig,
 	int r, int x, unsigned int l){
-	
+
 	const GA1DArrayGenome<int>& g = DYN_CAST(const GA1DArrayGenome<int>&, orig);
-	
+
 	GA1DArrayGenome<int>::copy(g,r,x,l);
 }
 
@@ -157,7 +157,7 @@ void GE1DArrayGenome::addGenos(vector<int> g){
 
 vector<int>& GE1DArrayGenome::getGenos()
 {return genos;}
-	
+
 void GE1DArrayGenome::addCovar(int c)
 {covars.push_back(c);}
 
@@ -207,24 +207,24 @@ void GE1DArrayGenome::setGramDepth(const unsigned int depth){
 
 
 // Allow crossover only on effective length of individuals
-int GE1DArrayGenome::effCrossover(const GAGenome &p1, 
-			       const GAGenome &p2, 
-			       GAGenome *c1, 
+int GE1DArrayGenome::effCrossover(const GAGenome &p1,
+			       const GAGenome &p2,
+			       GAGenome *c1,
 			       GAGenome *c2){
-			       
+
 	const GE1DArrayGenome &mom = DYN_CAST(const GE1DArrayGenome &, p1);
-	const GE1DArrayGenome &dad = DYN_CAST(const GE1DArrayGenome &, p2);		       
+	const GE1DArrayGenome &dad = DYN_CAST(const GE1DArrayGenome &, p2);
 	int nc=0;
 	unsigned int momsite, momlen;
 	unsigned int dadsite, dadlen;
 
 	if(c1 && c2){
 		GE1DArrayGenome &sis=DYN_CAST(GE1DArrayGenome &, *c1);
-		GE1DArrayGenome &bro=DYN_CAST(GE1DArrayGenome &, *c2);	       
-		
+		GE1DArrayGenome &bro=DYN_CAST(GE1DArrayGenome &, *c2);
+
 		if(sis.resizeBehaviour() == GAGenome::FIXED_SIZE &&
 			 bro.resizeBehaviour() == GAGenome::FIXED_SIZE){
-			if(mom.length() != dad.length() || 
+			if(mom.length() != dad.length() ||
 	 sis.length() != bro.length() ||
 	 sis.length() != mom.length()){
 	GAErr(GA_LOC, mom.className(), "effective cross", gaErrSameLengthReqd);
@@ -260,17 +260,17 @@ int GE1DArrayGenome::effCrossover(const GAGenome &p1,
 			sis.resize(momsite+dadlen);
 			bro.resize(dadsite+momlen);
 		}
-	
+
 		sis.copy(mom, 0, 0, momsite);
 		sis.copy(dad, momsite, dadsite, dadlen);
 		bro.copy(dad, 0, 0, dadsite);
 		bro.copy(mom, dadsite, momsite, momlen);
-		
+
 		nc=2;
 	}
 	else if(c1 || c2){
-		GE1DArrayGenome &sis = (c1 ? 
-			       DYN_CAST(GE1DArrayGenome &, *c1) : 
+		GE1DArrayGenome &sis = (c1 ?
+			       DYN_CAST(GE1DArrayGenome &, *c1) :
 			       DYN_CAST(GE1DArrayGenome &, *c2));
 
 		if(sis.resizeBehaviour() == GAGenome::FIXED_SIZE){
@@ -297,10 +297,10 @@ int GE1DArrayGenome::effCrossover(const GAGenome &p1,
 	    else{
 		    // Choose point from effective length
 		    dadsite = GARandomInt(0, dad.getEffectiveSize()-1);
-		  } 
+		  }
 			sis.resize(momsite+dadlen);
 		}
-		
+
 		if(GARandomBit()){
 			sis.copy(mom, 0, 0, momsite);
 			sis.copy(dad, momsite, dadsite, dadlen);
@@ -312,12 +312,12 @@ int GE1DArrayGenome::effCrossover(const GAGenome &p1,
 
 		nc = 1;
 	}
-	
+
 	return nc;
 }
 
 
- 
+
 void GE1DArrayGenome::establish(){
   	if(estab){
   		(*estab)(*this);
@@ -331,16 +331,16 @@ void GE1DArrayGenome::establish(){
 ///
 int GE1DArrayGenome::pruneAndPlant(GAGenome* startGenome,
 	GAGenome* planted){
- 
+
 	GAGenome * cloned = startGenome->clone();
 	const GE1DArrayGenome &orig=DYN_CAST(GE1DArrayGenome &, *cloned);
 	int inc=0;
-	
+
 	GE1DArrayGenome &prune=DYN_CAST(GE1DArrayGenome &, *startGenome);
 	GE1DArrayGenome &plant=DYN_CAST(GE1DArrayGenome &, *planted);
 
 	mapper->setGenotype(orig);
-	Phenotype const *phenotype=mapper->getPhenotype();  
+	Phenotype const *phenotype=mapper->getPhenotype();
 
 	// if not valid, make pruned a copy and use sensible init to create a planted one
 	if(!phenotype->getValid()){
@@ -350,11 +350,11 @@ int GE1DArrayGenome::pruneAndPlant(GAGenome* startGenome,
 		delete cloned;
 		return inc=1;
 	}
- 
+
 	// when valid look for an <expr> to use as basis for prune and plant
 	// establish codons
 	mapper->establishCodons(orig);
-	
+
 	string ruleString = "<expr>";
 
 	unsigned int origsite = mapper->getMatchingCodon(ruleString);
@@ -375,13 +375,13 @@ int GE1DArrayGenome::pruneAndPlant(GAGenome* startGenome,
 	prune.copy(plant,int(origsite),0,(unsigned int)plant.length());
 	unsigned int endpoint = orig.length()-(origsite+origBlockLen);
 	prune.copy(orig,int(origsite+plant.length()),int(origsite+origBlockLen),endpoint);
- 
-	//resize the planted one with block length 
+
+	//resize the planted one with block length
 	//and copy over the codons to it
 	plant.resize(origBlockLen);
 	endpoint = (unsigned int)origBlockLen;
 	plant.copy(orig, 0, origsite,endpoint);
- 
+
 	mapper->setMaxDepth(origMaxDepth);
 	delete cloned;
 	return inc=1;
@@ -391,24 +391,24 @@ int GE1DArrayGenome::pruneAndPlant(GAGenome* startGenome,
 
 ///
 /// Crosses over at same nonterminal point to and then swap the codons
-/// for each genome at that block.  
+/// for each genome at that block.
 ///
 int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 			  const GAGenome& p2,
-			  GAGenome* c1, 
+			  GAGenome* c1,
 			  GAGenome* c2){
 	// when one or the other is invalid (perform effCrossover instead)
 	const GE1DArrayGenome &mom = DYN_CAST(const GE1DArrayGenome &, p1);
-	const GE1DArrayGenome &dad = DYN_CAST(const GE1DArrayGenome &, p2);		       
+	const GE1DArrayGenome &dad = DYN_CAST(const GE1DArrayGenome &, p2);
 	// when neither is valid use standard effective crossover
 	if(!mom.isValid() && !dad.isValid()){
 		return effCrossover(p1,p2,c1,c2);
 	}
-// cout << "block cross" << endl;	
+// cout << "block cross" << endl;
 	int nc=0;
 	int momsite;
 	int dadsite;
-	
+
 	if(c1 && c2){
 		GE1DArrayGenome &sis=DYN_CAST(GE1DArrayGenome &, *c1);
 		GE1DArrayGenome &bro=DYN_CAST(GE1DArrayGenome &, *c2);
@@ -420,12 +420,12 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 			return nc;
 		}
 		else{
-			
+
 			// check for case where one is valid and other is not
 			if(!mom.isValid()){
 				unsigned int dadl = dad.length();
 				dadsite = GARandomInt(0, dad.getEffectiveSize()-1);
-				unsigned int msite = GARandomInt(0, mom.length()-1);        
+				unsigned int msite = GARandomInt(0, mom.length()-1);
 				unsigned int dadlen = dad.length() - dadsite;
 				sis.resize(msite + dadlen);
 				sis.copy(mom, 0, 0, msite); // create new genome from dad and mom
@@ -444,33 +444,13 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 				bro.copy(mom, dsite, momsite, momlen);
 				return nc = 2;
 			}
-			
-// mapper->setGenotype(mom);
-// cout << "MOM: ";
-// Phenotype const *phenotype=mapper->getPhenotype();
-// unsigned int phenoSize=(*phenotype).size();
-// 			for(unsigned int i=0; i<phenoSize; ++i){
-// cout << *((*phenotype)[i]) << "|";
-// 			}
-// cout << endl;			
-// mapper->setGenotype(dad);
-// Phenotype const *phenotype2=mapper->getPhenotype();
-// phenoSize=(*phenotype2).size(); 
-// cout << "DAD: ";
-// 			for(unsigned int i=0; i<phenoSize; ++i){
-// cout <<*((*phenotype2)[i]) << "|";
-// 			}
-// cout << endl;		
 
-			
-// cout << "VALID CXROSS" << endl;
 			// select random site on the mother chromosome
 			momsite = GARandomInt(0, mom.getEffectiveSize()-1);
-			
+
 			// determine the non-terminal at that location
 			mapper->establishCodons(mom);
 			int momBlockLen = mapper->determineBlockLength(momsite);
-// cout << "momBlockLen=" << momBlockLen << endl;
 			// if not complete block copy original over (or can do effCrossover with these)
 			if(momBlockLen < 0){
 				unsigned int moml = mom.length();
@@ -480,7 +460,6 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 			}
 			else{
 				string ruleString = mapper->getRuleString(momsite);
-// cout << "ruleString=" << ruleString << endl;
 				// have valid block from mom so find corresponding block in dad
 				mapper->establishCodons(dad);
 				dadsite = mapper->getMatchingCodon(ruleString);
@@ -488,12 +467,11 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 				int dadBlockLen = -1;
 				if(dadsite >= 0)
 					dadBlockLen = mapper->determineBlockLength(dadsite);
-// cout << "dadBLockLen=" << dadBlockLen << endl;		
 				if(dadBlockLen < 0){
 					unsigned int moml = mom.length();
 					unsigned int dadl = dad.length();
 					sis.copy(mom,0,0,moml);
-					bro.copy(dad,0,0,dadl);          
+					bro.copy(dad,0,0,dadl);
 				}
 				else{
 					// everything ok so copy to the new genomes, swapping the blocks in the parents
@@ -505,56 +483,36 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 					sis.copy(dad, momsite, dadsite, dBLockLen);
 					unsigned int endpoint = mom.length()-(msite+mBlockLen);
 					sis.copy(mom,momsite+dadBlockLen, momsite+momBlockLen, endpoint);
-					
+
 					// copy other genome
 					bro.resize(dad.length()-dadBlockLen+momBlockLen);
 					unsigned int dsite = dadsite;
 					bro.copy(dad,0,0,dsite);
 					bro.copy(mom,dadsite,momsite,mBlockLen);
 					endpoint = dad.length()-(dadsite+dadBlockLen);
-					bro.copy(dad, dadsite+momBlockLen, dadsite+dadBlockLen, endpoint);          
-
-// mapper->setGenotype(sis);
-// cout << "SIS: ";
-// Phenotype const *phenotype3=mapper->getPhenotype();
-// phenoSize=(*phenotype3).size(); 
-// 			for(unsigned int i=0; i<phenoSize; ++i){
-// cout << *((*phenotype3)[i]) << "|";
-// 			}
-// cout << endl;			
-// mapper->setGenotype(bro);
-// Phenotype const *phenotype4=mapper->getPhenotype();
-// phenoSize=(*phenotype4).size();
-// cout << "BRO: ";
-// 			for(unsigned int i=0; i<phenoSize; ++i){
-// cout << *((*phenotype4)[i])<< "|";
-// 			}
-// cout << endl;
-
-
-
+					bro.copy(dad, dadsite+momBlockLen, dadsite+dadBlockLen, endpoint);
 				}
-				
+
 			}
 			nc = 2;
-			}     
+			}
 		}
 		else if(c1 || c2){
-			GE1DArrayGenome &sis = (c1 ? 
-			  DYN_CAST(GE1DArrayGenome&, *c1) : 
+			GE1DArrayGenome &sis = (c1 ?
+			  DYN_CAST(GE1DArrayGenome&, *c1) :
 				DYN_CAST(GE1DArrayGenome&, *c2));
-				
+
 			// when fixed size required return an error
 			if(sis.resizeBehaviour() == GAGenome::FIXED_SIZE){
 	        GAErr(GA_LOC, mom.className(), "one-point cross", gaErrSameLengthReqd);
 	        return nc;
-			}		  
+			}
 		  else{
-		    // determine which will be base genome      
+		    // determine which will be base genome
 				bool change = GARandomBit();
-				
-				
-				// when one parent is not valid 
+
+
+				// when one parent is not valid
 				// copy the other parent as new child so that blocks are maintained
 				if(!dad.isValid()){
 						sis.resize(mom.length());
@@ -568,10 +526,10 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 						sis.copy(dad,0,0,dadl);
 						return nc=1;
 				}
-				
+
 				const GE1DArrayGenome* startParent = (change?&mom:&dad);
 				const GE1DArrayGenome* otherParent = (change?&dad:&mom);
-				
+
 				int startsite = GARandomInt(0, startParent->getEffectiveSize()-1);
 				// determine the non-terminal at that location
 				mapper->establishCodons(*startParent);
@@ -593,9 +551,9 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 							sis.copy(*startParent, 0, 0, startl);
 							return nc=1;
 					}
- 
+
 					int otherBlockLen = mapper->determineBlockLength(othersite);
-				
+
 					if(otherBlockLen < 0){
 						unsigned int startl = startParent->length();
 						sis.copy(*startParent,0,0,startl);
@@ -623,14 +581,14 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 // Calculate number of mutations based on length and do those
 int GE1DArrayGenome::codonMutator(GAGenome & g, float pmut){
 	GA1DArrayGenome<int>& genome = (GA1DArrayGenome<int>&)g;
-	
+
 	// if pmut is zero return 0 for no mutations done
 	if(pmut <= 0.0)
 		return 0;
-	
+
 	float nmut = genome.length() * pmut;
 	register int i,n;
-	
+
 	int length = genome.length()-1;
 	// when total is less than one have to check each codon
 	if(nmut < 1.0){
@@ -645,7 +603,7 @@ int GE1DArrayGenome::codonMutator(GAGenome & g, float pmut){
 	}
 	return nmut;
 }
- 
+
 int
 GE1DArrayGenome::output(ostream & os) const
 {

@@ -66,8 +66,8 @@ void TerminalSymbCreator::setGrammerOptimization(string optName){
 TerminalSymbol* TerminalSymbCreator::getTerm(string& symbol){
 		if(terminalMap.find(symbol) == terminalMap.end())
 				throw AthenaExcept("No terminal match for " + symbol);
-		
-		return terminalMap[symbol]; 
+
+		return terminalMap[symbol];
 }
 
 
@@ -81,20 +81,19 @@ std::string TerminalSymbCreator::getGenoName(int varIndex){
 }
 
 ///
-/// Adds variable terminals to map for use in constructing 
+/// Adds variable terminals to map for use in constructing
 /// neural networks.
 /// @param num_variables
-/// 
+///
 void TerminalSymbCreator::addGenotypeVariables(int numVariables){
 		int g;
 		string name;
 		for(g=0; g<numVariables; g++){
-// 				name = "G" + Stringmanip::numberToString(g);
 				name = getGenoName(g);
 				terminalMap[name] = new GenotypeTerm(name, g);
-				
+
 		}
-		
+
 }
 
 
@@ -113,22 +112,21 @@ std::string TerminalSymbCreator::getContinName(int varIndex){
 /// neural networks
 /// @param numVariables
 ///
-void TerminalSymbCreator::addContinVariables(int numVariables){ 
+void TerminalSymbCreator::addContinVariables(int numVariables){
 		int c;
 		string name;
- 
+
 		for(c=0; c<numVariables; c++){
-// 				name = "C" + Stringmanip::numberToString(c);
 				name = getContinName(c);
 				terminalMap[name] = new ContinVariable(name, c);
 		}
-		
+
 }
 
 
 ///
 /// Sets the individual in the Genotype and Variable classes
-/// @param ind Individual 
+/// @param ind Individual
 ///
 void TerminalSymbCreator::setInd(Individual* ind){
 		GenotypeTerm::setInd(ind);
@@ -141,11 +139,11 @@ void TerminalSymbCreator::setInd(Individual* ind){
 /// on symbol passed in
 /// @param symbol for selecting appropriate terminal
 /// @param num_args number of arguments the terminal accepts
-/// @return new Terminal 
+/// @return new Terminal
 ///
-void TerminalSymbCreator::createTerminals(int numGenotypes, 
+void TerminalSymbCreator::createTerminals(int numGenotypes,
 				int numCovariates){
-		
+
 	// create terminals
 	terminalMap["+"] = new Addition("+", 2);
 	terminalMap["-"] = new Subtraction("-", 2);
@@ -180,7 +178,7 @@ void TerminalSymbCreator::createTerminals(int numGenotypes,
 	terminalMap["->"] = new TerminalSymbol("^", 0);
 	terminalMap["nc"] = new TerminalSymbol("nc",0);
 	terminalMap["pheno"] = new PhenotypeTerm("Pheno");
-	
+
 	// set the special terminals for quick access
 	rParen = terminalMap[")"];
 	lParen = terminalMap["("];
@@ -188,7 +186,7 @@ void TerminalSymbCreator::createTerminals(int numGenotypes,
 	concat = terminalMap["Concat"];
 	connect = terminalMap["^"];
 	phenoPtr = terminalMap["pheno"];
-	
+
 	// create the constants
 	terminalMap["-1"] = createConstant("-1");
 	terminalMap["0"] = createConstant("0");
@@ -215,21 +213,11 @@ void TerminalSymbCreator::createTerminals(int numGenotypes,
 
 	addGenotypeVariables(numGenotypes);
 	addContinVariables(numCovariates);
-	
-	// create optSymbol structs for use in creating terminals from constant value
-// 	leftParenSymb.symbol = "(";
-// 	leftParenSymb.noNT = true;
-// 	rightParenSymb.symbol = ")";
-// 	rightParenSymb.noNT = true;
-// 	concatSymb.symbol = "Concat";
-// 	concatSymb.noNT = false;
-// 	periodSymb.symbol = ".";
-// 	periodSymb.noNT = true;
 }
 
-/// 
+///
 /// Creates a constant TerminalSymbol
-/// @param symbol  
+/// @param symbol
 ///
 TerminalSymbol * TerminalSymbCreator::createConstant(const string& symbol){
 	return new Constant(symbol, 0);
@@ -238,209 +226,20 @@ TerminalSymbol * TerminalSymbCreator::createConstant(const string& symbol){
 
 void TerminalSymbCreator::addConstant(const string& symbol){
 	terminalMap[symbol]=createConstant(symbol);
-	
-// 	constantSet.insert(terminalMap[symbol]);
+
 	grammarOptimizer->addNumberConstant(terminalMap[symbol]);
 }
 
 
-// TerminalSymbol* TerminalSymbCreator::getClosestConstant(float value){
-// 	ConstantPointer temp;
-// 	temp.value = value;
-// 	std::set<ConstantPointer>::iterator upperIter = constantSet.upper_bound(temp);
-// 	std::set<ConstantPointer>::iterator lowerIter = constantSet.lower_bound(temp);
-// 	if((value-lowerIter->value) < (upperIter->value-value))
-// 		return lowerIter->cons;
-// 	else
-// 		return upperIter->cons;
-// }
-
-
-/// 
+///
 /// Creates a string of symbols for grammar use based on a constant value
 /// @param value float version of the number to create in the grammar
 ///
-void TerminalSymbCreator::terminalsFromConstant(float value, 
+void TerminalSymbCreator::terminalsFromConstant(float value,
 	symbVector& optSymbols){
-	
-	grammarOptimizer->terminalsFromConstant(value, optSymbols);
-	
-// 	optSymbols.clear();
-// 	
-// 	stringstream ss;
-// 
-// 	bool negative=false;
-// 	
-// 	if(value < 0){
-// 		value = fabs(value);
-// 		negative = true;
-// 	}
-// 	
-// 	optSymbol tempSymb;
-// 	
-// 	// when too small just make the weight be zero and return
-// 	if(value < 0.0001){
-// 		optSymbols.push_back(concatSymb);
-// 		optSymbols.push_back(leftParenSymb);
-// 		tempSymb.symbol = "0";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);    
-// 		tempSymb.symbol = "1";
-// 		tempSymb.noNT = true;
-// 		optSymbols.push_back(tempSymb);
-// 		optSymbols.push_back(rightParenSymb);
-// 		return;
-// 	}
-// 	
-// 	// need to subtract from 0 for a negative number
-// 	if(negative){
-// 		optSymbols.push_back(leftParenSymb);
-// 		optSymbols.push_back(concatSymb);
-// 		optSymbols.push_back(leftParenSymb);
-// 		tempSymb.symbol = "0";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);
-// 		tempSymb.symbol = "1";
-// 		tempSymb.noNT = true;
-// 		optSymbols.push_back(tempSymb);
-// 		optSymbols.push_back(rightParenSymb);   
-// 		tempSymb.symbol = "-";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);
-// 
-// 	}
-// 	
-// 	// check size of value to see if it is too big 
-// 	// when too big need to multiply by appropriate value and
-// 	// when too small need to divide by appropriate value
-// 	// -- as of now range is from 99.99 * 99.99 to 0.01 * 0.01
-// 	// or (9998.0001 to 0.0001) 
-// 	if(value > 9998.0001)
-// 		value = 9998.0001;
-// 	
-// 	if(value <= 99.99 and value >= 0.01){
-// 		optSymbols.push_back(concatSymb);
-// 		optSymbols.push_back(leftParenSymb); 
-// 		getStringFromNum(value, optSymbols);
-// 		optSymbols.push_back(rightParenSymb);
-// 	}
-// 	else if(value > 99.99){
-// 		optSymbols.push_back(leftParenSymb);
-// 		float newvalue = value / 99.99;
-// 		optSymbols.push_back(concatSymb);
-// 		optSymbols.push_back(leftParenSymb);
-// 		
-// 		getStringFromNum(newvalue, optSymbols);
-// 		optSymbols.push_back(rightParenSymb);
-// 	
-// 		tempSymb.symbol = "*";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);
-// 		
-// 		optSymbols.push_back(concatSymb);
-// 		optSymbols.push_back(leftParenSymb);
-// 
-// 		tempSymb.symbol = "9";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);
-// 		
-// 		tempSymb.symbol = "9";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);
-// 		
-// 		optSymbols.push_back(periodSymb);
-// 		tempSymb.symbol = "9";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);    
-// 		
-// 		tempSymb.symbol = "9";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);
-// 		
-// 		tempSymb.symbol = "5";
-// 		tempSymb.noNT = true;
-// 		optSymbols.push_back(tempSymb);
-// 		
-// 		optSymbols.push_back(rightParenSymb);
-// 		optSymbols.push_back(rightParenSymb);
-// 	}
-// 	else if(value < 0.01){
-// 		optSymbols.push_back(leftParenSymb);
-// 
-// 		float newvalue = value / 0.01;
-// 		optSymbols.push_back(concatSymb);
-// 	
-// 		optSymbols.push_back(leftParenSymb);
-// 		getStringFromNum(newvalue, optSymbols);
-// 		optSymbols.push_back(rightParenSymb);
-// 
-// 		tempSymb.symbol = "*";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);    
-// 		optSymbols.push_back(concatSymb);
-// 		optSymbols.push_back(leftParenSymb);
-// 		optSymbols.push_back(periodSymb);
-// 
-// 		tempSymb.symbol = "0";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb); 
-// 
-// 		tempSymb.symbol = "1";
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);     
-// 
-// 		tempSymb.symbol = "3";
-// 		tempSymb.noNT = true;
-// 		optSymbols.push_back(tempSymb);     
-// 
-// 		optSymbols.push_back(rightParenSymb);
-// 		
-// 		optSymbols.push_back(rightParenSymb);
-// 	}
-// 
-// 	if(negative)
-// 		optSymbols.push_back(rightParenSymb);
 
+	grammarOptimizer->terminalsFromConstant(value, optSymbols);
 }
 
-
-///
-/// converts the value into a string -- assumes values are no greater than 99.99
-/// @param value
-/// @param symbols to add to 
-///
-// void TerminalSymbCreator::getStringFromNum(float value, symbVector& optSymbols){
-// 	
-// 	string numString;
-// 	stringstream ss;
-// 	ss << value;
-// 	numString = ss.str(); 
-// 	// no decimal point
-// 	if(int(value) <= 9 && numString.find(".")==string::npos){ 
-// 		ss.str("");
-// 		ss << int(value);
-// 		numString = ss.str();
-// 	}
-// 	else{ // make sure there are 2 numbers after decimal point
-// 		ss.str("");
-// 	 ss << setiosflags(ios::fixed) << setprecision(2) << value;
-// 		numString = ss.str();
-// 	}
-// 	
-// 	optSymbol tempSymb;
-// 	// add symbols to the symbVector (each digit and the decimal)
-// 	for(string::iterator striter = numString.begin(); striter != numString.end();
-// 		striter++){
-// 		tempSymb.symbol = *striter;
-// 		tempSymb.noNT = false;
-// 		optSymbols.push_back(tempSymb);
-// 	}
-// 	
-// 	ss.str("");
-// 	ss << numString.length();
-// 	tempSymb.symbol = ss.str();
-// 	tempSymb.noNT = true;
-// 	optSymbols.push_back(tempSymb);   
-// }
 
 

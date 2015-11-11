@@ -31,7 +31,7 @@ ExpressionTree::ExpressionTree(){
 	operatorMap["PMULT"]="*";
 	operatorMap["PSUB"]="-";
 	operatorMap["W"]="*";
-	
+
 	prefixMap["PADD"]="Activate";
 	prefixMap["PDIV"]="DIV";
 	prefixMap["PMULT"]="Activate";
@@ -49,23 +49,23 @@ void ExpressionTree::convertPostFix(vector<TerminalSymbol*> & postFixStack){
 	vector<TerminalSymbol*> newStack;
 
 	compressOperator(postFixStack, newStack);
-	
+
 	vector<tree<ElementNode> > stack;
 	tree<ElementNode>::iterator top;
 	deque<float> args;
-	
+
 	TerminalSymbol* currElement;
 	int numArgs;
-	
+
 	for(unsigned int i=0; i<newStack.size(); i++){
 		currElement = newStack[i];
 		numArgs = currElement->getNumArgs();
 		tree<ElementNode> currTree;
-		
+
 		top = currTree.begin();
 		ElementNode currNode;
 		currNode.el = currElement;
-		currTree.insert(top, currNode);    
+		currTree.insert(top, currNode);
 		// when need to add elements get them from stack
 		if(numArgs != 0){
 			// when a variable operator pop off top element from stack
@@ -76,58 +76,58 @@ void ExpressionTree::convertPostFix(vector<TerminalSymbol*> & postFixStack){
 				top = argTree.begin(); // variable argument amount will be at top of tree
 				numArgs = int(top->el->evaluate(args));
 			}
-			
+
 			vector<tree<ElementNode> > tempStack;
-			
+
 			// now pop off number of trees from stack and add to current tree
 			// as children -- add in reverse order to match the network
 			for(int currArg=0; currArg < numArgs; currArg++){
 				tempStack.push_back(stack.back());
 				stack.pop_back();
 			}
-			
+
 			// now put in correct order onto original tree
 			for(int currArg=0; currArg < numArgs; currArg++){
 				argTree = tempStack.back();
 				tempStack.pop_back();
 				currTree.append_child(currTree.begin(), argTree.begin());
 			}
-			
+
 		}
-		
+
 		stack.push_back(currTree);
 	}
-	
+
 	// stack should now contain a single tree that is an expression
-	// tree of the network 
+	// tree of the network
 	expressTree = stack.back();
 }
 
 
 ///
-/// Compresses the operator calculations for generating 
+/// Compresses the operator calculations for generating
 ///
 void ExpressionTree::compressOperator(vector<TerminalSymbol*> & postFixStack,
 	vector<TerminalSymbol*>& newStack){
-	
+
 	// for any operator compresses them so that stack will not have redundant information
 	// any operator can be compressed into a constant value
-	
+
 	// 1.  for any non-constant / non-operator push on to new stack
 	// 2.  when find constant evaluate until find non-constant and then take that value from
 	// stack and create a new constant for the new stack
-	
+
 	TerminalSymbol* newConstant;
-	
+
 	vector<float> stack;
 	deque<float> args;
 	int numArgs;
 	vector<float>::iterator iter;
-	
+
 	for(unsigned int i=0; i < postFixStack.size(); i++){
-		
+
 		TerminalSymbol::TerminalType termType = postFixStack[i]->getTermType();
-		
+
 		if(termType == TerminalSymbol::Operator){
 			// when it is an operator evaluate and push back on to stack
 			numArgs = postFixStack[i]->getNumArgs();
@@ -150,11 +150,11 @@ void ExpressionTree::compressOperator(vector<TerminalSymbol*> & postFixStack,
 				newStack.push_back(newConstant);
 			}
 			stack.clear();
-			
+
 			newStack.push_back(postFixStack[i]);
 		}
 	}
-	
+
 }
 
 
@@ -164,7 +164,7 @@ void ExpressionTree::compressOperator(vector<TerminalSymbol*> & postFixStack,
 ///
 string ExpressionTree::alterLabel(data_manage::Dataholder* holder,
 			bool mapUsed, bool ottDummy, string label, bool continMapUsed, bool equationOut){
-			
+
 	if(mapUsed && label[0] == 'G'){
 		 stringstream ss(label.substr(1,label.length()-1));
 		 int num, numOrig;
@@ -187,7 +187,7 @@ string ExpressionTree::alterLabel(data_manage::Dataholder* holder,
 		ss >> num;
 		num -= 1;
 		label = holder->getCovarName(num);
-	}        
+	}
 	else{
 		if(label[0]=='G'){
 	  stringstream ss(label.substr(1,label.length()-1));
@@ -205,7 +205,7 @@ string ExpressionTree::alterLabel(data_manage::Dataholder* holder,
 			}
 		 }
 	}
-		 
+
 	return label;
 }
 
@@ -245,11 +245,11 @@ unsigned int ExpressionTree::getMaxDepth(){
 ///
 unsigned int ExpressionTree::incrementDepth(tree<ElementNode>::iterator baseIter, unsigned int currDepth){
 		tree<ElementNode>::iterator childIter;
-		
+
 		unsigned int maxDepth=0, depth;
-		
-		for(int child=0; child < int(expressTree.number_of_children(baseIter)); child++){  
-				childIter = expressTree.child(baseIter, child);  
+
+		for(int child=0; child < int(expressTree.number_of_children(baseIter)); child++){
+				childIter = expressTree.child(baseIter, child);
 				depth=incrementDepth(childIter, currDepth);
 				if(depth > maxDepth){
 						maxDepth=depth;
@@ -257,7 +257,7 @@ unsigned int ExpressionTree::incrementDepth(tree<ElementNode>::iterator baseIter
 		}
 		if(baseIter->el->getType()[0] == 'P')
 			maxDepth+=1;
-			
+
 		return maxDepth;
 }
 
@@ -272,21 +272,21 @@ void ExpressionTree::setOperators(string& label, string& op, string& prefix){
 
 
 ///
-/// Output as mathematical expression.  Can't be a simple equation because of the 
-/// presence of the Activation.  (also the division operator is a function that 
+/// Output as mathematical expression.  Can't be a simple equation because of the
+/// presence of the Activation.  (also the division operator is a function that
 /// needs to be taken into account - also boolean operators don't work well in this)
-/// 
+///
 ///
 void ExpressionTree::outputEquation(ostream& out, data_manage::Dataholder* holder,
 	bool mapUsed, bool ottDummy, bool continMapUsed){
-	
+
 	tree<ElementNode>::iterator iter = expressTree.begin();
 	outputEquationTree(out, holder, mapUsed, ottDummy, continMapUsed, iter);
 }
 
 
 ///
-/// Output as mathematical expression.  
+/// Output as mathematical expression.
 ///
 string ExpressionTree::getEquation(){
 	tree<ElementNode>::iterator iter = expressTree.begin();
@@ -296,27 +296,27 @@ string ExpressionTree::getEquation(){
 }
 
 ///
-/// Output as mathematical expression.  Can't be a simple equation because of the 
-/// presence of the Activation.  (also the division operator is a function that 
+/// Output as mathematical expression.  Can't be a simple equation because of the
+/// presence of the Activation.  (also the division operator is a function that
 /// needs to be taken into account - also boolean operators don't work well in this)
-/// 
+///
 ///
 void ExpressionTree::getEquationTree(ostream& out, tree<ElementNode>::iterator baseIter){
-	
+
 	int numChildren = expressTree.number_of_children(baseIter);
-	
+
 	string label = baseIter->el->getName();
-	
+
 	if(numChildren > 0){
 		// if it is a node (PADD, PSUB, PDIV or PMULT) have add activate sigmoid to output
-		
+
 		string op, prefix="";
-		
+
 		setOperators(label, op, prefix);
-		
+
 		// every one gets a start paren
 		out << prefix << "(";
-		
+
 		int endIndex = numChildren-1;
 		tree<ElementNode>::iterator childIter;
 		int child;
@@ -327,13 +327,11 @@ void ExpressionTree::getEquationTree(ostream& out, tree<ElementNode>::iterator b
 		}
 		childIter = expressTree.child(baseIter, child);
 		getEquationTree(out, childIter);
-		
+
 		// after all children do end paren
 		out << ")";
 	}
 	else{
-// 		if(!keepLabel)
-// 			label = alterLabel(holder, mapUsed, ottDummy, label, continMapUsed, true);
 		out << label;
 	}
 
@@ -341,28 +339,28 @@ void ExpressionTree::getEquationTree(ostream& out, tree<ElementNode>::iterator b
 
 
 ///
-/// Output as mathematical expression.  Can't be a simple equation because of the 
-/// presence of the Activation.  (also the division operator is a function that 
+/// Output as mathematical expression.  Can't be a simple equation because of the
+/// presence of the Activation.  (also the division operator is a function that
 /// needs to be taken into account - also boolean operators don't work well in this)
-/// 
+///
 ///
 void ExpressionTree::outputEquationTree(ostream& out, data_manage::Dataholder* holder,
 	bool mapUsed, bool ottDummy, bool continMapUsed, tree<ElementNode>::iterator baseIter){
-	
+
 	int numChildren = expressTree.number_of_children(baseIter);
-	
+
 	string label = baseIter->el->getLabel();
-	
+
 	if(numChildren > 0){
 		// if it is a node (PADD, PSUB, PDIV or PMULT) have add activate sigmoid to output
-		
+
 		string op, prefix="";
-		
+
 		setOperators(label, op, prefix);
-		
+
 		// every one gets a start paren
 		out << prefix << "(";
-		
+
 		int endIndex = numChildren-1;
 		tree<ElementNode>::iterator childIter;
 		int child;
@@ -373,7 +371,7 @@ void ExpressionTree::outputEquationTree(ostream& out, data_manage::Dataholder* h
 		}
 		childIter = expressTree.child(baseIter, child);
 		outputEquationTree(out, holder, mapUsed, ottDummy, continMapUsed, childIter);
-		
+
 		// after all children do end paren
 		out << ")";
 	}
@@ -386,7 +384,7 @@ void ExpressionTree::outputEquationTree(ostream& out, data_manage::Dataholder* h
 
 
 // void ExpressionTree::outputChildren(ostream& out, data_manage::Dataholder* holder,
-	
+
 
 ///
 /// Output expression tree in dot language for use by Graphviz to
@@ -405,43 +403,43 @@ void ExpressionTree::outputDot(ostream & out, data_manage::Dataholder* holder,
 		if(typeCount.find(type) == typeCount.end())
 			typeCount[type] = 0;
 		typeCount[type]++;
- 
+
 		stringstream ss;
 		ss << typeCount[type];
 		string number;
 		ss >> number;
-		
+
 		iter->id = iter->el->getType() + number;
 	}
- 
+
 	out << "digraph G{\n";
 	out << "\tgraph [ dpi = 300 ];\n";
 	out << "\tsize=\"7.5,11.0\";\n";
 	out << "\tdir=\"none\";\n";
 	out << "\trankdir=\"LR\";\n";
 	out << "\torientation=\"landscape\";\n";
-	
+
 	// each node needs to point to its parent
 	tree<ElementNode>::iterator parent;
 	iter = expressTree.begin();
- 
+
 	string label = iter->el->getLabel();
 
 	label = alterLabel(holder, mapUsed, ottDummy, label, continMapUsed,false);
 
-	out << "\t" <<  iter->id << " [shape=\"" << iter->el->getShape() << "\" style=\"" << 
+	out << "\t" <<  iter->id << " [shape=\"" << iter->el->getShape() << "\" style=\"" <<
 		iter->el->getStyle() << "\" label=\"" << label << "\"];" << endl;
 	iter++;
-	
+
 	for(; iter != expressTree.end(); iter++){
 		parent = expressTree.parent(iter);
 		out << "\t" << iter->id << "->" << parent->id << ";" << endl;
- 
+
 		string label = iter->el->getLabel();
 		label = alterLabel(holder, mapUsed, ottDummy, label, continMapUsed,false);
- 
-		out << "\t" << iter->id << " [shape=\"" << iter->el->getShape() << "\" style=\"" << 
-			iter->el->getStyle() << "\" label=\"" << label << "\"];" << endl;  
+
+		out << "\t" << iter->id << " [shape=\"" << iter->el->getShape() << "\" style=\"" <<
+			iter->el->getStyle() << "\" label=\"" << label << "\"];" << endl;
 	}
-	out << "}" << endl; 
+	out << "}" << endl;
 }

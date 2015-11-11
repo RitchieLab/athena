@@ -39,7 +39,6 @@ void GENNGrammarAdjuster::readGrammarFile(string filename){
 	while(!file.eof()){
 		file.getline(buffer, 2048);
 		string newline(buffer);
-// 		if(newline.find_first_of("01234567890abcdedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ<>,")!=string::npos)
 			lines.push_back(buffer);
 	}
 	file.close();
@@ -54,13 +53,11 @@ void GENNGrammarAdjuster::readGrammarFile(string filename){
 void GENNGrammarAdjuster::setMapper(AthenaGrammarSI& mapper, int rank){
 	vector<string>::iterator iter;
 	string program;
-	
+
 	for(iter = lines.begin(); iter != lines.end(); iter++){
 		program += *iter + "\n";
 	}
 	program += "\n";
-// cout << program << endl;
-// exit(1);
 	mapper.readBNFString(program);
 }
 
@@ -78,9 +75,9 @@ vector<string> GENNGrammarAdjuster::getVariables(){
 			break;
 		}
 	}
-	
+
 	std::size_t start, finish;
-	
+
 	// for each one look for G or C marking start of variables
 	while((*iter).find_first_of("GC") != string::npos){
 		string line = *iter;
@@ -89,14 +86,14 @@ vector<string> GENNGrammarAdjuster::getVariables(){
 		vars.push_back(line.substr(start, finish));
 		++iter;
  }
-	
+
 	return vars;
 }
 
 
 
 ///
-/// Returns symbol name based on parameters 
+/// Returns symbol name based on parameters
 /// @param vPrefix variable prefix 'G' for genotype and 'C' for continuous
 /// @param num Number to include
 /// @return string with symbol name
@@ -123,7 +120,7 @@ vector<string>::iterator GENNGrammarAdjuster::getStartVariables(){
 
 
 ///
-/// Returns number of lines associated with variables in 
+/// Returns number of lines associated with variables in
 /// current grammar
 /// @param start iterator marking start of variable lines
 /// @param last iterator containing last of the variable lines
@@ -151,18 +148,18 @@ int GENNGrammarAdjuster::countVarLines(vector<string>::iterator& start,
 
 
 ///
-/// Replaces any of the current genotypes or continuous variables specified in the grammar 
+/// Replaces any of the current genotypes or continuous variables specified in the grammar
 /// with rules placing every variable into the grammar
-/// @param nGenos number of genotypes 
+/// @param nGenos number of genotypes
 /// @param nContin number of continuous variables in set
 ///
 void GENNGrammarAdjuster::includeAllVars(int nGenos, int nContin){
 
 	vector<string>::iterator start = getStartVariables();
- 
+
 	vector<string>::iterator iter, last;
 	int vLines=countVarLines(start,last);
- 
+
 	int c;
 	start--; // move start back to correct row
 	// first reset the first row
@@ -175,13 +172,13 @@ void GENNGrammarAdjuster::includeAllVars(int nGenos, int nContin){
 		c = 2;
 	}
 	int vUsed = 1;
-	
+
 	iter=start;
-	
+
 	string varType = "G", newSymbol, newLine;
 	vector<string> holder;
-	
-	
+
+
 	for(int g=2; g<=nGenos; g++){
 		newSymbol = createVariableSymbol(varType, g);
 		newLine = "           | " + newSymbol;
@@ -194,7 +191,7 @@ void GENNGrammarAdjuster::includeAllVars(int nGenos, int nContin){
 			holder.push_back(newLine);
 		}
 	}
-	
+
 	varType = "C";
 	for(; c<=nContin; c++){
 		newSymbol = createVariableSymbol(varType, c);
@@ -206,9 +203,9 @@ void GENNGrammarAdjuster::includeAllVars(int nGenos, int nContin){
 		}
 		else{
 			holder.push_back(newLine);
-		}    
+		}
 	}
- 
+
 	// if vUsed is less than vLines will need to erase the extra lines from the
 	// grammar string vector
 	if(vUsed < vLines){
@@ -239,9 +236,9 @@ void GENNGrammarAdjuster::includeAllVars(int nGenos, int nContin){
 /// Expands shorthannd for continuous variables and genotypes into useable format.
 /// The shorthand is for declaring multiple genotypes or continuous variables
 /// at a time such as G1-10 or C5-7.
-/// 
+///
 void GENNGrammarAdjuster::expandVariables(){
-	
+
 	// find line starting with "<v>" as start of genotypes and continuous variables
 	vector<string>::iterator start = getStartVariables();
 	vector<string>::iterator last;
@@ -250,18 +247,18 @@ void GENNGrammarAdjuster::expandVariables(){
 	start--; // move start back to first line
 
 	// now start marks first line and last is last line in genotypes and continuous variables
-	// need to process each line looking for '-' 
+	// need to process each line looking for '-'
 	map<string, bool> genosIncluded;
 	map<string, bool> covarsIncluded;
 	std::size_t loc, dash, lastDigit;
 	string newSymbol;
-	
+
 	for(vector<string>::iterator iter=start; iter != last; ++iter){
 		bool expand = false;
 		lastDigit = (*iter).find_last_of("0123456789");
 		if(lastDigit == string::npos)
 			continue;
-		
+
 		if((dash=iter->find("-")) != string::npos){
 			expand = true;
 		}
@@ -291,7 +288,7 @@ void GENNGrammarAdjuster::expandVariables(){
 				if((*iter)[loc]=='G'){
 					genosIncluded[newSymbol] = true;
 				}
-				else 
+				else
 					covarsIncluded[newSymbol] = true;
 			}
 		}
@@ -304,12 +301,12 @@ void GENNGrammarAdjuster::expandVariables(){
 			if((*iter)[loc]=='G'){
 				genosIncluded[newSymbol] = true;
 			}
-			else{ 
+			else{
 				covarsIncluded[newSymbol] = true;
 			}
 		}
 	}
-	
+
 	// delete all current genotype and continuous lines
 	// then insert new lines matching genotypes and continuous variables to include
 	last--;  // move last to point back to final element
@@ -317,10 +314,10 @@ void GENNGrammarAdjuster::expandVariables(){
 	start--;
 	if(startDelete != lines.end())
 		lines.erase(startDelete, last);
-	
+
 	map<string, bool>::iterator genoiter = genosIncluded.begin();
 	map<string, bool>::iterator covariter = covarsIncluded.begin();
-	
+
 	// need to reset the first line
 	if(!genosIncluded.empty()){
 		*start = "<v>      ::= " + genoiter->first;
@@ -330,19 +327,19 @@ void GENNGrammarAdjuster::expandVariables(){
 		*start = "<v>      ::= " + covariter->first;
 		covariter++;
 	}
-	
+
 	start++;
-	
+
 	// create temp vector
 	vector<string> holder;
 	for(; genoiter != genosIncluded.end(); genoiter++){
 		holder.push_back("           | " + genoiter->first);
 	}
-	
+
 	for(; covariter != covarsIncluded.end(); covariter++){
 		holder.push_back("           | " + covariter->first);
 	}
-	
+
 	if(!holder.empty()){
 		lines.insert(start, holder.begin(), holder.end());
 	}
@@ -354,28 +351,20 @@ void GENNGrammarAdjuster::expandVariables(){
 ///
 void GENNGrammarAdjuster::excludeVariables(std::set<std::string>& varSet){
 
-// vector<string>::iterator tmpIter;
-// for(tmpIter=lines.begin(); tmpIter != lines.end(); ++tmpIter){
-// cout << *tmpIter << endl;
-// }
-
 	// find line starting with "<v>" as start of genotypes and continuous variables
 	vector<string>::iterator start = getStartVariables();
 	vector<string>::iterator last;
 	countVarLines(start, last);
-// cout << "last=" << *last << endl;
 	vector<string> tmp;
-	
+
 	vector<string>::iterator iter = lines.begin();
 	// copy up to the start of the variables
 	for(;iter != start-1; ++iter){
 		tmp.push_back(*iter);
 	}
-	
-// 	vector<string>::iterator final = last+1;
+
 	// check start and see if it is to be excluded
 	string varname = getVarname(*iter);
-// cout << "varname=" << varname << endl;
 	if(varSet.find(varname) == varSet.end()){
 		tmp.push_back(*iter);
 		++iter;
@@ -390,7 +379,7 @@ void GENNGrammarAdjuster::excludeVariables(std::set<std::string>& varSet){
 			++iter;
 		}
 	}
-	
+
 	while(iter != last){
 		varname = getVarname(*iter);
 		if(varSet.find(varname) == varSet.end()){
@@ -398,17 +387,12 @@ void GENNGrammarAdjuster::excludeVariables(std::set<std::string>& varSet){
 		}
 		++iter;
 	}
-	
+
 	for(;iter != lines.end(); ++iter){
 		tmp.push_back(*iter);
 	}
-	
+
 	lines = tmp;
-// cout << "--------------------------------" << endl;
-// for(tmpIter=lines.begin(); tmpIter != lines.end(); ++tmpIter){
-// cout << *tmpIter << endl;
-// }
-// exit(1);
 }
 
 ///
@@ -430,25 +414,25 @@ void GENNGrammarAdjuster::doubleGenotypeGrammar(){
 
 	vector<string>::iterator last;
 	countVarLines(start, last);
-	
+
 	// need to make a list of all the genotypes and covariates in the grammar
 	vector<int> genos;
 	vector<string> covars;  // no need to manipulate these
-	
+
 	std::size_t loc, lastDigit;
 	string newSymbol;
 
 	start--;
-	
-	for(vector<string>::iterator iter=start; iter != last; ++iter){   
+
+	for(vector<string>::iterator iter=start; iter != last; ++iter){
 		loc = iter->find_first_of("CG");
 		string num;
 		lastDigit = iter->find_last_of("0123456789");
-		
+
 		for(std::size_t z=loc+1; z <= lastDigit; z++){
 			num+=(*iter)[z];
 		}
-		
+
 		if((*iter)[loc]=='G'){
 			stringstream ss(num);
 			int n;
@@ -458,9 +442,9 @@ void GENNGrammarAdjuster::doubleGenotypeGrammar(){
 		else {
 			covars.push_back("C" + num);
 		}
- 
+
 	}
-	
+
 	// delete all current genotype and continuous lines
 	// then insert new lines matching genotypes and continuous variables to include
 	last--;  // move last to point back to final element
@@ -484,8 +468,8 @@ void GENNGrammarAdjuster::doubleGenotypeGrammar(){
 
 	start++;
 
-	
-	// now begin adding new ones -- adjusting the genotypes 
+
+	// now begin adding new ones -- adjusting the genotypes
 	for(unsigned int i=1; i < genos.size(); i++){
 		holder.push_back("           | " +createVariableSymbol("G", genos[i]*2-1));
 		holder.push_back("           | " +createVariableSymbol("G", genos[i]*2));
@@ -494,12 +478,12 @@ void GENNGrammarAdjuster::doubleGenotypeGrammar(){
 	for(; covarStart < covars.size(); covarStart++){
 		holder.push_back("           | " + covars[covarStart]);
 	}
-	
+
 	// now insert all new lines
 	if(!holder.empty()){
 		lines.insert(start, holder.begin(), holder.end());
-	}  
-	
+	}
+
 }
 
 
@@ -509,14 +493,14 @@ void GENNGrammarAdjuster::doubleGenotypeGrammar(){
 /// variablesIncluded set
 ///
 void GENNGrammarAdjuster::editOnlyVarIncluded(){
- 
+
 	vector<string>::iterator start = getStartVariables();
 	vector<string>::iterator last;
 	int vLines=countVarLines(start, last);
-	
+
 	// move back to start row
 	start--;
- 
+
 	// get first variable from set
 	set<string>::iterator varIter = variablesIncluded.begin();
 
@@ -524,7 +508,7 @@ void GENNGrammarAdjuster::editOnlyVarIncluded(){
 	varIter++;
 	start++;
 	int vUsed = 1;
-	
+
 	for(;varIter != variablesIncluded.end() && start != lines.end(); varIter++){
 		*start = "           | " + *varIter;
 		start++;
@@ -550,7 +534,7 @@ void GENNGrammarAdjuster::editOnlyVarIncluded(){
 			deleteEnd++;
 		}
 		lines.erase(deleteStart, deleteEnd);
-	} 
+	}
 }
 
 
@@ -563,7 +547,7 @@ void GENNGrammarAdjuster::editOnlyVarIncluded(){
 ///
 void GENNGrammarAdjuster::setBayesianSize(unsigned int minP, unsigned int maxP, unsigned int minC,
 	unsigned int maxC){
-	
+
 	vector<string>::iterator lineIter = lines.begin(), startIter, endIter;
 	for(;lineIter != lines.end(); ++lineIter){
 		if(lineIter->find("<parents>")==0){
@@ -576,7 +560,7 @@ void GENNGrammarAdjuster::setBayesianSize(unsigned int minP, unsigned int maxP, 
 			break;
 		}
 	}
-	
+
 	// delete extra lines
 	if(endIter != startIter){
 		endIter = lines.erase(startIter, endIter);
@@ -584,7 +568,7 @@ void GENNGrammarAdjuster::setBayesianSize(unsigned int minP, unsigned int maxP, 
 	else{
 		endIter = lines.erase(startIter);
 	}
-	
+
 	vector<string> newLines;
 	unsigned int i = minP;
 	newLines.push_back("<parents>  ::= ");
@@ -597,10 +581,10 @@ void GENNGrammarAdjuster::setBayesianSize(unsigned int minP, unsigned int maxP, 
 			newLines.back() += "<v>";
 		}
 	}
-	
+
 	// insert new lines before the endIter
 	lines.insert(endIter, newLines.begin(), newLines.end());
-	
+
 	for(lineIter = lines.begin();lineIter != lines.end(); ++lineIter){
 		if(lineIter->find("<children>")==0){
 			startIter=lineIter;
@@ -612,7 +596,7 @@ void GENNGrammarAdjuster::setBayesianSize(unsigned int minP, unsigned int maxP, 
 			break;
 		}
 	}
-	
+
 	// delete extra lines
 	if(endIter != startIter){
 		endIter = lines.erase(startIter, endIter);
@@ -620,7 +604,7 @@ void GENNGrammarAdjuster::setBayesianSize(unsigned int minP, unsigned int maxP, 
 	else{
 		endIter = lines.erase(startIter);
 	}
-	
+
 	newLines.clear();
 	i=minC;
 	newLines.push_back("<children>  ::= ");
@@ -632,11 +616,11 @@ void GENNGrammarAdjuster::setBayesianSize(unsigned int minP, unsigned int maxP, 
 		for(unsigned int j=1; j<=i; j++){
 			newLines.back() += "<child>";
 		}
-	}	
-	
+	}
+
 	// insert new lines before the endIter
 	lines.insert(endIter, newLines.begin(), newLines.end());
-	
+
 }
 
 
@@ -646,10 +630,10 @@ void GENNGrammarAdjuster::setBayesianSize(unsigned int minP, unsigned int maxP, 
 /// @param terminals string vector containing terminals
 ///
 void GENNGrammarAdjuster::addVariables(vector<string>& terminals){
-	
+
 	vector<string>::iterator iter;
 	std::size_t loc;
-	
+
 	for(iter = terminals.begin(); iter != terminals.end(); iter++){
 		loc = iter->find_first_of("CG");
 		// must start with C or G to be a variable
@@ -660,7 +644,7 @@ void GENNGrammarAdjuster::addVariables(vector<string>& terminals){
 				variablesIncluded.insert(*iter);
 			}
 		}
-	} 
+	}
 }
 
 
@@ -683,10 +667,8 @@ void GENNGrammarAdjuster::setConstants(float min, float max, float interval){
 	decreasingValue -= interval;
 	char buffer[20];
 	constantsIncluded.clear();
-	
+
 	while(increasingValue <= max){
-// 		constantLines.push_back("           | " + data_manage::Stringmanip::numberToString(increasingValue));
-// 		constantLines.push_back("           | " + data_manage::Stringmanip::numberToString(decreasingValue));
 		sprintf(buffer, "%.3f",increasingValue);
 		constantLines.push_back("           | " + string(buffer));
 		constantsIncluded.push_back(buffer);
@@ -696,7 +678,7 @@ void GENNGrammarAdjuster::setConstants(float min, float max, float interval){
 		increasingValue += interval;
 		decreasingValue -= interval;
 	}
-	
+
 	vector<string>::iterator start, last, iter;
 	// delete the original constant lines
 	for(iter=lines.begin(); iter != lines.end(); ++iter){
@@ -710,10 +692,10 @@ void GENNGrammarAdjuster::setConstants(float min, float max, float interval){
 			break;
 		}
 	}
-	
+
 	lines.erase(start, last);
-	
+
 	// append the new ones
 	lines.insert(lines.end(), constantLines.begin(), constantLines.end());
-	
+
 }

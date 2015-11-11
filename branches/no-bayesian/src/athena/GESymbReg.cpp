@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   GESymbReg.cpp
  * Author: dudeksm
  *
@@ -28,46 +28,39 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "GENNGrammarAdjuster.h"
 #include <ga/ga.h>
 #include <ctime>
- 
+
  ///
-/// Sets parameters within the algorithm for the 
+/// Sets parameters within the algorithm for the
 /// analysis.
 /// @param algParam AlgorithmParams
 /// @param numExchanges total number of times the best model will be passed to other algorithms
 /// when more than one algorithm
 /// @param numGenos number of Genotypes in set
 /// @param numContin number of Continuous variables in set
-/// 
-void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, 
+///
+void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos,
 	int numContin, vector<unsigned int>& excludedGenos, vector<unsigned int>& excludedContins){
-			
+
 		GENNAlg::setParams(algParam, numExchanges, numGenos, numContin, excludedGenos,
-			excludedContins);	
+			excludedContins);
 
 		map<string, string>::iterator mapIter;
-		
-		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end(); 
-			mapIter++){       
+
+		for(mapIter = algParam.params.begin(); mapIter != algParam.params.end();
+			mapIter++){
 				switch(paramMap[mapIter->first]){
-// 						case noMatchParam:
-// 								throw AthenaExcept("No match for parameter " + mapIter->first +
-// 												"in Algorithm GE Symbolic Regression");
-// 								break;
 						case bpstart:
 								throw AthenaExcept("No match for parameter " + mapIter->first +
 												" in Algorithm GE Symbolic Regression");
 								break;
-						case bpfreq:    
+						case bpfreq:
 								throw AthenaExcept("No match for parameter " + mapIter->first +
 												" in Algorithm GE Symbolic Regression");
 								break;
-// 						default:
-// 								throw AthenaExcept("No match for parameter " + mapIter->first +
-// 												" in Algorithm GE Symbolic Regression");               
 				}
 		}
 
-		setGAParams(excludedGenos, excludedContins);   
+		setGAParams(excludedGenos, excludedContins);
 }
 
 
@@ -76,14 +69,14 @@ void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 /// Sets parameters for use with GAlib
 /// @throws AthenaExcept on error
 ///
-void GESymbReg::setGAParams(vector<unsigned int>& excludedGenos, 
-			vector<unsigned int>& excludedContins){   
+void GESymbReg::setGAParams(vector<unsigned int>& excludedGenos,
+			vector<unsigned int>& excludedContins){
 		GARandomSeed(randSeed);
 		srand(randSeed);
-	
+
 		// first free ga memory if already run
 		freeMemory();
-		
+
 		//Initialize the GE mapper
 	 //Set maximum number of wrapping events per mapping
 	 mapper.setMaxWraps(wrapEvents);
@@ -91,7 +84,7 @@ void GESymbReg::setGAParams(vector<unsigned int>& excludedGenos,
 		adjuster.setMapper(mapper);
 
 		setMapperPrefs(mapper);
-	  
+
 	  if(!requireAllVars && !requireAllVarsOnce)
 			GEObjective::setSolutionType("SYMBREG", calculatorName);
 		else if(requireAllVars){
@@ -104,7 +97,6 @@ void GESymbReg::setGAParams(vector<unsigned int>& excludedGenos,
 		}
 
 	 if(calculatorName.compare("RSQUARED")==0 || calculatorName.compare("MEANABSOLUTE")==0){
-//    if(calculatorName.compare("RSQUARED")==0){
 		 pop.setConvertScores(true);
 	 }
 
@@ -117,7 +109,7 @@ void GESymbReg::setGAParams(vector<unsigned int>& excludedGenos,
 
 ///
 /// Runs an indicated interval for the algorithm. This interval is set
-/// in the stepSize variable.  
+/// in the stepSize variable.
 ///
 int GESymbReg::step(){
 
@@ -127,22 +119,22 @@ int GESymbReg::step(){
 				if(!ga->done()){
 				 if(logTypeSelected!=LogNone){
 						geLog->addGeneration();
-				 }         
+				 }
 				 ga->step();
 				 restrictStepsDone++;
- 
+
 					if(ngensVarRestrict && restrictStepsDone == ngensVarRestrict){
 					 // have to convert the networks back to original mapping
 					 GEObjective::setMapper(&mapper);
 					 GE1DArrayGenome::setMapper(&mapper);
 					 convertNetworks(restrictMapper, mapper);
 				 }
-				 
+
 				 // check for need to change crossovers
 				 if(ngensBlockCross && restrictStepsDone == ngensBlockCross){
 						resetCrossover();
 				 }
- 
+
 				 fillLog();
 				}
 		}
@@ -150,7 +142,7 @@ int GESymbReg::step(){
 		#ifdef HAVE_CXX_MPI
 			// if restricted variables has been used and are still in effect
 			// need to convert all networks back to original grammar and exchange
-			// then construct new grammar restricted to only variables in the 
+			// then construct new grammar restricted to only variables in the
 			// new population and continue to process
 			if(ngensVarRestrict && restrictStepsDone < ngensVarRestrict){
 			// have to convert the networks back to original mapping
@@ -166,10 +158,10 @@ int GESymbReg::step(){
 			}
 
 		#endif
-		
+
 		// only need to fill population at this point not at end of each generation
 		fillPopulation();
-		
+
 		return 0;
 }
 

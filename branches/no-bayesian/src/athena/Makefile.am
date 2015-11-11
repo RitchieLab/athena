@@ -93,8 +93,6 @@ SumFileReader.cpp \
 SumFileReader.h \
 MeanAbsErrCalculator.cpp \
 MeanAbsErrCalculator.h \
-MDR.cpp \
-MDR.h \
 ScoreHolder.cpp \
 ScoreHolder.h \
 AlgorithmList.h \

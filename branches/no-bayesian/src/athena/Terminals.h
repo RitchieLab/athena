@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   Terminals.h
  * Author: dudeksm
  *
@@ -34,12 +34,12 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 using namespace data_manage;
 
 class Constant :public TerminalSymbol{
-	
+
 	public:
 		Constant(std::string symbol, int numberArgs=0);
 		Constant(float val);
 		virtual ~Constant(){}
-		
+
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
 
 		private:
@@ -58,117 +58,100 @@ class BiasTerm :public TerminalSymbol{
 
 	public:
 		BiasTerm(std::string name, int numberArgs=0);
-		
+
 		virtual ~BiasTerm(){}
-		
+
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
 
 		private:
-			float biasValue;		 
+			float biasValue;
 
 };
 
 
 ///
-/// TerminalSymbol base class for all terminals depending on 
+/// TerminalSymbol base class for all terminals depending on
 /// having knowledge of which individual is being looked at from
 /// dataset
 ///
 class IndividualTerm :public TerminalSymbol{
-	
+
 	public:
 		IndividualTerm(std::string name, int variableIndex, TerminalType tType=NotVariable);
-		
+
 		virtual ~IndividualTerm(){}
-		
+
 		virtual float evaluate(std::deque<float> & TerminalSymbols){return 0.0;}
-		
+
 		inline int getIndex(){return indexValue;}
-		
+
 		virtual int getNumLevels(Dataset* dataSet){return 3;}
-		
+
 		static void setInd(Individual* ind);
-		
+
 		protected:
 			int indexValue;
-			
+
 			static Individual* ind;
 };
 
 
 ///
-/// TerminalSymbol that contains an index for referencing 
+/// TerminalSymbol that contains an index for referencing
 /// genotypes in the dataset
 ///
 class PhenotypeTerm :public IndividualTerm{
-	
+
 	public:
 		PhenotypeTerm(std::string name, int variableIndex=1);
-		
+
 		virtual ~PhenotypeTerm(){}
-		
+
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
-		
+
 		virtual int getNumLevels(Dataset* dataSet){return dataSet->getNumStatusLevels();}
-		
-// 		inline int getIndex(){return indexValue;}
-// 		
-// 		static void setInd(Individual* ind);
+
 		private:
-// 			int indexValue;
-// 			
-// 			static Individual* ind;
 };
 
 ///
-/// TerminalSymbol that contains an index for referencing 
+/// TerminalSymbol that contains an index for referencing
 /// genotypes in the dataset
 ///
 class GenotypeTerm :public IndividualTerm{
-	
+
 	public:
 		GenotypeTerm(std::string name, int variableIndex);
-		
+
 		virtual ~GenotypeTerm(){}
-		
+
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
-		
-// 		inline int getIndex(){return indexValue;}
-// 		
-// 		static void setInd(Individual* ind);
+
 		private:
-// 			int indexValue;
-// 			
-// 			static Individual* ind;
 };
 
 
 ///
-/// TerminalSymbol that contains an index for referencing 
+/// TerminalSymbol that contains an index for referencing
 /// genotypes in the dataset
 ///
 class ContinVariable :public IndividualTerm{
-	
+
 	public:
 		ContinVariable(std::string name, int variableIndex);
-		
+
 		virtual ~ContinVariable(){}
-		
+
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
-		
+
 		virtual int getNumLevels(Dataset* dataSet){return dataSet->getNumLevels(indexValue);}
-		
-// 		static void setInd(Individual* ind);
-		
-// 		inline int getIndex(){return indexValue;}
+
 		private:
-// 			int indexValue;
-// 			static Individual* ind;
 };
 
 
 class Addition :public TerminalSymbol{
-	
+
 	public:
 		Addition(std::string symbol, int numberArgs);
 		virtual ~Addition(){}
@@ -176,7 +159,7 @@ class Addition :public TerminalSymbol{
 };
 
 class Subtraction :public TerminalSymbol{
-	
+
 	public:
 		Subtraction(std::string symbol, int numberArgs);
 		virtual ~Subtraction(){}
@@ -184,7 +167,7 @@ class Subtraction :public TerminalSymbol{
 };
 
 class Multiplication :public TerminalSymbol{
-	
+
 	public:
 		Multiplication(std::string symbol, int numberArgs);
 		virtual ~Multiplication(){}
@@ -192,7 +175,7 @@ class Multiplication :public TerminalSymbol{
 };
 
 class Division :public TerminalSymbol{
-	
+
 	public:
 		Division(std::string symbol, int numberArgs);
 		virtual ~Division(){}
@@ -200,7 +183,7 @@ class Division :public TerminalSymbol{
 };
 
 class Power :public TerminalSymbol{
-	
+
 	public:
 		Power(std::string symbol, int numberArgs);
 		virtual ~Power(){}
@@ -208,7 +191,7 @@ class Power :public TerminalSymbol{
 };
 
 class pAdd :public TerminalSymbol{
-	
+
 	public:
 		pAdd(std::string symbol, int numberArgs);
 		virtual ~pAdd(){}
@@ -216,7 +199,7 @@ class pAdd :public TerminalSymbol{
 };
 
 class pSub :public TerminalSymbol{
-	
+
 	public:
 		pSub(std::string symbol, int numberArgs);
 		virtual ~pSub(){}
@@ -224,7 +207,7 @@ class pSub :public TerminalSymbol{
 };
 
 class pMult :public TerminalSymbol{
-	
+
 	public:
 		pMult(std::string symbol, int numberArgs);
 		virtual ~pMult(){}
@@ -232,7 +215,7 @@ class pMult :public TerminalSymbol{
 };
 
 class pDiv :public TerminalSymbol{
-	
+
 	public:
 		pDiv(std::string symbol, int numberArgs);
 		virtual ~pDiv(){}
@@ -240,7 +223,7 @@ class pDiv :public TerminalSymbol{
 };
 
 class Weight :public TerminalSymbol{
-	
+
 	public:
 		Weight(std::string symbol, int numberArgs);
 		virtual ~Weight(){}
@@ -249,7 +232,7 @@ class Weight :public TerminalSymbol{
 
 
 class Dot :public TerminalSymbol{
-	
+
 	public:
 		Dot(std::string symbol, int numberArgs=0);
 		virtual ~Dot(){}
@@ -294,10 +277,10 @@ class Tangent  :public TerminalSymbol{
 		virtual float evaluate(std::deque<float> & TerminalSymbols);
 };
 
-	 
+
 // Following are the boolean operators for neural nets
 class pAnd :public TerminalSymbol{
-	
+
 	public:
 		pAnd(std::string symbol, int numberArgs);
 		virtual ~pAnd(){}
@@ -305,7 +288,7 @@ class pAnd :public TerminalSymbol{
 };
 
 class pNand :public TerminalSymbol{
-	
+
 	public:
 		pNand(std::string symbol, int numberArgs);
 		virtual ~pNand(){}
@@ -313,7 +296,7 @@ class pNand :public TerminalSymbol{
 };
 
 class pOr :public TerminalSymbol{
-	
+
 	public:
 		pOr(std::string symbol, int numberArgs);
 		virtual ~pOr(){}
@@ -321,7 +304,7 @@ class pOr :public TerminalSymbol{
 };
 
 class pNor :public TerminalSymbol{
-	
+
 	public:
 		pNor(std::string symbol, int numberArgs);
 		virtual ~pNor(){}
@@ -329,7 +312,7 @@ class pNor :public TerminalSymbol{
 };
 
 class pXor :public TerminalSymbol{
-	
+
 	public:
 		pXor(std::string symbol, int numberArgs);
 		virtual ~pXor(){}
@@ -345,7 +328,7 @@ class And :public TerminalSymbol{
 };
 
 class Nand :public TerminalSymbol{
-	
+
 	public:
 		Nand(std::string symbol, int numberArgs);
 		virtual ~Nand(){}
@@ -353,7 +336,7 @@ class Nand :public TerminalSymbol{
 };
 
 class Or :public TerminalSymbol{
-	
+
 	public:
 		Or(std::string symbol, int numberArgs);
 		virtual ~Or(){}
@@ -361,7 +344,7 @@ class Or :public TerminalSymbol{
 };
 
 class Nor :public TerminalSymbol{
-	
+
 	public:
 		Nor(std::string symbol, int numberArgs);
 		virtual ~Nor(){}
@@ -369,7 +352,7 @@ class Nor :public TerminalSymbol{
 };
 
 class Xor :public TerminalSymbol{
-	
+
 	public:
 		Xor(std::string symbol, int numberArgs);
 		virtual ~Xor(){}

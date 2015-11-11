@@ -108,12 +108,6 @@ public:
 		/// Returns covariates and snps in best network
 		vector<string> getBestVariables();
 
-		/// Retrieves the models from BioFilter and stores the information in the algorithm
-// 		void getBioModels(std::string filename, std::string bioFileType, data_manage::Dataholder* holder);
-
-		/// Retrieves the models from the BioFilter archive files and stores information in algorithm
-// 		void getBioModelsArchive(string genegeneFile, string archiveFile, data_manage::Dataholder* holder);
-
 		/// Return additional output names used for final models
 		virtual vector<std::string>  getAdditionalOutputNames();
 
@@ -131,21 +125,7 @@ public:
 		virtual void validationIndOutput(vector<std::stringstream*>& indss, vector<Solution*>& models);
 
  		#ifdef HAVE_CXX_MPI
-// 			struct genomeMPI{
-// 				float genomeParams[8];
-// 				int codons[MAX_GENOME_SIZE];
-// 			};
-//
-// 			typedef struct genomeMPI structMPI;
-//
  			virtual void setRank(int rank);
-// 			void updateWithMigration(float* stats, int* codons, int totalNodes, int myRank, int max_length=0);
-// 			void updateWithMigration(structMPI * genomes, int totalNodes, int myRank);
-// 			void sendAndReceive(int totalNodes, int myRank);
-// 			void sendAndReceiveStruct(int totalNodes, int myRank);
-// 			int nodesCompleted(int complete);
-// 			void exchangeBestVariables(int totalNodes, int myRank, vector<int>& genotypes,
-// 				vector<int>& contins);
  		#endif
 
 
@@ -166,8 +146,6 @@ protected:
 
 		void convertNetworks(AthenaGrammarSI& currentMapper, AthenaGrammarSI& newMapper);
 
-// 		void setMapperPrefs(AthenaGrammarSI& athenaMapper);
-
 		void resetCrossover();
 
 		void setRestrictedGrammar(bool clearVariables);
@@ -177,50 +155,9 @@ protected:
 
 		void runBackPropagation();
 
-// 		void setBioModels(BioFilterModelCollection& collection, data_manage::Dataholder* holder);
-
 		NNSolution* convertGenome(GAGenome& ind);
 
 		int reachedGoal();
-
-// 		enum GENNParams{
-// 				noMatchParam,
-// 				minSizeParam,
-// 				maxSizeParam,
-// 				tailRatioParam,
-// 				growRateParam,
-// 				maxDepthParam,
-// 				tailSizeParam,
-// 				sensibleInitParam,
-// 				popSizeParam,
-// 				numGenParam,
-// 				probCrossParam,
-// 				probMutParam,
-// 				gramFileParam,
-// 				stepSizeParam,
-// 				calcType,
-// 				useEffectiveXO,
-// 				useAllSnps,
-// 				useAllCovariates,
-// 				requireAll,
-// 				requireAllOnce,
-// 				bioInitFract,
-// 				restrictVarGens,
-// 				bioModelSelection,
-// 				blockCrossGens,
-// 				resetVarsAtMigration,
-// 				bpfreq,
-// 				bpstart,
-// 				gaSelection,
-// 				doubleTournF,
-// 				doubleTournD,
-// 				doubleTournFitFirst,
-// 				prunePlantFract,
-// 				fitGoal,
-// 				bestCVThresh,
-// 				bestCorrThresh,
-// 				constantSpan
-// 		};
 
 		enum GENNParams{
 				noMatchParam,
@@ -251,26 +188,8 @@ protected:
 
 		void makeRestrictedGrammar(bool clearVariables, AthenaGrammarSI& useMapper);
 
-		// GA Selection parameters
-// 		GASelectionType gaSelector;
-// 		bool fitFirst;
-// 		int doubleTourneyF;
-// 		float doubleTourneyD;
-
-		//Random initialization parameters
-// 		unsigned int minSize, maxSize;
-
-		//Sensible initialization parameters
-// 		float tailRatio, growRate;
-// 		unsigned int maxDepth, tailSize;
-// 		bool sensibleInit;
-
-		//Prune and plant parameters
-// 		float pruneAndPlantFract;
-
 		//General algorithm parameters
 		bool requireAllVars, requireAllVarsOnce, resetRestrictedAtMigration, simpleConstants;
-// 		unsigned int wrapEvents, randSeed;
 		std::string mainLogFilename, fitnessLogFilename, snpnameLogFilename;
 		unsigned int ngensVarRestrict, restrictStepsDone;
 		double initBioFract;
@@ -282,10 +201,6 @@ protected:
 
 		// GE parameters
 		AthenaGrammarSI restrictMapper;
-
-		// Genetic algorithm
-// 		GASimpleGA* ga;
-// 		GENNGrammarAdjuster adjuster;
 
 		#ifdef HAVE_CXX_MPI
 			GenomeTransfer popMigrator;

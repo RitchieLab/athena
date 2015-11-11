@@ -52,9 +52,9 @@ MDRFileHandler::~MDRFileHandler()
 ///@return none
 ///@throws DataExcept on error
 ///
-void MDRFileHandler::parseFile(string filename, Dataholder * holder, 
+void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 				int missingValue, float statusMissingValue, bool containsID){
-				
+
 	int maxLocusValue = 0;
 	ifstream dataStream(filename.c_str(), ios::in);
 
@@ -94,14 +94,14 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 		}
 		ind.setID(indID);
 		ss >> indStatus;
-		
+
 		// check to see if ind should be skipped because status is missing
 		if(fabs(indStatus - statusMissingValue) > DBL_EPSILON){
-			
+
 			if(fabs(indStatus-0) > DBL_EPSILON && fabs(indStatus-1) > DBL_EPSILON){
 				holder->setCasecontrol(false);
 			}
-			
+
 			ind.setStatus(indStatus);
 			while(ss >> geno){
 				if(geno == missingValue){
@@ -110,7 +110,7 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 				}
 				else if(geno > 2){
 				throw DataExcept("All genotypes must be less than 3 or equal the missing value " +
-						Stringmanip::numberToString(missingValue) + "\nIndividual " + 
+						Stringmanip::numberToString(missingValue) + "\nIndividual " +
 						Stringmanip::numberToString(dummyID++) +
 						" has the genotype " + Stringmanip::numberToString(geno));
 				}
@@ -124,7 +124,7 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 			holder->addInd(ind);
 		}
 		else{
-			cout << "Skipping individual " << indID << " with status " << indStatus << 
+			cout << "Skipping individual " << indID << " with status " << indStatus <<
 	  		" (STATUSMISSINGVALUE is set to " << statusMissingValue << ")" << endl;
 		}
 
@@ -151,14 +151,14 @@ void MDRFileHandler::parseFile(string filename, Dataholder * holder,
 ///
 void MDRFileHandler::parseFile(std::string trainFile, std::string testFile, Dataholder* holder,
 	  int missingValue, float statusMissingValue, bool containsID){
-	
+
 	parseFile(trainFile, holder, missingValue, statusMissingValue, containsID);
 	// now the number of inds in the set will specify the split point for CV generation
 	holder->setTestSplit(holder->numInds());
-	
+
 	// parse the testing file and add to dataholder
 	parseFile(testFile, holder, missingValue, statusMissingValue, containsID);
-	
+
 }
 
 
@@ -187,12 +187,10 @@ void MDRFileHandler::writeFile(string filename,
 
 	for(unsigned int currInd=0; currInd < numInds; currInd++){
 		currIndividual = dataholder->getInd(currInd);
-// 		outStream << Stringmanip::itos(currIndividual->getStatus())
 		outStream << Stringmanip::numberToString(currIndividual->getStatus())	<< " ";
 		for(currLoc=0; currLoc < lastLocus; currLoc++){
-// 			outStream << Stringmanip::itos(currIndividual->getGenotype(currLoc))
 			outStream << Stringmanip::numberToString(currIndividual->getGenotype(currLoc)) << " ";
-			
+
 		}
 		outStream << Stringmanip::numberToString(currIndividual->getGenotype(currLoc)) << endl;
 	}

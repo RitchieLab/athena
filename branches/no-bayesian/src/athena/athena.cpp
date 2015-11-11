@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 	if(myRank==0){
 #endif
 				time (&start);
-				cout << endl << "\t" << execName << ":\t" << versionDate << endl << endl;
+				cout << endl << "\t" << execName << ":\t" << version << "\t(" <<  versionDate << ")"<< endl << endl;
 #ifdef HAVE_CXX_MPI
 				}
 #endif
@@ -171,11 +171,7 @@ int main(int argc, char** argv) {
 #endif
 	}
 	else{
-// 	    try{
 			cvSet = cvMaker.loadSplits(config.getSplitFile(), &data);
-// 		}catch(DataExcept de){
-// 				exitApp(de, myRank);
-// 		}
 	}
 
 	// check variance of input variables
@@ -335,7 +331,6 @@ int main(int argc, char** argv) {
 						break; // can complete early
 				 }
 			}
-//sleep(10);
 		alg->closeLog();
 
 		alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
@@ -345,7 +340,6 @@ int main(int argc, char** argv) {
 			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()),
 				&(cvSet.getInterval(currCV).getTraining()), &data, mapFileUsed, config.getOttEncoded(),
 				continMapUsed);
-// exit(1);
 		}
 			// check population values
 	  pops.push_back(alg->getPopulation());

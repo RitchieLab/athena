@@ -38,11 +38,8 @@ ScoreHolder::ScoreNode* ScoreHolder::getScore(vector<IndividualTerm*>& terms){
 		// if node not found create and insert the node
 		if((nodeIter=h->find(*iter)) == h->end()){
 			if(count < maximumCount){
-// cout << "NOT FOUND insert with score=" << insertNode.sc << endl;
 				h->insert(std::pair<IndividualTerm*, ScoreNode>(*iter, insertNode));
 				nodeIter = h->find(*iter);
-// cout << "score insert check=" << nodeIter->second.sc << endl;
-// 				returnNode = &(nodeIter->second);
 				count++;
 			}
 			else{
@@ -51,17 +48,9 @@ ScoreHolder::ScoreNode* ScoreHolder::getScore(vector<IndividualTerm*>& terms){
 				return &none;
 			}
 		}
-// 		if(iter+1 != terms.end())
 	 		h = &(nodeIter->second.scores);
 	}
-
-// nodeIter=h->find(terms.back());
-// if(nodeIter == h->end())
-// cout << "NO MATCH " << endl;
-// cout << "return score is " << nodeIter->second.sc << endl;
 	return &(nodeIter->second);
-	// return node 
-// 	return &(h->find(terms.back())->second);
 }
 
 
