@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   GESymbReg.h
  * Author: dudeksm
  *
@@ -31,28 +31,31 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 /// Inherits from the GENNAlg class.
 /// Contains code for running GE to produce symbolic regression equations
-/// 
- 
+///
+
 class GESymbReg: public GENNAlg{
 	public:
-	
+
 		/// Set the parameters for the algorithm
-		void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos, 
-			int numContin, vector<unsigned int>& excludedGenos, 
-			vector<unsigned int>& excludedContins);  
-		
+		void setParams(AlgorithmParams& algParams, int numExchanges, int numGenos,
+			int numContin, vector<unsigned int>& excludedGenos,
+			vector<unsigned int>& excludedContins);
+
 		/// Runs a step of the algorithm
 		virtual int step();
-		
+
 		/// Returns extension for graphical representation
 		virtual std::string getGraphicalFileExt(){std::string empty; return empty;}
-	
+
+		/// sets defaults for configuration file
+		virtual void setConfigDefaults(Config& configuration, AlgorithmParams& algParam);
+
 	private:
-		
+
 		/// Sets GA for run
-		void setGAParams(vector<unsigned int>& excludedGenos, 
+		void setGAParams(vector<unsigned int>& excludedGenos,
 			vector<unsigned int>& excludedContins);
-	
+
 };
 
 

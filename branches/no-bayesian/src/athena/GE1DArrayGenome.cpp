@@ -331,7 +331,6 @@ void GE1DArrayGenome::establish(){
 ///
 int GE1DArrayGenome::pruneAndPlant(GAGenome* startGenome,
 	GAGenome* planted){
-
 	GAGenome * cloned = startGenome->clone();
 	const GE1DArrayGenome &orig=DYN_CAST(GE1DArrayGenome &, *cloned);
 	int inc=0;
@@ -350,24 +349,19 @@ int GE1DArrayGenome::pruneAndPlant(GAGenome* startGenome,
 		delete cloned;
 		return inc=1;
 	}
-
 	// when valid look for an <expr> to use as basis for prune and plant
 	// establish codons
 	mapper->establishCodons(orig);
-
 	string ruleString = "<expr>";
 
 	unsigned int origsite = mapper->getMatchingCodon(ruleString);
-
 	int origBlockLen = mapper->determineBlockLength(origsite);
-
 	// create block to replace original <expr> in pruned one
 	// set max depth to 5 and then run initialization to create small subtree
 	unsigned int origMaxDepth = mapper->getMaxDepth();
 	mapper->setMaxDepth(5);
 	// use plant to hold the new subtree temporarily
 	InitGEgenome::initFuncSI(plant);
-
 	// replace original <expr> with one that uses only <v> or Concat<num>
 	// as created in the plant holder
 	prune.resize(orig.length()-origBlockLen+plant.length());

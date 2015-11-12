@@ -138,6 +138,7 @@ void Algorithm::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 						    break;
 #ifdef ATHENA_BLOAT_CONTROL
 						case prunePlantFract:
+								pruneAndPlantFract = Stringmanip::stringToNumber<double>(mapIter->second);
 								break;
 #endif
 				}
@@ -162,7 +163,7 @@ void Algorithm::initializeParams(){
 	 totalNodes = 1;
 	 modelSortCol = 2;
 	 minSize = 50; // Minimum size for Random Initialization
-	 maxSize = 200; // Maximum size for Random Initialization
+	 maxSize = 1000; // Maximum size for Random Initialization
 
 	 tailRatio = 0.0;
 	 growRate = 0.5;

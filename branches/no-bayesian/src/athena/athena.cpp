@@ -101,7 +101,12 @@ int main(int argc, char** argv) {
 
 		vector<AlgorithmParams> algParams= config.getAlgorithmParams();
 		Algorithm* alg = AlgorithmFactory::createAlgorithm(algParams[0].name);
-		alg->setConfigDefaults(config,algParams[0]);
+
+		try{
+			alg->setConfigDefaults(config,algParams[0]);
+		}catch(AthenaExcept& ae){
+			exitApp(ae, myRank);
+		}
 		// fill dataholder with data
 		data_manage::Dataholder data;
 		CrossValidator cvMaker;

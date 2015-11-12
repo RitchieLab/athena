@@ -64,6 +64,18 @@ void GESymbReg::setParams(AlgorithmParams& algParam, int numExchanges, int numGe
 }
 
 
+///
+/// Sets values in main configuration to defaults needed by
+/// GENN Algorithm
+/// @param configuration Config
+///
+void GESymbReg::setConfigDefaults(Config& configuration, AlgorithmParams& algParam){
+  if(algParam.params["CALCTYPE"].compare("RSQUARED")==0){
+    configuration.setStatusAdjust("MINMAX");
+  }
+}
+
+
 
 ///
 /// Sets parameters for use with GAlib

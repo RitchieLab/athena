@@ -138,6 +138,9 @@ void GENNAlg::setConfigDefaults(Config& configuration, AlgorithmParams& algParam
   if(algParam.params["CALCTYPE"].compare("RSQUARED")==0){
     configuration.setStatusAdjust("MINMAX");
   }
+  if(algParam.params.find("PRUNEPLANT") != algParam.params.end()){
+  	throw AthenaExcept("PRUNEPLANT is only implemented for algorithm GESYMBREG");
+  }
 }
 
 
