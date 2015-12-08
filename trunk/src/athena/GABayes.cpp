@@ -249,7 +249,7 @@ void GABayes::testSolution(Dataset* testSet, int nproc){
   int n = ga->population().size();
 
   for(int i=0; i<n; i++){
-		GA2DBinaryStringGenome bestGenome = (GA2DBinaryStringGenome&)ga->population().best(i);
+		GA2DArrayGenome<int> bestGenome = (GA2DArrayGenome<int>&)ga->population().best(i);
 		float testScore = GAFunct::GACaseObjective(bestGenome);
 // 		((GA2DBinaryStringGenome&)ga->population().best(i)).setTestValue(testScore);
 		pop[i]->testVal(testScore);
@@ -297,10 +297,12 @@ void GABayes::initialize(){
 
 		// total number of variables
 		totalVars = varList.size();
-		GA2DBinaryStringGenome genome(totalVars,totalVars, GAFunct::GACaseObjective);
+// 		GA2DBinaryStringGenome genome(totalVars,totalVars, GAFunct::GACaseObjective);
+		GA2DArrayGenome<int> genome(maxParents,totalVars,GAFunct::GACaseObjective);
 		// evaluator set as part of constructor
 		GAFunct::setInitConP(initProbConn);
 		genome.initializer(GAFunct::initCase);
+		genome.mutator(GAFunct::mutateCase);
 		ga = new GASimpleGA(genome);
 
 		configGA(ga);
@@ -404,7 +406,8 @@ void GABayes::fillPopulation(){
 /// @return BayesSolution*
 ///
 GABayesSolution* GABayes::convertGenome(GAGenome& ind){
-	GA2DBinaryStringGenome& genome = (GA2DBinaryStringGenome&) ind;
+// 	GA2DBinaryStringGenome& genome = (GA2DBinaryStringGenome&) ind;
+	GA2DArrayGenome<int>& genome = (GA2DArrayGenome<int>&) ind;
 	GABayesSolution* sol = (GABayesSolution*)GAFunct::getBlankSolution();
 // 	vector<vector<int> > = constructEquation(genome);
 	constructSymbols(genome, sol);
@@ -588,8 +591,8 @@ void GABayes::getAdditionalFinalOutput(Dataset* testing, Dataset* training,
   for(unsigned int currInd = 0; currInd < numInds; currInd++){
 		pop[currInd]->setAdditionalOutput(GAFunct::getAdditionalFinalOutput(pop[currInd]->testVal()));
 	}
-
 }
+
 
 ///
 /// Calculate and return additional output (whether model is better than unconnected
@@ -609,16 +612,26 @@ void GABayes::getAdditionalFinalOutput(Dataset* set){
 /// Construct equation string from genome
 /// @genome GA2DBinaryStringGenome
 ///
-vector<vector<int> > GABayes::constructEquation(GA2DBinaryStringGenome& genome){
+vector<vector<int> > GABayes::constructEquation(GA2DArrayGenome<int>& genome){
 	vector<int> empty;
 	vector<vector<int> > conns(varList.size(), empty);
-	for(int i=0; i<genome.height(); i++){
-		for(int j=0; j<genome.width(); j++){
-			if(genome.gene(i,j)==1){
-				conns[j].push_back(i);
+// 	for(int i=0; i<genome.height(); i++){
+// 		for(int j=0; j<genome.width(); j++){
+// 			if(genome.gene(i,j)==1){
+// 				conns[j].push_back(i);
+// 			}
+// 		}
+// 	}
+
+	for(int y=0; y<genome.height(); y++){
+		for(int x=0; x<genome.width(); x++){
+			if(genome.gene(x,y) != -1){
+// 				conns[j].push_back(i);
+				conns[y].push_back(genome.gene(x,y));
 			}
 		}
 	}
+
 	return conns;
 }
 
@@ -628,7 +641,8 @@ vector<vector<int> > GABayes::constructEquation(GA2DBinaryStringGenome& genome){
 /// @param genome
 /// @param solution
 /// @returns vector of symbols
-void GABayes::constructSymbols(GA2DBinaryStringGenome& genome,
+///
+void GABayes::constructSymbols(GA2DArrayGenome<int>& genome,
 	Solution* sol){
   vector<string> symbols;
   std::set<int> genos, contins;
@@ -644,23 +658,38 @@ void GABayes::constructSymbols(GA2DBinaryStringGenome& genome,
   	continPrefix="C";
   }
 
+
+  std::set<int> isParent;
+  for(int y=0; y<height; y++){
+// cout << "isParent ";
+  	for(int x=0; x<width; x++){
+  		if(genome.gene(x,y)!=-1){
+  			isParent.insert(genome.gene(x,y));
+// cout << genome.gene(x,y) << " ";
+  		}
+  	}
+// cout << endl;
+  }
+// cout << "==============" << endl;
+	bool include;
   Dataholder* holder=set->getHolder();
-  for(int ch=0; ch<width; ch++){
+  for(int y=0; y<height; y++){
 		vector<int> parents;
-		bool include=false;
-		for(int p=0; p<height; p++){
-			if(genome.gene(p,ch)){
-				parents.push_back(p);
+		include=false;
+		for(int x=0; x<width; x++){
+			if(genome.gene(x,y) != -1){
+				parents.push_back(genome.gene(x,y));
 			}
 		}
 		// if parents empty, check to see if this node is a parent itself
 		if(parents.empty()){
-			for(int i=0; i<width; i++){
-				if(genome.gene(ch,i)){
-					include=true;
-					break;
-				}
+// 			for(int i=0; i<width; i++){
+// 			if(genome.gene(ch,i)){
+// cout << "look for " << y << endl;
+			if(isParent.find(y)!=isParent.end()){
+				include=true;
 			}
+// 			}
 		}
 		else{
 			include=true;
@@ -669,11 +698,11 @@ void GABayes::constructSymbols(GA2DBinaryStringGenome& genome,
 			//construct symbol
 			string prefix;
 
-			if(varList[ch]->isGeno())
+			if(varList[y]->isGeno())
 				prefix=genoPrefix;
 			else
 				prefix=continPrefix;
-			string symb="[" + prefix + varList[ch]->getName(holder);
+			string symb="[" + prefix + varList[y]->getName(holder);
 			if(!parents.empty()){
 				if(varList[parents[0]]->isGeno())
 					prefix=genoPrefix;
@@ -690,10 +719,10 @@ void GABayes::constructSymbols(GA2DBinaryStringGenome& genome,
 			}
 			symb += "]";
 			symbols.push_back(symb);
-			if(varList[ch]->isGeno())
-				genos.insert(varList[ch]->getIndex()+1);
+			if(varList[y]->isGeno())
+				genos.insert(varList[y]->getIndex()+1);
 			else
-				contins.insert(varList[ch]->getIndex()+1);
+				contins.insert(varList[y]->getIndex()+1);
 		}
   }
 
@@ -702,6 +731,13 @@ void GABayes::constructSymbols(GA2DBinaryStringGenome& genome,
   }
 
 	sol->setSymbols(symbols);
+
+// genome.write(cout);
+// for(size_t i=0;i<symbols.size();i++){
+// cout << symbols[i];
+// }
+// cout << endl;
+
 	vector<int> g,c;
 
 	// set genotypes and continuous variable indexes
@@ -768,7 +804,7 @@ void GABayes::writeUniqueFiles(ostream& outstream, map<float,  vector<vector<vec
 
 void GABayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga){
 
-	GA2DBinaryStringGenome& genome=(GA2DBinaryStringGenome &)ga->statistics().bestIndividual();
+	GA2DArrayGenome<int>& genome=(GA2DArrayGenome<int> &)ga->statistics().bestIndividual();
 
 	int height = genome.height();
 	int width = genome.width();
@@ -803,9 +839,9 @@ void GABayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga){
 // }
 	int index=0;
 	// fill send buffer
-	for(int i=0; i<height; i++){
-		for(int j=0; j<width; j++){
-			send[index]=genome.gene(i,j);
+	for(int y=0; y<height; y++){
+		for(int x=0; x<width; x++){
+			send[index]=genome.gene(x,y);
 			index++;
 		}
 	}
@@ -832,11 +868,11 @@ void GABayes::updateWithMigration(unsigned char* newGenes, float * recvScores,
 			continue;
 		}
 		GAGenome *tmpInd = ga->population().individual(0).clone();
-		GA2DBinaryStringGenome& genome = (GA2DBinaryStringGenome&)*tmpInd;
+		GA2DArrayGenome<int>& genome = (GA2DArrayGenome<int>&)*tmpInd;
 		genome.score(recvScores[node]);
-		for(int i=0; i<genome.height(); i++){
-			for(int j=0; j<genome.width(); j++){
-				genome.gene(i,j,newGenes[geneIndex]);
+		for(int y=0; y<genome.height(); y++){
+			for(int x=0; x<genome.width(); x++){
+				genome.gene(x,y,newGenes[geneIndex]);
 				geneIndex++;
 			}
 		}

@@ -26,11 +26,11 @@ public:
 
   static int SwapMutator(GAGenome&, float);
   static float ElementComparator(const GAGenome&, const GAGenome&);
-  static int UniformCrossover(const GAGenome&, const GAGenome&, 
+  static int UniformCrossover(const GAGenome&, const GAGenome&,
 			      GAGenome*, GAGenome*);
-  static int EvenOddCrossover(const GAGenome&, const GAGenome&, 
+  static int EvenOddCrossover(const GAGenome&, const GAGenome&,
 			      GAGenome*, GAGenome*);
-  static int OnePointCrossover(const GAGenome&, const GAGenome&, 
+  static int OnePointCrossover(const GAGenome&, const GAGenome&,
 			      GAGenome*, GAGenome*);
 
 public:
@@ -58,11 +58,11 @@ public:
   virtual int equal(const GAGenome & c) const;
 
   const T & gene(unsigned int x, unsigned int y) const {
-    return this->a[y*nx+x]; 
+    return this->a[y*nx+x];
   }
   T & gene(unsigned int x, unsigned int y, const T & value) {
     if(this->a[y*nx+x] != value) {
-      this->a[y*nx+x] = value; 
+      this->a[y*nx+x] = value;
       _evaluated = gaFalse;
     }
     return this->a[y*nx+x];
@@ -74,23 +74,23 @@ public:
   virtual int resize(int x, int y);
   int resizeBehaviour(Dimension which) const;
   int resizeBehaviour(Dimension which, unsigned int lower, unsigned int upper);
-  int resizeBehaviour(unsigned int lowerX, unsigned int upperX, 
+  int resizeBehaviour(unsigned int lowerX, unsigned int upperX,
 		      unsigned int lowerY, unsigned int upperY){
-    return(resizeBehaviour(WIDTH, lowerX, upperX) * 
+    return(resizeBehaviour(WIDTH, lowerX, upperX) *
 	   resizeBehaviour(HEIGHT, lowerY, upperY));
   }
-  void copy(const GA2DArrayGenome &, 
+  void copy(const GA2DArrayGenome &,
 	    unsigned int, unsigned int,
-	    unsigned int, unsigned int, 
+	    unsigned int, unsigned int,
 	    unsigned int, unsigned int);
   void swap(unsigned int a, unsigned int b,
 	    unsigned int c, unsigned int d){
     GAArray<T>::swap(b*nx+a, d*nx+c);
-    _evaluated = gaFalse; 
+    _evaluated = gaFalse;
   }
 
 protected:
-  GAAlleleSet<T> * as;		// the allele set 
+  GAAlleleSet<T> * as;		// the allele set
   unsigned int nx, ny, minX, minY, maxX, maxY;
 };
 
@@ -137,7 +137,7 @@ public:
   int equal(const GAGenome & c) const ;
   virtual int resize(int x, int y);
 
-  const GAAlleleSet<T>& alleleset(unsigned int i=0) const 
+  const GAAlleleSet<T>& alleleset(unsigned int i=0) const
     {return aset[i%naset];}
 
 protected:

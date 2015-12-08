@@ -3,26 +3,54 @@
 using namespace std;
 
 /// return number of arcs broken
-int CycleBreaker::breakCycles(GA2DBinaryStringGenome& genome){
+int CycleBreaker::breakCycles(GA2DArrayGenome<int>& genome){
 
 // cout << "break cycles" << endl;
+// test genome
+// 1 4 -1
+// -1 -1 -1
+// 7 -1 -1
+// -1 -1 -1
+// 0 -1 -1
+// -1 -1 9
+// -1 -1 -1
+// -1 -1 -1
+// -1 -1 -1
+// 5 6 -1
+// for(int y=0;y<genome.height();y++){
+// for(int x=0;x<genome.width(); x++){
+// genome.gene(x,y,-1);
+// }
+// }
+// genome.gene(0,0,1);
+// genome.gene(1,0,4);
+// genome.gene(0,2,7);
+// genome.gene(0,4,0);
+// genome.gene(2,5,9);
+// genome.gene(0,9,5);
+// genome.gene(1,9,6);
+// cout << "\n";
+// genome.write(cout);
+// exit(1);
+
+
+
 
 	// set up all the connections in a set
 	map<int,node> network;
 	int height = genome.height();
 	int width = genome.width();
 	node blank;
-	for(size_t i=0; i<height; i++){
-		network[i]=blank;
+	for(size_t y=0; y<height; y++){
+		network[y]=blank;
 	}
 
-	for(size_t i=0; i<height; i++){
-		for(size_t j=0; j<width; j++){
+	for(size_t y=0; y<height; y++){
+		for(size_t x=0; x<width; x++){
 			// lists all children for one node
-// 			if(matrix[i][j]){
-			if(genome.gene(i,j)){
-				network[i].children.insert(j);
-				network[j].parents.insert(i);
+			if(genome.gene(x,y) != -1){
+				network[genome.gene(x,y)].children.insert(y);
+				network[y].parents.insert(genome.gene(x,y));
 			}
 		}
 	}
@@ -78,9 +106,16 @@ int CycleBreaker::breakCycles(GA2DBinaryStringGenome& genome){
 		for(set<int>::iterator childIter = origNet[*iter].children.begin();
 			childIter != origNet[*iter].children.end(); ++childIter){
 			if(leftSeq.find(*childIter) != leftSeq.end()){
-// 				cout << "break " << *iter << " to " << *childIter << endl;
+// cout << "break " << *iter << " to " << *childIter << endl;
 				// matrix[*iter][*childIter]=0;
-				genome.gene(*iter,*childIter,0);
+// 				genome.gene(*iter,*childIter,0);
+// 				genome.gene(*childIter, *iter,-1);
+				for(int x=0;x<width;x++){
+					if(genome.gene(x, *childIter) == *iter){
+						genome.gene(x, *childIter,-1);
+						break;
+					}
+				}
 				broken++;
 			}
 		}
@@ -90,14 +125,22 @@ int CycleBreaker::breakCycles(GA2DBinaryStringGenome& genome){
 		for(set<int>::iterator childIter = origNet[*iter].children.begin();
 			childIter != origNet[*iter].children.end(); ++childIter){
 			if(leftSeq.find(*childIter) != leftSeq.end()){
-// 				cout << "break " << *iter << " to " << *childIter << endl;
+// cout << "break " << *iter << " to " << *childIter << endl;
 // 				matrix[*iter][*childIter]=0;
-				genome.gene(*iter,*childIter,0);
+// 				genome.gene(*iter,*childIter,0);
+				for(int x=0;x<width;x++){
+					if(genome.gene(x, *childIter) == *iter){
+						genome.gene(x, *childIter,-1);
+						break;
+					}
+				}
 				broken++;
 			}
 		}
 		leftSeq.insert(*iter);
 	}
+// genome.write(cout);
+// exit(1);
 	return broken;
 }
 

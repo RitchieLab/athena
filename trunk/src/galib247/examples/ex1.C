@@ -5,16 +5,16 @@
 
  DESCRIPTION:
    Example program for the SimpleGA class and 2DBinaryStringGenome class.
-This program tries to fill the 2Dgenome with alternating 1s and 0s. 
+This program tries to fill the 2Dgenome with alternating 1s and 0s.
   This example uses the default crossover (single point), default mutator
 (uniform random bit flip), and default initializer (uniform random) for the
 2D genome.
   Notice that one-point crossover is not necessarily the best kind of crossover
-to use if you want to generate a 'good' genome with this kind of objective 
+to use if you want to generate a 'good' genome with this kind of objective
 function.  But it does work.
 ---------------------------------------------------------------------------- */
 #include <ga/GASimpleGA.h>	// we're going to use the simple GA
-#include <ga/GA2DBinStrGenome.h> // and the 2D binary string genome
+#include <ga/GA2DArrayGenome.h> // and the 2D binary string genome
 #include <ga/std_stream.h>
 
 #define cout STD_COUT
@@ -72,15 +72,15 @@ main(int argc, char **argv)
 // That's it!
   return 0;
 }
- 
+
 
 
 
 // This is the objective function.  All it does is check for alternating 0s and
 // 1s.  If the gene is odd and contains a 1, the fitness is incremented by 1.
 // If the gene is even and contains a 0, the fitness is incremented by 1.  No
-// penalties are assigned. 
-//   We have to do the cast because a plain, generic GAGenome doesn't have 
+// penalties are assigned.
+//   We have to do the cast because a plain, generic GAGenome doesn't have
 // the members that a GA2DBinaryStringGenome has.  And it's ok to cast it
 // because we know that we will only get GA2DBinaryStringGenomes and
 // nothing else.

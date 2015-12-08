@@ -114,7 +114,7 @@ protected:
 
 	void fillPopulation();
 
-	void constructSymbols(GA2DBinaryStringGenome& genome,
+	void constructSymbols(GA2DArrayGenome<int>& genome,
 	 	Solution* sol);
 
 	GABayesSolution* convertGenome(GAGenome& ind);
@@ -175,7 +175,7 @@ protected:
 	string constructBayesStr(vector<vector<int> > network,
 		Dataholder* holder,bool genoMapUsed, bool continMapUsed);
 
-	vector<vector<int> > constructEquation(GA2DBinaryStringGenome& genome);
+	vector<vector<int> > constructEquation(GA2DArrayGenome<int>& genome);
 
 	void configGA(GASimpleGA* ga);
 

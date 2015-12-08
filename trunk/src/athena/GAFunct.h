@@ -20,7 +20,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _GAFUNCT_H
 #define	_GAFUNCT_H
 
-#include <ga/GA2DBinStrGenome.h> // and the 2D binary string genome
+#include <ga/GA2DArrayGenome.h> // and the 2D genome
 #include "GABayesSolutionCreator.h"
 #include <Dataset.h>
 
@@ -75,11 +75,16 @@ public:
 		caseBayesCreator.setNodeLimitMethod(method);
 		controlBayesCreator.setNodeLimitMethod(method);
 	}
+
+	static int mutateCase(GAGenome & c, float pmut);
+	static int mutateControl(GAGenome & c, float pmut);
+
 // static double fitnessTime, loopTime, maxCheckTime;
 
 private:
 	static void init(GAGenome &g, GABayesSolutionCreator& gaBayesCreator);
-	static void removeSelfConns(GA2DBinaryStringGenome& genome);
+	static void removeSelfAndDup(GA2DArrayGenome<int>& genome);
+	static int customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaBayesCreator);
 
 	static data_manage::Dataset* caseDataset, *controlDataset;
 	static float connProb;

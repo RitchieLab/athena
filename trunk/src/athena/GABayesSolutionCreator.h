@@ -20,7 +20,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _GABAYESSOLUTIONCREATOR_H
 #define	_GABAYESSOLUTIONCREATOR_H
 
-#include <ga/GA2DBinStrGenome.h>
+#include <ga/GA2DArrayGenome.h>
 #include <Dataset.h>
 #include "Variable.h"
 #include "SolutionCalculator.h"
@@ -38,9 +38,9 @@ public:
 
 	~GABayesSolutionCreator();
 
-	void fixLoops(GA2DBinaryStringGenome& g);
+	void fixLoops(GA2DArrayGenome<int>& g);
 
-	void checkNodeLimits(GA2DBinaryStringGenome& g);
+	void checkNodeLimits(GA2DArrayGenome<int>& g);
 
 	void setMIScores(data_manage::Dataset* ds, std::vector<Variable*>&  vList);
 
@@ -55,7 +55,7 @@ public:
 	}
 
 	/// Calculate and return network score
-	double calcScore(GA2DBinaryStringGenome& genome, std::vector<Variable*> varList,
+	double calcScore(GA2DArrayGenome<int>& genome, std::vector<Variable*> varList,
 		data_manage::Dataset* dSet);
 
 		/// Returns worst score
@@ -71,7 +71,12 @@ public:
 
 	void setNodeLimitMethod(std::string method);
 
-	void breakLoops(GA2DBinaryStringGenome& genome);
+	set<int> limitConnections(int childIndex, vector<int>& parents,
+		int maxConn);
+
+	void breakLoops(GA2DArrayGenome<int>& genome);
+
+	void limitChildren(GA2DArrayGenome<int>& genome);
 
 private:
 	double calcMI(Variable* parentVar, Variable* childVar, data_manage::Dataset* ds);
@@ -84,7 +89,7 @@ private:
 
 	double k2CalcNoParent(Variable* var, data_manage::Dataset* ds, int& nP);
 
-	vector<vector<int> > constructEquation(GA2DBinaryStringGenome& genome, std::vector<Variable*> varList);
+	vector<vector<int> > constructEquation(GA2DArrayGenome<int>& genome, std::vector<Variable*> varList);
 	void writeGenoNet(vector<vector<int> >& eq);
 
 	std::set<int> removeLowMI(int childIndex,vector<int>& parents,int maxConn);

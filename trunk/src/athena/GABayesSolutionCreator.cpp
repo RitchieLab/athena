@@ -52,7 +52,7 @@ void GABayesSolutionCreator::setNodeLimitMethod(string method){
 }
 
 
-void GABayesSolutionCreator::breakLoops(GA2DBinaryStringGenome& genome){
+void GABayesSolutionCreator::breakLoops(GA2DArrayGenome<int>& genome){
 	CycleBreaker breaker;
 
 // for(int i=0; i<genome.height(); i++){
@@ -80,7 +80,7 @@ void GABayesSolutionCreator::breakLoops(GA2DBinaryStringGenome& genome){
 /// Fix loops in bayesian network by breaking the lowest information ones
 /// @param g GA2DVinStrGenome g
 ///
-void GABayesSolutionCreator::fixLoops(GA2DBinaryStringGenome& genome){
+void GABayesSolutionCreator::fixLoops(GA2DArrayGenome<int>& genome){
 
 	// genome is a matrix and width=height
 	Tarjans tarj(genome.width());
@@ -123,7 +123,7 @@ cout << endl;
 
 			int parIdx, childIdx;
 
-				// find lowest MI for any parent->child in loop
+			// find lowest MI for any parent->child in loop
 		 for(std::vector<std::vector<int> >::iterator loopIter=loops.begin();
 			loopIter != loops.end(); ++loopIter){
 				double worstMI = 1e10;
@@ -159,11 +159,49 @@ cout << "done fixing loops" << endl;
 // 	}
 // 	cout << "\n";
 // }
-exit(1);
 }
 
 
-void GABayesSolutionCreator::checkNodeLimits(GA2DBinaryStringGenome& genome){
+void GABayesSolutionCreator::limitChildren(GA2DArrayGenome<int>& genome){
+	if(maxChildren <= 0)
+		return;
+
+	int genomeWidth=genome.width();
+	int genomeHeight=genome.height();
+
+// genome.write(cout);
+	vector<int> empty;
+	vector<vector<int> > children(genomeHeight, empty);
+	for(int y=0; y<genomeHeight; y++){
+		for(int x=0; x<genomeWidth; x++){
+			if(genome.gene(x,y) != -1){
+				children[genome.gene(x,y)].push_back(y);
+			}
+		}
+	}
+
+	for(size_t parIdx=0; parIdx < children.size(); parIdx++){
+		if(children[parIdx].size() <= maxChildren)
+			continue;
+// cout << "parIdx=" << parIdx << "\t";
+		set<int> keep=(this->*childLimitPtr)(parIdx,children[parIdx],maxChildren);
+// cout << "keep=" << *(keep.begin()) << endl;
+		for(vector<int>::iterator iter=children[parIdx].begin(); iter!=children[parIdx].end();
+			++iter){
+				int childIdx=*iter;
+			if(keep.find(*iter)==keep.end()){
+				for(int x=0; x<genomeWidth; x++){
+					if(genome.gene(x,childIdx) == parIdx){
+						genome.gene(x,childIdx,-1);
+					}
+				}
+			}
+		}
+	}
+
+}
+
+void GABayesSolutionCreator::checkNodeLimits(GA2DArrayGenome<int>& genome){
 	vector<int> parents;
 	int genomeWidth=genome.width();
 	int genomeHeight=genome.height();
@@ -237,6 +275,14 @@ void GABayesSolutionCreator::checkNodeLimits(GA2DBinaryStringGenome& genome){
 	}
 // exit(1);
 
+}
+
+///
+/// Returns set with indexes of connections to keep
+///
+set<int> GABayesSolutionCreator::limitConnections(int childIndex, vector<int>& parents,
+	int maxConn){
+	return (this->*limitPtr)(childIndex,parents,maxConn);
 }
 
 
@@ -330,9 +376,9 @@ void GABayesSolutionCreator::writeGenoNet(vector<vector<int> >& eq){
 
 ///
 /// Construct equation string from genome
-/// @genome GA2DBinaryStringGenome
+/// @genome GA2DArrayGenome<int>
 ///
-vector<vector<int> > GABayesSolutionCreator::constructEquation(GA2DBinaryStringGenome& genome,
+vector<vector<int> > GABayesSolutionCreator::constructEquation(GA2DArrayGenome<int>& genome,
 	 std::vector<Variable*> varList){
 	vector<int> empty;
 	vector<vector<int> > conns(varList.size(), empty);
@@ -355,7 +401,7 @@ vector<vector<int> > GABayesSolutionCreator::constructEquation(GA2DBinaryStringG
 /// @param dSet
 /// @return network score
 ///
-double GABayesSolutionCreator::calcScore(GA2DBinaryStringGenome& genome, vector<Variable*> varList,
+double GABayesSolutionCreator::calcScore(GA2DArrayGenome<int>& genome, vector<Variable*> varList,
 	data_manage::Dataset* dSet){
 
 	double totalScore=0.0, score;
@@ -385,14 +431,14 @@ double GABayesSolutionCreator::calcScore(GA2DBinaryStringGenome& genome, vector<
 // pars.push_back(2);
 // cout << k2Calc(j,pars,varList,dSet,nParams) << endl;
 // exit(1);
-	for(int j=0; j<genome.width(); j++){
+	for(int y=0; y<genome.height(); y++){
 		vector<int> parents;
 // cout << "j=" << j << endl;
-		for(int i=0; i<genome.height(); i++){
+		for(int x=0; x<genome.width(); x++){
 			// connection
-			if(genome.gene(i,j)){
+			if(genome.gene(x,y) != -1){
 // cout << "parent  " << i << " for " << j << endl;
-				parents.push_back(i);
+				parents.push_back(genome.gene(x,y));
 			}
 		}
 
@@ -403,11 +449,11 @@ double GABayesSolutionCreator::calcScore(GA2DBinaryStringGenome& genome, vector<
 
 		if(parents.empty()){
 			// the additional parameter term (if any) is already included in noParentScores
-			calculator->addIndScore(noParentScores[j],0);
+			calculator->addIndScore(noParentScores[y],0);
 // cout << "score=" << noParentScores[j] << "\n";
 		}
 		else{
-			score = k2Calc(j,parents,varList,dSet,nParams);
+			score = k2Calc(y,parents,varList,dSet,nParams);
 			calculator->addIndScore(score, nParams);
 		}
 	}

@@ -137,8 +137,6 @@ GenomeTransfer.cpp \
 GenomeTransfer.h \
 GEDiscrimBayes.cpp \
 GEDiscrimBayes.h \
-GADiscrimBayes.cpp \
-GADiscrimBayes.h \
 GAFunct.cpp \
 GAFunct.h \
 Variable.cpp \
