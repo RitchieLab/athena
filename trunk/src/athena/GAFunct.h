@@ -80,11 +80,13 @@ public:
 	static int mutateControl(GAGenome & c, float pmut);
 
 // static double fitnessTime, loopTime, maxCheckTime;
+// 	static int initConnections, dupConnections, limitChildConnections, brokenLoopConnections;
 
 private:
 	static void init(GAGenome &g, GABayesSolutionCreator& gaBayesCreator);
 	static void removeSelfAndDup(GA2DArrayGenome<int>& genome);
 	static int customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaBayesCreator);
+	static int countConnections(GA2DArrayGenome<int>& genome);
 
 	static data_manage::Dataset* caseDataset, *controlDataset;
 	static float connProb;

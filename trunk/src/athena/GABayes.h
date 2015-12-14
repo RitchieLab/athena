@@ -188,7 +188,7 @@ void writeGenoNet(vector<vector<int> >& eq);
 
 	#ifdef HAVE_CXX_MPI
 		void sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga);
-		void updateWithMigration(unsigned char* newGenes, float * recvScores,
+		void updateWithMigration(int * newGenes, float * recvScores,
 			int genomeSize,	int totalNodes, int myRank, GASimpleGA* ga);
 	#endif
 

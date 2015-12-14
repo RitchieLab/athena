@@ -28,6 +28,10 @@ GABayesSolutionCreator GAFunct::controlBayesCreator;
 // double GAFunct::fitnessTime = 0.0;
 // double GAFunct::loopTime = 0.0;
 // double GAFunct::maxCheckTime = 0.0;
+// int GAFunct::initConnections=0;
+// int GAFunct::dupConnections=0;
+// int GAFunct::limitChildConnections=0;
+// int GAFunct::brokenLoopConnections=0;
 
 ///
 /// Used to assign fitness values in GA
@@ -35,21 +39,25 @@ GABayesSolutionCreator GAFunct::controlBayesCreator;
 ///
 float GAFunct::GACaseObjective(GAGenome& g){
 
-	time_t startTime, endTime;
+// 	time_t startTime, endTime;
 
   GA2DArrayGenome<int> & genome = (GA2DArrayGenome<int> &)g;
+
+// initConnections+=countConnections(genome);
+
   removeSelfAndDup(genome);
 // time (&startTime);
 //   caseBayesCreator.checkNodeLimits(genome);
 // time (&endTime);
 // double dif = difftime (endTime,startTime);
 // maxCheckTime += dif;
-
+// dupConnections+=countConnections(genome);
 // time (&startTime);
 //   caseBayesCreator.fixLoops(genome);
 	caseBayesCreator.limitChildren(genome);
+// limitChildConnections+=countConnections(genome);
 	caseBayesCreator.breakLoops(genome);
-
+// brokenLoopConnections+=countConnections(genome);
 // time(&endTime);
 // dif = difftime (endTime,startTime);
 // loopTime += dif;
@@ -76,6 +84,22 @@ float GAFunct::GACaseObjective(GAGenome& g){
 	return score;
 // 	return caseBayesCreator.calcScore(genome, varList, caseDataset);
 }
+
+///
+/// counts total connections
+///
+int GAFunct::countConnections(GA2DArrayGenome<int>& genome){
+	int conns=0;
+	for(int y=0; y<genome.height(); y++){
+		for(int x=0; x<genome.width(); x++){
+			if(genome.gene(x,y)!=-1){
+				conns++;
+			}
+		}
+	}
+	return conns;
+}
+
 
 ///
 /// Used to assign fitness values in GA
@@ -201,7 +225,10 @@ int GAFunct::customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaB
   register int n, m, i, j, k;
   if(pmut <= 0.0) return(0);
 
-  float nMut = pmut * genome.size();
+	int matrixSize=genome.height()*genome.height();
+  float nMut = pmut * matrixSize;
+
+
   set<int> muts;
   if(nMut < 1.0){		// we have to do a flip test on each bit
     nMut = 0;
@@ -215,7 +242,7 @@ int GAFunct::customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaB
     	// determine which will be parents for this variable
 			vector<int> parents;
 			for(k=0; k<genome.width(); k++){
-				int par = genome.gene(i,k);
+				int par = genome.gene(k,i);
 				if(par == -1){
 					continue;
 				}
@@ -234,35 +261,36 @@ int GAFunct::customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaB
 				set<int> keep=gaBayesCreator.limitConnections(i,parents,genome.width());
 				int j=0;
 				for(set<int>::iterator iter=keep.begin(); iter != keep.end(); ++iter){
-					genome.gene(i,j,*iter);
+					genome.gene(j,i,*iter);
 					j++;
 				}
 			}
 			else{
 				size_t j=0;
 				for(; j<parents.size(); j++){
-					genome.gene(i,j,parents[j]);
+					genome.gene(j,i,parents[j]);
 				}
 				for(; j<genome.width(); j++){
-					genome.gene(i,j,-1);
+					genome.gene(j,i,-1);
 				}
 			}
     }
   }
   else{				// only flip the number of bits we need to flip
   	map<int, set<int> > muts;
+  	int matrixSize=genome.height()*genome.height();
     for(n=0; n<nMut; n++){
-      m = GARandomInt(0, genome.size()-1);
+      m = GARandomInt(0, matrixSize-1);
       i = m % genome.height();
       j = m / genome.height();
-			muts[j].insert(i);
+			muts[i].insert(j);
     }
-// 		for(i=0; i<genome.height(); i++){
+
 		for(map<int, set<int> >::iterator mutIter = muts.begin(); mutIter != muts.end(); ++mutIter){
 			vector<int> parents;
 			i = mutIter->first;
 			for(k=0; k<genome.width(); k++){
-				int par = genome.gene(i,k);
+				int par = genome.gene(k,i);
 				if(par == -1){
 					continue;
 				}
@@ -276,22 +304,21 @@ int GAFunct::customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaB
 			for(set<int>::iterator iter=muts[i].begin(); iter != muts[i].end(); ++iter){
 				parents.push_back(*iter);
 			}
-
 			if(parents.size() > genome.width()){
 				set<int> keep=gaBayesCreator.limitConnections(i,parents,genome.width());
 				int j=0;
 				for(set<int>::iterator iter=keep.begin(); iter != keep.end(); ++iter){
-					genome.gene(i,j,*iter);
+					genome.gene(j,i,*iter);
 					j++;
 				}
 			}
 			else{
 				size_t j=0;
 				for(; j<parents.size(); j++){
-					genome.gene(i,j,parents[j]);
+					genome.gene(j,i,parents[j]);
 				}
 				for(; j<genome.width(); j++){
-					genome.gene(i,j,-1);
+					genome.gene(j,i,-1);
 				}
 			}
 		}

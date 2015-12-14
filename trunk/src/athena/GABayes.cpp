@@ -285,6 +285,12 @@ void GABayes::configGA(GASimpleGA* ga){
 			ga->maximize();
 			maxBest = true;
 		ga->initialize();
+// cout << "Step\tinitConn\tdupConn\tchildConn\tloopConn\n";
+// cout << "0\t";
+// cout << GAFunct::initConnections/float(popSize)  << "\t";
+// cout << GAFunct::dupConnections/float(popSize)  << "\t";
+// cout << GAFunct::limitChildConnections/float(popSize)  << "\t";
+// cout << GAFunct::brokenLoopConnections/float(popSize)  << "\n";
 }
 
 
@@ -331,7 +337,17 @@ int GABayes::step(){
 //cout << endl;
 	for(unsigned int i=0; i < stepSize; i++){
 //cout << "rank=" << myRank << " step=" << i << endl;
+// GAFunct::initConnections=0;
+// GAFunct::dupConnections=0;
+// GAFunct::limitChildConnections=0;
+// GAFunct::brokenLoopConnections=0;
 		ga->step();
+// cout << i+1 <<"\t";
+// cout << GAFunct::initConnections/float(popSize) << "\t";
+// cout << GAFunct::dupConnections/float(popSize)  << "\t";
+// cout << GAFunct::limitChildConnections/float(popSize)  << "\t";
+// cout << GAFunct::brokenLoopConnections/float(popSize)  << "\n";
+
 // exit(1);
 	}
 
@@ -344,6 +360,7 @@ int GABayes::step(){
 //sleep(10);
 //cout << endl;
 // cout << "\nfitnessTime=" << timeDiff(GAFunct::fitnessTime) << endl;
+//cout << "K2 calc time=" << timeDiff(GAFunct::calcK2Time) << endl;
 // cout << "loopTime=" << timeDiff(GAFunct::loopTime) << endl;
 // cout << "maxCheckTime=" << timeDiff(GAFunct::maxCheckTime) << endl;
 
@@ -811,22 +828,22 @@ void GABayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga){
 	int sendSize = height * width;
 
 // if(myRank==1){
-// cout << "totalnodes=" << totalNodes << endl;
-// for(int i=0; i<genome.height(); i++){
-// 	cout << " " << i;
-// }
-// cout << "\n-------- SENT ---------------\n";
-// for(int i=0; i<genome.height(); i++){
-// 	cout << "i=" << i << " ";
-// 	for(int j=0; j<genome.width(); j++){
-// 	cout <<  genome.gene(i,j) << " ";
-// 	}
-// 	cout << endl;
-// }
-// }
+//  cout << "totalnodes=" << totalNodes << endl;
+//  for(int i=0; i<genome.width(); i++){
+//  	cout << " " << i;
+//  }
+//  cout << "\n-------- SENT ---------------\n";
+//  for(int y=0; y<genome.height(); y++){
+//  	cout << "y=" << y << " ";
+//  	for(int x=0; x<genome.width(); x++){
+//  	cout <<  genome.gene(x,y) << " ";
+//  	}
+//  	cout << endl;
+//  }
+//  }
 
 	// transfer entire binary genome
-	unsigned char* send = new unsigned char[sendSize];
+	int* send = new int[sendSize];
 	// send new scores
 	float sendScore = genome.score();
 	float * recvScore = new float[totalNodes];
@@ -835,7 +852,7 @@ void GABayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga){
 
 // if(myRank==1){
 // 	cout << myRank << " recvScore=>" << recvScore[0] << " " << recvScore[1] << endl;
-// 	cout << myRank << " creating genome to send" << endl;
+//  	cout << myRank << " creating genome to send" << endl;
 // }
 	int index=0;
 	// fill send buffer
@@ -846,8 +863,8 @@ void GABayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga){
 		}
 	}
 	int recvSize = sendSize * totalNodes;
-	unsigned char* recv = new unsigned char[recvSize];
-	MPI_Allgather(send, sendSize, MPI_UNSIGNED_CHAR, recv, sendSize, MPI_UNSIGNED_CHAR, MPI_COMM_WORLD);
+	int* recv = new int[recvSize];
+	MPI_Allgather(send, sendSize, MPI_INT, recv, sendSize, MPI_INT, MPI_COMM_WORLD);
 
 	updateWithMigration(recv, recvScore, sendSize, totalNodes, myRank, ga);
 
@@ -857,7 +874,7 @@ void GABayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga){
 }
 
 
-void GABayes::updateWithMigration(unsigned char* newGenes, float * recvScores,
+void GABayes::updateWithMigration(int* newGenes, float * recvScores,
 	int genomeSize,	int totalNodes, int myRank, GASimpleGA* ga){
 	GAPopulation pop(ga->population());
 	int geneIndex=0;
@@ -884,18 +901,18 @@ void GABayes::updateWithMigration(unsigned char* newGenes, float * recvScores,
 
 
 // if(myRank==0){
-// for(int i=0; i<genome.height(); i++){
-// 	cout << " " << i;
-// }
-// cout << "\n-------- RECEIVED ---------------\n";
-// for(int i=0; i<genome.height(); i++){
-// 	cout << "i=" << i << " ";
-// 	for(int j=0; j<genome.width(); j++){
-// 	cout <<  genome.gene(i,j) << " ";
-// 	}
-// 	cout << endl;
-// }
-// }
+// for(int y=0; y<genome.width(); y++){
+//  	cout << " " << y;
+//  }
+//  cout << "\n-------- RECEIVED ---------------\n";
+//  for(int y=0; y<genome.height(); y++){
+//  	cout << "y=" << y << " ";
+//  	for(int x=0; x<genome.width(); x++){
+//  	cout <<  genome.gene(x,y) << " ";
+//  	}
+//  	cout << endl;
+//  }
+//  }
 
 		delete tmpInd;
 	}
