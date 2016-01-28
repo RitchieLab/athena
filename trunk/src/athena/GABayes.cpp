@@ -56,7 +56,7 @@ void GABayes::initializeParams(){
 	 paramMap["MAXCHILDREN"] = maximumChildren;
 	 paramMap["LIMITMETHOD"] =limitMethod;
 
-		maxChildren = 0;
+		maxChildren = 5;
 		maxParents = 3;
 
 	 gaSelectorMap["ROULETTE"] = RouletteWheelSelection;

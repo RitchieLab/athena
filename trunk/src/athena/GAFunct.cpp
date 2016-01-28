@@ -327,6 +327,24 @@ int GAFunct::customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaB
   return(STA_CAST(int,nMut));
 }
 
+
+///
+/// Prunes network connections for a case dataset network
+/// @returns updated score for network
+///
+float GAFunct::pruneCase(vector<vector<int> >& conns){
+	return caseBayesCreator.pruneNetwork(conns, varList, caseDataset);
+}
+
+///
+/// Prunes network connections for a control dataset network
+/// @returns updated score for network
+///
+float GAFunct::pruneControls(vector<vector<int> >& conns){
+	return controlBayesCreator.pruneNetwork(conns, varList, controlDataset);
+}
+
+
 ///
 /// sets the Dataset for objective function to work with
 ///

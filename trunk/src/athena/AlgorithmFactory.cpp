@@ -20,7 +20,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "GESymbReg.h"
 #include "GEBayes.h"
 #include "GEDiscrimBayes.h"
-// #include "GADiscrimBayes.h"
+#include "GADiscrimBayes.h"
 #include "GABayes.h"
 
 std::map<string, AlgorithmFactory::AlgorithmType> AlgorithmFactory::AlgorithmMap;
@@ -56,9 +56,9 @@ Algorithm* AlgorithmFactory::createAlgorithm(string algName){
 				case GEDiscrimBayesAlgorithm:
 						newAlgorithm = new GEDiscrimBayes;
 						break;
-// 				case GADiscrimBayesAlgorithm:
-// 						newAlgorithm = new GADiscrimBayes;
-// 						break;
+				case GADiscrimBayesAlgorithm:
+						newAlgorithm = new GADiscrimBayes;
+						break;
 				case GABayesAlgorithm:
 						newAlgorithm = new GABayes;
 						break;
@@ -76,7 +76,7 @@ void AlgorithmFactory::setAlgorithmMap(){
 		AlgorithmMap["GESYMBREG"] = GESymbRegAlgorithm;
 		AlgorithmMap["GEBN"] = GEBayesAlgorithm;
 		AlgorithmMap["GEDISCRIMBN"] = GEDiscrimBayesAlgorithm;
-// 		AlgorithmMap["GADISCRIMBN"] = GADiscrimBayesAlgorithm;
+		AlgorithmMap["GADISCRIMBN"] = GADiscrimBayesAlgorithm;
 		AlgorithmMap["GABN"] = GABayesAlgorithm;
 }
 

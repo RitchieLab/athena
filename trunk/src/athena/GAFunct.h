@@ -79,6 +79,9 @@ public:
 	static int mutateCase(GAGenome & c, float pmut);
 	static int mutateControl(GAGenome & c, float pmut);
 
+	static float pruneCase(vector<vector<int> >& conns);
+	static float pruneControls(vector<vector<int> >& conns);
+
 // static double fitnessTime, loopTime, maxCheckTime;
 // 	static int initConnections, dupConnections, limitChildConnections, brokenLoopConnections;
 

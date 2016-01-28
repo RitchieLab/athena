@@ -62,7 +62,8 @@ void GABayesSolutionCreator::breakLoops(GA2DArrayGenome<int>& genome){
 // 	cout << endl;
 // }
 
-	int cycBroken=breaker.breakCycles(genome);
+// 	int cycBroken=breaker.breakCycles(genome);
+	breaker.breakCycles(genome);
 // 	cout << "broke " << cycBroken << endl;
 // if(cycBroken > 0){
 // for(int i=0; i<genome.height(); i++){
@@ -85,18 +86,18 @@ void GABayesSolutionCreator::fixLoops(GA2DArrayGenome<int>& genome){
 	// genome is a matrix and width=height
 	Tarjans tarj(genome.width());
 
-cout << endl;
-for(int i=0; i<genome.height(); i++){
-// 	cout << "i=" << i << " ";
-	for(int j=0; j<genome.width(); j++){
-// 	cout <<  genome.gene(i,j) << " ";
-		if(genome.gene(i,j))
-		cout << "adjMatrix[" << i << "][" << j << "] = true;\n";
-	}
-// 	cout << "\n";
-}
-cout << "\n";
-exit(1);
+// cout << endl;
+// for(int i=0; i<genome.height(); i++){
+// // 	cout << "i=" << i << " ";
+// 	for(int j=0; j<genome.width(); j++){
+// // 	cout <<  genome.gene(i,j) << " ";
+// 		if(genome.gene(i,j))
+// 		cout << "adjMatrix[" << i << "][" << j << "] = true;\n";
+// 	}
+// // 	cout << "\n";
+// }
+// cout << "\n";
+// exit(1);
 	// add edges
 	for(int i=0; i<genome.height(); i++){
 		for(int j=0; j<genome.width(); j++){
@@ -107,19 +108,19 @@ exit(1);
 			}
 		}
 	}
-	int fromVar, toVar;
+// 	int fromVar, toVar;
 // cout << "start SCC" << endl;
 	while(tarj.SCC()){
 		 std::vector<std::vector<int> > loops =tarj.getLoops();
 
-cout << "loops size=" << loops.size() << endl;
-for(size_t i=0; i<loops.size(); i++){
-cout << "loop " << i+1 << " => ";
-for(size_t j=0; j<loops[i].size(); j++){
- cout << loops[i][j] << " ";
-}
-cout << endl;
-}
+// cout << "loops size=" << loops.size() << endl;
+// for(size_t i=0; i<loops.size(); i++){
+// cout << "loop " << i+1 << " => ";
+// for(size_t j=0; j<loops[i].size(); j++){
+//  cout << loops[i][j] << " ";
+// }
+// cout << endl;
+// }
 
 			int parIdx, childIdx;
 
@@ -150,7 +151,7 @@ cout << endl;
 		genome.gene(parIdx, childIdx, 0);
 		tarj.removeEdge(parIdx, childIdx);
 	}
-cout << "done fixing loops" << endl;
+// cout << "done fixing loops" << endl;
 
 // for(int i=0; i<genome.height(); i++){
 // 	cout << "i=" << i << " ";
@@ -298,7 +299,7 @@ set<int> GABayesSolutionCreator::removeRandom(int childIndex,vector<int>& parent
 set<int> GABayesSolutionCreator::removeLowMI(int childIndex,vector<int>& parents,int maxConn){
 	// need to map the parents by MI score
 	set<int> keep;
-	int worstScore;
+// 		int worstScore;
 
 	map<float,int> parentsToKeep;
 // cout << "removeLowMI" << endl;
@@ -333,7 +334,7 @@ set<int> GABayesSolutionCreator::removeLowMI(int childIndex,vector<int>& parents
 
 set<int> GABayesSolutionCreator::removeLowChildMI(int parentIndex,vector<int>& children,int maxConn){
 	set<int> keep;
-	int worstScore;
+// 	int worstScore;
 
 	map<float,int> childrenToKeep;
 
@@ -392,6 +393,96 @@ vector<vector<int> > GABayesSolutionCreator::constructEquation(GA2DArrayGenome<i
 	return conns;
 }
 
+///
+/// prunes network by removing connections that do not improve the overall network score
+/// @param conns contains connections for network -- changes to network are done in place
+/// @param varList
+/// @param dSet
+/// @returns score of pruned network
+///
+float GABayesSolutionCreator::pruneNetwork(vector<vector<int> >& conns, vector<Variable*>& varList,
+		data_manage::Dataset* dSet){
+
+// cout << "Connections:" << endl;
+// for(size_t i=0; i<conns.size(); i++){
+// 	if(conns[i].empty())
+// 		continue;
+// 	cout << i << ": ";
+// 	for(size_t j=0; j<conns[i].size(); j++){
+// 		cout << conns[i][j] << " ";
+// 	}
+// 	cout << endl;
+// }
+
+// 	float score=0.0;
+	float nodeScore, connScore;
+	calculator->reset();
+	int nParams,thisParams;
+	vector<int> parents;
+
+	for(size_t childIdx=0; childIdx < conns.size();childIdx++){
+		// when no connections use no parent score and go to next variable
+		if(conns[childIdx].empty()){
+// cout << "childIdx=" << childIdx << " empty" << endl;
+			calculator->addIndScore(noParentScores[childIdx],0);
+			continue;
+		}
+		parents.clear();
+		set<int> nodeParents;
+		for(size_t parentIdx=0; parentIdx < conns[childIdx].size(); parentIdx++){
+// 			parents.push_back(conns[childIdx][parentIdx]);
+			nodeParents.insert(conns[childIdx][parentIdx]);
+		}
+
+		for(size_t parentIdx=0; parentIdx<conns[childIdx].size(); parentIdx++){
+// 			parents.clear();
+			// score with all variables
+			parents.assign(nodeParents.begin(), nodeParents.end());
+			nodeScore = k2Calc(childIdx,parents,varList,dSet,nParams);
+// cout << childIdx << " nodeScore=" << nodeScore;
+			nodeParents.erase(conns[childIdx][parentIdx]);
+			// score without this connection
+			if(nodeParents.empty()){
+				connScore = noParentScores[childIdx];
+				thisParams = 0;
+			}
+			else{
+				parents.assign(nodeParents.begin(), nodeParents.end());
+				connScore = k2Calc(childIdx,parents,varList,dSet,thisParams);
+			}
+// cout << " connScore=" << connScore;
+			if(connScore > nodeScore){ // if the score is better without the conection
+// cout << " replace ";
+				nodeScore = connScore;
+				nParams = thisParams;
+			}
+			else{
+// cout << " keep ";
+				// put the connection back into set
+				nodeParents.insert(conns[childIdx][parentIdx]);
+			}
+		}
+// cout << endl;
+		// set connections in original structure to final set
+		conns[childIdx].assign(nodeParents.begin(), nodeParents.end());
+		calculator->addIndScore(nodeScore,nParams);
+	}
+// cout << " final score=" << -calculator->getScore() << endl;
+
+// cout << "Connections:" << endl;
+// for(size_t i=0; i<conns.size(); i++){
+// 	if(conns[i].empty())
+// 		continue;
+// 	cout << i << ": ";
+// 	for(size_t j=0; j<conns[i].size(); j++){
+// 		cout << conns[i][j] << " ";
+// 	}
+// 	cout << endl;
+// }
+// cout << "=====================================" << endl;
+// 	return score;
+	return -calculator->getScore();
+}
 
 
 ///
@@ -404,7 +495,8 @@ vector<vector<int> > GABayesSolutionCreator::constructEquation(GA2DArrayGenome<i
 double GABayesSolutionCreator::calcScore(GA2DArrayGenome<int>& genome, vector<Variable*> varList,
 	data_manage::Dataset* dSet){
 
-	double totalScore=0.0, score;
+// 	double totalScore=0.0;
+	double score;
 	int nParams;
 	calculator->reset();
 

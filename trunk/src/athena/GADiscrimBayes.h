@@ -96,6 +96,9 @@ public:
 	void getAdditionalFinalOutput(Dataset* testing, Dataset* training,
 		data_manage::Dataholder* holder, bool mapUsed, bool ottDummy, bool continMapUsed);
 
+	void finalFromFile(Dataset* testing, Dataset* training,
+		data_manage::Dataholder* holder, bool mapUsed, bool ottDummy, bool continMapUsed);
+
 protected:
 	/// Sets GA for run
 	virtual void setGAParams(vector<unsigned int>& excludedGenos,
@@ -112,7 +115,12 @@ protected:
 	enum GABayesParams{
 		noMatchParam,
 		initConnectProb,
-		modelsToUse
+		modelsToUse,
+		maximumChildren,
+		maximumParents,
+		limitMethod,
+		caseAllFileName,
+		controlAllFileName
 	};
 
 	struct ConditionalTable{
@@ -129,6 +137,12 @@ protected:
 		float score;
 		vector<ConditionalTable> tables;
 		std::set<int> varsWithParents;
+		vector<vector<int> > originalConns;
+	};
+
+	struct connComparison{
+		vector<vector<int> > originalConns, newConns;
+		float newScore;
 	};
 
 	struct IndivResults{
@@ -153,6 +167,12 @@ protected:
 		map<vector<vector<int> >, ModelScores>& modelHolder, Dataholder* holder,
 		bool genoMapUsed, bool continMapUsed);
 
+	void writeDotFiles(multimap<float, connComparison>& sortedModels, Dataholder* holder,
+		bool genoMapUsed, bool continMapUsed, string endName);
+
+	void writeReducedFile(multimap<float, connComparison>& sortedModels, Dataholder* holder,
+		bool genoMapUsed, bool continMapUsed, string fileName);
+
 	string constructBayesStr(vector<vector<int> > network,
 		Dataholder* holder,bool genoMapUsed, bool continMapUsed);
 
@@ -165,7 +185,7 @@ protected:
 	void	calcProbTables(Dataset* dset, vector<vector<double> >& orphanProbs,
 		data_manage::Dataholder* holder);
 
-	vector<vector<int> > constructEquation(GA2DBinaryStringGenome& genome);
+	vector<vector<int> > constructEquation(GA2DArrayGenome<int>& genome);
 
 	double setPredictedScores(vector<IndivResults>& indScores, map<vector<vector<int> >,ModelScores>& caseModels,
 		map<vector<vector<int> >,ModelScores>& controlModels, double caseRatio);
@@ -178,7 +198,22 @@ protected:
 	void setIndModScores(Dataset* dset, map<vector<vector<int> >,ModelScores>& models,
 		vector<IndivResults>& indScores, vector<vector<double> >& orphanProbs);
 
+	void pruneModels(map<vector<vector<int> >, ModelScores>& caseModels,
+		map<vector<vector<int> >, ModelScores>& controlModels, data_manage::Dataholder* holder,
+		bool genoMapUsed, bool continMapUsed);
+
 void writeGenoNet(vector<vector<int> >& eq);
+	void readAllFile(string allFileName,map<vector<vector<int> >, ModelScores>& models,
+		map<string,int>& nameToIndex,data_manage::Dataholder* holder,
+		bool caseMods, bool genoMapUsed, bool continMapUsed);
+
+	void selectTopModels(map<vector<vector<int> >, ModelScores>& modelHolder,
+		map<vector<vector<int> >, ModelScores>& topModels, data_manage::Dataholder* holder,
+		bool caseMods, bool genoMapUsed, bool continMapUsed);
+
+	void runDiscriminantAnalysis(map<vector<vector<int> >, ModelScores>& caseModels,
+		map<vector<vector<int> >, ModelScores>& controlModels, Dataset* testing, Dataset* training,
+		data_manage::Dataholder* holder, bool mapUsed, bool continMapUsed);
 
 	#ifdef HAVE_CXX_MPI
 		void sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga);
@@ -201,8 +236,8 @@ void writeGenoNet(vector<vector<int> >& eq);
 	vector<Variable*> varList;
 	float initProbConn;
 	size_t totalVars;
-	string outputName;
-	int topModelsUsed, currCV;
+	string outputName, limitMethodType, caseAllFile, controlAllFile;
+	int topModelsUsed, currCV, maxChildren, maxParents;
 
 };
 

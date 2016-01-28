@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
 
-		string versionDate = "12/7/2015";
+		string versionDate = "1/27/2016";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -340,7 +340,7 @@ int main(int argc, char** argv) {
 
 		alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
 
-		if(numCV > 1){
+		if(numCV > 1 || config.getTestFile().size() > 0){
 			alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
 			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()),
 				&(cvSet.getInterval(currCV).getTraining()), &data, mapFileUsed, config.getOttEncoded(),

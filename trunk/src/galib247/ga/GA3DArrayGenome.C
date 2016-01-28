@@ -27,13 +27,13 @@ GA3DArrayGenome<T>::className() const {return "GA3DArrayGenome";}
 template <class T> int
 GA3DArrayGenome<T>::classID() const {return GAID::ArrayGenome3D;}
 
-template <class T> 
+template <class T>
 GA3DArrayGenome<T>::
 GA3DArrayGenome(unsigned int w, unsigned int h, unsigned int d,
 		GAGenome::Evaluator f,
 		void * u) :
 GAArray<T>(w*h*d),
-GAGenome(DEFAULT_3DARRAY_INITIALIZER, 
+GAGenome(DEFAULT_3DARRAY_INITIALIZER,
 	 DEFAULT_3DARRAY_MUTATOR,
 	 DEFAULT_3DARRAY_COMPARATOR)
 {
@@ -44,7 +44,7 @@ GAGenome(DEFAULT_3DARRAY_INITIALIZER,
 }
 
 
-template <class T> 
+template <class T>
 GA3DArrayGenome<T>::
 GA3DArrayGenome(const GA3DArrayGenome<T> & orig) :
 GAArray<T>(orig.sz), GAGenome(){
@@ -78,7 +78,7 @@ GA3DArrayGenome<T>::clone(GAGenome::CloneMethod flag) const {
   }
   else{
     cpy->GAGenome::copy(*this);
-    cpy->minX = minX; cpy->minY = minY; cpy->minZ = minZ; 
+    cpy->minX = minX; cpy->minY = minY; cpy->minZ = minZ;
     cpy->maxX = maxX; cpy->maxY = maxY; cpy->maxZ = maxZ;
   }
   return cpy;
@@ -145,7 +145,7 @@ GA3DArrayGenome<T>::resize(int w, int h, int d)
 
   GAArray<T>::size(w*h*d);
 
-  if(w > STA_CAST(int,nx) && h > STA_CAST(int,ny)){ 
+  if(w > STA_CAST(int,nx) && h > STA_CAST(int,ny)){
     int z=GAMin(STA_CAST(int,nz),d);
     for(int k=z-1; k>=0; k--)
       for(int j=ny-1; j>=0; j--)
@@ -179,7 +179,7 @@ GA3DArrayGenome<T>::read(STD_ISTREAM &) {
 
 
 template <class T> int
-GA3DArrayGenome<T>::write(STD_OSTREAM & os) const 
+GA3DArrayGenome<T>::write(STD_OSTREAM & os) const
 {
   for(unsigned int k=0; k<nz; k++){
     for(unsigned int j=0; j<ny; j++){
@@ -216,7 +216,7 @@ GA3DArrayGenome<T>::resizeBehaviour(GAGenome::Dimension which) const {
 
 template <class T> int
 GA3DArrayGenome<T>::
-resizeBehaviour(GAGenome::Dimension which, 
+resizeBehaviour(GAGenome::Dimension which,
 		unsigned int lower, unsigned int upper)
 {
   if(upper < lower){
@@ -278,7 +278,7 @@ copy(const GA3DArrayGenome<T> & orig,
 }
 
 
-template <class T> int 
+template <class T> int
 GA3DArrayGenome<T>::equal(const GAGenome & c) const
 {
   if(this == &c) return 1;
@@ -312,7 +312,7 @@ GA3DArrayAlleleGenome<T>::className() const {return "GA3DArrayAlleleGenome";}
 template <class T> int
 GA3DArrayAlleleGenome<T>::classID() const {return GAID::ArrayAlleleGenome3D;}
 
-template <class T> 
+template <class T>
 GA3DArrayAlleleGenome<T>::
 GA3DArrayAlleleGenome(unsigned int w, unsigned int h, unsigned int d,
 		      const GAAlleleSet<T> & s,
@@ -328,7 +328,7 @@ GA3DArrayGenome<T>(w,h,d,f,u) {
   this->crossover(GA3DArrayAlleleGenome<T>::DEFAULT_3DARRAY_ALLELE_CROSSOVER);
 }
 
-template <class T> 
+template <class T>
 GA3DArrayAlleleGenome<T>::
 GA3DArrayAlleleGenome(unsigned int w, unsigned int h, unsigned int d,
 		      const GAAlleleSetArray<T> & sa,
@@ -346,9 +346,9 @@ GA3DArrayGenome<T>(w,h,d, f, u) {
 }
 
 
-template <class T> 
+template <class T>
 GA3DArrayAlleleGenome<T>::
-GA3DArrayAlleleGenome(const GA3DArrayAlleleGenome<T> & orig) : 
+GA3DArrayAlleleGenome(const GA3DArrayAlleleGenome<T> & orig) :
 GA3DArrayGenome<T>(orig.nx, orig.ny, orig.nz) {
   naset = 0;
   aset = (GAAlleleSet<T>*)0;
@@ -368,10 +368,10 @@ GA3DArrayAlleleGenome<T>::clone(GAGenome::CloneMethod) const {
 }
 
 
-template <class T> void 
+template <class T> void
 GA3DArrayAlleleGenome<T>::copy(const GAGenome& orig){
   if(&orig == this) return;
-  const GA3DArrayAlleleGenome<T>* c = 
+  const GA3DArrayAlleleGenome<T>* c =
     DYN_CAST(const GA3DArrayAlleleGenome<T>*, &orig);
   if(c) {
     GA3DArrayGenome<T>::copy(*c);
@@ -414,7 +414,7 @@ GA3DArrayAlleleGenome<T>::resize(int w, int h, int d){
     for(int k=z-1; k>=0; k--)
       for(int j=this->ny-1; j>=0; j--)
 	for(unsigned int i=oldx; i<this->nx; i++)
-	  this->a[k*this->ny*this->nx+j*this->nx+i] = 
+	  this->a[k*this->ny*this->nx+j*this->nx+i] =
 	    aset[(k*this->ny*this->nx+j*this->nx+i) % naset].allele();
   }
   else if(this->ny > oldy){
@@ -463,7 +463,7 @@ GA3DArrayAlleleGenome<T>::equal(const GAGenome & c) const {
    Operator definitions
 ---------------------------------------------------------------------------- */
 // this does not handle genomes with multiple allele sets!
-template <class ARRAY_TYPE> void 
+template <class ARRAY_TYPE> void
 GA3DArrayAlleleGenome<ARRAY_TYPE>::UniformInitializer(GAGenome & c)
 {
   GA3DArrayAlleleGenome<ARRAY_TYPE> &child=
@@ -476,7 +476,7 @@ GA3DArrayAlleleGenome<ARRAY_TYPE>::UniformInitializer(GAGenome & c)
 }
 
 
-template <class ARRAY_TYPE> int 
+template <class ARRAY_TYPE> int
 GA3DArrayAlleleGenome<ARRAY_TYPE>::FlipMutator(GAGenome & c, float pmut)
 {
   GA3DArrayAlleleGenome<ARRAY_TYPE> &child=
@@ -512,7 +512,7 @@ GA3DArrayAlleleGenome<ARRAY_TYPE>::FlipMutator(GAGenome & c, float pmut)
 }
 
 
-template <class ARRAY_TYPE> int 
+template <class ARRAY_TYPE> int
 GA3DArrayGenome<ARRAY_TYPE>::SwapMutator(GAGenome & c, float pmut)
 {
   GA3DArrayGenome<ARRAY_TYPE> &child=DYN_CAST(GA3DArrayGenome<ARRAY_TYPE>&, c);
@@ -568,7 +568,7 @@ ElementComparator(const GAGenome& a, const GAGenome& b)
 
 
 
-// Make sure our bitmask is big enough, generate a mask, then use it to 
+// Make sure our bitmask is big enough, generate a mask, then use it to
 // extract the information from each parent to stuff the two children.
 // We don't deallocate any space for the masks under the assumption that we'll
 // have to use them again in the future.
@@ -680,12 +680,12 @@ UniformCrossover(const GAGenome& p1, const GAGenome& p2,
 //   This is designed only for genomes that are the same length.  If the child
 // is not the same length as the parent, or if the children are not the same
 // size, we don't do the crossover.
-//   In the interest of speed we do not do any checks for size.  Do not use 
+//   In the interest of speed we do not do any checks for size.  Do not use
 // this crossover method when the parents and children may be different sizes.
 // It might break!
 template <class T> int
 GA3DArrayGenome<T>::
-EvenOddCrossover(const GAGenome& p1, const GAGenome& p2, 
+EvenOddCrossover(const GAGenome& p1, const GAGenome& p2,
 GAGenome* c1, GAGenome* c2){
   const GA3DArrayGenome<T> &mom=DYN_CAST(const GA3DArrayGenome<T> &, p1);
   const GA3DArrayGenome<T> &dad=DYN_CAST(const GA3DArrayGenome<T> &, p2);
@@ -696,7 +696,7 @@ GAGenome* c1, GAGenome* c2){
   if(c1 && c2){
     GA3DArrayGenome<T> &sis=DYN_CAST(GA3DArrayGenome<T> &, *c1);
     GA3DArrayGenome<T> &bro=DYN_CAST(GA3DArrayGenome<T> &, *c2);
-    
+
     if(sis.width() == bro.width() && sis.height() == bro.height() &&
        sis.depth() == bro.depth() &&
        mom.width() == dad.width() && mom.height() == dad.height() &&
@@ -716,11 +716,11 @@ GAGenome* c1, GAGenome* c2){
     }
     else{
       int startx, starty, startz;
-      int maxx = (sis.width() > bro.width()) ? sis.width() : bro.width();
+//       int maxx = (sis.width() > bro.width()) ? sis.width() : bro.width();
       int minx = (mom.width() < dad.width()) ? mom.width() : dad.width();
-      int maxy = (sis.height() > bro.height()) ? sis.height() : bro.height();
+//       int maxy = (sis.height() > bro.height()) ? sis.height() : bro.height();
       int miny = (mom.height() < dad.height()) ? mom.height() : dad.height();
-      int maxz = (sis.depth() > bro.depth()) ? sis.depth() : bro.depth();
+//       int maxz = (sis.depth() > bro.depth()) ? sis.depth() : bro.depth();
       int minz = (mom.depth() < dad.depth()) ? mom.depth() : dad.depth();
       startx = (sis.width() < minx) ? sis.width() : minx;
       starty = (sis.height() < miny) ? sis.height() : miny;
@@ -806,8 +806,8 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
 
     if(sis.resizeBehaviour(GAGenome::WIDTH) == GAGenome::FIXED_SIZE &&
        bro.resizeBehaviour(GAGenome::WIDTH) == GAGenome::FIXED_SIZE){
-      if(mom.width() != dad.width() || 
-	 sis.width() != bro.width() || 
+      if(mom.width() != dad.width() ||
+	 sis.width() != bro.width() ||
 	 sis.width() != mom.width()){
 	GAErr(GA_LOC, mom.className(), "one-point cross", gaErrSameLengthReqd);
 	return nc;
@@ -828,11 +828,11 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
       sitex = GAMin(momsitex, dadsitex);
       lenx = GAMin(momlenx, dadlenx);
     }
-    
+
     if(sis.resizeBehaviour(GAGenome::HEIGHT) == GAGenome::FIXED_SIZE &&
        bro.resizeBehaviour(GAGenome::HEIGHT) == GAGenome::FIXED_SIZE){
-      if(mom.height() != dad.height() || 
-	 sis.height() != bro.height() || 
+      if(mom.height() != dad.height() ||
+	 sis.height() != bro.height() ||
 	 sis.height() != mom.height()){
 	GAErr(GA_LOC, mom.className(), "one-point cross", gaErrSameLengthReqd);
 	return nc;
@@ -856,8 +856,8 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
 
     if(sis.resizeBehaviour(GAGenome::DEPTH) == GAGenome::FIXED_SIZE &&
        bro.resizeBehaviour(GAGenome::DEPTH) == GAGenome::FIXED_SIZE){
-      if(mom.depth() != dad.depth() || 
-	 sis.depth() != bro.depth() || 
+      if(mom.depth() != dad.depth() ||
+	 sis.depth() != bro.depth() ||
 	 sis.depth() != mom.depth()){
 	GAErr(GA_LOC, mom.className(), "one-point cross", gaErrSameLengthReqd);
 	return nc;
@@ -882,8 +882,8 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
     sis.resize(sitex+lenx, sitey+leny, sitez+lenz);
     bro.resize(sitex+lenx, sitey+leny, sitez+lenz);
 
-    sis.copy(mom, 
-	     0, 0, 0, 
+    sis.copy(mom,
+	     0, 0, 0,
 	     momsitex-sitex, momsitey-sitey, momsitez-sitez,
 	     sitex, sitey, sitez);
     sis.copy(dad,
@@ -898,8 +898,8 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
 	     sitex, sitey, 0,
 	     momsitex, momsitey, momsitez-sitez,
 	     lenx, leny, sitez);
-    sis.copy(dad, 
-	     0, 0, sitez, 
+    sis.copy(dad,
+	     0, 0, sitez,
 	     dadsitex-sitex, dadsitey-sitey, dadsitez,
 	     sitex, sitey, lenz);
     sis.copy(mom,
@@ -914,9 +914,9 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
 	     sitex, sitey, sitez,
 	     dadsitex, dadsitey, dadsitez,
 	     lenx, leny, lenz);
-    
-    bro.copy(dad, 
-	     0, 0, 0, 
+
+    bro.copy(dad,
+	     0, 0, 0,
 	     dadsitex-sitex, dadsitey-sitey, dadsitez-sitez,
 	     sitex, sitey, sitez);
     bro.copy(mom,
@@ -931,8 +931,8 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
 	     sitex, sitey, 0,
 	     dadsitex, dadsitey, dadsitez-sitez,
 	     lenx, leny, sitez);
-    bro.copy(mom, 
-	     0, 0, sitez, 
+    bro.copy(mom,
+	     0, 0, sitez,
 	     momsitex-sitex, momsitey-sitey, momsitez,
 	     sitex, sitey, lenz);
     bro.copy(dad,
@@ -969,7 +969,7 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
       sitex = GAMin(momsitex, dadsitex);
       lenx = GAMin(momlenx, dadlenx);
     }
-    
+
     if(sis.resizeBehaviour(GAGenome::HEIGHT) == GAGenome::FIXED_SIZE){
       if(mom.height() != dad.height() || sis.height() != mom.height()){
 	GAErr(GA_LOC, mom.className(), "one-point cross", gaErrSameLengthReqd);
@@ -1003,12 +1003,12 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
       sitez = GAMin(momsitez, dadsitez);
       lenz = GAMin(momlenz, dadlenz);
     }
-    
+
     sis.resize(sitex+lenx, sitey+leny, sitez+lenz);
-    
+
     if(GARandomBit()){
-      sis.copy(mom, 
-	       0, 0, 0, 
+      sis.copy(mom,
+	       0, 0, 0,
 	       momsitex-sitex, momsitey-sitey, momsitez-sitez,
 	       sitex, sitey, sitez);
       sis.copy(dad,
@@ -1023,8 +1023,8 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
 	       sitex, sitey, 0,
 	       momsitex, momsitey, momsitez-sitez,
 	       lenx, leny, sitez);
-      sis.copy(dad, 
-	       0, 0, sitez, 
+      sis.copy(dad,
+	       0, 0, sitez,
 	       dadsitex-sitex, dadsitey-sitey, dadsitez,
 	       sitex, sitey, lenz);
       sis.copy(mom,
@@ -1041,8 +1041,8 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
 	       lenx, leny, lenz);
     }
     else{
-      sis.copy(dad, 
-	       0, 0, 0, 
+      sis.copy(dad,
+	       0, 0, 0,
 	       dadsitex-sitex, dadsitey-sitey, dadsitez-sitez,
 	       sitex, sitey, sitez);
       sis.copy(mom,
@@ -1057,8 +1057,8 @@ OnePointCrossover(const GAGenome& p1, const GAGenome& p2,
 	       sitex, sitey, 0,
 	       dadsitex, dadsitey, dadsitez-sitez,
 	       lenx, leny, sitez);
-      sis.copy(mom, 
-	       0, 0, sitez, 
+      sis.copy(mom,
+	       0, 0, sitez,
 	       momsitex-sitex, momsitey-sitey, momsitez,
 	       sitex, sitey, lenz);
       sis.copy(dad,

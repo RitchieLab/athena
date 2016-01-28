@@ -47,7 +47,7 @@ public:
 				/// GE Bayesian Discriminant
 				GEDiscrimBayesAlgorithm,
 				/// Bayesian Discriminant using GA
-// 				GADiscrimBayesAlgorithm,
+				GADiscrimBayesAlgorithm,
 				/// GA Bayesian
 				GABayesAlgorithm
 		};

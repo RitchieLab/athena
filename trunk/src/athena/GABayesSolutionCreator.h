@@ -78,6 +78,10 @@ public:
 
 	void limitChildren(GA2DArrayGenome<int>& genome);
 
+	/// prunes network by removing connections that do not improve the overall network score
+	float pruneNetwork(vector<vector<int> >& conns, vector<Variable*>& varList,
+		data_manage::Dataset* dSet);
+
 private:
 	double calcMI(Variable* parentVar, Variable* childVar, data_manage::Dataset* ds);
 
