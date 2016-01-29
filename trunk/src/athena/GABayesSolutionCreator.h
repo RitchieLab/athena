@@ -73,6 +73,7 @@ public:
 
 	set<int> limitConnections(int childIndex, vector<int>& parents,
 		int maxConn);
+//static double calcK2Time;
 
 	void breakLoops(GA2DArrayGenome<int>& genome);
 

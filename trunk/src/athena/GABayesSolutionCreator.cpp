@@ -22,6 +22,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <algorithm>
 #include "CycleBreaker.h"
+//double GABayesSolutionCreator::calcK2Time = 0.0;
 
 GABayesSolutionCreator::GABayesSolutionCreator(){
 	calculator=NULL;
@@ -500,6 +501,9 @@ double GABayesSolutionCreator::calcScore(GA2DArrayGenome<int>& genome, vector<Va
 	int nParams;
 	calculator->reset();
 
+
+//time_t startTime, endTime;
+//calcK2Time=0.0;
 // cout << "\n";
 // cout << "   ";
 // for(int i=0; i<genome.height(); i++){
@@ -546,6 +550,8 @@ double GABayesSolutionCreator::calcScore(GA2DArrayGenome<int>& genome, vector<Va
 		}
 		else{
 			score = k2Calc(y,parents,varList,dSet,nParams);
+//time(&endTime);
+//calcK2Time += difftime (endTime,startTime);
 			calculator->addIndScore(score, nParams);
 		}
 	}

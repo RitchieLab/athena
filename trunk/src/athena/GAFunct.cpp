@@ -25,9 +25,10 @@ data_manage::Dataset* GAFunct::controlDataset = NULL;
 vector<Variable*> GAFunct::varList;
 GABayesSolutionCreator GAFunct::caseBayesCreator;
 GABayesSolutionCreator GAFunct::controlBayesCreator;
-// double GAFunct::fitnessTime = 0.0;
-// double GAFunct::loopTime = 0.0;
-// double GAFunct::maxCheckTime = 0.0;
+//double GAFunct::fitnessTime = 0.0;
+//double GAFunct::loopTime = 0.0;
+//double GAFunct::maxCheckTime = 0.0;
+//double GAFunct::calcK2Time = 0.0;
 // int GAFunct::initConnections=0;
 // int GAFunct::dupConnections=0;
 // int GAFunct::limitChildConnections=0;
@@ -46,28 +47,33 @@ float GAFunct::GACaseObjective(GAGenome& g){
 // initConnections+=countConnections(genome);
 
   removeSelfAndDup(genome);
-// time (&startTime);
+//time (&startTime);
 //   caseBayesCreator.checkNodeLimits(genome);
-// time (&endTime);
+  caseBayesCreator.limitChildren(genome);
+//time (&endTime);
 // double dif = difftime (endTime,startTime);
-// maxCheckTime += dif;
+//maxCheckTime += dif;
 // dupConnections+=countConnections(genome);
-// time (&startTime);
+///time (&startTime);
 //   caseBayesCreator.fixLoops(genome);
-	caseBayesCreator.limitChildren(genome);
 // limitChildConnections+=countConnections(genome);
 	caseBayesCreator.breakLoops(genome);
 // brokenLoopConnections+=countConnections(genome);
-// time(&endTime);
-// dif = difftime (endTime,startTime);
-// loopTime += dif;
+//time(&endTime);
+//dif = difftime (endTime,startTime);
+//loopTime += dif;
+
+//time(&endTime);
+//dif = difftime (endTime,startTime);
+//loopTime += dif;
 
 // cout << "calculating case fitness" << endl;
-// time(&startTime);
+//time(&startTime);
 	float score=caseBayesCreator.calcScore(genome, varList, caseDataset);
-// time(&endTime);
-// dif = difftime (endTime,startTime);
-// fitnessTime += dif;
+//time(&endTime);
+//dif = difftime (endTime,startTime);
+//fitnessTime += dif;
+//calcK2Time += GABayesSolutionCreator::calcK2Time;
 // cout << "final score=" << score << endl;
 
 

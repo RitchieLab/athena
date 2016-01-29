@@ -85,6 +85,7 @@ int main(int argc, char** argv) {
 				}
 #endif
 		}
+cout << "start" << endl;
 
 		string configFile = argv[1];
 		ConfigFileReader configRead;
@@ -342,6 +343,7 @@ int main(int argc, char** argv) {
 
 		if(numCV > 1 || config.getTestFile().size() > 0){
 			alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
+cout << "call getAdditionalFinal" << endl;
 			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()),
 				&(cvSet.getInterval(currCV).getTraining()), &data, mapFileUsed, config.getOttEncoded(),
 				continMapUsed);

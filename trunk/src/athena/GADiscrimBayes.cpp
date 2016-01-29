@@ -883,9 +883,9 @@ if(myRank == 0){
 #ifdef HAVE_CXX_MPI
 if(myRank == 0){
 #endif
-	endName = ".control.dot";
+	string endName = ".control.dot";
 	writeDotFiles(sortedModels, holder, genoMapUsed, continMapUsed, endName);
-	outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".control.reduced";
+	string outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".control.reduced";
 	writeReducedFile(sortedModels, holder, genoMapUsed, continMapUsed, outName);
 #ifdef HAVE_CXX_MPI
 }
@@ -1422,7 +1422,7 @@ void GADiscrimBayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleG
 // }
 
 	// transfer entire binary genome
-	unsigned char* send = new unsigned char[sendSize];
+	unsigned int* send = new unsigned int[sendSize];
 	// send new scores
 	float sendScore = genome.score();
 	float * recvScore = new float[totalNodes];
@@ -1435,15 +1435,15 @@ void GADiscrimBayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleG
 // }
 	int index=0;
 	// fill send buffer
-	for(int i=0; i<height; i++){
-		for(int j=0; j<width; j++){
-			send[index]=genome.gene(i,j);
+	for(int y=0; y<height; y++){
+		for(int x=0; x<width; x++){
+			send[index]=genome.gene(x,y);
 			index++;
 		}
 	}
 	int recvSize = sendSize * totalNodes;
-	unsigned char* recv = new unsigned char[recvSize];
-	MPI_Allgather(send, sendSize, MPI_UNSIGNED_CHAR, recv, sendSize, MPI_UNSIGNED_CHAR, MPI_COMM_WORLD);
+	unsigned int* recv = new unsigned int[recvSize];
+	MPI_Allgather(send, sendSize, MPI_INT, recv, sendSize, MPI_INT, MPI_COMM_WORLD);
 
 	updateWithMigration(recv, recvScore, sendSize, totalNodes, myRank, ga);
 
@@ -1453,7 +1453,7 @@ void GADiscrimBayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleG
 }
 
 
-void GADiscrimBayes::updateWithMigration(unsigned char* newGenes, float * recvScores,
+void GADiscrimBayes::updateWithMigration(unsigned int* newGenes, float * recvScores,
 	int genomeSize,	int totalNodes, int myRank, GASimpleGA* ga){
 	GAPopulation pop(ga->population());
 	int geneIndex=0;
@@ -1466,9 +1466,9 @@ void GADiscrimBayes::updateWithMigration(unsigned char* newGenes, float * recvSc
 		GAGenome *tmpInd = ga->population().individual(0).clone();
 		GA2DArrayGenome<int>& genome = (GA2DArrayGenome<int>&)*tmpInd;
 		genome.score(recvScores[node]);
-		for(int i=0; i<genome.height(); i++){
-			for(int j=0; j<genome.width(); j++){
-				genome.gene(i,j,newGenes[geneIndex]);
+		for(int y=0; y<genome.height(); y++){
+			for(int x=0; x<genome.width(); x++){
+				genome.gene(x,y,newGenes[geneIndex]);
 				geneIndex++;
 			}
 		}
