@@ -85,7 +85,6 @@ int main(int argc, char** argv) {
 				}
 #endif
 		}
-cout << "start" << endl;
 
 		string configFile = argv[1];
 		ConfigFileReader configRead;
@@ -336,14 +335,12 @@ cout << "start" << endl;
 						break; // can complete early
 				 }
 			}
-//sleep(10);
 		alg->closeLog();
 
 		alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTraining()));
 
 		if(numCV > 1 || config.getTestFile().size() > 0){
 			alg->testSolution(&(cvSet.getInterval(currCV).getTesting()), nproc);
-cout << "call getAdditionalFinal" << endl;
 			alg->getAdditionalFinalOutput(&(cvSet.getInterval(currCV).getTesting()),
 				&(cvSet.getInterval(currCV).getTraining()), &data, mapFileUsed, config.getOttEncoded(),
 				continMapUsed);

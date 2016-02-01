@@ -487,10 +487,14 @@ void GADiscrimBayes::finalFromFile(Dataset* testing, Dataset* training,
 		nameToIndex[varName]=i;
 	}
 
+	string caseFile = caseAllFile + ".cv" + Stringmanip::numberToString(currCV) + ".all";
+	string controlFile = controlAllFile + ".cv" + Stringmanip::numberToString(currCV) +
+		".all";
+cout << "caseFile " << caseFile << endl;
 	map<vector<vector<int> >, ModelScores> caseModels;
-	readAllFile(caseAllFile, caseModels, nameToIndex, holder, true, mapUsed, continMapUsed);
+	readAllFile(caseFile, caseModels, nameToIndex, holder, true, mapUsed, continMapUsed);
 	map<vector<vector<int> >, ModelScores> controlModels;
-	readAllFile(controlAllFile, controlModels, nameToIndex,  holder, true, mapUsed,
+	readAllFile(controlFile, controlModels, nameToIndex,  holder, true, mapUsed,
 		continMapUsed);
 	runDiscriminantAnalysis(caseModels, controlModels, testing, training, holder, mapUsed,
 		continMapUsed);
@@ -680,8 +684,8 @@ void GADiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 	data_manage::Dataholder* holder, bool mapUsed, bool ottDummy, bool continMapUsed){
 
 	if(controlAllFile.length() > 0 && caseAllFile.length() > 0){
-		if(currCV==1)
-			finalFromFile(testing, training, holder, mapUsed, ottDummy, continMapUsed);
+// 		if(currCV==1)
+		finalFromFile(testing, training, holder, mapUsed, ottDummy, continMapUsed);
 		return;
 	}
 
@@ -883,9 +887,9 @@ if(myRank == 0){
 #ifdef HAVE_CXX_MPI
 if(myRank == 0){
 #endif
-	string endName = ".control.dot";
+	endName = ".control.dot";
 	writeDotFiles(sortedModels, holder, genoMapUsed, continMapUsed, endName);
-	string outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".control.reduced";
+	outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".control.reduced";
 	writeReducedFile(sortedModels, holder, genoMapUsed, continMapUsed, outName);
 #ifdef HAVE_CXX_MPI
 }
