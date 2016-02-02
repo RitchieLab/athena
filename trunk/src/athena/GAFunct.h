@@ -47,7 +47,7 @@ public:
 
 	/// sets the Dataset for objective function to work with
 	static void setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* controlDS,
-		std::vector<Variable*> vList);
+		std::vector<Variable*> vList, bool needMI=true);
 
 	/// sets Solution type for objective function
 	static void setSolutionType(std::string calculatorName){

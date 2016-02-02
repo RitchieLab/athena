@@ -355,15 +355,17 @@ float GAFunct::pruneControls(vector<vector<int> >& conns){
 /// sets the Dataset for objective function to work with
 ///
 void GAFunct::setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* controlDS,
-	std::vector<Variable*> vList){
+	std::vector<Variable*> vList, bool needMI){
 	caseDataset = caseDS;
 	controlDataset = controlDS;
 	varList=vList;
 
-	caseBayesCreator.setMIScores(caseDataset,vList);
+	if(needMI)
+		caseBayesCreator.setMIScores(caseDataset,vList);
 	caseBayesCreator.setNoParentScores(caseDataset,vList);
 
-	controlBayesCreator.setMIScores(controlDataset,vList);
+	if(needMI)
+		controlBayesCreator.setMIScores(controlDataset,vList);
 	controlBayesCreator.setNoParentScores(controlDataset, vList);
 
 // cout << "output test case set" << endl;

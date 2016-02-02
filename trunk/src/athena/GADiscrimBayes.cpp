@@ -243,7 +243,7 @@ void GADiscrimBayes::setDataset(Dataset* newSet){
 			varList[i]->setNumLevels(caseDataset->getNumLevels(varList[i]->getIndex()));
 		}
 	}
-	GAFunct::setDatasets(caseDataset, controlDataset, varList);
+	GAFunct::setDatasets(caseDataset, controlDataset, varList, caseAllFile.size() < 1);
 }
 
 ///
@@ -273,7 +273,8 @@ void GADiscrimBayes::configGA(GASimpleGA* ga){
 		// always maximize these scores
 			ga->maximize();
 			maxBest = true;
-		ga->initialize();
+		if(caseAllFile.size() < 1)
+			ga->initialize();
 }
 
 
@@ -849,13 +850,14 @@ void GADiscrimBayes::pruneModels(map<vector<vector<int> >, ModelScores>& caseMod
 		sortedModels.insert(std::pair<float, connComparison>(iter->second.score, comparison));
 	}
 	caseModels = temp;
+	string endName, outName;
 
 #ifdef HAVE_CXX_MPI
 if(myRank == 0){
 #endif
 // cout << "myRank=" << myRank  << "sorted models" << endl;
-	string outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".case.reduced";
-	string endName = ".case.dot";
+	outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".case.reduced";
+	endName = ".case.dot";
 	writeDotFiles(sortedModels, holder, genoMapUsed, continMapUsed, endName);
 	writeReducedFile(sortedModels, holder, genoMapUsed, continMapUsed, outName);
 #ifdef HAVE_CXX_MPI
