@@ -174,7 +174,7 @@ protected:
 		bool genoMapUsed, bool continMapUsed, string fileName);
 
 	string constructBayesStr(vector<vector<int> > network,
-		Dataholder* holder,bool genoMapUsed, bool continMapUsed);
+		Dataholder* holder,bool genoMapUsed, bool continMapUsed, bool excludeIndependent=false);
 
 	void setConditionalTables(Dataset* dset, map<vector<vector<int> > , ModelScores>& topModels,
 		Dataholder* holder, double missValue);

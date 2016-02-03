@@ -404,6 +404,28 @@ vector<vector<int> > GABayesSolutionCreator::constructEquation(GA2DArrayGenome<i
 float GABayesSolutionCreator::pruneNetwork(vector<vector<int> >& conns, vector<Variable*>& varList,
 		data_manage::Dataset* dSet){
 
+
+// map<int, string> convert;
+// convert[0]="a";
+// convert[1]="b";
+// convert[2]="c";
+// data_manage::Dataholder* holder = dSet->getHolder();
+// cout << "G" + varList[0]->getName(holder);
+// for(unsigned int j=1; j<varList.size(); j++){
+// 	cout << "\tG" + varList[j]->getName(holder);
+// }
+// cout << endl;
+//
+// for(unsigned int i=0; i<dSet->numInds(); i++){
+// 	data_manage::Individual * ind=dSet->getInd(i);
+// 	cout << convert[ind->getGenotype(varList[0]->getIndex())];
+// 	for(unsigned int j=1; j<varList.size(); j++){
+// 		cout << "\t" << convert[ind->getGenotype(varList[j]->getIndex())];
+// 	}
+// 	cout << endl;
+// }
+// exit(1);
+
 // cout << "Connections:" << endl;
 // for(size_t i=0; i<conns.size(); i++){
 // 	if(conns[i].empty())

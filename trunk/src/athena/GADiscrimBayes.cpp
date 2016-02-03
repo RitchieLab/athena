@@ -929,7 +929,8 @@ void GADiscrimBayes::writeDotFiles(multimap<float, connComparison>& sortedModels
 	while(iter != sortedModels.end()){
 		string outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + "." +
 			Stringmanip::numberToString(modNum) + endName;
-		string network = constructBayesStr(iter->second.newConns, holder, genoMapUsed, continMapUsed);
+		string network = constructBayesStr(iter->second.newConns, holder, genoMapUsed,
+			continMapUsed, true);
 		// tokenize
 		vector<string> nodes = Stringmanip::split(network, ']');
 		ofstream os;
@@ -940,6 +941,8 @@ void GADiscrimBayes::writeDotFiles(multimap<float, connComparison>& sortedModels
 		os << "\tdir=\"none\";\n";
 		os << "\trankdir=\"LR\";\n";
 		os << "\torientation=\"portrait\";\n";
+
+		std::set<std::string> include;
 		std::set<std::string> added;
 		for(vector<string>::iterator symbIter=nodes.begin(); symbIter != nodes.end();
 			++symbIter){
@@ -1341,10 +1344,11 @@ void GADiscrimBayes::setConditionalTables(Dataset* dset, map<vector<vector<int> 
 /// Constructs bayes network representation compatible with bnlearn package in R
 /// @param network 2-D vector showing parents for each node
 /// @param holder Dataholder
+/// @param excludeIndependent Default is false.  Exclude nodes that are independent.
 /// @returns network string
 ///
 string GADiscrimBayes::constructBayesStr(vector<vector<int> > network,
-	Dataholder* holder, bool genoMapUsed, bool continMapUsed){
+	Dataholder* holder, bool genoMapUsed, bool continMapUsed, bool excludeIndependent){
 	string netString;
 	vector<string> prefixes(2, "");
 	if(!genoMapUsed){
@@ -1353,16 +1357,36 @@ string GADiscrimBayes::constructBayesStr(vector<vector<int> > network,
 	if(!continMapUsed){
 		prefixes[0]="C";
 	}
-	for(size_t i=0; i<network.size(); i++){
-		netString += "[";
-		netString += prefixes[varList[i]->isGeno()] + varList[i]->getName(holder);
-		if(!network[i].empty()){
-			netString += "|" + prefixes[varList[network[i][0]]->isGeno()]  + varList[network[i][0]]->getName(holder);
-			for(size_t j=1; j<network[i].size(); j++){
-				netString += ":" + prefixes[varList[network[i][j]]->isGeno()] + varList[network[i][j]]->getName(holder);
+
+	std::set<int> excludedNodes;
+	if(excludeIndependent){
+		std::set<int> isParent;
+		for(size_t i=0; i<network.size(); i++){
+			for(size_t j=0; j<network[i].size(); j++){
+				isParent.insert(network[i][j]);
 			}
 		}
-		netString += "]";
+
+		for(size_t i=0; i<network.size(); i++){
+			if(network[i].empty() && isParent.find(i) == isParent.end()){
+				excludedNodes.insert(i);
+			}
+		}
+	}
+
+
+	for(size_t i=0; i<network.size(); i++){
+		if(excludedNodes.find(i) == excludedNodes.end()){
+			netString += "[";
+			netString += prefixes[varList[i]->isGeno()] + varList[i]->getName(holder);
+			if(!network[i].empty()){
+				netString += "|" + prefixes[varList[network[i][0]]->isGeno()]  + varList[network[i][0]]->getName(holder);
+				for(size_t j=1; j<network[i].size(); j++){
+					netString += ":" + prefixes[varList[network[i][j]]->isGeno()] + varList[network[i][j]]->getName(holder);
+				}
+			}
+			netString += "]";
+		}
 	}
 	return netString;
 }
