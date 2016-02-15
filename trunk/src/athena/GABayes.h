@@ -24,6 +24,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Algorithm.h"
 #include "Variable.h"
 #include "GABayesSolution.h"
+#include "Athena2DArrayGenome.h"
 
 class GABayes:public Algorithm{
 
@@ -114,7 +115,7 @@ protected:
 
 	void fillPopulation();
 
-	void constructSymbols(GA2DArrayGenome<int>& genome,
+	void constructSymbols(Athena2DArrayGenome<int>& genome,
 	 	Solution* sol);
 
 	GABayesSolution* convertGenome(GAGenome& ind);
@@ -175,7 +176,7 @@ protected:
 	string constructBayesStr(vector<vector<int> > network,
 		Dataholder* holder,bool genoMapUsed, bool continMapUsed);
 
-	vector<vector<int> > constructEquation(GA2DArrayGenome<int>& genome);
+	vector<vector<int> > constructEquation(Athena2DArrayGenome<int>& genome);
 
 	void configGA(GASimpleGA* ga);
 

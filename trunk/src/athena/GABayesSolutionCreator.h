@@ -20,7 +20,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _GABAYESSOLUTIONCREATOR_H
 #define	_GABAYESSOLUTIONCREATOR_H
 
-#include <ga/GA2DArrayGenome.h>
+#include "Athena2DArrayGenome.h"
 #include <Dataset.h>
 #include "Variable.h"
 #include "SolutionCalculator.h"
@@ -38,9 +38,9 @@ public:
 
 	~GABayesSolutionCreator();
 
-	void fixLoops(GA2DArrayGenome<int>& g);
+	void fixLoops(Athena2DArrayGenome<int>& g);
 
-	void checkNodeLimits(GA2DArrayGenome<int>& g);
+	void checkNodeLimits(Athena2DArrayGenome<int>& g);
 
 	void setMIScores(data_manage::Dataset* ds, std::vector<Variable*>&  vList);
 
@@ -55,7 +55,7 @@ public:
 	}
 
 	/// Calculate and return network score
-	double calcScore(GA2DArrayGenome<int>& genome, std::vector<Variable*> varList,
+	double calcScore(Athena2DArrayGenome<int>& genome, std::vector<Variable*> varList,
 		data_manage::Dataset* dSet);
 
 		/// Returns worst score
@@ -75,9 +75,9 @@ public:
 		int maxConn);
 //static double calcK2Time;
 
-	void breakLoops(GA2DArrayGenome<int>& genome);
+	void breakLoops(Athena2DArrayGenome<int>& genome);
 
-	void limitChildren(GA2DArrayGenome<int>& genome);
+	void limitChildren(Athena2DArrayGenome<int>& genome);
 
 	/// prunes network by removing connections that do not improve the overall network score
 	float pruneNetwork(vector<vector<int> >& conns, vector<Variable*>& varList,
@@ -94,7 +94,7 @@ private:
 
 	double k2CalcNoParent(Variable* var, data_manage::Dataset* ds, int& nP);
 
-	vector<vector<int> > constructEquation(GA2DArrayGenome<int>& genome, std::vector<Variable*> varList);
+	vector<vector<int> > constructEquation(Athena2DArrayGenome<int>& genome, std::vector<Variable*> varList);
 	void writeGenoNet(vector<vector<int> >& eq);
 
 	std::set<int> removeLowMI(int childIndex,vector<int>& parents,int maxConn);

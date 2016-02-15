@@ -53,7 +53,7 @@ void GABayesSolutionCreator::setNodeLimitMethod(string method){
 }
 
 
-void GABayesSolutionCreator::breakLoops(GA2DArrayGenome<int>& genome){
+void GABayesSolutionCreator::breakLoops(Athena2DArrayGenome<int>& genome){
 	CycleBreaker breaker;
 
 // for(int i=0; i<genome.height(); i++){
@@ -82,7 +82,7 @@ void GABayesSolutionCreator::breakLoops(GA2DArrayGenome<int>& genome){
 /// Fix loops in bayesian network by breaking the lowest information ones
 /// @param g GA2DVinStrGenome g
 ///
-void GABayesSolutionCreator::fixLoops(GA2DArrayGenome<int>& genome){
+void GABayesSolutionCreator::fixLoops(Athena2DArrayGenome<int>& genome){
 
 	// genome is a matrix and width=height
 	Tarjans tarj(genome.width());
@@ -164,7 +164,7 @@ void GABayesSolutionCreator::fixLoops(GA2DArrayGenome<int>& genome){
 }
 
 
-void GABayesSolutionCreator::limitChildren(GA2DArrayGenome<int>& genome){
+void GABayesSolutionCreator::limitChildren(Athena2DArrayGenome<int>& genome){
 	if(maxChildren <= 0)
 		return;
 
@@ -203,7 +203,7 @@ void GABayesSolutionCreator::limitChildren(GA2DArrayGenome<int>& genome){
 
 }
 
-void GABayesSolutionCreator::checkNodeLimits(GA2DArrayGenome<int>& genome){
+void GABayesSolutionCreator::checkNodeLimits(Athena2DArrayGenome<int>& genome){
 	vector<int> parents;
 	int genomeWidth=genome.width();
 	int genomeHeight=genome.height();
@@ -378,9 +378,9 @@ void GABayesSolutionCreator::writeGenoNet(vector<vector<int> >& eq){
 
 ///
 /// Construct equation string from genome
-/// @genome GA2DArrayGenome<int>
+/// @genome Athena2DArrayGenome<int>
 ///
-vector<vector<int> > GABayesSolutionCreator::constructEquation(GA2DArrayGenome<int>& genome,
+vector<vector<int> > GABayesSolutionCreator::constructEquation(Athena2DArrayGenome<int>& genome,
 	 std::vector<Variable*> varList){
 	vector<int> empty;
 	vector<vector<int> > conns(varList.size(), empty);
@@ -515,7 +515,7 @@ float GABayesSolutionCreator::pruneNetwork(vector<vector<int> >& conns, vector<V
 /// @param dSet
 /// @return network score
 ///
-double GABayesSolutionCreator::calcScore(GA2DArrayGenome<int>& genome, vector<Variable*> varList,
+double GABayesSolutionCreator::calcScore(Athena2DArrayGenome<int>& genome, vector<Variable*> varList,
 	data_manage::Dataset* dSet){
 
 // 	double totalScore=0.0;
@@ -697,7 +697,6 @@ void GABayesSolutionCreator::setMIScores(data_manage::Dataset* ds, std::vector<V
 	size_t gridSize=varList.size();
 	vector<double> row(gridSize, 0.0);
 	miScores.assign(gridSize, row);
-// cout << "calc MI" << endl;
 	for(size_t i=0; i<gridSize; i++){
 		for(size_t j=0; j<gridSize; j++){
 			if(i==j){

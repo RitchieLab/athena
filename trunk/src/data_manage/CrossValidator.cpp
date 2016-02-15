@@ -41,12 +41,16 @@ CrossValidator::~CrossValidator()
 ///  @param holder Dataholder containing data for this analysis
 ///	 @return CVSet
 ///
-CVSet CrossValidator::splitData(unsigned int numCrossVal, Dataholder* holder){
+CVSet CrossValidator::splitData(unsigned int numCrossVal, Dataholder* holder,
+	bool multiCatData){
 
 	if(holder->getTestSplit() > 0)
 		return splitByNum(holder);
 
-	vector<Individual*> shuffled, affected, unaffected;
+	if(multiCatData)
+		return splitDataMultiCat(numCrossVal, holder);
+
+	vector<Individual*> affected, unaffected;
 	statusBin(holder, affected, unaffected);
 
 	if(numCrossVal > 1){
@@ -58,7 +62,7 @@ CVSet CrossValidator::splitData(unsigned int numCrossVal, Dataholder* holder){
 	}
 
 	vector<Individual*> temp;
-	
+
 	splits.assign(numCrossVal, temp);
 	distributeInds(numCrossVal, affected, splits);
 	distributeInds(numCrossVal, unaffected, splits);
@@ -67,8 +71,37 @@ CVSet CrossValidator::splitData(unsigned int numCrossVal, Dataholder* holder){
 }
 
 
+///
+///  Splits data into category sets for the number of
+///  CV intervals selected
+///  @param numCrossVal Number of crossvalidation intervals
+///  @param holder Dataholder containing data for this analysis
+///	 @return CVSet
+///
+CVSet CrossValidator::splitDataMultiCat(unsigned int numCrossVal, Dataholder* holder){
 
-/// 
+	vector<vector<Individual*> >categories;
+	statusBin(holder, categories);
+
+	for(size_t i=0; i<categories.size(); i++){
+		shuffleInds(categories[i]);
+	}
+
+	vector<Individual*> temp;
+	splits.assign(numCrossVal, temp);
+
+	for(size_t i=0; i<categories.size(); i++){
+		distributeInds(numCrossVal, categories[i], splits);
+	}
+// 	distributeInds(numCrossVal, affected, splits);
+// 	distributeInds(numCrossVal, unaffected, splits);
+
+	return createSet(numCrossVal, holder);
+}
+
+
+
+///
 /// Creates CVSet based on splits and number of cross-validations
 ///
 CVSet CrossValidator::createSet(unsigned int numCrossVal, Dataholder* holder){
@@ -78,7 +111,7 @@ CVSet CrossValidator::createSet(unsigned int numCrossVal, Dataholder* holder){
 		unsigned int group;
 		// using the splits stored in vector construct the CV Intervals and fill the set
 		for(unsigned int currCV=0; currCV < numCrossVal; currCV++){
-			Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl()), 
+			Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl()),
 				testing(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl());
 			for(group=0; group < numCrossVal; group++){
 				if(group != currCV)
@@ -100,7 +133,7 @@ CVSet CrossValidator::createSet(unsigned int numCrossVal, Dataholder* holder){
 	}
 	else{ // only one interval so don't split data
 		CVInterval interval;
-		Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype(), 
+		Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype(),
 			holder->isCaseControl());
 		training.addInds(splits[0]);
 		training.calcSSTotal();
@@ -108,7 +141,7 @@ CVSet CrossValidator::createSet(unsigned int numCrossVal, Dataholder* holder){
 		training.setHolder(holder);
 		interval.addSet(training);
 		set.addInterval(interval);
-	}	
+	}
 	return set;
 }
 
@@ -123,16 +156,16 @@ CVSet CrossValidator::splitByNum(Dataholder* holder){
 	int splitIndex = holder->getTestSplit();
 	CVSet set;
 
-	Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl()), 
+	Dataset training(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl()),
 		testing(holder->getMissingCoValue(), holder->getMissingGenotype(), holder->isCaseControl());
-	
+
 	vector<Individual*> testSet, trainSet;
-	
+
 	int i=0;
 	for(i=0; i<splitIndex; i++){
 		trainSet.push_back(holder->getInd(i));
-	}  
-	
+	}
+
 	int nInds = int(holder->numInds());
 	for(; i<nInds; i++){
 		testSet.push_back(holder->getInd(i));
@@ -140,14 +173,14 @@ CVSet CrossValidator::splitByNum(Dataholder* holder){
 
 	training.addInds(trainSet);
 	testing.addInds(testSet);
-	
+
 	CVInterval interval;
 	training.calcSSTotal();
 	testing.calcSSTotal();
 	interval.addSet(training);
 	interval.addSet(testing);
 	set.addInterval(interval);
-	
+
 	return set;
 }
 
@@ -191,10 +224,34 @@ void CrossValidator::statusBin(Dataholder* holder, vector<Individual*>& affected
 	}
 }
 
+///
+/// Distributes individuals between affected and unaffected arrays
+/// @param holder Dataholder
+/// @param affected Vector will contain pointers to affected inds
+/// @param unaffected Vector will contain pointers to unaffected inds
+///
+void CrossValidator::statusBin(Dataholder* holder, vector<vector<Individual*> >& categories){
+	categories.clear();
+
+	int maxPheno=0;
+	Individual* ind;
+	unsigned int n_inds = holder->numInds();
+	for(unsigned int i=0; i<n_inds; i++){
+		ind = holder->getInd(i);
+		if(int(ind->getStatus()) > maxPheno)
+			maxPheno = int(ind->getStatus());
+	}
+	categories.resize(maxPheno+1);
+
+	for(unsigned int i=0; i < n_inds; i++){
+		ind = holder->getInd(i);
+		categories[int(ind->getStatus())].push_back(ind);
+	}
+}
 
 
 ///
-/// Places all individuals in affected 
+/// Places all individuals in affected
 /// @param holder Dataholder
 /// @param affected Vector will contain pointers to affected inds
 /// @param unaffected Vector will contain pointers to unaffected inds

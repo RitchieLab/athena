@@ -3,7 +3,7 @@
 using namespace std;
 
 /// return number of arcs broken
-int CycleBreaker::breakCycles(GA2DArrayGenome<int>& genome){
+int CycleBreaker::breakCycles(Athena2DArrayGenome<int>& genome){
 
 // cout << "break cycles" << endl;
 // test genome

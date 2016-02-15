@@ -10,13 +10,13 @@ arc set problem" Eades et. al.
 #include <vector>
 #include <map>
 #include <deque>
-#include <ga/GA2DArrayGenome.h>
+#include "Athena2DArrayGenome.h"
 
 class CycleBreaker{
 
 	public:
 
-		int breakCycles(GA2DArrayGenome<int>& genome);
+		int breakCycles(Athena2DArrayGenome<int>& genome);
 
 
 	private:

@@ -49,13 +49,16 @@ public:
 	~CrossValidator();
 
 	/// splits data into testing and training sets for the indicated number of intervals
-	CVSet splitData(unsigned int numCrossVal, Dataholder* holder);
-	
+	CVSet splitData(unsigned int numCrossVal, Dataholder* holder, bool multiCatData=false);
+
 	/// save splits with individual IDs
 	void saveSplits(std::string filename);
-	
+
 	/// load splits with individual IDs
-	CVSet loadSplits(std::string filename, Dataholder* holder);  
+	CVSet loadSplits(std::string filename, Dataholder* holder);
+
+	/// splits data by multiple category sets
+	CVSet splitDataMultiCat(unsigned int numCrossVal, Dataholder* holder);
 
 private:
 
@@ -66,16 +69,18 @@ private:
 
 	void statusBin(Dataholder* holder, std::vector<Individual*>& affected,
 			std::vector<Individual*>& unaffected);
-			
+
+	void statusBin(Dataholder* holder, vector<vector<Individual*> >& categories);
+
 	void statusBinAffOnly(Dataholder* holder, std::vector<Individual*>& affected,
 			std::vector<Individual*>& unaffected);
-			
+
 	CVSet splitByNum(Dataholder* holder);
-	
+
 	CVSet createSet(unsigned int num_cv, Dataholder* holder);
 
 	vector<vector<Individual*> > splits;
-	
+
 };
 
 }

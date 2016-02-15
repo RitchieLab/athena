@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
 
-		string versionDate = "2/1/2016";
+		string versionDate = "2/11/2016";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
 
 	if(config.getSplitFile()==""){
 			if(config.getValidationSumFile().empty())
-		    cvSet = cvMaker.splitData(config.getNumCV(), &data);
+		    cvSet = cvMaker.splitData(config.getNumCV(), &data, config.getMultiCategory());
 		  else
 		  	cvSet = cvMaker.splitData(1, &data);
 #ifdef HAVE_CXX_MPI

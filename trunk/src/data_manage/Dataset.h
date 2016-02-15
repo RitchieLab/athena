@@ -115,6 +115,9 @@ public:
 	/// Splits dataset into 2 new case/control sets
 	std::vector<Dataset*> splitCaseControl();
 
+	/// Splits dataset into multiple datasets
+	std::vector<Dataset*> splitCategories();
+
 	/// Set Dataholder
 	void setHolder(Dataholder* h);//{holder=h;}
 

@@ -23,6 +23,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Algorithm.h"
 #include "Variable.h"
+#include "Athena2DArrayGenome.h"
 #define MAXMODELTRANSFER 16384
 
 class GADiscrimBayes:public Algorithm{
@@ -161,6 +162,10 @@ protected:
 		return lhs.mPtr->score > rhs.mPtr->score;
 	}
 
+	void outputProbFiles(vector<IndivResults>& trainingScores, data_manage::Dataset* training,
+		vector<IndivResults>&  testingScores, data_manage::Dataset* testing,
+		vector<map<vector<vector<int> >, ModelScores> >& models);
+
 	void writeIndScores(string filename, vector<IndivResults>& scores);
 
 	void writeUniqueFiles(ostream& outstream, map<float,  vector<vector<vector<int> >  > >& sortedModels,
@@ -185,10 +190,14 @@ protected:
 	void	calcProbTables(Dataset* dset, vector<vector<double> >& orphanProbs,
 		data_manage::Dataholder* holder);
 
-	vector<vector<int> > constructEquation(GA2DArrayGenome<int>& genome);
+	vector<vector<int> > constructEquation(Athena2DArrayGenome<int>& genome);
 
-	double setPredictedScores(vector<IndivResults>& indScores, map<vector<vector<int> >,ModelScores>& caseModels,
-		map<vector<vector<int> >,ModelScores>& controlModels, double caseRatio);
+// 	double setPredictedScores(vector<IndivResults>& indScores, map<vector<vector<int> >,ModelScores>& caseModels,
+// 		map<vector<vector<int> >,ModelScores>& controlModels, double caseRatio);
+
+	double setPredictedScores(vector<IndivResults>& indScores,
+		vector<map<vector<vector<int> > ,ModelScores> >& models,
+		int caseIdx, double caseRatio);
 
 	void configGA(GASimpleGA* ga);
 
@@ -196,11 +205,14 @@ protected:
 		data_manage::Dataholder* holder,bool caseMods,bool genoMapUsed, bool continMapUsed);
 
 	void setIndModScores(Dataset* dset, map<vector<vector<int> >,ModelScores>& models,
-		vector<IndivResults>& indScores, vector<vector<double> >& orphanProbs);
+		vector<IndivResults>& indScores, vector<vector<double> >& orphanProbs, int caseValue=1);
 
-	void pruneModels(map<vector<vector<int> >, ModelScores>& caseModels,
-		map<vector<vector<int> >, ModelScores>& controlModels, data_manage::Dataholder* holder,
-		bool genoMapUsed, bool continMapUsed);
+// 	void pruneModels(map<vector<vector<int> >, ModelScores>& caseModels,
+// 		map<vector<vector<int> >, ModelScores>& controlModels, data_manage::Dataholder* holder,
+// 		bool genoMapUsed, bool continMapUsed);
+
+	void pruneModels(vector<map<vector<vector<int> >, ModelScores> >& models,
+		data_manage::Dataholder* holder, bool genoMapUsed, bool continMapUsed);
 
 void writeGenoNet(vector<vector<int> >& eq);
 	void readAllFile(string allFileName,map<vector<vector<int> >, ModelScores>& models,
@@ -211,9 +223,15 @@ void writeGenoNet(vector<vector<int> >& eq);
 		map<vector<vector<int> >, ModelScores>& topModels, data_manage::Dataholder* holder,
 		bool caseMods, bool genoMapUsed, bool continMapUsed);
 
-	void runDiscriminantAnalysis(map<vector<vector<int> >, ModelScores>& caseModels,
-		map<vector<vector<int> >, ModelScores>& controlModels, Dataset* testing, Dataset* training,
-		data_manage::Dataholder* holder, bool mapUsed, bool continMapUsed);
+	void runDiscriminantAnalysis(vector<map<vector<vector<int> >, ModelScores> >& models,
+		Dataset* testing, Dataset* training, data_manage::Dataholder* holder, bool mapUsed,
+		bool continMapUsed);
+
+// 	void runDiscriminantAnalysis(map<vector<vector<int> >, ModelScores>& caseModels,
+// 		map<vector<vector<int> >, ModelScores>& controlModels, Dataset* testing, Dataset* training,
+// 		data_manage::Dataholder* holder, bool mapUsed, bool continMapUsed);
+
+	void freeMemory();
 
 	#ifdef HAVE_CXX_MPI
 		void sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga);
@@ -231,13 +249,16 @@ void writeGenoNet(vector<vector<int> >& eq);
 
 	std::map<std::string, GABayesParams> paramMap;
 
-	GASimpleGA * caseGA, *controlGA;
-	Dataset * caseDataset, *controlDataset;
+// 	GASimpleGA * caseGA, *controlGA;
+	vector<GASimpleGA*> categoryGAs;
+// 	Dataset * caseDataset, *controlDataset;
+	vector<Dataset*> categoryDatasets;
 	vector<Variable*> varList;
 	float initProbConn;
 	size_t totalVars;
 	string outputName, limitMethodType, caseAllFile, controlAllFile;
 	int topModelsUsed, currCV, maxChildren, maxParents;
+	bool outputDotFiles;
 
 };
 

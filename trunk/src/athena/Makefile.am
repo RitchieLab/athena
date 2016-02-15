@@ -152,7 +152,9 @@ GABayesSolution.cpp \
 CycleBreaker.h \
 CycleBreaker.cpp \
 GADiscrimBayes.h \
-GADiscrimBayes.cpp
+GADiscrimBayes.cpp \
+Athena2DArrayGenome.h \
+Athena2DArrayGenome.cpp
 
 athena_LDADD=../libGE-0.26/libGE.la ../galib247/libga.la ../annie/libannie.la ../stat_calc/libstat_calc.la ../data_manage/libdata_manage.la
 

@@ -133,6 +133,36 @@ vector<Dataset*> Dataset::splitCaseControl(){
 }
 
 
+///
+/// Splits dataset into multiple categories based on status
+///
+vector<Dataset*> Dataset::splitCategories(){
+	// determine number of categories
+	int maxPheno=0;
+	for(unsigned int i=0; i<inds.size(); i++){
+		if(int(inds[i]->getStatus()) > maxPheno)
+			maxPheno = int(inds[i]->getStatus());
+	}
+	vector<Dataset*> splitSets(maxPheno+1, new Dataset);
+
+// 	Dataset* caseSet = new Dataset;
+// 	Dataset* controlSet = new Dataset;
+// 	splitSets.push_back(controlSet);
+// 	splitSets.push_back(caseSet);
+	for(unsigned int i=0; i<inds.size(); i++){
+		splitSets[int(inds[i]->getStatus())]->addInd(inds[i]);
+	}
+// 	splitSets[0]->setHolder(holder);
+// 	splitSets[1]->setHolder(holder);
+	for(size_t i=0; i<splitSets.size(); i++){
+		splitSets[i]->setHolder(holder);
+	}
+// 	splitSets[0]->setAllLevels(continLevels);
+// 	splitSets[1]->setAllLevels(continLevels);
+	return splitSets;
+}
+
+
 /// Gets number of levels for a continuous variable
 unsigned int Dataset::getNumLevels(unsigned int varIndex){return holder->getNumLevels(varIndex);}
 

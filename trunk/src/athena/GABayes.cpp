@@ -249,7 +249,7 @@ void GABayes::testSolution(Dataset* testSet, int nproc){
   int n = ga->population().size();
 
   for(int i=0; i<n; i++){
-		GA2DArrayGenome<int> bestGenome = (GA2DArrayGenome<int>&)ga->population().best(i);
+		Athena2DArrayGenome<int> bestGenome = (Athena2DArrayGenome<int>&)ga->population().best(i);
 		float testScore = GAFunct::GACaseObjective(bestGenome);
 // 		((GA2DBinaryStringGenome&)ga->population().best(i)).setTestValue(testScore);
 		pop[i]->testVal(testScore);
@@ -304,7 +304,7 @@ void GABayes::initialize(){
 		// total number of variables
 		totalVars = varList.size();
 // 		GA2DBinaryStringGenome genome(totalVars,totalVars, GAFunct::GACaseObjective);
-		GA2DArrayGenome<int> genome(maxParents,totalVars,GAFunct::GACaseObjective);
+		Athena2DArrayGenome<int> genome(maxParents,totalVars,GAFunct::GACaseObjective);
 		// evaluator set as part of constructor
 		GAFunct::setInitConP(initProbConn);
 		genome.initializer(GAFunct::initCase);
@@ -424,7 +424,7 @@ void GABayes::fillPopulation(){
 ///
 GABayesSolution* GABayes::convertGenome(GAGenome& ind){
 // 	GA2DBinaryStringGenome& genome = (GA2DBinaryStringGenome&) ind;
-	GA2DArrayGenome<int>& genome = (GA2DArrayGenome<int>&) ind;
+	Athena2DArrayGenome<int>& genome = (Athena2DArrayGenome<int>&) ind;
 	GABayesSolution* sol = (GABayesSolution*)GAFunct::getBlankSolution();
 // 	vector<vector<int> > = constructEquation(genome);
 	constructSymbols(genome, sol);
@@ -629,7 +629,7 @@ void GABayes::getAdditionalFinalOutput(Dataset* set){
 /// Construct equation string from genome
 /// @genome GA2DBinaryStringGenome
 ///
-vector<vector<int> > GABayes::constructEquation(GA2DArrayGenome<int>& genome){
+vector<vector<int> > GABayes::constructEquation(Athena2DArrayGenome<int>& genome){
 	vector<int> empty;
 	vector<vector<int> > conns(varList.size(), empty);
 // 	for(int i=0; i<genome.height(); i++){
@@ -659,7 +659,7 @@ vector<vector<int> > GABayes::constructEquation(GA2DArrayGenome<int>& genome){
 /// @param solution
 /// @returns vector of symbols
 ///
-void GABayes::constructSymbols(GA2DArrayGenome<int>& genome,
+void GABayes::constructSymbols(Athena2DArrayGenome<int>& genome,
 	Solution* sol){
   vector<string> symbols;
   std::set<int> genos, contins;
@@ -821,7 +821,7 @@ void GABayes::writeUniqueFiles(ostream& outstream, map<float,  vector<vector<vec
 
 void GABayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleGA* ga){
 
-	GA2DArrayGenome<int>& genome=(GA2DArrayGenome<int> &)ga->statistics().bestIndividual();
+	Athena2DArrayGenome<int>& genome=(Athena2DArrayGenome<int> &)ga->statistics().bestIndividual();
 
 	int height = genome.height();
 	int width = genome.width();
@@ -885,7 +885,7 @@ void GABayes::updateWithMigration(int* newGenes, float * recvScores,
 			continue;
 		}
 		GAGenome *tmpInd = ga->population().individual(0).clone();
-		GA2DArrayGenome<int>& genome = (GA2DArrayGenome<int>&)*tmpInd;
+		Athena2DArrayGenome<int>& genome = (Athena2DArrayGenome<int>&)*tmpInd;
 		genome.score(recvScores[node]);
 		for(int y=0; y<genome.height(); y++){
 			for(int x=0; x<genome.width(); x++){

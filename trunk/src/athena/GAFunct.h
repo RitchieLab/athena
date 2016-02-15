@@ -20,7 +20,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _GAFUNCT_H
 #define	_GAFUNCT_H
 
-#include <ga/GA2DArrayGenome.h> // and the 2D genome
+#include "Athena2DArrayGenome.h" // and the 2D genom
 #include "GABayesSolutionCreator.h"
 #include <Dataset.h>
 
@@ -33,27 +33,34 @@ public:
 	/// Used to assign fitness values in GA
 	static float GACaseObjective(GAGenome& g);
 
+	static float GAObjective(GAGenome &g);
+
 	/// Used to assign fitness values in GA
-	static float GAControlObjective(GAGenome& g);
+// 	static float GAControlObjective(GAGenome& g);
+
+	/// conducts random init
+	static void init(GAGenome& g);
 
 	/// conducts random initialization of genomes
 	static void initCase(GAGenome &g);
 
 	/// conducts random initialization of genomes
-	static void initControl(GAGenome &g);
+// 	static void initControl(GAGenome &g);
 
 	/// sets rank
 	static void setInitConP(float p){connProb=p;}
 
 	/// sets the Dataset for objective function to work with
-	static void setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* controlDS,
-		std::vector<Variable*> vList, bool needMI=true);
+// 	static void setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* controlDS,
+// 		std::vector<Variable*> vList, bool needMI=true);
 
 	/// sets Solution type for objective function
 	static void setSolutionType(std::string calculatorName){
 // 				solCreator = SolutionFactory::createSolution(solutionName);
 		caseBayesCreator.setCalculator(calculatorName);
-		controlBayesCreator.setCalculator(calculatorName);
+		for(size_t i=0; i<bayesCreators.size(); i++)
+			bayesCreators[i].setCalculator(calculatorName);
+// 		controlBayesCreator.setCalculator(calculatorName);
 	}
 
 	static double getWorstScore(){return caseBayesCreator.getWorst();}
@@ -66,35 +73,42 @@ public:
 
 	static void setDataset(data_manage::Dataset* caseDS, std::vector<Variable*> vList);
 
+	static void setDatasets(vector<data_manage::Dataset*> categorySets,
+		std::vector<Variable*> vList, bool needMI);
+
 	static void setNodeMaximums(int maxP, int maxC){
 		caseBayesCreator.setNodeMax(maxP,maxC);
-		controlBayesCreator.setNodeMax(maxP,maxC);
+// 		controlBayesCreator.setNodeMax(maxP,maxC);
 	}
 
 	static void setNodeLimitMethod(std::string method){
 		caseBayesCreator.setNodeLimitMethod(method);
-		controlBayesCreator.setNodeLimitMethod(method);
+// 		controlBayesCreator.setNodeLimitMethod(method);
 	}
 
+	static int mutate(GAGenome & c, float pmut);
 	static int mutateCase(GAGenome & c, float pmut);
-	static int mutateControl(GAGenome & c, float pmut);
+// 	static int mutateControl(GAGenome & c, float pmut);
 
+	static float prune(vector<vector<int> >& conns, int category);
 	static float pruneCase(vector<vector<int> >& conns);
-	static float pruneControls(vector<vector<int> >& conns);
+// 	static float pruneControls(vector<vector<int> >& conns);
 
 // static double fitnessTime, loopTime, maxCheckTime;
 // 	static int initConnections, dupConnections, limitChildConnections, brokenLoopConnections;
 
 private:
 	static void init(GAGenome &g, GABayesSolutionCreator& gaBayesCreator);
-	static void removeSelfAndDup(GA2DArrayGenome<int>& genome);
+	static void removeSelfAndDup(Athena2DArrayGenome<int>& genome);
 	static int customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaBayesCreator);
-	static int countConnections(GA2DArrayGenome<int>& genome);
+	static int countConnections(Athena2DArrayGenome<int>& genome);
 
-	static data_manage::Dataset* caseDataset, *controlDataset;
+	static data_manage::Dataset* caseDataset;//, *controlDataset;
+	static vector<data_manage::Dataset*> datasets;
 	static float connProb;
 	static vector<Variable*> varList;
-	static GABayesSolutionCreator caseBayesCreator, controlBayesCreator;
+	static GABayesSolutionCreator caseBayesCreator; //controlBayesCreator;
+	static vector<GABayesSolutionCreator> bayesCreators;
 
 
 };

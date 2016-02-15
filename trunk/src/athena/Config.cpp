@@ -71,9 +71,10 @@ void Config::initialize(){
 		imgWriter="";
 		startCV = 1;
 		selectBest=false;
+		multiCat=false;
 }
 
-/// /// Checks configuration parameters for errors /// @throws AthenaExcept /// void 
+/// /// Checks configuration parameters for errors /// @throws AthenaExcept /// void
 void Config::checkConfig(){
 	if(numExchanges < 0)
 		throw AthenaExcept("NUMEXCHANGES must be greater than zero");

@@ -21,10 +21,12 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 float	GAFunct::connProb =0.1;
 data_manage::Dataset* GAFunct::caseDataset = NULL;
-data_manage::Dataset* GAFunct::controlDataset = NULL;
+// data_manage::Dataset* GAFunct::controlDataset = NULL;
+vector<data_manage::Dataset*> GAFunct::datasets;
 vector<Variable*> GAFunct::varList;
 GABayesSolutionCreator GAFunct::caseBayesCreator;
-GABayesSolutionCreator GAFunct::controlBayesCreator;
+// GABayesSolutionCreator GAFunct::controlBayesCreator;
+vector<GABayesSolutionCreator> GAFunct::bayesCreators;
 //double GAFunct::fitnessTime = 0.0;
 //double GAFunct::loopTime = 0.0;
 //double GAFunct::maxCheckTime = 0.0;
@@ -42,7 +44,7 @@ float GAFunct::GACaseObjective(GAGenome& g){
 
 // 	time_t startTime, endTime;
 
-  GA2DArrayGenome<int> & genome = (GA2DArrayGenome<int> &)g;
+  Athena2DArrayGenome<int> & genome = (Athena2DArrayGenome<int> &)g;
 
 // initConnections+=countConnections(genome);
 
@@ -94,7 +96,7 @@ float GAFunct::GACaseObjective(GAGenome& g){
 ///
 /// counts total connections
 ///
-int GAFunct::countConnections(GA2DArrayGenome<int>& genome){
+int GAFunct::countConnections(Athena2DArrayGenome<int>& genome){
 	int conns=0;
 	for(int y=0; y<genome.height(); y++){
 		for(int x=0; x<genome.width(); x++){
@@ -111,15 +113,30 @@ int GAFunct::countConnections(GA2DArrayGenome<int>& genome){
 /// Used to assign fitness values in GA
 /// @param g Genome to evaluate
 ///
-float GAFunct::GAControlObjective(GAGenome& g){
-  GA2DArrayGenome<int> & genome = (GA2DArrayGenome<int> &)g;
+// float GAFunct::GAControlObjective(GAGenome& g){
+//   Athena2DArrayGenome<int> & genome = (Athena2DArrayGenome<int> &)g;
+//   removeSelfAndDup(genome);
+//   controlBayesCreator.checkNodeLimits(genome);
+// //   controlBayesCreator.fixLoops(genome);
+//   controlBayesCreator.breakLoops(genome);
+// // cout << "calculating control fitness" << endl;
+// 	return controlBayesCreator.calcScore(genome, varList, controlDataset);
+// }
+
+
+///
+/// Used to assign fitness values in GA
+/// @param g Genome to evaluate
+///
+float GAFunct::GAObjective(GAGenome &g){
+	Athena2DArrayGenome<int> & genome = (Athena2DArrayGenome<int> &)g;
   removeSelfAndDup(genome);
-  controlBayesCreator.checkNodeLimits(genome);
-//   controlBayesCreator.fixLoops(genome);
-  controlBayesCreator.breakLoops(genome);
-// cout << "calculating control fitness" << endl;
-	return controlBayesCreator.calcScore(genome, varList, controlDataset);
+	int category = genome.category();
+	bayesCreators[category].checkNodeLimits(genome);
+	bayesCreators[category].breakLoops(genome);
+	return bayesCreators[category].calcScore(genome, varList, datasets[category]);
 }
+
 
 
 vector<std::string> GAFunct::getAdditionalFinalOutput(float score){
@@ -147,8 +164,15 @@ void GAFunct::initCase(GAGenome &g){
 }
 
 /// conducts random initialization of genomes
-void GAFunct::initControl(GAGenome &g){
-	init(g, controlBayesCreator);
+// void GAFunct::initControl(GAGenome &g){
+// 	init(g, controlBayesCreator);
+// }
+
+
+/// conducts initialization using appropriate bayes creator
+void GAFunct::init(GAGenome &g){
+	Athena2DArrayGenome<int> & genome = (Athena2DArrayGenome<int> &)g;
+	init(g, bayesCreators[genome.category()]);
 }
 
 
@@ -158,7 +182,7 @@ void GAFunct::initControl(GAGenome &g){
 /// @param gaBayesCreator GABayesSolutionCreator to use in initialization
 ///
 void GAFunct::init(GAGenome &g, GABayesSolutionCreator& gaBayesCreator){
-	GA2DArrayGenome<int> & genome = (GA2DArrayGenome<int> &)g;
+	Athena2DArrayGenome<int> & genome = (Athena2DArrayGenome<int> &)g;
 	for(int y=0; y<genome.height(); y++){
 		vector<int> conns;
 		for(int x=0; x<genome.height(); x++){
@@ -189,7 +213,7 @@ void GAFunct::init(GAGenome &g, GABayesSolutionCreator& gaBayesCreator){
 /// unset any connections to self in matrix
 /// @param g GAGenome to initialize
 ///
-void GAFunct::removeSelfAndDup(GA2DArrayGenome<int>& genome){
+void GAFunct::removeSelfAndDup(Athena2DArrayGenome<int>& genome){
 	set<int> dups;
 	int parentIdx;
 
@@ -213,21 +237,27 @@ void GAFunct::removeSelfAndDup(GA2DArrayGenome<int>& genome){
 }
 
 
-/// conducts random initialization of genomes
+/// conducts mutation of genomes
 int GAFunct::mutateCase(GAGenome & c, float pmut){
 	return customMutator(c, pmut, caseBayesCreator);
 }
 
-/// conducts random initialization of genomes
-int GAFunct::mutateControl(GAGenome & c, float pmut){
-	return customMutator(c, pmut, controlBayesCreator);
+/// conducts mutation of genomes
+// int GAFunct::mutateControl(GAGenome & c, float pmut){
+// 	return customMutator(c, pmut, controlBayesCreator);
+// }
+
+/// conducts mutation of genomes
+int GAFunct::mutate(GAGenome& c, float pmut){
+	Athena2DArrayGenome<int> & genome = (Athena2DArrayGenome<int> &)c;
+	return customMutator(c, pmut, bayesCreators[genome.category()]);
 }
 
 ///
 /// Custom mutator has same effect as flipmutator for binary string genome
 ///
 int GAFunct::customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaBayesCreator){
-  GA2DArrayGenome<int> &genome=DYN_CAST(GA2DArrayGenome<int> &, c);
+  Athena2DArrayGenome<int> &genome=DYN_CAST(Athena2DArrayGenome<int> &, c);
   register int n, m, i, j, k;
   if(pmut <= 0.0) return(0);
 
@@ -333,6 +363,13 @@ int GAFunct::customMutator(GAGenome & c, float pmut, GABayesSolutionCreator& gaB
   return(STA_CAST(int,nMut));
 }
 
+///
+/// Prunes network connections for the appropriate dataset
+/// @returns updated score for network
+///
+float GAFunct::prune(vector<vector<int> >& conns, int category){
+	return bayesCreators[category].pruneNetwork(conns, varList, datasets[category]);
+}
 
 ///
 /// Prunes network connections for a case dataset network
@@ -346,27 +383,27 @@ float GAFunct::pruneCase(vector<vector<int> >& conns){
 /// Prunes network connections for a control dataset network
 /// @returns updated score for network
 ///
-float GAFunct::pruneControls(vector<vector<int> >& conns){
-	return controlBayesCreator.pruneNetwork(conns, varList, controlDataset);
-}
+// float GAFunct::pruneControls(vector<vector<int> >& conns){
+// 	return controlBayesCreator.pruneNetwork(conns, varList, controlDataset);
+// }
 
 
 ///
 /// sets the Dataset for objective function to work with
 ///
-void GAFunct::setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* controlDS,
-	std::vector<Variable*> vList, bool needMI){
-	caseDataset = caseDS;
-	controlDataset = controlDS;
-	varList=vList;
-
-	if(needMI)
-		caseBayesCreator.setMIScores(caseDataset,vList);
-	caseBayesCreator.setNoParentScores(caseDataset,vList);
-
-	if(needMI)
-		controlBayesCreator.setMIScores(controlDataset,vList);
-	controlBayesCreator.setNoParentScores(controlDataset, vList);
+// void GAFunct::setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* controlDS,
+// 	std::vector<Variable*> vList, bool needMI){
+// 	caseDataset = caseDS;
+// 	controlDataset = controlDS;
+// 	varList=vList;
+//
+// 	if(needMI)
+// 		caseBayesCreator.setMIScores(caseDataset,vList);
+// 	caseBayesCreator.setNoParentScores(caseDataset,vList);
+//
+// 	if(needMI)
+// 		controlBayesCreator.setMIScores(controlDataset,vList);
+// 	controlBayesCreator.setNoParentScores(controlDataset, vList);
 
 // cout << "output test case set" << endl;
 // for(unsigned int i=0; i<caseDS->numInds(); i++){
@@ -384,7 +421,28 @@ void GAFunct::setDatasets(data_manage::Dataset* caseDS, data_manage::Dataset* co
 // 		throw AthenaExcept(solCreator->getCalculator()->getName() + " requires a case-control dataset");
 // 	}
 // 	solCreator->setCalculatorConstant(ds);
+// }
+
+
+///
+/// sets the Dataset for objective function to work with
+///
+void GAFunct::setDatasets(vector<data_manage::Dataset*> categorySets,
+	std::vector<Variable*> vList, bool needMI){
+
+// 	GABayesSolutionCreator newCreator;
+	bayesCreators.assign(datasets.size(),caseBayesCreator);
+	datasets = categorySets;
+	varList=vList;
+
+
+	for(size_t i=0; i<datasets.size(); i++){
+		if(needMI)
+			bayesCreators[i].setMIScores(datasets[i],vList);
+		bayesCreators[i].setNoParentScores(datasets[i], vList);
+	}
 }
+
 
 ///
 /// sets the Dataset for objective function to work with
