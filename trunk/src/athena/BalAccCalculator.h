@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   BalAccCalculator.h
  * Author: dudeksm
  *
@@ -32,38 +32,40 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Calculates balanced accuracy
 ///
 class BalAccCalculator : public SolutionCalcImp<BalAccCalculator>{
-	 
+
 public:
-		
+
 		BalAccCalculator();
-		
+
 		/// resets calculator for new analysis set
 		void reset();
-		
+
 		/// adds evaluation score to results
 		void addIndScore(float score, float status);
-		
+
 		/// returns balanced accuracy
 		float getScore(){
-			return .5 * (float(caseRight) / (caseRight + caseWrong) + 
+			return .5 * (float(caseRight) / (caseRight + caseWrong) +
 			float(controlRight) /(controlRight + controlWrong));
 		}
 	 bool maxBest(){return true;}
-	 
+
 	 bool logMaxBest(){return true;}
-	 
+
+	 BalAccCalculator* clone(){return new BalAccCalculator(*this);}
+
 	 	virtual std::vector<std::string> getAdditionalOutputNames(){
 			return outputNames;
 		}
-		
+
 		virtual std::vector<std::string> getAdditionalFinalOutput();
 
 	 	virtual void evaluateAdditionalOutput(std::vector<stat::TestResult>& results);
-	 	
+
 	 	virtual bool requiresCaseControl(){return true;}
-	 	
+
 	 	void setConstant(data_manage::Dataset* ds){}
-	 
+
 	 /// returns worst score
 	 float getWorst(){return 0.0;}
 private:

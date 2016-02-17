@@ -31,6 +31,35 @@ GABayesSolutionCreator::GABayesSolutionCreator(){
 	childLimitPtr=&GABayesSolutionCreator::removeLowChildMI;
 }
 
+GABayesSolutionCreator::GABayesSolutionCreator(const GABayesSolutionCreator& orig){
+	miScores = orig.miScores;
+	noParentScores = orig.noParentScores;
+	varParams = orig.varParams;
+	maxParents = orig.maxParents;
+	maxChildren = orig.maxChildren;
+	limitPtr = orig.limitPtr;
+	childLimitPtr = orig.childLimitPtr;
+	if(orig.calculator != NULL)
+		calculator = orig.calculator->clone();
+	else
+		calculator = NULL;
+}
+
+GABayesSolutionCreator& GABayesSolutionCreator::operator=(const GABayesSolutionCreator& orig){
+	miScores = orig.miScores;
+	noParentScores = orig.noParentScores;
+	varParams = orig.varParams;
+	maxParents = orig.maxParents;
+	maxChildren = orig.maxChildren;
+	limitPtr = orig.limitPtr;
+	childLimitPtr = orig.childLimitPtr;
+	if(orig.calculator != NULL)
+		calculator = orig.calculator->clone();
+	else
+		calculator = NULL;
+
+}
+
 GABayesSolutionCreator::~GABayesSolutionCreator(){
 	if(calculator != NULL){
 		delete calculator;
@@ -697,6 +726,7 @@ void GABayesSolutionCreator::setMIScores(data_manage::Dataset* ds, std::vector<V
 	size_t gridSize=varList.size();
 	vector<double> row(gridSize, 0.0);
 	miScores.assign(gridSize, row);
+
 	for(size_t i=0; i<gridSize; i++){
 		for(size_t j=0; j<gridSize; j++){
 			if(i==j){

@@ -269,6 +269,7 @@ void GADiscrimBayes::setDataset(Dataset* newSet){
 			varList[i]->setNumLevels(newSet->getNumLevels(varList[i]->getIndex()));
 		}
 	}
+
 	GAFunct::setDatasets(categoryDatasets, varList, caseAllFile.size() < 1);
 }
 
@@ -297,8 +298,8 @@ void GADiscrimBayes::configGA(GASimpleGA* ga){
 		ga->pCrossover(probCross);
 		ga->nGenerations(numGenerations);
 		// always maximize these scores
-			ga->maximize();
-			maxBest = true;
+		ga->maximize();
+		maxBest = true;
 		if(caseAllFile.size() < 1)
 			ga->initialize();
 }
@@ -308,7 +309,6 @@ void GADiscrimBayes::configGA(GASimpleGA* ga){
 /// Initializes the algorithm
 ///
 void GADiscrimBayes::initialize(){
-
 	// total number of variables
 	totalVars = varList.size();
 	GAFunct::setInitConP(initProbConn);
@@ -320,7 +320,6 @@ void GADiscrimBayes::initialize(){
 		categoryGAs.push_back(new GASimpleGA(genome));
 		configGA(categoryGAs.back());
 	}
-
 
 // 	Athena2DArrayGenome<int> caseGenome(maxParents,totalVars, GAFunct::GACaseObjective);
 // 	Athena2DArrayGenome<int> controlGenome(maxParents,totalVars, GAFunct::GAControlObjective);
@@ -499,6 +498,7 @@ void GADiscrimBayes::setConfigDefaults(Config& configuration, AlgorithmParams& a
 	configuration.setContinAdjust("MAKECATEGORIAL");
 	configuration.setMultiCategory(true);
 	outputName = configuration.getOutputName();
+	currCV = configuration.getStartCV();
 }
 
 
@@ -536,11 +536,10 @@ void GADiscrimBayes::finalFromFile(Dataset* testing, Dataset* training,
 	string caseFile = caseAllFile + ".cv" + Stringmanip::numberToString(currCV) + ".all";
 	string controlFile = controlAllFile + ".cv" + Stringmanip::numberToString(currCV) +
 		".all";
-cout << "caseFile " << caseFile << endl;
 	map<vector<vector<int> >, ModelScores> caseModels;
-	readAllFile(caseFile, caseModels, nameToIndex, holder, true, mapUsed, continMapUsed);
+	readAllFile(caseFile, caseModels, nameToIndex, holder, 1, mapUsed, continMapUsed);
 	map<vector<vector<int> >, ModelScores> controlModels;
-	readAllFile(controlFile, controlModels, nameToIndex,  holder, true, mapUsed,
+	readAllFile(controlFile, controlModels, nameToIndex,  holder, 0, mapUsed,
 		continMapUsed);
 
 	vector<map<vector<vector<int> >, ModelScores> > models;
@@ -555,7 +554,7 @@ cout << "caseFile " << caseFile << endl;
 
 void GADiscrimBayes::readAllFile(string allFileName,map<vector<vector<int> >, ModelScores>& models,
 	map<string,int>& nameToIndex, data_manage::Dataholder* holder,
-		bool caseMods, bool genoMapUsed, bool continMapUsed){
+		int category, bool genoMapUsed, bool continMapUsed){
 	ifstream allIn(allFileName.c_str(), ios::in);
 	if(!allIn.is_open()){
 		throw AthenaExcept("ERROR: Unable to open " + allFileName + "\n");
@@ -603,7 +602,7 @@ void GADiscrimBayes::readAllFile(string allFileName,map<vector<vector<int> >, Mo
 	}while(!allIn.eof());
 
 	allIn.close();
-	selectTopModels(modelHolder, models, holder, caseMods, genoMapUsed, continMapUsed);
+	selectTopModels(modelHolder, models, holder, category, genoMapUsed, continMapUsed);
 }
 
 ///
@@ -612,7 +611,6 @@ void GADiscrimBayes::readAllFile(string allFileName,map<vector<vector<int> >, Mo
 void GADiscrimBayes::runDiscriminantAnalysis(vector<map<vector<vector<int> >, ModelScores> >& models,
 	Dataset* testing, Dataset* training, data_manage::Dataholder* holder, bool mapUsed,
 	bool continMapUsed){
-
 	pruneModels(models, holder, mapUsed, continMapUsed);
 
 	int totalInds=0;
@@ -622,11 +620,12 @@ void GADiscrimBayes::runDiscriminantAnalysis(vector<map<vector<vector<int> >, Mo
 		calcProbTables(categoryDatasets[i], orphanProbs[i], holder);
 		totalInds += categoryDatasets[i]->numInds();
 	}
-
 	vector<double> missingValues(models.size(), 0.0);
 	vector<double> categoryRatios;
 	for(size_t i=0; i<models.size(); i++){
-		double ratio = categoryDatasets[i]->numInds() / double(totalInds-categoryDatasets[i]->numInds());
+// cout << "num cat=" << i << " is " << categoryDatasets[i]->numInds() << endl;
+		double ratio = categoryDatasets[i]->numInds() / double(totalInds);
+// cout << "ratio=" << ratio << endl;
 		int numCat = categoryDatasets[i]->numInds() + int(testing->numInds()*ratio+0.5);
 		categoryRatios.push_back(ratio);
 		missingValues[i] = double(1) / numCat;
@@ -645,6 +644,7 @@ void GADiscrimBayes::runDiscriminantAnalysis(vector<map<vector<vector<int> >, Mo
 	if(models.size() == 2)
 		caseIdx=1;
 	for(;caseIdx<models.size();caseIdx++){
+// cout << "caseIdx=" << caseIdx << endl;
 		vector<IndivResults> trainingScores(training->numInds(),emptyResult),
 			testingScores(testing->numInds(),emptyResult);
 
@@ -654,24 +654,27 @@ void GADiscrimBayes::runDiscriminantAnalysis(vector<map<vector<vector<int> >, Mo
 		for(size_t conIdx=0; conIdx < models.size(); conIdx++){
 			if(caseIdx==conIdx)
 				continue;
+// cout << "conIndex " << conIdx << endl;
 			setIndModScores(training, models[conIdx], trainingScores, orphanProbs[conIdx], caseIdx);
 			setIndModScores(testing, models[conIdx], testingScores, orphanProbs[conIdx], caseIdx);
 // 			categoryDatasets[conIdx]->numInds();
 		}
 		double trainingAUC=setPredictedScores(trainingScores, models, caseIdx,categoryRatios[caseIdx]);
 		double testingAUC=setPredictedScores(testingScores, models, caseIdx,categoryRatios[caseIdx]);
-
+// cout << "trainingAUC=" << trainingAUC << " testingAUC=" << testingAUC << endl;
+// exit(1);
 #ifdef HAVE_CXX_MPI
 if(myRank == 0){
 #endif
 		if(caseIdx==0 || models.size()==2){
 			outputProbFiles(trainingScores, training, testingScores, testing, models);
 		}
+
 		string trainingFile = outputName + ".cv." + Stringmanip::numberToString(currCV) +
-			"case." + Stringmanip::numberToString(caseIdx) + ".train.inds.txt";
+			".case." + Stringmanip::numberToString(caseIdx) + ".train.inds.txt";
 		writeIndScores(trainingFile, trainingScores);
 		string testingFile = outputName + ".cv." + Stringmanip::numberToString(currCV) +
-				"case." + Stringmanip::numberToString(caseIdx) + ".test.inds.txt";
+				".case." + Stringmanip::numberToString(caseIdx) + ".test.inds.txt";
 		writeIndScores(testingFile, testingScores);
 
 		// add this CV result to .sum file
@@ -687,23 +690,19 @@ if(myRank == 0){
 			for(size_t i=0; i<models.size()-1; i++){
 				sumstream << "\tCategory\tControl Models\tCount";
 			}
-			sumstream << "\tTrain AUC\tTest AUC\n";
+			sumstream << "\tTrain AUC\tTest AUC" << endl;
 		}
-
 
 		mdScores tmpScore;
 		vector<mdScores> eVec;
 		vector<vector<mdScores> > categoryMods(models.size(), eVec);
 		// sort models by score
 		for(size_t i=0; i<models.size(); i++){
-			map<vector<vector<int> >, ModelScores>::iterator mIter=models[i].begin();
-			for(int i=0; i<topModelsUsed; i++){
-				if(mIter != models[i].end()){
-					tmpScore.mString = constructBayesStr(mIter->first,holder, mapUsed, continMapUsed);
+			for(map<vector<vector<int> >, ModelScores>::iterator mIter=models[i].begin();
+				mIter != models[i].end(); ++mIter){
+					tmpScore.mString = constructBayesStr(mIter->first,holder, mapUsed, continMapUsed, true);
 					tmpScore.mPtr = &(mIter->second);
 					categoryMods[i].push_back(tmpScore);
-					++mIter;
-				}
 			}
 			sort(categoryMods[i].begin(), categoryMods[i].end(), sortByScore);
 		}
@@ -760,7 +759,7 @@ if(myRank == 0){
 }
 #endif
 	}
-
+	currCV++;
 		// sort models by score
 // 		map<vector<vector<int> >, ModelScores>::iterator caseIter=caseModels.begin();
 // 		map<vector<vector<int> >, ModelScores>::iterator conIter=controlModels.begin();
@@ -801,7 +800,6 @@ if(myRank == 0){
 void GADiscrimBayes::outputProbFiles(vector<IndivResults>& trainingScores, data_manage::Dataset* training,
 	vector<IndivResults>&  testingScores, data_manage::Dataset* testing,
 	vector<map<vector<vector<int> >, ModelScores> >& models){
-
 	int currModelIdx=0;
 	for(size_t category=0; category<models.size(); category++){
 		size_t nModels = models[category].size();
@@ -818,20 +816,22 @@ void GADiscrimBayes::outputProbFiles(vector<IndivResults>& trainingScores, data_
 		// probability for each model
 		for(size_t i=0; i<training->numInds(); i++){
 			probFile << (*training)[i]->getID();
+// cout << "i=" << i << endl;
 			for(size_t j=currModelIdx; j<(nModels+currModelIdx); j++){
-				probFile << "\t" << testingScores[i].scores[j];
+				probFile << "\t" << trainingScores[i].scores[j];
 			}
 			probFile << "\n";
 		}
 		probFile.close();
 
-		probFile << "\n";
 		filename = outputName + ".cv." + Stringmanip::numberToString(currCV) +
 			".cat." + Stringmanip::numberToString(category) + ".test.probtable";
+		probFile.open(filename.c_str(), ios::out);
 		probFile << "ind ID";
 		for(size_t i=0; i<nModels; i++){
 			probFile << "\tV" << i+1;
 		}
+		probFile << "\n";
 		for(size_t i=0; i<testing->numInds(); i++){
 			probFile << (*testing)[i]->getID();
 			for(size_t j=currModelIdx; j<(nModels+currModelIdx); j++){
@@ -842,7 +842,6 @@ void GADiscrimBayes::outputProbFiles(vector<IndivResults>& trainingScores, data_
 		probFile.close();
 		currModelIdx += nModels;
 	}
-
 }
 
 
@@ -858,22 +857,13 @@ void GADiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* trainin
 		return;
 	}
 
-	vector<map<vector<vector<int> >, ModelScores > > models;
+	map<vector<vector<int> >, ModelScores > empty;
+	vector<map<vector<vector<int> >, ModelScores > > models(categoryGAs.size(), empty);
 	for(size_t i=0; i<categoryGAs.size(); i++){
-		totalModels(categoryGAs[i], models[i], holder, true, mapUsed, continMapUsed);
+		totalModels(categoryGAs[i], models[i], holder, i, mapUsed, continMapUsed);
 	}
 
-// 	map<vector<vector<int> >, ModelScores> caseModels;
-// 	map<vector<vector<int> >, ModelScores> controlModels;
-//
-// 	totalModels(caseGA, caseModels, holder, true, mapUsed, continMapUsed);
-// 	totalModels(controlGA, controlModels, holder, false, mapUsed, continMapUsed);
-
-// 	runDiscriminantAnalysis(caseModels, controlModels, testing, training, holder, mapUsed,
-// 		continMapUsed);
-
 	runDiscriminantAnalysis(models, testing, training, holder, mapUsed, continMapUsed);
-
 }
 
 
@@ -1093,7 +1083,8 @@ double GADiscrimBayes::setPredictedScores(vector<IndivResults>& indScores,
 			totalCount += caseModIter->second.count;
 		}
 		caseScore /= (long double)totalCount;
-
+// cout << "indIter->scores.size()=" << indIter->scores.size() << endl;
+// cout <<  "caseScore=" << caseScore << endl;
 		totalCount=0;
 		for(size_t conIdx=0; conIdx < models.size(); conIdx++){
 			if(conIdx==caseIdx)
@@ -1105,59 +1096,20 @@ double GADiscrimBayes::setPredictedScores(vector<IndivResults>& indScores,
 			}
 		}
 		conScore /= (long double)totalCount;
-
+// cout << "conScore=" << conScore << endl;
+// cout << "caseRatio=" << caseRatio << endl;
 		indIter->predicted = caseRatio * caseScore / (caseRatio * caseScore +
 			(1-caseRatio) * conScore);
 		tempResult.score = indIter->predicted;
 		tempResult.status = indIter->phenotype;
+// cout << "tempResult.score=" << tempResult.score << endl;
+// cout << "tempResult.status=" << tempResult.status << endl;
 		results.push_back(tempResult);
 	}
 
 	//calculate and return AUC
 	return stat::AUCCalc::calculateAUC(results);
 }
-
-
-///
-/// Set predicted phenotype for each individual in set
-/// @return AUC
-///
-// double GADiscrimBayes::setPredictedScores(vector<IndivResults>& indScores, map<vector<vector<int> >,ModelScores>& caseModels,
-// 	map<vector<vector<int> >,ModelScores>& controlModels, double caseRatio){
-//
-// 	long double caseScore, conScore;
-// 	int sIndex, totalCount;
-// 	stat::TestResult tempResult;
-// 	std::vector<stat::TestResult> results;
-// 	for(vector<IndivResults>::iterator indIter=indScores.begin(); indIter != indScores.end();
-// 		++indIter){
-// 		caseScore = conScore = 0.0;
-// 		sIndex=totalCount=0;
-// 		for(map<vector<vector<int> >,ModelScores>::iterator caseModIter=caseModels.begin(); caseModIter != caseModels.end();
-// 			++caseModIter){
-// 			caseScore += indIter->scores[sIndex++] * caseModIter->second.count;
-// 			totalCount += caseModIter->second.count;
-// 		}
-// 		caseScore /= (long double)totalCount;
-//
-// 		totalCount=0;
-// 		for(map<vector<vector<int> >,ModelScores>::iterator conModIter=controlModels.begin(); conModIter != controlModels.end();
-// 			++conModIter){
-// 			conScore += indIter->scores[sIndex++] * conModIter->second.count;
-// 			totalCount += conModIter->second.count;
-// 		}
-// 		conScore /= (long double)totalCount;
-//
-// 		indIter->predicted = caseRatio * caseScore / (caseRatio * caseScore +
-// 			(1-caseRatio) * conScore);
-// 		tempResult.score = indIter->predicted;
-// 		tempResult.status = indIter->phenotype;
-// 		results.push_back(tempResult);
-// 	}
-//
-// 	//calculate and return AUC
-// 	return stat::AUCCalc::calculateAUC(results);
-// }
 
 ///
 /// Sets the individual scores for every individual in set for the models passed
@@ -1171,7 +1123,9 @@ void GADiscrimBayes::setIndModScores(Dataset* dset, map<vector<vector<int> >,Mod
 		indScores[i].indID = (*dset)[i]->getID();
 		indScores[i].phenotype = (*dset)[i]->getStatus();
 		// set any that don't match case value to be a control
-		if(indScores[i].phenotype != caseValue)
+		if(indScores[i].phenotype == caseValue)
+			indScores[i].phenotype = 1;
+		else
 			indScores[i].phenotype = 0;
 		// loop through each model and assign a value to each individual for each model
 		for(map<vector<vector<int> >, ModelScores>::iterator modIter=models.begin(); modIter != models.end();
@@ -1202,26 +1156,20 @@ void GADiscrimBayes::setIndModScores(Dataset* dset, map<vector<vector<int> >,Mod
 
 void GADiscrimBayes::selectTopModels(map<vector<vector<int> >, ModelScores>& modelHolder,
 	map<vector<vector<int> >, ModelScores>& topModels, data_manage::Dataholder* holder,
-	bool caseMods, bool genoMapUsed, bool continMapUsed){
+	int category, bool genoMapUsed, bool continMapUsed){
 	// insert into map with score as key
 	map<float, vector<vector<vector<int> >  >  > sortedModels;
 	for(map<vector<vector<int> >, ModelScores>::iterator iter=modelHolder.begin(); iter != modelHolder.end();
 		++iter){
 		sortedModels[iter->second.score].push_back(iter->first);
-// cout << "model score=" << iter->second.score << " count=" << iter->second.count << endl;
 	}
-// exit(1);
 
 #ifdef HAVE_CXX_MPI
 if(myRank == 0){
 #endif
 	string outName;
-	if(caseMods){
-		outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".case.uniq";
-	}
-	else{
-		outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".control.uniq";
-	}
+	outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".cat." +
+		Stringmanip::numberToString(category) + ".uniq";
 	ofstream os;
 	os.open(outName.c_str(), ios::out);
 	writeUniqueFiles(os,sortedModels,modelHolder, holder, genoMapUsed, continMapUsed);
@@ -1247,9 +1195,9 @@ if(myRank == 0){
 }
 
 void GADiscrimBayes::totalModels(GASimpleGA* ga,  map<vector<vector<int> >, ModelScores>& topModels,
-	data_manage::Dataholder* holder,bool caseMods, bool genoMapUsed, bool continMapUsed){
-
+	data_manage::Dataholder* holder,int category, bool genoMapUsed, bool continMapUsed){
 	topModels.clear();
+
 	int nGenomes = ga->population().size();
 	map<vector<vector<int> >, ModelScores> modelHolder;
 	vector<vector<int> > mNodes;
@@ -1270,50 +1218,7 @@ void GADiscrimBayes::totalModels(GASimpleGA* ga,  map<vector<vector<int> >, Mode
 	#ifdef HAVE_CXX_MPI
 		gatherModelInformation(modelHolder);
 	#endif
-
-	selectTopModels(modelHolder, topModels, holder, caseMods, genoMapUsed, continMapUsed);
-
-// 	//insert into map with score as key
-// 	map<float, vector<vector<vector<int> >  >  > sortedModels;
-// 	for(map<vector<vector<int> >, ModelScores>::iterator iter=modelHolder.begin(); iter != modelHolder.end();
-// 		++iter){
-// 		sortedModels[iter->second.score].push_back(iter->first);
-// 	}
-
-// #ifdef HAVE_CXX_MPI
-// if(myRank == 0){
-// #endif
-// // cout << "myRank=" << myRank  << "sorted models" << endl;
-// 	string outName;
-// 	if(caseMods){
-// 		outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".case.uniq";
-// 	}
-// 	else{
-// 		outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".control.uniq";
-// 	}
-// 	ofstream os;
-// 	os.open(outName.c_str(), ios::out);
-// 	writeUniqueFiles(os,sortedModels,modelHolder, holder, genoMapUsed, continMapUsed);
-// 	os.close();
-// #ifdef HAVE_CXX_MPI
-// }
-// #endif
-//
-// 	int i=0;
-// 	map<float,  vector<vector<vector<int> >  > >::reverse_iterator sortedIter=sortedModels.rbegin();
-//
-// 	while(i<topModelsUsed){
-// 		for(vector<vector<vector<int> >  >::iterator modIter=sortedIter->second.begin();
-// 			modIter != sortedIter->second.end(); ++modIter){
-// 			if(i++ < topModelsUsed){
-// 				topModels[*modIter] = modelHolder[*modIter];
-// 			}
-// 			else{
-// 				break;
-// 			}
-// 		}
-// 		++sortedIter;
-// 	}
+	selectTopModels(modelHolder, topModels, holder, category, genoMapUsed, continMapUsed);
 
 }
 

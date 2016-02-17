@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   MeanSquaredErrCalculator.h
  * Author: dudeksm
  *
@@ -36,17 +36,17 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Calculates mean squared error
 ///
 class MeanSquaredErrCalculator: public SolutionCalcImp<MeanSquaredErrCalculator>{
-		
+
 		public:
-		
+
 		MeanSquaredErrCalculator();
-		
+
 		/// resets calculator for new analysis set
 		void reset();
-		
+
 		/// adds evaluation score to results
 		void addIndScore(float score, float status);
-		
+
 		/// returns mean squared error
 		float getScore(){
 				if(totalIndsTested == 0)
@@ -54,12 +54,14 @@ class MeanSquaredErrCalculator: public SolutionCalcImp<MeanSquaredErrCalculator>
 				else
 					return squaredErrorTotal / totalIndsTested;
 		}
-		
+
 		/// returns false so that the best is the smallest
 		bool maxBest(){return false;}
-		
+
 		bool logMaxBest(){return true;}
-		
+
+		MeanSquaredErrCalculator* clone(){return new MeanSquaredErrCalculator(*this);}
+
 		/// returns worst score
 		float getWorst(){return 1000000;}
 		/// sets the sstotal for use in calculating rsquared
@@ -70,16 +72,16 @@ class MeanSquaredErrCalculator: public SolutionCalcImp<MeanSquaredErrCalculator>
 		/// returns rsquared for display to user
 		float outputScore(float sc){return 1-(sc/ssTotal);}
 
-		
+
 private:
 
 		static const string calcMatchName;
-		
+
 		float squaredErrorTotal, ssTotal;
 		std::vector<float> statTotal;
 		unsigned int totalIndsTested;
-		
-		
+
+
 };
 
 

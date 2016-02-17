@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   SolutionCalculator.h
  * Author: dudeksm
  *
@@ -40,48 +40,50 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 ///
 
 class SolutionCalculator{
-		
+
 public:
-		
+
 		SolutionCalculator(){name = "Calculator";}
-		
+
 		virtual ~SolutionCalculator(){}
 
 		virtual void addIndScore(float score, float status)=0;
-		
+
 		virtual float getScore()=0;
-		
+
 		virtual void reset()=0;
-		
+
 		virtual bool maxBest()=0;
-		
+
 		virtual bool logMaxBest()=0;
-		
+
 		virtual float getWorst()=0;
-		
+
 		virtual float getConstant(){return 0.0;}
-		
+
 		virtual bool requiresCaseControl(){return false;}
-		
+
+		virtual SolutionCalculator* clone()=0;
+
 		/// Used when a sub class needs a constant value for calculations as in RSquared
 		virtual void setConstant(data_manage::Dataset* ds)=0;
-		
+
 		virtual std::vector<std::string> getAdditionalOutputNames(){
 			return outputNames;
 		}
-		
+
 		virtual std::vector<std::string> getAdditionalFinalOutput(){
 			return outputValues;
 		}
-		
+
 		virtual void evaluateAdditionalOutput(std::vector<stat::TestResult>& results){}
-		
+
 		std::string getName(){return name;}
-		
+
 protected:
 		std::string name;
 		std::vector<std::string> outputNames, outputValues;
-		
+
 };
 
 

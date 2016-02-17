@@ -202,7 +202,7 @@ protected:
 	void configGA(GASimpleGA* ga);
 
 	void totalModels(GASimpleGA* alg,  map<vector<vector<int> >, ModelScores>& topModels,
-		data_manage::Dataholder* holder,bool caseMods,bool genoMapUsed, bool continMapUsed);
+		data_manage::Dataholder* holder,int category,bool genoMapUsed, bool continMapUsed);
 
 	void setIndModScores(Dataset* dset, map<vector<vector<int> >,ModelScores>& models,
 		vector<IndivResults>& indScores, vector<vector<double> >& orphanProbs, int caseValue=1);
@@ -217,11 +217,11 @@ protected:
 void writeGenoNet(vector<vector<int> >& eq);
 	void readAllFile(string allFileName,map<vector<vector<int> >, ModelScores>& models,
 		map<string,int>& nameToIndex,data_manage::Dataholder* holder,
-		bool caseMods, bool genoMapUsed, bool continMapUsed);
+		int category, bool genoMapUsed, bool continMapUsed);
 
 	void selectTopModels(map<vector<vector<int> >, ModelScores>& modelHolder,
 		map<vector<vector<int> >, ModelScores>& topModels, data_manage::Dataholder* holder,
-		bool caseMods, bool genoMapUsed, bool continMapUsed);
+		int category, bool genoMapUsed, bool continMapUsed);
 
 	void runDiscriminantAnalysis(vector<map<vector<vector<int> >, ModelScores> >& models,
 		Dataset* testing, Dataset* training, data_manage::Dataholder* holder, bool mapUsed,

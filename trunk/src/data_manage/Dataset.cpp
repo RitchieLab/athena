@@ -143,7 +143,11 @@ vector<Dataset*> Dataset::splitCategories(){
 		if(int(inds[i]->getStatus()) > maxPheno)
 			maxPheno = int(inds[i]->getStatus());
 	}
-	vector<Dataset*> splitSets(maxPheno+1, new Dataset);
+	vector<Dataset*> splitSets;
+	for(int i=0; i<maxPheno+1; i++){
+		Dataset * newSet = new Dataset;
+		splitSets.push_back(newSet);
+	}
 
 // 	Dataset* caseSet = new Dataset;
 // 	Dataset* controlSet = new Dataset;
@@ -152,6 +156,7 @@ vector<Dataset*> Dataset::splitCategories(){
 	for(unsigned int i=0; i<inds.size(); i++){
 		splitSets[int(inds[i]->getStatus())]->addInd(inds[i]);
 	}
+
 // 	splitSets[0]->setHolder(holder);
 // 	splitSets[1]->setHolder(holder);
 	for(size_t i=0; i<splitSets.size(); i++){

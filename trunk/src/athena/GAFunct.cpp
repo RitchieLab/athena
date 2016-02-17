@@ -431,16 +431,17 @@ void GAFunct::setDatasets(vector<data_manage::Dataset*> categorySets,
 	std::vector<Variable*> vList, bool needMI){
 
 // 	GABayesSolutionCreator newCreator;
-	bayesCreators.assign(datasets.size(),caseBayesCreator);
 	datasets = categorySets;
 	varList=vList;
 
+	bayesCreators.assign(datasets.size(),caseBayesCreator);
 
 	for(size_t i=0; i<datasets.size(); i++){
 		if(needMI)
 			bayesCreators[i].setMIScores(datasets[i],vList);
 		bayesCreators[i].setNoParentScores(datasets[i], vList);
 	}
+// exit(1);
 }
 
 

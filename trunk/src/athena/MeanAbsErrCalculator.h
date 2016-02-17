@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   MeanAbsErrCalculator.h
  * Author: dudeksm
  *
@@ -36,17 +36,17 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Calculates mean squared error
 ///
 class MeanAbsErrCalculator: public SolutionCalcImp<MeanAbsErrCalculator>{
-		
+
 		public:
-		
+
 		MeanAbsErrCalculator();
-		
+
 		/// resets calculator for new analysis set
 		void reset();
-		
+
 		/// adds evaluation score to results
 		void addIndScore(float score, float status);
-		
+
 		/// returns mean squared error
 		float getScore(){
 				if(totalIndsTested == 0)
@@ -54,12 +54,14 @@ class MeanAbsErrCalculator: public SolutionCalcImp<MeanAbsErrCalculator>{
 				else
 					return  errTotal / obsTotal;
 		}
-		
+
+		MeanAbsErrCalculator* clone(){return new MeanAbsErrCalculator(*this);}
+
 		/// returns false so that the best is the smallest
 		bool maxBest(){return false;}
-		
+
 		bool logMaxBest(){return true;}
-		
+
 		/// returns worst score
 		float getWorst(){return 1e6;}
 		/// sets the sstotal for use in calculating rsquared
@@ -70,10 +72,10 @@ class MeanAbsErrCalculator: public SolutionCalcImp<MeanAbsErrCalculator>{
 		/// returns 1-score as report value
 		float outputScore(float sc){return 1-sc;}
 
-		
+
 private:
 
-		static const string calcMatchName;	
+		static const string calcMatchName;
 		float errTotal, obsTotal;
 		unsigned int totalIndsTested;
 };

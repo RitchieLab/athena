@@ -38,6 +38,10 @@ public:
 
 	~GABayesSolutionCreator();
 
+	GABayesSolutionCreator(const GABayesSolutionCreator& orig);
+
+	GABayesSolutionCreator& operator=(const GABayesSolutionCreator& orig);
+
 	void fixLoops(Athena2DArrayGenome<int>& g);
 
 	void checkNodeLimits(Athena2DArrayGenome<int>& g);

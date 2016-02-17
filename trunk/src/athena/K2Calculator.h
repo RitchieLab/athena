@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   K2Calculator.h
  * Author: dudeksm
  *
@@ -32,39 +32,41 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Calculates balanced accuracy
 ///
 class K2Calculator : public SolutionCalcImp<K2Calculator>{
-	 
+
 public:
-		
+
 		K2Calculator();
-		
+
 		/// resets calculator for new analysis set
 		void reset();
-		
+
 		/// adds evaluation score to results
 		void addIndScore(float score, float status);
-		
+
 		/// returns balanced accuracy
 		float getScore(){
 			return -k2Score;
 		}
-		
+
 	 /// scores are converted to positive values so max is best
 	 bool maxBest(){return true;}
-	 
+
+	 K2Calculator* clone(){return new K2Calculator(*this);}
+
 	 bool logMaxBest(){return true;}
-	 
+
 	 	virtual std::vector<std::string> getAdditionalOutputNames(){
 			return outputNames;
 		}
-		
+
 		virtual std::vector<std::string> getAdditionalFinalOutput();
 
 	 	virtual void evaluateAdditionalOutput(std::vector<stat::TestResult>& results);
-	 	
+
 	 	virtual bool requiresCaseControl(){return false;}
-	 	
+
 	 	void setConstant(data_manage::Dataset* ds){}
-	 
+
 	 /// returns worst score
 	 float getWorst(){return 0.0;}
 private:

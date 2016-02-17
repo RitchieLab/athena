@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
  * File:   AUCCalculator.h
  * Author: dudeksm
  *
@@ -31,33 +31,35 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// Calculates balanced accuracy
 ///
 class AUCCalculator: public SolutionCalcImp<AUCCalculator>{
-	 
+
 public:
-		
+
 		AUCCalculator();
-		
+
 		/// resets calculator for new analysis set
 		void reset();
-		
+
 		/// adds evaluation score to results
 		void addIndScore(float score, float status);
-		
+
 		/// returns area under the curve
 		float getScore();
-		
+
 	 	bool maxBest(){return true;}
-	 	
+
 	 	bool logMaxBest(){return true;}
-		
+
 	 /// returns worst score
 	 float getWorst(){return 0.0;}
-	 
+
+	 AUCCalculator* clone(){return new AUCCalculator(*this);}
+
 	 void evaluateAdditionalOutput(std::vector<stat::TestResult>& results);
-	 
+
 	 virtual bool requiresCaseControl(){return true;}
-	 
+
 	 void setConstant(data_manage::Dataset* ds){}
-	 
+
 private:
 		float auc;
 		static const string calcMatchName;
