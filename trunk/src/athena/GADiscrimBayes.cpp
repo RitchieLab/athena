@@ -670,8 +670,9 @@ void GADiscrimBayes::runDiscriminantAnalysis(vector<map<vector<vector<int> >, Mo
 	size_t caseIdx=0;
 	if(models.size() == 2)
 		caseIdx=1;
+	bool headerNeeded=true;
 	for(;caseIdx<models.size();caseIdx++){
-// cout << "caseIdx=" << caseIdx << endl;
+// cout << "caseIdx=" << caseIdx << " original status=" << holder->getOriginalStatus(caseIdx) << endl;
 		vector<IndivResults> trainingScores(training->numInds(),emptyResult),
 			testingScores(testing->numInds(),emptyResult);
 
@@ -689,7 +690,6 @@ void GADiscrimBayes::runDiscriminantAnalysis(vector<map<vector<vector<int> >, Mo
 		double trainingAUC=setPredictedScores(trainingScores, models, caseIdx,categoryRatios[caseIdx]);
 		double testingAUC=setPredictedScores(testingScores, models, caseIdx,categoryRatios[caseIdx]);
 // cout << "trainingAUC=" << trainingAUC << " testingAUC=" << testingAUC << endl;
-// exit(1);
 #ifdef HAVE_CXX_MPI
 if(myRank == 0){
 #endif
@@ -707,17 +707,20 @@ if(myRank == 0){
 		// add this CV result to .sum file
 		string sumFile = outputName + ".GADBN.sum";
 		ofstream sumstream;
-		if(currCV > 1){
+		if(currCV > 1 || !headerNeeded){
 			sumstream.open(sumFile.c_str(), ios::app);
 		}
 		else{
 			sumstream.open(sumFile.c_str(), ios::out);
-			sumstream << "CV\tCase Category\tCase Models\tCount";
+			if(headerNeeded){
+				sumstream << "CV\tCase Category\tCase Models\tCount";
 
-			for(size_t i=0; i<models.size()-1; i++){
-				sumstream << "\tCategory\tControl Models\tCount";
+				for(size_t i=0; i<models.size()-1; i++){
+					sumstream << "\tCategory\tControl Models\tCount";
+				}
+				sumstream << "\tTrain AUC\tTest AUC\n";
+				headerNeeded=false;
 			}
-			sumstream << "\tTrain AUC\tTest AUC" << endl;
 		}
 
 		mdScores tmpScore;
@@ -764,7 +767,7 @@ if(myRank == 0){
 					sumstream << "\t\t\t";
 				}
 			}
-			sumstream << "\t\t";
+			sumstream << "\t\t\n";
 // 			if(modIndex < caseMods.size()){
 // 				sumstream << "\t" << caseMods[modIndex].mString
 // 				<<  "\t" << caseMods[modIndex].mPtr->count;
