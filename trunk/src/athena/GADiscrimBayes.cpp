@@ -698,10 +698,10 @@ if(myRank == 0){
 		}
 
 		string trainingFile = outputName + ".cv." + Stringmanip::numberToString(currCV) +
-			".case." + Stringmanip::numberToString(caseIdx) + ".train.inds.txt";
+			".case." + Stringmanip::numberToString(holder->getOriginalStatus(caseIdx)) + ".train.inds.txt";
 		writeIndScores(trainingFile, trainingScores);
 		string testingFile = outputName + ".cv." + Stringmanip::numberToString(currCV) +
-				".case." + Stringmanip::numberToString(caseIdx) + ".test.inds.txt";
+				".case." + Stringmanip::numberToString(holder->getOriginalStatus(caseIdx)) + ".test.inds.txt";
 		writeIndScores(testingFile, testingScores);
 
 		// add this CV result to .sum file
