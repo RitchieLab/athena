@@ -87,8 +87,9 @@ void GADiscrimBayes::initializeParams(){
 	 paramMap["MAXPARENTS"] = maximumParents;
 	 paramMap["MAXCHILDREN"] = maximumChildren;
 	 paramMap["LIMITMETHOD"] =limitMethod;
-	 paramMap["CASEALLFILE"] = caseAllFileName;
-	 paramMap["CONTROLALLFILE"] = controlAllFileName;
+// 	 paramMap["CASEALLFILE"] = caseAllFileName;
+// 	 paramMap["CONTROLALLFILE"] = controlAllFileName;
+	 paramMap["CATEGORYALLFILES"] = categoryAllFileNames;
 
 	 gaSelectorMap["ROULETTE"] = RouletteWheelSelection;
 	 gaSelectorMap["PARETO"] = ParetoFrontSelection;
@@ -96,9 +97,10 @@ void GADiscrimBayes::initializeParams(){
 
 	 useAllVars = false;
 	 outputDotFiles = true;
+	 categorizedPhenos = false;
 	 numGenotypes = 0;
 	 numContinuous = 0;
-	 caseAllFile=controlAllFile="";
+	 categoryAllFiles="";
 
 	 ga = NULL;
 	 maxBest = true;
@@ -150,12 +152,12 @@ void GADiscrimBayes::setParams(AlgorithmParams& algParam, int numExchanges, int 
 							case limitMethod:
 								limitMethodType = mapIter->second;
 								break;
-							case	caseAllFileName:
-								caseAllFile = mapIter->second;
+							case	categoryAllFileNames:
+								categoryAllFiles = mapIter->second;
 								break;
-							case	controlAllFileName:
-								controlAllFile = mapIter->second;
-								break;
+// 							case	controlAllFileName:
+// 								controlAllFile = mapIter->second;
+// 								break;
 						case initConnectProb:
 							initProbConn = Stringmanip::stringToNumber<float>(mapIter->second);
 							break;
@@ -249,6 +251,12 @@ void GADiscrimBayes::addContin(vector<unsigned int>& excludedContin,
 ///
 void GADiscrimBayes::setDataset(Dataset* newSet){
 	set = newSet;
+
+	if(!categorizedPhenos){
+		set->getHolder()->reNumberStatus();
+		categorizedPhenos = true;
+	}
+
 // 	if(caseDataset != NULL)
 // 		delete caseDataset;
 // 	if(controlDataset != NULL)
@@ -270,7 +278,7 @@ void GADiscrimBayes::setDataset(Dataset* newSet){
 		}
 	}
 
-	GAFunct::setDatasets(categoryDatasets, varList, caseAllFile.size() < 1);
+	GAFunct::setDatasets(categoryDatasets, varList, categoryAllFiles.size() < 1);
 }
 
 ///
@@ -300,7 +308,7 @@ void GADiscrimBayes::configGA(GASimpleGA* ga){
 		// always maximize these scores
 		ga->maximize();
 		maxBest = true;
-		if(caseAllFile.size() < 1)
+		if(categoryAllFiles.size() < 1)
 			ga->initialize();
 }
 
@@ -353,7 +361,8 @@ void GADiscrimBayes::run(){
 ///
 int GADiscrimBayes::step(){
 	int completed =0;
-	if(controlAllFile.length() > 0 && caseAllFile.length() > 0){
+// 	if(controlAllFile.length() > 0 && caseAllFile.length() > 0){
+	if(categoryAllFiles.length() > 0){
 		return 0;
 	}
 
@@ -533,18 +542,36 @@ void GADiscrimBayes::finalFromFile(Dataset* testing, Dataset* training,
 		nameToIndex[varName]=i;
 	}
 
-	string caseFile = caseAllFile + ".cv" + Stringmanip::numberToString(currCV) + ".all";
-	string controlFile = controlAllFile + ".cv" + Stringmanip::numberToString(currCV) +
-		".all";
-	map<vector<vector<int> >, ModelScores> caseModels;
-	readAllFile(caseFile, caseModels, nameToIndex, holder, 1, mapUsed, continMapUsed);
-	map<vector<vector<int> >, ModelScores> controlModels;
-	readAllFile(controlFile, controlModels, nameToIndex,  holder, 0, mapUsed,
-		continMapUsed);
+// 	string caseFile = caseAllFile + ".cv" + Stringmanip::numberToString(currCV) + ".all";
+// 	string controlFile = controlAllFile + ".cv" + Stringmanip::numberToString(currCV) +
+// 		".all";
+// 	map<vector<vector<int> >, ModelScores> caseModels;
+// 	readAllFile(caseFile, caseModels, nameToIndex, holder, 1, mapUsed, continMapUsed);
+// 	map<vector<vector<int> >, ModelScores> controlModels;
+// 	readAllFile(controlFile, controlModels, nameToIndex,  holder, 0, mapUsed,
+// 		continMapUsed);
+//
+// 	vector<map<vector<vector<int> >, ModelScores> > models;
+// 	models.push_back(caseModels);
+// 	models.push_back(controlModels);
 
+	// loop through files
+	vector<string> fileInfo = Stringmanip::split(categoryAllFiles, ' ');
+	map<int, string> filenameMap;
+	// should be outcome category <space> filename
+	for(size_t i=0; i<fileInfo.size(); i+=2){
+		filenameMap[Stringmanip::stringToNumber<int>(fileInfo[i])]=fileInfo[i+1];
+	}
 	vector<map<vector<vector<int> >, ModelScores> > models;
-	models.push_back(caseModels);
-	models.push_back(controlModels);
+	int category=0;
+	// iterate through filename map and read files for appropriate category
+	for(map<int,string>::iterator iter=filenameMap.begin(); iter != filenameMap.end(); ++iter){
+		map<vector<vector<int> >, ModelScores> fileModels;
+		readAllFile(iter->second, fileModels, nameToIndex, holder, category, mapUsed, continMapUsed);
+		models.push_back(fileModels);
+		category++;
+	}
+
 // 	runDiscriminantAnalysis(caseModels, controlModels, testing, training, holder, mapUsed,
 // 		continMapUsed);
 	runDiscriminantAnalysis(models, testing, training, holder, mapUsed,
@@ -708,19 +735,19 @@ if(myRank == 0){
 		}
 
 		int modIndex=0;
-		sumstream << currCV << "\t" << caseIdx << "\t"<< categoryMods[caseIdx][modIndex].mString << "\t"
+		sumstream << currCV << "\t" << holder->getOriginalStatus(caseIdx)<< "\t"<< categoryMods[caseIdx][modIndex].mString << "\t"
 			<< categoryMods[caseIdx][modIndex].mPtr->count;
 		for(size_t i=0; i<models.size(); i++){
 			if(i==caseIdx)
 				continue;
-			sumstream << "\t" <<  i << "\t" << categoryMods[i][modIndex].mString << "\t"
+			sumstream << "\t" <<  holder->getOriginalStatus(i) << "\t" << categoryMods[i][modIndex].mString << "\t"
 				<< categoryMods[i][modIndex].mPtr->count;
 		}
 		sumstream << "\t" << trainingAUC << "\t" << testingAUC << "\n";
 
 		for(modIndex=1; modIndex<topModelsUsed; modIndex++){
 			if(modIndex < categoryMods[caseIdx].size()){
-				sumstream << "\t" << caseIdx << "\t"<< categoryMods[caseIdx][modIndex].mString << "\t"
+				sumstream << "\t" << holder->getOriginalStatus(caseIdx) << "\t"<< categoryMods[caseIdx][modIndex].mString << "\t"
 					<< categoryMods[caseIdx][modIndex].mPtr->count;
 			}
 			else{
@@ -730,7 +757,7 @@ if(myRank == 0){
 				if(i==caseIdx)
 					continue;
 				if(modIndex < categoryMods[i].size()){
-					sumstream << "\t" <<  i << "\t" << categoryMods[i][modIndex].mString << "\t"
+					sumstream << "\t" <<  holder->getOriginalStatus(i)  << "\t" << categoryMods[i][modIndex].mString << "\t"
 						<< categoryMods[i][modIndex].mPtr->count;
 				}
 				else{
@@ -804,8 +831,8 @@ void GADiscrimBayes::outputProbFiles(vector<IndivResults>& trainingScores, data_
 	for(size_t category=0; category<models.size(); category++){
 		size_t nModels = models[category].size();
 		string filename = outputName + ".cv." + Stringmanip::numberToString(currCV) +
-			".cat." + Stringmanip::numberToString(category) + ".train.probtable";
-
+			".cat." + Stringmanip::numberToString(training->getHolder()->getOriginalStatus(category)) + ".train.probtable";
+// cout << "category=" << category << " probtable cat=" << training->getHolder()->getOriginalStatus(category) <<endl;
 		ofstream probFile(filename.c_str(), ios::out);
 		probFile << "ind ID";
 		for(size_t i=0; i<nModels; i++){
@@ -825,7 +852,7 @@ void GADiscrimBayes::outputProbFiles(vector<IndivResults>& trainingScores, data_
 		probFile.close();
 
 		filename = outputName + ".cv." + Stringmanip::numberToString(currCV) +
-			".cat." + Stringmanip::numberToString(category) + ".test.probtable";
+			".cat." + Stringmanip::numberToString(testing->getHolder()->getOriginalStatus(category)) + ".test.probtable";
 		probFile.open(filename.c_str(), ios::out);
 		probFile << "ind ID";
 		for(size_t i=0; i<nModels; i++){
@@ -851,7 +878,8 @@ void GADiscrimBayes::outputProbFiles(vector<IndivResults>& trainingScores, data_
 void GADiscrimBayes::getAdditionalFinalOutput(Dataset* testing, Dataset* training,
 	data_manage::Dataholder* holder, bool mapUsed, bool ottDummy, bool continMapUsed){
 
-	if(controlAllFile.length() > 0 && caseAllFile.length() > 0){
+// 	if(controlAllFile.length() > 0 && caseAllFile.length() > 0){
+	if(categoryAllFiles.length() > 0){
 // 		if(currCV==1)
 		finalFromFile(testing, training, holder, mapUsed, ottDummy, continMapUsed);
 		return;
@@ -899,8 +927,8 @@ void GADiscrimBayes::pruneModels(vector<map<vector<vector<int> >, ModelScores> >
 			#endif
 // cout << "myRank=" << myRank  << "sorted models" << endl;
 				outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".cat." +
-				Stringmanip::numberToString(i) + ".reduced";
-				endName = ".cat." +  Stringmanip::numberToString(i) + ".dot";
+				Stringmanip::numberToString(holder->getOriginalStatus(i)) + ".reduced";
+				endName = ".cat." +  Stringmanip::numberToString(holder->getOriginalStatus(i)) + ".dot";
 				if(outputDotFiles)
 					writeDotFiles(sortedModels, holder, genoMapUsed, continMapUsed, endName);
 				writeReducedFile(sortedModels, holder, genoMapUsed, continMapUsed, outName);
@@ -1169,7 +1197,7 @@ if(myRank == 0){
 #endif
 	string outName;
 	outName = outputName + ".cv." + Stringmanip::numberToString(currCV) + ".cat." +
-		Stringmanip::numberToString(category) + ".uniq";
+		Stringmanip::numberToString(holder->getOriginalStatus(category)) + ".uniq";
 	ofstream os;
 	os.open(outName.c_str(), ios::out);
 	writeUniqueFiles(os,sortedModels,modelHolder, holder, genoMapUsed, continMapUsed);

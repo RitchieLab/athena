@@ -32,6 +32,9 @@ Dataholder::Dataholder()
 	binaryStatusOnly = false;
 	maxLocus = 0;
 	splitNum = -1;
+	for(int i=0; i<10000; i++){
+		statusConvert[i]=i;
+	}
 }
 
 
@@ -97,7 +100,7 @@ void Dataholder::addDefaultCovars(){
 void Dataholder::checkVariance(CVSet& cvSet){
 
 	unsigned int nIntervals = cvSet.numIntervals();
-	
+
 	if(nIntervals == 1){
 		// check entire set at one time
 		checkVariance();
@@ -110,10 +113,10 @@ void Dataholder::checkVariance(CVSet& cvSet){
 			Dataset trainSet = cvInt.getTraining();
 			Dataset testSet = cvInt.getTesting();
 			checkVariance(trainSet);
-			checkVariance(testSet);	
+			checkVariance(testSet);
 		}
 	}
-	
+
 }
 
 
@@ -126,7 +129,7 @@ void Dataholder::checkVariance(Dataset& dataSet){
 	unsigned int nContin = dataSet.numCovariates();
 	stat::Descriptive devCalculator;
 	vector<float> vals(nInds, 0.0);
-	
+
 	// check each geno
 	for(unsigned int i=0; i<nGenos; i++){
 		for(unsigned int j=0; j<nInds; j++){
@@ -137,7 +140,7 @@ void Dataholder::checkVariance(Dataset& dataSet){
 			excludedGenos.push_back(i);
 		}
 	}
-	
+
 	// check each continuous variable
 	for(unsigned int i=0; i<nContin; i++){
 		for(unsigned int j=0; j<nInds; j++){
@@ -147,7 +150,7 @@ void Dataholder::checkVariance(Dataset& dataSet){
 		if(stdDev == 0){
 			excludedContin.push_back(i);
 		}
-	}		
+	}
 }
 
 
@@ -164,7 +167,7 @@ void Dataholder::checkVariance(){
 	unsigned int nContin = numCovariates();
 	stat::Descriptive devCalculator;
 	vector<float> vals(nInds, 0.0);
-	
+
 	// check each geno
 	for(unsigned int i=0; i<nGenos; i++){
 		for(unsigned int j=0; j<nInds; j++){
@@ -175,7 +178,7 @@ void Dataholder::checkVariance(){
 			excludedGenos.push_back(i);
 		}
 	}
-	
+
 	// check each continuous variable
 	for(unsigned int i=0; i<nContin; i++){
 		for(unsigned int j=0; j<nInds; j++){
@@ -185,7 +188,36 @@ void Dataholder::checkVariance(){
 		if(stdDev == 0){
 			excludedContin.push_back(i);
 		}
-	}	
+	}
+}
+
+///
+/// orders status as 0,1,2
+/// saves map for converting back
+///
+void Dataholder::reNumberStatus(){
+	map<int, int> statusMap;
+	statusConvert.clear();
+	int newValue=0;
+	for(size_t i=0; i<inds.size(); i++){
+		if(statusMap.find(int(inds[i]->getStatus())) == statusMap.end()){
+			statusMap[int(inds[i]->getStatus())]=1;
+		}
+	}
+
+	for(map<int, int>::iterator iter=statusMap.begin(); iter != statusMap.end();
+		++iter){
+		statusConvert[newValue]=iter->first;
+		iter->second = newValue++;
+	}
+
+	for(size_t i=0; i<inds.size(); i++){
+		inds[i]->setStatus(statusMap[int(inds[i]->getStatus())]);
+	}
+}
+
+int Dataholder::getOriginalStatus(int status){
+	return statusConvert[status];
 }
 
 

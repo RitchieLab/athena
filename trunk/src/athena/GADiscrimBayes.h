@@ -120,8 +120,9 @@ protected:
 		maximumChildren,
 		maximumParents,
 		limitMethod,
-		caseAllFileName,
-		controlAllFileName
+		categoryAllFileNames
+// 		caseAllFileName,
+// 		controlAllFileName
 	};
 
 	struct ConditionalTable{
@@ -256,9 +257,9 @@ void writeGenoNet(vector<vector<int> >& eq);
 	vector<Variable*> varList;
 	float initProbConn;
 	size_t totalVars;
-	string outputName, limitMethodType, caseAllFile, controlAllFile;
+	string outputName, limitMethodType, categoryAllFiles;
 	int topModelsUsed, currCV, maxChildren, maxParents;
-	bool outputDotFiles;
+	bool outputDotFiles, categorizedPhenos;
 
 };
 

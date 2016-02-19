@@ -336,7 +336,6 @@ int GABayes::step(){
 //sleep(10);
 //cout << endl;
 	for(unsigned int i=0; i < stepSize; i++){
-//cout << "rank=" << myRank << " step=" << i << endl;
 // GAFunct::initConnections=0;
 // GAFunct::dupConnections=0;
 // GAFunct::limitChildConnections=0;

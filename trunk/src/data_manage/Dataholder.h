@@ -31,7 +31,7 @@ namespace data_manage
 
 ///
 /// Holds data for analysis.  Actual analysis is run using the
-/// Dataset class.  The Dataset class contains pointers back 
+/// Dataset class.  The Dataset class contains pointers back
 ///
 class Dataholder
 {
@@ -41,7 +41,7 @@ public:
 
 	/// Adds an individual to the dataholder
 	void addInd(Individual& ind);
-	
+
 	/// Adds an individual to the dataholder
 	void addInd(Individual* ind);
 
@@ -62,13 +62,13 @@ public:
 		covarsScaleGroup[scaleGroup].push_back(covars.size()-1);
 		covarsGroup[covars.size()-1]=covarsScaleGroup.find(scaleGroup);
 	}
-	
+
 	/// returns group name based on covariate index
 	inline string getCovarGroupName(unsigned int index){
 		std::map<unsigned int, std::map<std::string, std::vector<int> >::iterator>::iterator iter = covarsGroup.find(index);
 		return iter->second->first;
 	}
-	
+
 	inline std::map<std::string, std::vector<int> >& getContinGroups(){return covarsScaleGroup;}
 
 	/// Retrieve variable name
@@ -91,7 +91,7 @@ public:
 
 	/// Number of genotypes in set
 	inline unsigned int numGenotypes(){return genos.size();}
-	
+
 	/// Sets maximum locus value in set
 	inline void setMaxLocusValue(unsigned int maxLocusValue){maxLocus=maxLocusValue;}
 
@@ -115,10 +115,10 @@ public:
 
 	/// Returns pointer to ind
 	inline Individual* getInd(unsigned int index){return inds[index];}
-	
+
 	/// Returns whether data matches case/control set
 	inline bool isCaseControl(){return binaryStatusOnly;}
-	
+
 	/// Sets whether data is case/control only
 	inline void setCasecontrol(bool tf){binaryStatusOnly=tf;}
 
@@ -127,53 +127,53 @@ public:
 		if(indsMap.find(id)==indsMap.end()) throw DataExcept("Unable to find individual with ID=" + id);
 		return indsMap[id];
 	}
-	
+
 	/// Gets value for continous variable missing
 	float getMissingCoValue(){return missingCoValue;}
-	
+
 	/// Sets missing value for continuous variables
 	void setMissingCoValue(float miss){missingCoValue = miss;}
-	
+
 	/// Gets missing value for genotypes
 	int getMissingGenotype(){return missingGenotype;}
-	
+
 	/// Sets missing value for genotypes
 	void setMissingGenotype(int miss){missingGenotype = miss;}
-	
+
 	/// Adds default snp names
 	void addDefaultSnps();
-	
+
 	/// Adds default covariate names
 	void addDefaultCovars();
-	
+
 	/// Indicates whether ott-dummy encoding used for genotypes
 	void ottDummyEncoding(bool val){ottEncoded = val;}
-	
+
 	/// Returns status on ott_dummy_encoding
 	bool ottDummyEncoding(){return ottEncoded;}
-	
+
 	/// Set the cut-off for splitting the training and testing when the 2 files are split
 	void setTestSplit(int indnum){splitNum = indnum;}
-	
+
 	/// Returns the split number
 	int getTestSplit(){return splitNum;}
-	
+
 	/// Check for variance in variables and create lists of ones that have zero variance
 	void checkVariance();
-	
+
 	void checkVariance(CVSet& cvSet);
-	
+
 	void checkVariance(Dataset& dataSet);
-	
+
 	/// Returns list of excluded Genotypes
 	vector<unsigned int> getExcludedGenotypes(){return excludedGenos;}
-	
+
 	/// Returns list of excluded Continuous variables
 	vector<unsigned int> getExcludedContins(){return excludedContin;}
-	
+
 	/// Gets number of levels for a continuous variable
 	unsigned int getNumLevels(unsigned int varIndex){return continLevels[varIndex];}
-	
+
 	/// Sets number of levels for a continuous variable
 	void setNumLevels(unsigned int varIndex, unsigned int nLevels){
 		if(continLevels.empty())
@@ -183,17 +183,22 @@ public:
 	void setAllLevels(std::vector<unsigned int> cLevels){
 		continLevels=cLevels;
 	}
-	
+
 	/// Returns number of levels for phenotype
 	unsigned int getNumStatusLevels(){return statusLevels;}
-	
+
 	/// Sets number of levels for phenotype
 	void setNumStatusLevels(unsigned int nLevels){statusLevels=nLevels;}
-	
+
 	/// Returns all levels
 	std::vector<unsigned int> getAllLevels(){return continLevels;}
 
-	
+	/// Renumber status into consecutive values beginning with 0
+	void reNumberStatus();
+
+	/// Return original status value
+	int getOriginalStatus(int status);
+
 private:
 	std::vector<Individual*> inds;
 	std::vector<std::string> genos;
@@ -203,6 +208,7 @@ private:
 	std::map<std::string, Individual*> indsMap;
 	std::map<std::string, std::vector<int> > covarsScaleGroup;
 	std::map<unsigned int, std::map<std::string, std::vector<int> >::iterator> covarsGroup;
+	std::map<int, int> statusConvert;
 	std::vector<unsigned int> continLevels;
 	unsigned int maxLocus;
 	bool anyMissing, ottEncoded, binaryStatusOnly;
