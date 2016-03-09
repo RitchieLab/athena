@@ -506,6 +506,7 @@ void GADiscrimBayes::setConfigDefaults(Config& configuration, AlgorithmParams& a
 	configuration.setSummaryOnly("SUPPRESS");
 	configuration.setContinAdjust("MAKECATEGORIAL");
 	configuration.setMultiCategory(true);
+	configuration.setStatusAdjust("NONE");
 	outputName = configuration.getOutputName();
 	currCV = configuration.getStartCV();
 }

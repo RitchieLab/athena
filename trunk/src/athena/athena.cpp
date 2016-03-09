@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
 
-		string versionDate = "2/17/2016";
+		string versionDate = "3/9/2016";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
