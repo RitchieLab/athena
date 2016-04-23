@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
 
-		string versionDate = "3/9/2016";
+		string versionDate = "4/22/2016";
 		string execName = "ATHENA";
 		string version = "1.1.0";
 		 time_t start,end;
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 		ConfigFileReader configRead;
 		Config config;
 		ScaleData* scaler = NULL, *continScaler=NULL;
-		stringstream performanceStream;
+
 
 		// read config file
 		try{
@@ -287,6 +287,7 @@ int main(int argc, char** argv) {
 
 	  int originalSeed = config.getRandSeed();
 		for(; currCV < numCV; currCV++){
+			stringstream performanceStream;
 			adjustSeed(config, originalSeed,currCV, nproc, myRank);
 			alg->setRand(config.getRandSeed());
 #ifdef HAVE_CXX_MPI
@@ -381,7 +382,8 @@ int main(int argc, char** argv) {
 					performanceStream << "Testing" << endl;
 					alg->outputIndEvals(&(cvSet.getInterval(currCV).getTesting()), performanceStream, currProc);
 				}
-
+				// write out performance info
+				writer.outputIndCheckPt(performanceStream, currCV);
 			}
 #ifdef HAVE_CXX_MPI
 	}
@@ -416,7 +418,6 @@ int main(int argc, char** argv) {
 				;
 			}
 		}
-
 #ifdef HAVE_CXX_MPI
 } /* end of output */
 #endif
@@ -425,6 +426,7 @@ int main(int argc, char** argv) {
 #endif
 		}
 
+	stringstream indivOutStream;
 	// add equation output to summary
 #ifdef HAVE_CXX_MPI
 if(myRank==0){
@@ -433,6 +435,9 @@ if(myRank==0){
 		writer.outputEquations(alg, bestSolutions, data, mapFileUsed, config.getOttEncoded(),
 			continMapUsed);
 	}
+	if(config.getIndOutput())
+		writer.readIndCheckPts(indivOutStream, numCV);
+
 #ifdef HAVE_CXX_MPI
 }
 #endif
@@ -449,14 +454,13 @@ if(myRank==0){
 #ifdef HAVE_CXX_MPI
 	if(myRank==0){
 #endif
-
 		Population bestPop = alg->getPopulation();
 		alg->getAdditionalFinalOutput(&selectSet);
 		writer.outputBest(bestPop[0],data,mapFileUsed,config.getOttEncoded(),continMapUsed,
 			alg->getFitnessName());
 			if(config.getIndOutput()){
-				performanceStream << "CV Best" << endl;
-				alg->outputIndEvals(&selectSet, performanceStream, 0);
+				indivOutStream << "CV Best" << endl;
+				alg->outputIndEvals(&selectSet, indivOutStream, 0);
 			}
 #ifdef HAVE_CXX_MPI
 	}
@@ -474,7 +478,7 @@ if(myRank==0){
 		if(myRank==0)
 #endif
 	if(config.getIndOutput())
-			writer.outputInds(performanceStream, config.getOutputName(), alg->getFitnessName());
+			writer.outputInds(indivOutStream, config.getOutputName(), alg->getFitnessName());
 	} // end for standard run (no input validation file)
 #ifdef HAVE_CXX_MPI
 		MPI_Finalize();
