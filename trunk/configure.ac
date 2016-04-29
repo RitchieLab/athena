@@ -5,9 +5,9 @@ AC_INIT(athena, 1.1.0, software@ritchielab.psu.edu)
 
 # Checks for --enable-debug added
 AX_CHECK_ENABLE_DEBUG
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_CXX
+#AC_PROG_CC
+#AC_PROG_CPP
+#AC_PROG_CXX
 
 AC_CANONICAL_HOST
 case $host_os in

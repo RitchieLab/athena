@@ -1565,7 +1565,7 @@ void GADiscrimBayes::sendAndReceiveGenomes(int totalNodes, int myRank, GASimpleG
 
 	updateWithMigration(recv, recvScore, sendSize, totalNodes, myRank, ga);
 
-	delete [] sendScore;
+	delete [] sendInfo;
 	delete [] recvScore;
 	delete [] send;
 	delete [] recv;
