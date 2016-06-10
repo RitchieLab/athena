@@ -269,7 +269,6 @@ void GADiscrimBayes::setDataset(Dataset* newSet){
 	freeMemory();
 // 	vector<Dataset*> splitSets = newSet->splitCaseControl();
 	categoryDatasets = newSet->splitCategories();
-
 // 	controlDataset=splitSets[0];
 // 	caseDataset = splitSets[1];
 	for(size_t i=0; i<varList.size(); i++){
@@ -277,7 +276,6 @@ void GADiscrimBayes::setDataset(Dataset* newSet){
 			varList[i]->setNumLevels(newSet->getNumLevels(varList[i]->getIndex()));
 		}
 	}
-
 	GAFunct::setDatasets(categoryDatasets, varList, categoryAllFiles.size() < 1);
 }
 
@@ -328,21 +326,6 @@ void GADiscrimBayes::initialize(){
 		categoryGAs.push_back(new GASimpleGA(genome));
 		configGA(categoryGAs.back());
 	}
-
-// 	Athena2DArrayGenome<int> caseGenome(maxParents,totalVars, GAFunct::GACaseObjective);
-// 	Athena2DArrayGenome<int> controlGenome(maxParents,totalVars, GAFunct::GAControlObjective);
-	// evaluator set as part of constructor
-// 		genome.evaluator(GAFunct::GAObjective);
-
-// 	caseGenome.initializer(GAFunct::initCase);
-// 	controlGenome.initializer(GAFunct::initControl);
-// 	caseGenome.mutator(GAFunct::mutateCase);
-// 	controlGenome.mutator(GAFunct::mutateControl);
-
-// 	caseGA = new GASimpleGA(caseGenome);
-// 	controlGA = new GASimpleGA(controlGenome);
-// 	configGA(caseGA);
-// 	configGA(controlGA);
 }
 
 ///
@@ -543,19 +526,6 @@ void GADiscrimBayes::finalFromFile(Dataset* testing, Dataset* training,
 		nameToIndex[varName]=i;
 	}
 
-// 	string caseFile = caseAllFile + ".cv" + Stringmanip::numberToString(currCV) + ".all";
-// 	string controlFile = controlAllFile + ".cv" + Stringmanip::numberToString(currCV) +
-// 		".all";
-// 	map<vector<vector<int> >, ModelScores> caseModels;
-// 	readAllFile(caseFile, caseModels, nameToIndex, holder, 1, mapUsed, continMapUsed);
-// 	map<vector<vector<int> >, ModelScores> controlModels;
-// 	readAllFile(controlFile, controlModels, nameToIndex,  holder, 0, mapUsed,
-// 		continMapUsed);
-//
-// 	vector<map<vector<vector<int> >, ModelScores> > models;
-// 	models.push_back(caseModels);
-// 	models.push_back(controlModels);
-
 	// loop through files
 	vector<string> fileInfo = Stringmanip::split(categoryAllFiles, ' ');
 	map<int, string> filenameMap;
@@ -573,8 +543,6 @@ void GADiscrimBayes::finalFromFile(Dataset* testing, Dataset* training,
 		category++;
 	}
 
-// 	runDiscriminantAnalysis(caseModels, controlModels, testing, training, holder, mapUsed,
-// 		continMapUsed);
 	runDiscriminantAnalysis(models, testing, training, holder, mapUsed,
 		continMapUsed);
 }
@@ -639,6 +607,7 @@ void GADiscrimBayes::readAllFile(string allFileName,map<vector<vector<int> >, Mo
 void GADiscrimBayes::runDiscriminantAnalysis(vector<map<vector<vector<int> >, ModelScores> >& models,
 	Dataset* testing, Dataset* training, data_manage::Dataholder* holder, bool mapUsed,
 	bool continMapUsed){
+
 	pruneModels(models, holder, mapUsed, continMapUsed);
 
 	int totalInds=0;
@@ -903,8 +872,9 @@ void GADiscrimBayes::pruneModels(vector<map<vector<vector<int> >, ModelScores> >
 	data_manage::Dataholder* holder, bool genoMapUsed, bool continMapUsed){
 
 	string endName, outName;
-
+// cout << "start pruneModels" << endl;
 	for(size_t i=0; i<models.size(); i++){
+// cout << "i=" << i << endl;
 		map<vector<vector<int> >, ModelScores> temp;
 		multimap<float, connComparison> sortedModels;
 		connComparison comparison;
@@ -912,6 +882,7 @@ void GADiscrimBayes::pruneModels(vector<map<vector<vector<int> >, ModelScores> >
 				++iter){
 				vector<vector<int> > conns = iter->first;
 				ModelScores modScore = iter->second;
+// cout << "call prune" << endl;
 				modScore.score = GAFunct::prune(conns, i);
 				comparison.originalConns = iter->first;
 				comparison.newConns = conns;
@@ -1299,16 +1270,76 @@ void	GADiscrimBayes::calcProbTables(Dataset* dset, vector<vector<double> >& orph
 			totals[int(varList[i]->getValue(dset->getInd(ind)))]++;
 		}
 		double allTotal = 0.0;
-		for(int l=0; l<nLevels; l++){
+		// exclude highest level (it is for individuals who are missing data)
+		for(int l=0; l<nLevels-1; l++){
 			allTotal += totals[l];
 		}
-		for(int i=0; i<nLevels; i++){
+		for(int i=0; i<nLevels-1; i++){
 			table[i] = totals[i] / allTotal;
 		}
+		// set missing probability to 1.0
+		// when set to 1.0 it means that the missing data will not affect overall
+		// probability score of the individual
+		table[nLevels-1]=1.0;
 		orphanProbs.push_back(table);
 	}
 }
 
+
+///
+/// Determines which values correspond to one or more
+/// missing data indicators in the variables
+/// @param parents vector of Variable pointers
+/// @param missingVals set which will contain the values for missing
+/// @param nLevels number of levels for each
+///
+void	GADiscrimBayes::setMissingIndexes(vector<unsigned int> &parents, std::set<int>& missingVals,
+	vector<int>& nLevels, vector<int>& cumulativeLevels){
+	// 3 sets with max of 4 on each
+	vector<int> max(parents.size(),0);
+	for(size_t i=0; i<max.size(); i++){
+		max[i]=nLevels[i]-1;
+	}
+
+	// track the current index on each level
+	// set to max
+	vector<int> index(max.size(),0);
+	for(size_t i=0; i<index.size(); i++){
+		index[i]=max[i];
+	}
+	// current index to change (last one -- or inner most one)
+	int currIndex=index.size()-1;
+	bool endLoop=false;
+	int value;
+
+	do{
+		value=0;
+		for(size_t i=0; i<index.size(); i++){
+// 			cout << index[i] << " ";
+			if(index[i]==max[i]){
+// 				cout << " <-- " << index[i] <<" is max";
+				for(size_t j=0; j<index.size(); j++){
+					value += index[j] * cumulativeLevels[j];
+				}
+				missingVals.insert(value);
+// 			cout << "insert " << value << endl;
+				break;
+			}
+		}
+// 		cout << endl;
+		index[currIndex]--;
+		while(index[currIndex] < 0){
+			index[currIndex]=max[currIndex];
+			if(currIndex==0)
+				endLoop=true;
+			else{
+				currIndex--;
+				index[currIndex]--;
+			}
+		}
+		currIndex=index.size()-1;
+	}while(!endLoop);
+}
 
 ///
 /// Create parent data combination
@@ -1317,7 +1348,7 @@ void	GADiscrimBayes::calcProbTables(Dataset* dset, vector<vector<double> >& orph
 /// @returns number of different levels(factors) in the parent combined values
 ///
 int GADiscrimBayes::configParentData(vector<int>& parentValues, vector<unsigned int> &parents,
-	Dataset* dSet, vector<int>& cumulativeLevels){
+	Dataset* dSet, vector<int>& cumulativeLevels, std::set<int>& missingDataVals){
 	// assume three levels (to hold SNP data)
 // 	int constLevels = 3; // this has to be changed also
 // 	int snpLevels = 3;
@@ -1334,6 +1365,24 @@ int GADiscrimBayes::configParentData(vector<int>& parentValues, vector<unsigned 
 	for(unsigned int i=1; i<cumulativeLevels.size(); i++){
 		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels[i-1];
 	}
+
+	// create set of missing values
+	missingDataVals.clear();
+	setMissingIndexes(parents, missingDataVals, nLevels, cumulativeLevels);
+
+// 	missingDataVals.clear();
+// 	for(unsigned int i=0; i<parents.size(); i++){
+// 		// set each to missing and store all combinations with others set to all values
+// 		int val=varList[parents[i]]->getMissingVal() * cumulativeLevels[i];
+// 		for(unsigned int j=0; i<parents.size(); j++){
+// 			if(i==j)
+// 				continue;
+// 			for(unsigned int k=0; k<varList[parents[j]]->getNumLevels(); k++){
+// 				val += k * cumulativeLevels[j];
+// 			}
+// 		}
+// 		missingDataVals.insert(val);
+// 	}
 
 // 	deque<float> args;
 	unsigned int nParents = parents.size();
@@ -1388,9 +1437,21 @@ void GADiscrimBayes::setConditionalTables(Dataset* dset, map<vector<vector<int> 
 			}
 
 
+// Individual* ind2;
+// cout << "\n";
+// for(unsigned int i=0; i<dset->numInds(); i++){
+// ind2=(*dset)[i];
+// cout << childVar->getValue(ind2);
+// for(unsigned int j=0; j<modIter->second.tables.back().parentIndexes.size(); j++){
+// cout << "\t" << varList[modIter->second.tables.back().parentIndexes[j]]->getValue(ind2);
+// }
+// cout << "\n";
+// }
+
 			vector<int> parentValues;
+			std::set<int> missingDataVals;
 			int parentLevels = configParentData(parentValues, modIter->second.tables.back().parentIndexes,
-					dset, modIter->second.tables.back().cumulativeLevels);
+					dset, modIter->second.tables.back().cumulativeLevels, missingDataVals);
 			int nodeLevels = childVar->getNumLevels();
 			vector<int> inner(parentLevels,0);
 			vector<vector<int> > totals(nodeLevels, inner);
@@ -1400,16 +1461,26 @@ void GADiscrimBayes::setConditionalTables(Dataset* dset, map<vector<vector<int> 
 			for(unsigned int i=0; i<dset->numInds(); i++){
 				ind=(*dset)[i];
 				totals[int(childVar->getValue(ind))][parentValues[i]]++;
-				nodeTotals[int(childVar->getValue(ind))]++;
+// 				nodeTotals[int(childVar->getValue(ind))]++;
 			}
+			for(unsigned int lvl=0; lvl<nodeLevels-1; lvl++){
+				for(unsigned int parLvl=0; parLvl < parentLevels; parLvl++){
+					if(missingDataVals.find(parLvl) == missingDataVals.end()){
+						nodeTotals[lvl] += totals[lvl][parLvl];
+					}
+				}
+			}
+
 			vector<double> innerProbs(parentLevels, 0.0);
 			modIter->second.tables.back().probs.assign(nodeLevels, innerProbs);
 			for(int i=0; i<nodeLevels; i++){
 				for(int j=0; j<parentLevels; j++){
-					if(totals[i][j] > 0)
-						modIter->second.tables.back().probs[i][j] = totals[i][j]/double(nodeTotals[i]);
-					else
-						modIter->second.tables.back().probs[i][j] = missValue;
+				if(missingDataVals.find(j) != missingDataVals.end() || i == childVar->getMissingVal())
+					modIter->second.tables.back().probs[i][j] = 1.0;
+				else if(totals[i][j] > 0)
+					modIter->second.tables.back().probs[i][j] = totals[i][j]/double(nodeTotals[i]);
+				else
+					modIter->second.tables.back().probs[i][j] = missValue;
 				}
 			}
 // cout << "table" << endl;

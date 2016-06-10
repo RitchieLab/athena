@@ -220,5 +220,13 @@ int Dataholder::getOriginalStatus(int status){
 	return statusConvert[status];
 }
 
+///
+/// Returns highest value in a continuous variable
+/// @param varIndex index of variable to get value
+///
+float Dataholder::getHighestVal(int varIndex){
+	return highContin[varIndex];
+}
+
 
 }

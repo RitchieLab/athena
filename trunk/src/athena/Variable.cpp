@@ -24,7 +24,8 @@ Variable::Variable(int idx){
 
 GenoVariable::GenoVariable(int index):Variable(index){
 	gType = true;
-	nLevels=3;
+	// one level for missing
+	nLevels=4;
 }
 
 ///
@@ -44,6 +45,14 @@ string GenoVariable::getName(data_manage::Dataholder* holder){
 float GenoVariable::getValue(data_manage::Individual* ind){
 	return ind->getGenotype(index);
 }
+
+///
+/// Returns missing for variable
+/// @returns missing value;
+///
+// float GenoVariable::getMissingVal(){
+// 	return 3.0;
+// }
 
 ConVariable::ConVariable(int index):Variable(index){
 	gType=false;
@@ -65,3 +74,12 @@ float ConVariable::getValue(data_manage::Individual* ind){
 string ConVariable::getName(data_manage::Dataholder* holder){
 	return holder->getCovarName(index);
 }
+
+
+///
+/// Returns missing for variable
+/// @returns missing value;
+///
+// float ConVariable::getMissingVal(){
+// 	return holder->get
+// }

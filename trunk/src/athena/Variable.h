@@ -35,6 +35,7 @@ public:
 	virtual bool isGeno(){return gType;}
 	virtual int getNumLevels(){return nLevels;}
 	void setNumLevels(int nl){nLevels=nl;}
+	int getMissingVal(){return nLevels-1;}
 	virtual string getName(data_manage::Dataholder* holder)=0;
 
 protected:
@@ -47,6 +48,7 @@ class GenoVariable :public Variable{
 		GenoVariable(int index);
 		virtual float getValue(data_manage::Individual* ind);
 		virtual string getName(data_manage::Dataholder* holder);
+// 		virtual float getMissingVal();
 };
 
 class ConVariable :public Variable{
@@ -54,6 +56,7 @@ class ConVariable :public Variable{
 		ConVariable(int index);
 		virtual float getValue(data_manage::Individual* ind);
 		virtual string getName(data_manage::Dataholder* holder);
+// 		virtual float getMissingVal();
 };
 
 #endif

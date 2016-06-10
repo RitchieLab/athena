@@ -199,6 +199,9 @@ public:
 	/// Return original status value
 	int getOriginalStatus(int status);
 
+	/// Returns highest value in a continuous variable
+	float getHighestVal(int varIndex);
+
 private:
 	std::vector<Individual*> inds;
 	std::vector<std::string> genos;
@@ -210,6 +213,7 @@ private:
 	std::map<unsigned int, std::map<std::string, std::vector<int> >::iterator> covarsGroup;
 	std::map<int, int> statusConvert;
 	std::vector<unsigned int> continLevels;
+	std::vector<float> highContin;
 	unsigned int maxLocus;
 	bool anyMissing, ottEncoded, binaryStatusOnly;
 	int missingGenotype, splitNum;

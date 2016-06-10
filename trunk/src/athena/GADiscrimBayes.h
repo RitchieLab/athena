@@ -186,7 +186,10 @@ protected:
 		Dataholder* holder, double missValue);
 
 	int configParentData(vector<int>& parentValues, vector<unsigned int> &parents,
-		Dataset* dSet, vector<int>& cumulativeLevels);
+		Dataset* dSet, vector<int>& cumulativeLevels,  std::set<int>& missingDataVals);
+
+	void	setMissingIndexes(std::vector<unsigned int> &parents, std::set<int>& missingVals,
+		std::vector<int>& nLevels, vector<int>& cumulativeLevels);
 
 	void	calcProbTables(Dataset* dset, vector<vector<double> >& orphanProbs,
 		data_manage::Dataholder* holder);

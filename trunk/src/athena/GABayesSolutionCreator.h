@@ -91,7 +91,7 @@ private:
 	double calcMI(Variable* parentVar, Variable* childVar, data_manage::Dataset* ds);
 
 	int configParentData(std::vector<int>& parentValues, std::vector<Variable*> &parents,
-		data_manage::Dataset* dSet);
+		data_manage::Dataset* dSet,std::set<int>& missingVals);
 
 	double k2Calc(int childIdx, vector<int>& parIndexes,
 		vector<Variable*> varList, data_manage::Dataset* dSet, int& nP);
@@ -104,6 +104,9 @@ private:
 	std::set<int> removeLowMI(int childIndex,vector<int>& parents,int maxConn);
 	std::set<int> removeLowChildMI(int childIndex,vector<int>& parents,int maxConn);
 	std::set<int> removeRandom(int childIndex,vector<int>& parents,int maxConn);
+
+	void	setMissingIndexes(std::vector<Variable*> &parents, std::set<int>& missingVals,
+		std::vector<int>& nLevels, vector<int>& cumulativeLevels);
 
 	std::vector<std::vector<double> > miScores;
 	std::vector<double> noParentScores;

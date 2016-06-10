@@ -57,7 +57,7 @@ GABayesSolutionCreator& GABayesSolutionCreator::operator=(const GABayesSolutionC
 		calculator = orig.calculator->clone();
 	else
 		calculator = NULL;
-
+	return *this;
 }
 
 GABayesSolutionCreator::~GABayesSolutionCreator(){
@@ -471,8 +471,9 @@ float GABayesSolutionCreator::pruneNetwork(vector<vector<int> >& conns, vector<V
 	calculator->reset();
 	int nParams,thisParams;
 	vector<int> parents;
-
+// cout << "start prune conns size=" << conns.size() << endl;
 	for(size_t childIdx=0; childIdx < conns.size();childIdx++){
+// cout << "childIdx=" << childIdx << endl;
 		// when no connections use no parent score and go to next variable
 		if(conns[childIdx].empty()){
 // cout << "childIdx=" << childIdx << " empty" << endl;
@@ -552,7 +553,6 @@ double GABayesSolutionCreator::calcScore(Athena2DArrayGenome<int>& genome, vecto
 	int nParams;
 	calculator->reset();
 
-
 //time_t startTime, endTime;
 //calcK2Time=0.0;
 // cout << "\n";
@@ -600,6 +600,7 @@ double GABayesSolutionCreator::calcScore(Athena2DArrayGenome<int>& genome, vecto
 // cout << "score=" << noParentScores[j] << "\n";
 		}
 		else{
+// cout << "calc with parents" << endl;
 			score = k2Calc(y,parents,varList,dSet,nParams);
 //time(&endTime);
 //calcK2Time += difftime (endTime,startTime);
@@ -622,6 +623,34 @@ double GABayesSolutionCreator::calcScore(Athena2DArrayGenome<int>& genome, vecto
 double GABayesSolutionCreator::k2Calc(int childIdx, vector<int>& parIndexes,
 	vector<Variable*> varList, data_manage::Dataset* dSet, int& nP){
 
+
+// map<int,string> conversion;
+// conversion[0]="a";
+// conversion[1]="b";
+// conversion[2]="c";
+// conversion[3]="M"; // for missing
+// // child is first followed by the parents
+// cout << "\nG1";
+// for(int i=0; i<parIndexes.size(); i++){
+// 	cout << "\tG" << i+2;
+// }
+// cout << "\n";
+// data_manage::Individual* ind2;
+//
+// for(unsigned int i=0; i < dSet->numInds(); i++){
+// 	ind2 = (*dSet)[i];
+// 	cout <<  conversion[varList[childIdx]->getValue(ind2)];
+// // 	totals[node->getValue(ind2)][parentValues[i]]++;
+// 	for(size_t p=0; p<parIndexes.size(); p++){
+// 		cout << "\t" << conversion[varList[parIndexes[p]]->getValue(ind2)];
+// 	}
+// 	cout << "\n";
+// // 	parentTotals[parentValues[i]]++;
+// // 	nodeTotals[node->getValue(ind)]++;
+// }
+// exit(1);
+
+
 	nP=0;
 	Variable * node = varList[childIdx];
 	vector<Variable*> parents;
@@ -632,8 +661,16 @@ double GABayesSolutionCreator::k2Calc(int childIdx, vector<int>& parIndexes,
 	// construct table with node values and the values for the parent combinations
 	vector<int> parentValues;
 // cout << " start configPar "; cout.flush();
-	int parentLevels = configParentData(parentValues, parents, dSet);
+	set<int> missingVals;
+	int parentLevels = configParentData(parentValues, parents, dSet, missingVals);
 // cout << " end configPar "; cout.flush();
+
+// cout << "missing values\n";
+// for(set<int>::iterator iter=missingVals.begin(); iter != missingVals.end(); ++iter){
+// cout << *iter;
+// }
+// cout << "------\n";
+
 	int nodeLevels = node->getNumLevels();
 	int imaginary = 0;
 	float alpha = 1.0;
@@ -643,50 +680,131 @@ double GABayesSolutionCreator::k2Calc(int childIdx, vector<int>& parIndexes,
 	vector<int> parentTotals(parentLevels, 0);
 	vector<int> nodeTotals(nodeLevels, 0);
 	data_manage::Individual* ind;
+	int nodeMissingValue=varList[childIdx]->getMissingVal();
+	int nodeValue;
 	for(unsigned int i=0; i < numInds; i++){
 		ind = (*dSet)[i];
-		totals[node->getValue(ind)][parentValues[i]]++;
-		parentTotals[parentValues[i]]++;
-		nodeTotals[node->getValue(ind)]++;
+		nodeValue = node->getValue(ind);
+		if(nodeValue != nodeMissingValue && missingVals.find(parentValues[i]) == missingVals.end()){
+			totals[nodeValue][parentValues[i]]++;
+			nodeTotals[nodeValue]++;
+			parentTotals[parentValues[i]]++;
+		}
 	}
+
+// for(size_t i=0; i<totals.size(); i++){
+// cout << i << " ";
+// for(size_t j=0; j<totals[i].size(); j++){
+// cout << " " << totals[i][j];
+// }
+// cout << "\n";
+// }
+
+
 // cout << " start condit "; cout.flush();
 	// calculate conditional posterior probability
 	double score = 0.0;
-	for(int i=0; i<nodeLevels; i++){
+	// exclude the final (missing) node level
+	for(int i=0; i<nodeLevels-1; i++){
+// cout << "first node value=" << i << endl;
 		for(int j=0; j<parentLevels; j++){
-			score += lgamma(totals[i][j] + alpha); // - lgamma(alpha) /* always zero for k2 */
+			if(missingVals.find(j) == missingVals.end())
+				score += lgamma(totals[i][j] + alpha); // - lgamma(alpha) /* always zero for k2 */
 		}
 	}
 	int finalParentLevels = parentLevels;
 	for(int j=0; j < parentLevels; j++){
-		if(parentTotals[j] == 0){
+		if(parentTotals[j] == 0 || missingVals.find(j)!=missingVals.end()){
 			finalParentLevels--;
 		}
 	}
 	int finalNodeLevels=0;
-	for(int j=0; j < nodeLevels; j++){
+	// exclude the missing node level
+	for(int j=0; j < nodeLevels-1; j++){
 		if(nodeTotals[j] > 0)
 			finalNodeLevels++;
 	}
+
+// cout << "finalNodelevel=" << finalNodeLevels << " finalParentLevels=" << finalParentLevels << endl;
 	imaginary = finalNodeLevels * finalParentLevels;
 	nP = (finalNodeLevels-1) * finalParentLevels;
 	for(int j=0; j < parentLevels; j++){
-		if(parentTotals[j] > 0){
+		if(parentTotals[j] > 0 && missingVals.find(j)==missingVals.end()){
+// cout << "include " << j << " total=" << parentTotals[j] << endl;
 			score += lgamma(double(imaginary)/finalParentLevels) -
 				lgamma(parentTotals[j] + double(imaginary)/finalParentLevels);
 		}
 	}
+// cout << "score=" << score << endl;
+// exit(1);
 	return score;
+}
+
+///
+/// Determines which values correspond to one or more
+/// missing data indicators in the variables
+/// @param parents vector of Variable pointers
+/// @param missingVals set which will contain the values for missing
+/// @param nLevels number of levels for each
+///
+void	GABayesSolutionCreator::setMissingIndexes(vector<Variable*> &parents, std::set<int>& missingVals,
+	vector<int>& nLevels, vector<int>& cumulativeLevels){
+	// 3 sets with max of 4 on each
+	vector<int> max(parents.size(),0);
+	for(size_t i=0; i<max.size(); i++){
+		max[i]=nLevels[i]-1;
+	}
+
+	// track the current index on each level
+	// set to max
+	vector<int> index(max.size(),0);
+	for(size_t i=0; i<index.size(); i++){
+		index[i]=max[i];
+	}
+	// current index to change (last one -- or inner most one)
+	int currIndex=index.size()-1;
+	bool endLoop=false;
+	int value;
+
+	do{
+		value=0;
+		for(size_t i=0; i<index.size(); i++){
+// 			cout << index[i] << " ";
+			if(index[i]==max[i]){
+// 				cout << " <-- " << index[i] <<" is max";
+				for(size_t j=0; j<index.size(); j++){
+					value += index[j] * cumulativeLevels[j];
+				}
+				missingVals.insert(value);
+// 			cout << "insert " << value << endl;
+				break;
+			}
+		}
+// 		cout << endl;
+		index[currIndex]--;
+		while(index[currIndex] < 0){
+			index[currIndex]=max[currIndex];
+			if(currIndex==0)
+				endLoop=true;
+			else{
+				currIndex--;
+				index[currIndex]--;
+			}
+		}
+		currIndex=index.size()-1;
+	}while(!endLoop);
 }
 
 ///
 /// Create parent data combination
 /// @param parentValues [out]
 /// @param parents
+/// @param missingVals set storing values that correspond to missing data
 /// @returns number of different levels(factors) in the parent combined values
 ///
 int GABayesSolutionCreator::configParentData(vector<int>& parentValues,
-	vector<Variable*> &parents, data_manage::Dataset* dSet){
+	vector<Variable*> &parents, data_manage::Dataset* dSet,
+	std::set<int>& missingVals){
 
 	// set number of levels for each parent
 	vector<int> nLevels(parents.size(), 0);
@@ -701,6 +819,33 @@ int GABayesSolutionCreator::configParentData(vector<int>& parentValues,
 // 		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels;
 		cumulativeLevels[i] = cumulativeLevels[i-1] * nLevels[i-1];
 	}
+
+	missingVals.clear();
+	setMissingIndexes(parents, missingVals, nLevels, cumulativeLevels);
+
+// cout << "parents.size()=" << parents.size() << endl;
+// cout << "set missing values" << endl;
+// 	// create set of missing values
+// 	missingVals.clear();
+// 	for(unsigned int i=0; i<parents.size(); i++){
+// cout << "i=" << i << endl;
+// 		// set each to missing and store all combinations with others set to all values
+// 		int val=parents[i]->getMissingVal() * cumulativeLevels[i];
+// cout << "val=" << val << endl;
+// 		for(unsigned int j=0; i<parents.size(); j++){
+// 			if(i==j)
+// 				continue;
+// cout << "i,j=" << i << "," << j << endl;
+// 			for(unsigned int k=0; k<parents[j]->getNumLevels(); k++){
+// cout << "k=" << k << endl;
+// 				val += k * cumulativeLevels[j];
+// 			}
+// 		}
+// cout << "missing val " << val << endl;
+// 		missingVals.insert(val);
+// 	}
+
+
 // 	int nl = cumulativeLevels.back() * nLevels;
 	deque<float> args;
 	unsigned int nParents = parents.size();
@@ -710,6 +855,10 @@ int GABayesSolutionCreator::configParentData(vector<int>& parentValues,
 		ind = (*dSet)[i];
 		int value = 0;
 		for(unsigned int j=0; j < nParents; j++){
+// cout << "i=" << i << " j=" << j << " # cumulativeLevels=" << cumulativeLevels.size() << endl;
+// cout << "ind=" << ind << endl;
+// cout << parents[j]->getIndex() << endl;
+// cout << parents[j]->getValue(ind) << endl;
 			value += parents[j]->getValue(ind) * cumulativeLevels[j];
 		}
 		parentValues.push_back(value);
@@ -728,14 +877,18 @@ void GABayesSolutionCreator::setMIScores(data_manage::Dataset* ds, std::vector<V
 	miScores.assign(gridSize, row);
 
 	for(size_t i=0; i<gridSize; i++){
+// cout << "parent=" << i << endl;
 		for(size_t j=0; j<gridSize; j++){
 			if(i==j){
 				continue;
 			}
+// i=1;
+// j=0;
 			miScores[i][j]=calcMI(varList[i], varList[j], ds);
-// cout << "parent=" << i << " child=" << j << " MI=" << miScores[i][j] << endl;
+// cout << "parent=" << i << " child=" << j << " MI=" << miScores[i][j]  << " varparent=" << varList[i]->getIndex() << " varchild=" << varList[j]->getIndex() << endl;
 		}
 	}
+// exit(1);
 }
 
 ///
@@ -743,6 +896,7 @@ void GABayesSolutionCreator::setMIScores(data_manage::Dataset* ds, std::vector<V
 ///
 double	GABayesSolutionCreator::calcMI(Variable* parentVar, Variable* childVar, data_manage::Dataset* ds){
 		double mutualInfo=0.0;
+// cout << "start calcMI" << endl;
 
 // 	vector<IndividualTerm*> terms(2,NULL);
 // 	terms[0] = static_cast<IndividualTerm*>(v1);
@@ -768,12 +922,14 @@ double	GABayesSolutionCreator::calcMI(Variable* parentVar, Variable* childVar, d
 		nl *= nLevels[i];
 	}
 
+// cout << "nl=" << nl << endl;
+
 	vector<int> combinedTotals(nl,0);
 	size_t v1Levels = terms[0]->getNumLevels();
 	size_t v2Levels = terms[1]->getNumLevels();
+// cout << "v1Levels=" << v1Levels << " " << "v2Levels=" << v2Levels << endl;
 	vector<int> v1Totals(v1Levels, 0);
 	vector<int> v2Totals(v2Levels, 0);
-
 
 	vector<int> cumulativeLevels(terms.size(), 1);
 	for(unsigned int i=1; i<cumulativeLevels.size(); i++){
@@ -782,10 +938,15 @@ double	GABayesSolutionCreator::calcMI(Variable* parentVar, Variable* childVar, d
 
 // 	unsigned int nTerms = terms.size();
 	data_manage::Individual* ind;
-	unsigned int N = ds->numInds();
+// 	unsigned int N = ds->numInds();
 
 	for(unsigned int i=0; i < ds->numInds(); i++){
 		ind = (*ds)[i];
+
+// if(terms[0]->getValue(ind) > 2){
+// 	cout << "found out of range" << endl;
+// exit(1);
+// }
 
 		int value = 0;
 		value += terms[0]->getValue(ind) * cumulativeLevels[0];
@@ -793,27 +954,65 @@ double	GABayesSolutionCreator::calcMI(Variable* parentVar, Variable* childVar, d
 
 		value += terms[1]->getValue(ind) * cumulativeLevels[1];
 		v2Totals[terms[1]->getValue(ind)]++;
-
 		combinedTotals[value]++;
 	}
 
+// cout << "indexes are " << terms[0]->getIndex() << " and " << terms[1]->getIndex() << endl;
+// for(size_t i=0; i<v1Levels; i++){
+// for(size_t j=0; j<v2Levels; j++){
+// int value =0;
+// value += i * cumulativeLevels[0];
+// value += j * cumulativeLevels[1];
+// cout << "i,j=" << i <<"," << j << " val=" << value << " total=" << combinedTotals[value] << endl;
+// }
+// }
+
+
+	unsigned int v1Max = v1Levels - 1;
+	unsigned int v2Max = v2Levels - 1;
+	unsigned int N=0;
+	int index;
+	for(unsigned int i=0; i<v1Max; i++){
+		for(unsigned int j=0; j<v2Max; j++){
+			index = i * cumulativeLevels[0] + j * cumulativeLevels[1];
+// cout << "include i,j=" << i << "," << j << " tot=" << combinedTotals[index] << endl;
+			N += combinedTotals[index];
+		}
+	}
+// cout << "N=" << N << endl;
+
+// for(int x=0; x<3; x++){
+// 	cout << "v1Totals[" << x <<"]=" << v1Totals[x]<<endl;
+// 	cout << "v2Totals[" << x <<"]=" << v2Totals[x]<<endl;
+// }
+// cout << "combinedTotals size=" << combinedTotals.size() << endl;
+// for(int x=0; x<9; x++){
+// 	cout << "combinedTotals[" << x << "]=" << combinedTotals[x] << endl;
+// }
 	// calculate mutual information
 	// for each combination
-	int index;
-	for(unsigned int i=0; i<v1Levels; i++){
-		for(unsigned int j=0; j<v2Levels; j++){
+
+	// skip missing totals
+
+	for(unsigned int i=0; i<v1Max; i++){
+		for(unsigned int j=0; j<v2Max; j++){
 			index = i * cumulativeLevels[0] + j * cumulativeLevels[1];
 // cout << "v1 " << i << "=" << v1Totals[i] << endl;
-// cout << "v2 " << j << "=" << v1Totals[j] << endl;
+// cout << "v2 " << j << "=" << v2Totals[j] << endl;
 			if(combinedTotals[index] > 0){
 				mutualInfo += combinedTotals[index] / double(N) * log(N*combinedTotals[index]/double(v1Totals[i]*v2Totals[j]));
-			}
 // cout << "i=" << i << " j=" << j << " tot=" << combinedTotals[index] << " mi=" << mutualInfo << endl;
+// cout << "N=" << N << " double(v1Totals[i]*v2Totals[j])=" << double(v1Totals[i]*v2Totals[j]) << endl;
 // cout << "first part=" << combinedTotals[index] / double(N) << endl;
 // cout <<  "second part without log=" << N*combinedTotals[index]/double(v1Totals[i]*v2Totals[j]) << endl;
 // cout << "second part=" << log(N*combinedTotals[index]/double(v1Totals[i]*v2Totals[j])) << endl;
+			}
+
 		}
 	}
+// cout << "end calcMI" << endl;
+// cout << "mutualInfo=" << mutualInfo << endl;
+// exit(1);
 	return mutualInfo;
 }
 
@@ -858,14 +1057,25 @@ double GABayesSolutionCreator::k2CalcNoParent(Variable* var, data_manage::Datase
 	for(unsigned int i=0; i < nInds; i++){
 // 		totals[int(ds->getInd(i)->getCovariate(cIndex))]++;
 		totals[int(var->getValue(ds->getInd(i)))]++;
+
 	}
+
+// for(size_t i=0; i<totals.size(); i++){
+// cout << "totals[" << i << "]=" << totals[i] << endl;
+// }
+
 
 	nP =-1;
 	// alpha = 1
 	// imaginary is simply number of levels of totals for K2
-	double imaginary = double(totals.size());
+	// subtract the missing category
+	unsigned int maxIndex=totals.size()-1;
+	double imaginary = double(maxIndex);
+	// adjust number of inds
+	nInds = nInds - totals[maxIndex];
+// cout << "nInds=" << nInds << endl;
 	double alpha = 1.0;
-	for(unsigned int i=0; i<totals.size(); i++){
+	for(unsigned int i=0; i<maxIndex; i++){
 		result += lgamma(totals[i]+alpha); // no need to get gamma of alpha (it is 0)
 		// reduce imaginary when a cell is empty
 		if(totals[i]==0)
@@ -874,6 +1084,8 @@ double GABayesSolutionCreator::k2CalcNoParent(Variable* var, data_manage::Datase
 			nP++;
 	}
 	result += lgamma(imaginary) - lgamma(imaginary + nInds);
+// cout << "nP=" << nP << " imaginary=" << imaginary << endl;
+// cout << "score=" << result << endl;
 	return result;
 }
 

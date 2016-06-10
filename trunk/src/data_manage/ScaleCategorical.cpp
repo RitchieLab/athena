@@ -78,7 +78,7 @@ void ScaleCategorical::adjustContin(Dataholder* holder, unsigned int varIndex){
 			uniqueValues.insert(value);
 		}
 	}
-	
+
 	map<int, int> conversion;
 	int conv=0;
 	for(set<int>::iterator iter=uniqueValues.begin(); iter != uniqueValues.end();
@@ -86,18 +86,22 @@ void ScaleCategorical::adjustContin(Dataholder* holder, unsigned int varIndex){
 		conversion[*iter]=conv;
 		conv++;
 	}
+	/// add category for missing values
+	// reset the missing covariate value to be this category
+	conversion[int(holder->getMissingCoValue())]=conv;
+	holder->setMissingCoValue(conv);
 
 	for(currInd = 0; currInd < numInds; currInd++){
 		ind = holder->getInd(currInd);
-		if(ind->getCovariate(varIndex) == holder->getMissingCoValue()){
-			continue;
-		}
+// 		if(ind->getCovariate(varIndex) == holder->getMissingCoValue()){
+// 			continue;
+// 		}
 		int oldvalue = ind->getCovariate(varIndex);
-		ind->setCovariate(varIndex, conversion[oldvalue]);		
+		ind->setCovariate(varIndex, conversion[oldvalue]);
 	}
-	
+
 	holder->setNumLevels(varIndex, conversion.size());
-	
+
 }
 
 
@@ -122,7 +126,7 @@ void ScaleCategorical::adjustContin(Dataset* dataset, unsigned int varIndex){
 			uniqueValues.insert(value);
 		}
 	}
-	
+
 	map<int, int> conversion;
 	int conv=0;
 	for(set<int>::iterator iter=uniqueValues.begin(); iter != uniqueValues.end();
@@ -130,11 +134,17 @@ void ScaleCategorical::adjustContin(Dataset* dataset, unsigned int varIndex){
 		conversion[*iter]=conv;
 		conv++;
 	}
+	/// add category for missing values
+	// reset the missing covariate value to be this category
+	conversion[int(dataset->getMissingCoValue())]=conv;
+	dataset->setMissingCoValue(conv);
+
+
 	for(currInd = 0; currInd < numInds; currInd++){
 		ind = dataset->getInd(currInd);
-		if(ind->getCovariate(varIndex) == dataset->getMissingCoValue()){
-			continue;
-		}
+// 		if(ind->getCovariate(varIndex) == dataset->getMissingCoValue()){
+// 			continue;
+// 		}
 		int oldvalue = ind->getCovariate(varIndex);
 		ind->setCovariate(varIndex, conversion[oldvalue]);
 	}
@@ -152,7 +162,7 @@ void ScaleCategorical::adjustStatus(Dataholder* holder){
 	Individual* ind;
 	set<int> uniqueValues;
 	originalVals.clear();
-	
+
 	for(currInd = 0; currInd < numInds; currInd++){
 		ind = holder->getInd(currInd);
 		int value = int(ind->getStatus());
@@ -161,16 +171,16 @@ void ScaleCategorical::adjustStatus(Dataholder* holder){
 			originalVals[value]=ind->getStatus();
 		}
 	}
-	
-	
-	if(uniqueValues.size() ==2 && uniqueValues.find(1) != uniqueValues.end() && uniqueValues.find(0) != 
+
+
+	if(uniqueValues.size() ==2 && uniqueValues.find(1) != uniqueValues.end() && uniqueValues.find(0) !=
 		uniqueValues.end()){
 		return;
 	}
 	else if(uniqueValues.size()==1 && uniqueValues.find(1) != uniqueValues.end()){
 		return;
 	}
-	
+
 	map<int, int> conversion;
 	int conv=0;
 	for(set<int>::iterator iter=uniqueValues.begin(); iter != uniqueValues.end();
@@ -182,16 +192,16 @@ void ScaleCategorical::adjustStatus(Dataholder* holder){
 	for(currInd = 0; currInd < numInds; currInd++){
 		ind = holder->getInd(currInd);
 		int oldStatus = ind->getStatus();
-		ind->setStatus(conversion[oldStatus]);		
+		ind->setStatus(conversion[oldStatus]);
 	}
-	
+
 	holder->setNumStatusLevels(conversion.size());
 }
 
 
 ///
 /// Scales data to be categorical
-/// @param holder Dataset 
+/// @param holder Dataset
 ///
 void ScaleCategorical::adjustStatus(Dataset* dataset){
 	unsigned int currInd, numInds = dataset->numInds();
@@ -206,15 +216,15 @@ void ScaleCategorical::adjustStatus(Dataset* dataset){
 			originalVals[value]=ind->getStatus();
 		}
 	}
-	
-	if(uniqueValues.size() ==2 && uniqueValues.find(1) != uniqueValues.end() && uniqueValues.find(0) != 
+
+	if(uniqueValues.size() ==2 && uniqueValues.find(1) != uniqueValues.end() && uniqueValues.find(0) !=
 		uniqueValues.end()){
 		return;
 	}
 	else if(uniqueValues.size()==1 && uniqueValues.find(1) != uniqueValues.end()){
 		return;
-	}	
-	
+	}
+
 	map<int, int> conversion;
 	int conv=0;
 	for(set<int>::iterator iter=uniqueValues.begin(); iter != uniqueValues.end();
@@ -226,11 +236,11 @@ void ScaleCategorical::adjustStatus(Dataset* dataset){
 	for(currInd = 0; currInd < numInds; currInd++){
 		ind = dataset->getInd(currInd);
 		int oldStatus = ind->getStatus();
-		ind->setStatus(conversion[oldStatus]);		
+		ind->setStatus(conversion[oldStatus]);
 	}
-	
+
 	dataset->setNumStatusLevels(conversion.size());
-	
+
 }
 
 
@@ -239,7 +249,7 @@ void ScaleCategorical::adjustStatus(Dataset* dataset){
 /// @return string
 ///
 string ScaleCategorical::outputScaleInfo(){
-	
+
 	stringstream ss;
 	ss << "Converted to categorical" << endl;
 	return ss.str();
