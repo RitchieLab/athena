@@ -99,7 +99,7 @@ private:
 	double k2CalcNoParent(Variable* var, data_manage::Dataset* ds, int& nP);
 
 	vector<vector<int> > constructEquation(Athena2DArrayGenome<int>& genome, std::vector<Variable*> varList);
-	void writeGenoNet(vector<vector<int> >& eq);
+	void writeGenoNet(vector<vector<int> >& eq, vector<Variable*>& varList);
 
 	std::set<int> removeLowMI(int childIndex,vector<int>& parents,int maxConn);
 	std::set<int> removeLowChildMI(int childIndex,vector<int>& parents,int maxConn);

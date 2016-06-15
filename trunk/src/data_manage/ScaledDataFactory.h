@@ -29,23 +29,24 @@ class ScaledDataFactory{
 	public:
 
 		static ScaleData* createScaler(string scaleType);
-		
+
 	private:
-		
+
 		enum ScaleType{
 			NoMatch,
 			ScaleNorm,
 			ScaleContin,
 			ScaleGroupContin,
 			ScaleCat,
+			ScaleCatRecode,
 			NoScale
 		};
 
 		static map<string, ScaleType> scaleMap;
-		
+
 		/// Sets the map
 		static void setScaleMap();
-		
+
 };
 
 

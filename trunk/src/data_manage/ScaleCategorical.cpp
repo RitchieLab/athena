@@ -28,7 +28,13 @@ namespace data_manage
 
 ScaleCategorical::ScaleCategorical()
 {
+	recodeMissing=false;
 }
+
+ScaleCategorical::ScaleCategorical(bool recMiss){
+	recodeMissing=true;
+}
+
 
 ScaleCategorical::~ScaleCategorical()
 {
@@ -89,13 +95,12 @@ void ScaleCategorical::adjustContin(Dataholder* holder, unsigned int varIndex){
 	/// add category for missing values
 	// reset the missing covariate value to be this category
 	conversion[int(holder->getMissingCoValue())]=conv;
-	holder->setMissingCoValue(conv);
-
+// 	holder->setMissingCoValue(conv);
 	for(currInd = 0; currInd < numInds; currInd++){
 		ind = holder->getInd(currInd);
-// 		if(ind->getCovariate(varIndex) == holder->getMissingCoValue()){
-// 			continue;
-// 		}
+		if(ind->getCovariate(varIndex) == holder->getMissingCoValue()  && !recodeMissing){
+			continue;
+		}
 		int oldvalue = ind->getCovariate(varIndex);
 		ind->setCovariate(varIndex, conversion[oldvalue]);
 	}
@@ -136,15 +141,16 @@ void ScaleCategorical::adjustContin(Dataset* dataset, unsigned int varIndex){
 	}
 	/// add category for missing values
 	// reset the missing covariate value to be this category
+// cout << "missing is " << dataset->getMissingCoValue() << " changed to " << conv << endl;
 	conversion[int(dataset->getMissingCoValue())]=conv;
-	dataset->setMissingCoValue(conv);
+// 	dataset->setMissingCoValue(conv);
 
 
 	for(currInd = 0; currInd < numInds; currInd++){
 		ind = dataset->getInd(currInd);
-// 		if(ind->getCovariate(varIndex) == dataset->getMissingCoValue()){
-// 			continue;
-// 		}
+		if(ind->getCovariate(varIndex) == dataset->getMissingCoValue() && !recodeMissing){
+			continue;
+		}
 		int oldvalue = ind->getCovariate(varIndex);
 		ind->setCovariate(varIndex, conversion[oldvalue]);
 	}

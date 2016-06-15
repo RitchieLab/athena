@@ -391,14 +391,26 @@ set<int> GABayesSolutionCreator::removeLowChildMI(int parentIndex,vector<int>& c
 
 
 /// write out equation
-void GABayesSolutionCreator::writeGenoNet(vector<vector<int> >& eq){
+void GABayesSolutionCreator::writeGenoNet(vector<vector<int> >& eq, vector<Variable*>& varList){
+
 	for(size_t i=0; i<eq.size(); i++){
-		cout << "[G" << i+1;
+		if(varList[i]->isGeno()){
+			cout << "[G" << i+1;
+		}
+		else{
+			cout << "[C" << i+1;
+		}
 		if(!eq[i].empty()){
-			cout << "|G" << (eq[i][0]+1);
+			if(varList[eq[i][0]]->isGeno())
+				cout << "|G" << (eq[i][0]+1);
+			else
+				cout << "|C" << (eq[i][0]+1);
 		}
 		for(size_t j=1; j<eq[i].size(); j++){
-			cout << ":G" << (eq[i][j]+1);
+			if(varList[eq[i][j]]->isGeno())
+				cout << ":G" << (eq[i][j]+1);
+			else
+				cout << ":C" << (eq[i][j]+1);
 		}
 		cout << "]";
 	}
@@ -411,12 +423,13 @@ void GABayesSolutionCreator::writeGenoNet(vector<vector<int> >& eq){
 ///
 vector<vector<int> > GABayesSolutionCreator::constructEquation(Athena2DArrayGenome<int>& genome,
 	 std::vector<Variable*> varList){
+
 	vector<int> empty;
 	vector<vector<int> > conns(varList.size(), empty);
 	for(int i=0; i<genome.height(); i++){
 		for(int j=0; j<genome.width(); j++){
-			if(genome.gene(i,j)==1){
-				conns[j].push_back(i);
+			if(genome.gene(j,i)!=-1){
+				conns[i].push_back(genome.gene(j,i));
 			}
 		}
 	}
@@ -553,10 +566,40 @@ double GABayesSolutionCreator::calcScore(Athena2DArrayGenome<int>& genome, vecto
 	int nParams;
 	calculator->reset();
 
+
+// map<int, string> convert;
+// convert[0]="a";
+// convert[1]="b";
+// convert[2]="c";
+// convert[3]="d";
+// convert[4]="e";
+// convert[5]="f";
+// convert[6]="g";
+// convert[7]="h";
+// data_manage::Dataholder* holder = dSet->getHolder();
+// cout << "G" + varList[0]->getName(holder);
+// for(unsigned int j=1; j<varList.size(); j++){
+// 	cout << "\tG" + varList[j]->getName(holder);
+// }
+// cout << endl;
+//
+// for(unsigned int i=0; i<dSet->numInds(); i++){
+// 	data_manage::Individual * ind=dSet->getInd(i);
+// // 		cout << convert[ind->getGenotype(varList[0]->getIndex())];
+// 		cout << convert[varList[0]->getValue(ind)];
+// // 		cout << varList[0]->getValue(ind);
+// 	for(unsigned int j=1; j<varList.size(); j++){
+// // 		cout << "\t" << convert[ind->getGenotype(varList[j]->getIndex())];
+// 		cout << "\t" << convert[varList[j]->getValue(ind)];
+// // 		cout << "\t" << varList[j]->getValue(ind);
+// 	}
+// 	cout << endl;
+// }
+// exit(1);
+
 //time_t startTime, endTime;
 //calcK2Time=0.0;
 // cout << "\n";
-// cout << "   ";
 // for(int i=0; i<genome.height(); i++){
 // 	cout << " " << i;
 // }
@@ -564,13 +607,14 @@ double GABayesSolutionCreator::calcScore(Athena2DArrayGenome<int>& genome, vecto
 // for(int i=0; i<genome.height(); i++){
 // 	cout << "i=" << i << " ";
 // 	for(int j=0; j<genome.width(); j++){
-// 	cout <<  genome.gene(i,j) << " ";
+// 	cout <<  genome.gene(j,i) << " ";
 // 	}
 // 	cout << "\n";
 // }
 //
 // vector<vector<int> > eq = constructEquation(genome,varList);
-// writeGenoNet(eq);
+// writeGenoNet(eq, varList);
+// exit(1);
 
 
 // int j=1;
@@ -578,22 +622,26 @@ double GABayesSolutionCreator::calcScore(Athena2DArrayGenome<int>& genome, vecto
 // pars.push_back(2);
 // cout << k2Calc(j,pars,varList,dSet,nParams) << endl;
 // exit(1);
+
+// cout << "genome height = " << genome.height() << endl;
+// cout << "genome width = " << genome.width() << endl;
+
 	for(int y=0; y<genome.height(); y++){
 		vector<int> parents;
 // cout << "j=" << j << endl;
 		for(int x=0; x<genome.width(); x++){
 			// connection
 			if(genome.gene(x,y) != -1){
-// cout << "parent  " << i << " for " << j << endl;
+// cout << "parent  " << genome.gene(x,y) << " for " << y << endl;
 				parents.push_back(genome.gene(x,y));
 			}
 		}
 
-// cout << "ch=G" << j+1 << " parents: ";
+// cout << "ch=GorC" << y+1 << " parents: ";
 // for(size_t p=0; p<parents.size(); p++){
-// cout << "G" << parents[p] << " ";
+// cout << "GorC" << parents[p]+1 << " ";
 // }
-
+// cout << " ||||| parents size=" << parents.size() << endl;
 		if(parents.empty()){
 			// the additional parameter term (if any) is already included in noParentScores
 			calculator->addIndScore(noParentScores[y],0);
@@ -607,8 +655,9 @@ double GABayesSolutionCreator::calcScore(Athena2DArrayGenome<int>& genome, vecto
 			calculator->addIndScore(score, nParams);
 		}
 	}
-//exit(1);
+
 // cout << "final score=" << -calculator->getScore() << "\n";
+// exit(1);
 	return -calculator->getScore();
 }
 
@@ -623,11 +672,17 @@ double GABayesSolutionCreator::calcScore(Athena2DArrayGenome<int>& genome, vecto
 double GABayesSolutionCreator::k2Calc(int childIdx, vector<int>& parIndexes,
 	vector<Variable*> varList, data_manage::Dataset* dSet, int& nP){
 
+// cout << "childIdx=" << childIdx << " isGeno=" << varList[childIdx]->isGeno() << endl;
 
 // map<int,string> conversion;
 // conversion[0]="a";
 // conversion[1]="b";
 // conversion[2]="c";
+// conversion[3]="d";
+// conversion[4]="e";
+// conversion[5]="f";
+// conversion[6]="g";
+// conversion[7]="h";
 // conversion[3]="M"; // for missing
 // // child is first followed by the parents
 // cout << "\nG1";
@@ -636,13 +691,18 @@ double GABayesSolutionCreator::k2Calc(int childIdx, vector<int>& parIndexes,
 // }
 // cout << "\n";
 // data_manage::Individual* ind2;
-//
 // for(unsigned int i=0; i < dSet->numInds(); i++){
 // 	ind2 = (*dSet)[i];
-// 	cout <<  conversion[varList[childIdx]->getValue(ind2)];
+// 	if(varList[childIdx]->getValue(ind2) == varList[childIdx]->getMissingVal())
+// 		cout << "M";
+// 	else
+// 		cout <<  conversion[varList[childIdx]->getValue(ind2)];
 // // 	totals[node->getValue(ind2)][parentValues[i]]++;
 // 	for(size_t p=0; p<parIndexes.size(); p++){
-// 		cout << "\t" << conversion[varList[parIndexes[p]]->getValue(ind2)];
+// 		if(varList[parIndexes[p]]->getValue(ind2) == varList[parIndexes[p]]->getMissingVal())
+// 			cout << "\tM";
+// 		else
+// 			cout << "\t" << conversion[varList[parIndexes[p]]->getValue(ind2)];
 // 	}
 // 	cout << "\n";
 // // 	parentTotals[parentValues[i]]++;

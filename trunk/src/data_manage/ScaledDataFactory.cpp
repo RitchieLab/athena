@@ -34,13 +34,13 @@ map<string, ScaledDataFactory::ScaleType> ScaledDataFactory::scaleMap;
 /// @throws DataExcept when no match
 ///
 ScaleData* ScaledDataFactory::createScaler(string scaleType){
-	
+
 	if(scaleMap.empty()){
 		setScaleMap();
 	}
-	
+
 	ScaleData* newScaler;
-	
+
 	switch(scaleMap[scaleType]){
 		case NoMatch:
 			throw DataExcept("No scaler matching " + scaleType);
@@ -57,21 +57,24 @@ ScaleData* ScaledDataFactory::createScaler(string scaleType){
 		case ScaleCat:
 			newScaler = new ScaleCategorical;
 			break;
+		case ScaleCatRecode:
+			newScaler = new ScaleCategorical(true);
+			break;
 		case NoScale:
 			newScaler = new ScaleData;
 			break;
 		default:
 			throw DataExcept("No scaler matching " + scaleType);
 	}
-	
+
 	return newScaler;
-	
+
 }
 
 
 ///
 /// Establishes the map for use in creating solutions
-/// @return 
+/// @return
 ///
 void ScaledDataFactory::setScaleMap(){
 	scaleMap["NORMSTDEV"]=ScaleNorm;
@@ -80,6 +83,7 @@ void ScaledDataFactory::setScaleMap(){
 	scaleMap["MINMAX"]=ScaleContin;
 	scaleMap["MINMAXGROUP"]=ScaleGroupContin;
 	scaleMap["MAKECATEGORIAL"]=ScaleCat;
+	scaleMap["MAKECATEGORIALRECODE"]=ScaleCatRecode;
 	scaleMap["NONE"]=NoScale;
 
 }

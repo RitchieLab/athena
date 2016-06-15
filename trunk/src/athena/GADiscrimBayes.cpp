@@ -487,7 +487,7 @@ void GADiscrimBayes::setConfigDefaults(Config& configuration, AlgorithmParams& a
 		outputDotFiles=false;
 	}
 	configuration.setSummaryOnly("SUPPRESS");
-	configuration.setContinAdjust("MAKECATEGORIAL");
+	configuration.setContinAdjust("MAKECATEGORIALRECODE");
 	configuration.setMultiCategory(true);
 	configuration.setStatusAdjust("NONE");
 	outputName = configuration.getOutputName();

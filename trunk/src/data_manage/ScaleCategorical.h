@@ -28,34 +28,39 @@ class ScaleCategorical : public data_manage::ScaleData
 {
 public:
 	ScaleCategorical();
+	ScaleCategorical(bool recMiss);
 	~ScaleCategorical();
 
 	void adjustContin(Dataholder* holder, unsigned int varIndex);
-	
+
 	void adjustContin(Dataholder* holder);
-	
+
 	void adjustContin(Dataset* dataset, unsigned int varIndex);
-	
-	void adjustContin(Dataset* dataset);	
-	
+
+	void adjustContin(Dataset* dataset);
+
 	void adjustStatus(Dataset* dataset);
-	
-	/// Scales status by dividing all 
+
+	/// Scales status by dividing all
 	void adjustStatus(Dataholder* holder);
 
 	/// Returns original value for a scaled status value
 	float getOriginalStatus(float status){return originalVals[status];}
-	
+
 	/// Writes scaling information to ostream
 	string outputScaleInfo();
-	
+
+	/// Determines whether missing values will be recoded as a category
+	void recodeMiss(bool tf){recodeMissing=tf;}
+
 private:
-	
+
 	float statMin, statMax;
 	std::map<std::string, float> maxGroupValues;
-	
+	bool recodeMissing;
+
 	map<float, float> originalVals;
-	
+
 
 };
 
