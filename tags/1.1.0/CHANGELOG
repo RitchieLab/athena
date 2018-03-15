@@ -1,0 +1,26 @@
+== Version 1.1.0 ==
+	* CONTINMAPFILE option added so that continuous input variables will have names in output
+	* Added extended logging to show all models created
+	* Altered logging to use less memory by only keeping a single generation of log information
+	* Added warning for parameter combinations where sensible initialization parameters won’t work
+	* Reports total run time at completion
+	* Added higher resolution instruction to .dot file output
+	* Reports fitness calculation used
+	* Added ability to restart an analysis from a specific CV – for cases when the run was interrupted
+	* Added FITNESSGOAL parameter to end a run when a model is reached that meets or exceeds the indicated fitness
+	* Added scaling for continuous input variables with ability to group the input variables and scale all variables within a group
+	* Added area under the curve (AUC) as an option for fitness calculation
+	* Added percent missing to report in summary file for each model
+	* Best model selection routine added for creating an overall best model from a run.
+	* Individual output scores now show difference between observed and predicted values in sorted order.
+	* Neural networks now output as an equation in addition to previous output.
+	* Output variables to log option added.
+	* Added check to prevent any files being written for testing when CV=1.
+	* Added IMAGEWRITER parameter to allow for automatic network image generation from ATHENA from .dot files.
+	* Updated and expanded logging options for GENN.
+	* Run validation dataset after a GENN using models from the .sum file.
+
+
+== Version 1.0.0 ==
+Initial release
+

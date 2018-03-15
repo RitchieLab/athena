@@ -1,0 +1,152 @@
+Using libGE version 0.26
+read map file comma.gram
+Total # of rules = 9
+rule_num=8
+before expanded vars
+found V5-8
+start=5 end=8
+begin=5
+final=8
+p=4
+V5-8
+V5
+j=0 -- V1 
+j=1 -- V2 
+j=2 -- V3 
+j=3 -- V4 
+j=4 -- V5 
+j=5 -- V6 
+j=6 -- V7 
+j=7 -- V8 
+after expanded vars
+j=0 -- V1 
+j=1 -- V2 
+j=2 -- V3 
+j=3 -- V4 
+j=4 -- V5 
+j=5 -- V6 
+j=6 -- V7 
+j=7 -- V8 
+after doubled genotypes
+j=0 -- V1 
+j=1 -- V2 
+j=2 -- V3 
+j=3 -- V4 
+j=4 -- V5 
+j=5 -- V6 
+j=6 -- V7 
+j=7 -- V8 
+j=8 -- V9 
+j=9 -- V10 
+j=10 -- V11 
+j=11 -- V12 
+j=12 -- V13 
+j=13 -- V14 
+j=14 -- V15 
+j=15 -- V16 
+PD(W(Concat(96.885),V4),W((Concat(7.484)-(Concat(.803)*Concat(8.83))),PD(W(Concat(31),V10),W(Concat(31),PS(W(Concat(61),V2),W(((Concat(8.524)/Concat(31))+(Concat(7.23)-Concat(.623))),V16),2)),2)),2)
+PD -- 
+( -- 
+W( -- 
+Concat( -- 
+9 -- 
+6 -- 
+. -- 
+8 -- 
+8 -- 
+5 -- 
+) -- 
+, -- 
+V4 -- 
+),W( -- 
+( -- 
+Concat( -- 
+7 -- 
+. -- 
+4 -- 
+8 -- 
+4 -- 
+) -- 
+- -- 
+( -- 
+Concat( -- 
+. -- 
+8 -- 
+0 -- 
+3 -- 
+) -- 
+* -- 
+Concat( -- 
+8 -- 
+. -- 
+8 -- 
+3 -- 
+) -- 
+) -- 
+) -- 
+, -- 
+PD -- 
+( -- 
+W( -- 
+Concat( -- 
+3 -- 
+1 -- 
+) -- 
+, -- 
+V10 -- 
+),W( -- 
+Concat( -- 
+3 -- 
+1 -- 
+) -- 
+, -- 
+PS -- 
+( -- 
+W( -- 
+Concat( -- 
+6 -- 
+1 -- 
+) -- 
+, -- 
+V2 -- 
+),W( -- 
+( -- 
+( -- 
+Concat( -- 
+8 -- 
+. -- 
+5 -- 
+2 -- 
+4 -- 
+) -- 
+/ -- 
+Concat( -- 
+3 -- 
+1 -- 
+) -- 
+) -- 
++ -- 
+( -- 
+Concat( -- 
+7 -- 
+. -- 
+2 -- 
+3 -- 
+) -- 
+- -- 
+Concat( -- 
+. -- 
+6 -- 
+2 -- 
+3 -- 
+) -- 
+) -- 
+) -- 
+, -- 
+V16 -- 
+),2 -- 
+) -- 
+),2 -- 
+) -- 
+),2 -- 
+) -- 

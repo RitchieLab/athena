@@ -1,0 +1,25 @@
+<p>      ::= <expr>
+<expr>   ::= <expr><op><expr>
+           | (<expr><op><expr>)
+           | <v>
+           | <Concat>(<num>)
+<Concat> ::= Concat
+<op>     ::= +
+           | *
+           | -
+           | /
+<num>    ::= <dig>.<dig>3
+           | .<dig><dig>3
+<dig>    ::= 0
+           | 1
+           | 2
+           | 3
+           | 4
+           | 5
+           | 6
+           | 7
+           | 8
+           | 9
+<v>      ::= G1
+           | G2 
+

@@ -1,0 +1,54 @@
+g++ -O2 -Wall -Wno-deprecated -I.  -c AbstractNeuron.cpp -o AbstractNeuron.o
+In file included from Link.h:4,
+                 from Neuron.h:4,
+                 from AbstractNeuron.h:4,
+                 from AbstractNeuron.cpp:2:
+defines.h:80:20: error: Vector.h: No such file or directory
+defines.h:81:21: error: Control.h: No such file or directory
+AbstractNeuron.cpp:3:20: error: random.h: No such file or directory
+AbstractNeuron.cpp:4:18: error: auxf.h: No such file or directory
+Neuron.h:49: error: expected initializer before ‘<’ token
+Neuron.h:118: error: ISO C++ forbids declaration of ‘vector’ with no type
+Neuron.h:118: error: invalid use of ‘::’
+Neuron.h:118: error: expected ‘;’ before ‘<’ token
+Neuron.h:121: error: ‘LINKS’ does not name a type
+Neuron.h:127: error: ‘LINKS’ does not name a type
+Neuron.h:234: error: ‘std::vector’ has not been declared
+Neuron.h:234: error: expected ‘,’ or ‘...’ before ‘<’ token
+Neuron.h:240: error: ‘Vector’ has not been declared
+AbstractNeuron.cpp: In constructor ‘annie::AbstractNeuron::AbstractNeuron(int, bool)’:
+AbstractNeuron.cpp:19: error: ‘_classHeirarchy’ was not declared in this scope
+AbstractNeuron.cpp: In member function ‘virtual void annie::AbstractNeuron::connect(annie::Neuron*, annie::real)’:
+AbstractNeuron.cpp:27: error: ‘_inputLinks’ was not declared in this scope
+AbstractNeuron.cpp:28: error: ‘class annie::Neuron’ has no member named ‘_outputLinks’
+AbstractNeuron.cpp: In static member function ‘static annie::real annie::AbstractNeuron::getRandomWeight()’:
+AbstractNeuron.cpp:39: error: ‘uniformRandom’ was not declared in this scope
+AbstractNeuron.cpp: In member function ‘virtual void annie::AbstractNeuron::calculateNewWeights(annie::real, annie::real)’:
+AbstractNeuron.cpp:51: error: ‘LINKS’ has not been declared
+AbstractNeuron.cpp:51: error: expected `;' before ‘it’
+AbstractNeuron.cpp:53: error: ‘it’ was not declared in this scope
+AbstractNeuron.cpp:53: error: ‘_inputLinks’ was not declared in this scope
+AbstractNeuron.cpp:61: error: ‘defaultControl’ was not declared in this scope
+AbstractNeuron.cpp:63: error: ‘defaultControl’ was not declared in this scope
+AbstractNeuron.cpp:67: error: ‘defaultControl’ was not declared in this scope
+AbstractNeuron.cpp:69: error: ‘defaultControl’ was not declared in this scope
+AbstractNeuron.cpp: In member function ‘virtual void annie::AbstractNeuron::update()’:
+AbstractNeuron.cpp:75: error: ‘LINKS’ has not been declared
+AbstractNeuron.cpp:75: error: expected `;' before ‘it’
+AbstractNeuron.cpp:76: error: ‘it’ was not declared in this scope
+AbstractNeuron.cpp:76: error: ‘_inputLinks’ was not declared in this scope
+AbstractNeuron.cpp:84: error: ‘defaultControl’ was not declared in this scope
+AbstractNeuron.cpp: In member function ‘virtual annie::real annie::AbstractNeuron::getWeight(annie::Neuron*) const’:
+AbstractNeuron.cpp:133: error: ‘LINKS’ has not been declared
+AbstractNeuron.cpp:133: error: expected `;' before ‘i’
+AbstractNeuron.cpp:134: error: ‘i’ was not declared in this scope
+AbstractNeuron.cpp:134: error: ‘_inputLinks’ was not declared in this scope
+AbstractNeuron.cpp: In member function ‘void annie::AbstractNeuron::randomizeWeights()’:
+AbstractNeuron.cpp:144: error: ‘LINKS’ has not been declared
+AbstractNeuron.cpp:144: error: expected `;' before ‘it’
+AbstractNeuron.cpp:145: error: ‘it’ was not declared in this scope
+AbstractNeuron.cpp:145: error: ‘_inputLinks’ was not declared in this scope
+defines.h: At global scope:
+defines.h:58: warning: ‘annie::REAL_MAX’ defined but not used
+defines.h:58: warning: ‘annie::REAL_MIN’ defined but not used
+make: *** [AbstractNeuron.o] Error 1
