@@ -20,6 +20,8 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <sstream>
 #include <fstream>
 
+#include "Stringmanip.h"
+
 namespace data_manage
 {
 
@@ -36,6 +38,7 @@ void ContinMapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
 	}
 
 	string line;
+	unsigned int numNames=0;
 
 	string continID, groupID;
 	while(!mapStream.eof()){
@@ -55,6 +58,9 @@ void ContinMapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
 	}
 
 	mapStream.close();
+        if(dataholder->numCovariates() !=  numNames){
+                throw DataExcept(" number of variable names (" + Stringmanip::numberToString(numNames)+ ") in " + mapFile + " does not match number in the continuous variable data file (" + Stringmanip::numberToString(dataholder->numCovariates()) + ")");
+        }
 }
 
 

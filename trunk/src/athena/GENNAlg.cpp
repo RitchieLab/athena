@@ -83,7 +83,8 @@ void GENNAlg::setDataset(Dataset* newSet){
 /// 
 void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGenos, 
   int numContin, vector<unsigned int>& excludedGenos, vector<unsigned int>& excludedContins){
-		
+		excludedContins.clear();
+		excludedGenos.clear();
 		
 		Algorithm::setParams(algParam, numExchanges, numGenos, numContin, excludedGenos,
 		  excludedContins);

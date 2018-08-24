@@ -21,6 +21,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include <fstream>
 
 #include <cstdlib>
+#include "Stringmanip.h"
 
 namespace data_manage
 {
@@ -43,6 +44,7 @@ void MapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
 //	unsigned int chrom;
 //	unsigned int pos;
 string chrom,pos;
+       unsigned int numNames=0;
 
 	while(!mapStream.eof()){
 		getline(mapStream, line);
@@ -54,9 +56,14 @@ string chrom,pos;
 		stringstream ss(line);
 		ss >> chrom >> snpID >> pos;
 		dataholder->addGenoName(snpID);
+		numNames++;
 	}
 
 	mapStream.close();
+	// confirm that the number of names added matches the number of genotype columns in data file
+	if(dataholder->numGenos() !=  numNames){
+		throw DataExcept(" number of variable names (" + Stringmanip::numberToString(numNames)+ ") in " + mapFile + " does not match number in the data file (" + Stringmanip::numberToString(dataholder->numGenos()) + ")");	
+	}
 }
 
 

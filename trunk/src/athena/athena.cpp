@@ -65,9 +65,9 @@ int main(int argc, char** argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
 
-		string versionDate = "6/7/2016";
+		string versionDate = "8/17/2018";
 		string execName = "ATHENA";
-		string version = "1.1.0";
+		string version = "1.2.0";
 		 time_t start,end;
 
 		if(argc < 2){
@@ -180,6 +180,7 @@ int main(int argc, char** argv) {
 
 	// check variance of input variables
 				data.checkVariance(cvSet);
+/*
 #ifdef HAVE_CXX_MPI
 		if(myRank==0){
 #endif
@@ -189,6 +190,7 @@ int main(int argc, char** argv) {
 #ifdef HAVE_CXX_MPI
 }
 #endif
+*/
 
 				// convert data if needed
 				try{
@@ -231,6 +233,15 @@ int main(int argc, char** argv) {
 			vector<unsigned int> exContins=data.getExcludedContins();
 			alg->setParams(algParams[0], config.getNumExchanges(),
 				data.numGenos(), data.numCovariates(), exGenos, exContins);
+#ifdef HAVE_CXX_MPI
+                if(myRank==0){
+#endif
+                                if(!exGenos.empty() || !exContins.empty()){
+                                        reportExcluded(exGenos, exContins);
+                                }
+#ifdef HAVE_CXX_MPI
+}
+#endif
 		}
 		catch(AthenaExcept ex){
 			exitApp(ex, myRank);
