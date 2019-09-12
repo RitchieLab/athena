@@ -38,16 +38,16 @@ AC_CHECK_LIB([z], [main])
 AX_PATH_GSL([1.0],[AC_DEFINE([HAVE_GSL],[],[GSL Available])],[AC_DEFINE([NO_GSL],[],[No GSL Found])])
 
 # Biobin/ biofilter use sqlite 3.5.4 (group_concat)
-PKG_CHECK_MODULES([SQLITE],[sqlite3 >= 3.5.4], [AC_DEFINE([HAVE_SQLITE],[],[SQLite is available])],[AC_DEFINE([NO_SQLITE],[],[No SQLite library available])])
-PKG_CHECK_MODULES([PNG],[libpng >= 1.2.10], [AC_DEFINE([HAVE_PNG],[],[Png Library Available])],[AC_DEFINE([NO_PNG],[],[No PNG library available])])
-PKG_CHECK_MODULES([LIBR], [libR >= 2.10], [AC_DEFINE([HAVE_R],[],[R Library Available])],[AC_DEFINE([NO_R],[],[No R available])])
+#PKG_CHECK_MODULES([SQLITE],[sqlite3 >= 3.5.4], [AC_DEFINE([HAVE_SQLITE],[],[SQLite is available])],[AC_DEFINE([NO_SQLITE],[],[No SQLite library available])])
+#PKG_CHECK_MODULES([PNG],[libpng >= 1.2.10], [AC_DEFINE([HAVE_PNG],[],[Png Library Available])],[AC_DEFINE([NO_PNG],[],[No PNG library available])])
+#PKG_CHECK_MODULES([LIBR], [libR >= 2.10], [AC_DEFINE([HAVE_R],[],[R Library Available])],[AC_DEFINE([NO_R],[],[No R available])])
 AX_FREETYPE_BASE([2.2.0])
 
 AX_EXECINFO([AC_DEFINE([HAVE_EXECINFO],[],[Execinfo (backtrace) available])], [AC_DEFINE([NO_EXECINFO],[],[No execinfo (backtrace) available])])
 AX_CXX_GCC_ABI_DEMANGLE
 
 AX_SOCI_CORE
-AX_SOCI_SQLITE
+#AX_SOCI_SQLITE
 
 # If desired, automake will have a conditional "USE_R" which will be true
 # If not, "USE_R" will be false.  Also, will define the macro "USE_R" on the 

@@ -21,7 +21,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 // GEGrammarSI* InitGEgenome::mapper = NULL;
 AthenaGrammarSI* InitGEgenome::mapper = NULL;
 unsigned int InitGEgenome::minSize = 50;
-unsigned int InitGEgenome::maxSize = 200;
+unsigned int InitGEgenome::maxSize = 5000;
 
 int InitGEgenome::rank = 0;
 

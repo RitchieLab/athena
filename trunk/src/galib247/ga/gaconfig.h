@@ -370,7 +370,7 @@ incorporate it into the code base.
 #if __GNUC__ > 2
 #define GALIB_USE_ANSI_HEADERS
 #define GALIB_USE_STD_NAMESPACE
-#define GALIB_USE_COMP_OPERATOR_TEMPLATES
+//#define GALIB_USE_COMP_OPERATOR_TEMPLATES
 #endif
 
 

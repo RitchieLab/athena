@@ -25,7 +25,7 @@ const std::string& OptGrammarFactory::registerCalc(const std::string& key, creat
 }
 
 OptGrammar* OptGrammarFactory::create(const std::string& key){
-	std::map<std::string, createOptFunc*>::const_iterator it=creation_map.find(key);
+	std::map<const std::string, createOptFunc*>::const_iterator it=creation_map.find(key);
 	if(it != creation_map.end()){
 		return (*it).second();
 	}else{

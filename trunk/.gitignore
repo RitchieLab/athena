@@ -16,3 +16,4 @@ ltmain.sh
 build*
 NOTES.txt
 compile
+testing/*

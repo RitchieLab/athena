@@ -9,15 +9,21 @@ AX_CHECK_ENABLE_DEBUG
 #AC_PROG_CPP
 #AC_PROG_CXX
 
-AC_CANONICAL_HOST
-case $host_os in
-  darwin*)
-    CPPFLAGS="$CPPFLAGS --stdlib=libstdc++"
-    LDFLAGS="$LDFLAGS --stdlib=libstdc++"
-  ;;
-  *)
-  ;;
-esac
+#AC_CANONICAL_HOST
+#case $host_os in
+#  darwin*)
+#    CPPFLAGS="$CPPFLAGS --stdlib=libstdc++"
+#    LDFLAGS="$LDFLAGS --stdlib=libstdc++"
+#    CPPFLAGS="$CPPFLAGS --stdlib=libc++"
+#    LDFLAGS="$LDFLAGS ---stdlib=libc++"
+#     CPPFLAGS="$CPPFLAGS --std=c++98"
+#stdlib=libc++
+#  ;;
+#  *)
+#  ;;
+#esac
+
+CXXFLAGS='-D_GLIBCXX_USE_CXX11_ABI=0'
 
 AC_ARG_WITH(mpi, [AS_HELP_STRING([--with-mpi],
 [compile with MPI (parallelization) support. If none is found, MPI is not used. Default: auto]) ],

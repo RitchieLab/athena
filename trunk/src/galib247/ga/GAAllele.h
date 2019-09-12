@@ -90,6 +90,10 @@ template <class T> int operator==(const T &, const T &);
 template <class T> int operator!=(const T &, const T &);
 #endif
 
+template <typename T> class GAAlleleSet;
+template<typename T> int operator==(const GAAlleleSet<T> &, const GAAlleleSet<T> &);
+template<typename T> int operator!=(const GAAlleleSet<T> &, const GAAlleleSet<T> &);
+
 
 template <class T>
 class GAAlleleSet {

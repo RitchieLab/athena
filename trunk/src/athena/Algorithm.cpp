@@ -169,7 +169,7 @@ void Algorithm::initializeParams(){
 	 totalNodes = 1;
 	 modelSortCol = 2;
 	 minSize = 50; // Minimum size for Random Initialization
-	 maxSize = 200; // Maximum size for Random Initialization
+	 maxSize = 5000; // Maximum size for Random Initialization
 
 	 tailRatio = 0.0;
 	 growRate = 0.5;

@@ -25,7 +25,8 @@ const std::string& CalculatorFactory::registerCalc(const std::string& key, creat
 }
 
 SolutionCalculator* CalculatorFactory::create(const std::string& key){
-	std::map<std::string, createFunc*>::const_iterator it=creation_map.find(key);
+	std::map<const std::string, createFunc*>::const_iterator it=creation_map.find(key);
+// 	std::map<std::string, createFunc*>::iterator it=creation_map.find(key);
 	if(it != creation_map.end()){
 		return (*it).second();
 	}else{
