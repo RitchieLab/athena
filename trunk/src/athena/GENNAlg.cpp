@@ -167,7 +167,7 @@ void GENNAlg::setParams(AlgorithmParams& algParam, int numExchanges, int numGeno
 /// GENN Algorithm
 /// @param configuration Config
 ///
-void GENNAlg::setConfigDefaults(Config& configuration, AlgorithmParams& algParam){
+void GENNAlg::setConfigDefaults(Configuration& configuration, AlgorithmParams& algParam){
   if(algParam.params["CALCTYPE"].compare("RSQUARED")==0){
     configuration.setStatusAdjust("MINMAX");
   }
@@ -1055,7 +1055,7 @@ void GENNAlg::prepareLog(string basename, int cv){
 /// Process and fill population with best models
 ///
 void GENNAlg::selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
-			Dataset* set, Config& config){
+			Dataset* set, Configuration& config){
 
   setDataset(set);
 // get list of variables

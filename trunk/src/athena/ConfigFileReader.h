@@ -31,7 +31,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 /// objects
 ///
 
-#include "Config.h"
+#include "Configuration.h"
 #include "AthenaExcept.h"
 #include <Stringmanip.h>
 #include <fstream>
@@ -44,7 +44,7 @@ public:
 		
 		ConfigFileReader(string configFile);
 		
-		Config readConfig(string configFile);
+		Configuration readConfig(string configFile);
 		
 private:
 		

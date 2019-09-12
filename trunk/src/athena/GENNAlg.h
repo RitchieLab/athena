@@ -31,7 +31,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "NNLog.h"
 #include "NNModelLog.h"
 
-#include "Config.h"
+#include "Configuration.h"
 #ifdef HAVE_CXX_MPI
 	#include "GenomeTransfer.h"
 #endif
@@ -122,9 +122,9 @@ public:
 		
 		/// Return single best model
 		virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
-			Dataset* set, Config& config);
+			Dataset* set, Configuration& config);
 			
-		virtual void setConfigDefaults(Config& configuration, AlgorithmParams& algParam);
+		virtual void setConfigDefaults(Configuration& configuration, AlgorithmParams& algParam);
 		
 		virtual vector<Solution*> runValidation(std::string sumFile);
 		

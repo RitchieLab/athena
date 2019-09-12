@@ -30,7 +30,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "Algorithm.h"
 #include "AlgorithmFactory.h"
 #include "BioFilterModelCollection.h"
-#include "Config.h"
+#include "Configuration.h"
 #include "BayesSolution.h"
 #include "NNLog.h"
 #include "BayesModelLog.h"
@@ -67,14 +67,14 @@ public:
 	void initialize();
 	
 	/// Sets configuration to any defaults specific to this algorithm
-	void setConfigDefaults(Config& configuration,AlgorithmParams& algParam);
+	void setConfigDefaults(Configuration& configuration,AlgorithmParams& algParam);
 	
 	/// Sets testing values for best solutions
 	void testSolution(Dataset* testSet, int nproc);
 	
 	/// Select best model from models passed and return
 	virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
-		Dataset* set, Config& configuration){}
+		Dataset* set, Configuration& configuration){}
 	
 	/// Outputs individual evaluations to stream
 	virtual void outputIndEvals(Dataset* set, ostream& os, int model){}

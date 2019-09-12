@@ -17,14 +17,14 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
- * File:   Config.h
+ * File:   Configuration.h
  * Author: dudeksm
  *
  * Created on November 5, 2008, 4:59 PM
  */
 
-#ifndef _CONFIG_H
-#define	_CONFIG_H
+#ifndef _CONFIGURATION_H
+#define	_CONFIGURATION_H
 
 #include <map>
 #include <string>
@@ -48,11 +48,11 @@ struct AlgorithmParams{
 ///
 /// Contains configuration parameters for running HEMANN
 ///
-class Config{
+class Configuration{
 
 public:
 		/// Constructor
-		Config();
+		Configuration();
 
 		std::string getDataSetType(){return dataType;}
 		void setDataSetType(std::string dtype){dataType = dtype;}
@@ -236,5 +236,5 @@ private:
 };
 
 
-#endif	/* _CONFIG_H */
+#endif	/* _CONFIGURATION_H */
 

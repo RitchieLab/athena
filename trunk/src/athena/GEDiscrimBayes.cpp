@@ -77,7 +77,7 @@ void GEDiscrimBayes::setRand(unsigned int seed){
 /// GEDiscrimBayes Algorithm
 /// @param configuration Config
 ///
-void GEDiscrimBayes::setConfigDefaults(Config& configuration, AlgorithmParams& algParam){
+void GEDiscrimBayes::setConfigDefaults(Configuration& configuration, AlgorithmParams& algParam){
 	// algorithm will write its own output
 	configuration.setLogType("NONE");
 	configuration.setSummaryOnly("SUPPRESS");

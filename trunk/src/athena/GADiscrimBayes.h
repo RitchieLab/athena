@@ -86,11 +86,11 @@ public:
 	void closeLog(){}
 
 	/// For setting any defaults
-	void setConfigDefaults(Config& configuration, AlgorithmParams& algParam);
+	void setConfigDefaults(Configuration& configuration, AlgorithmParams& algParam);
 
 	/// Select best model from models passed and return
 	virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
-		Dataset* set, Config& configuration){}
+		Dataset* set, Configuration& configuration){}
 
 	virtual vector<Solution*> runValidation(std::string sumFile);
 

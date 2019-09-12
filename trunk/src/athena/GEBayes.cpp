@@ -94,7 +94,7 @@ void GEBayes::resetCrossover(){
 /// GEBAyes Algorithm
 /// @param configuration Config
 ///
-void GEBayes::setConfigDefaults(Config& configuration, AlgorithmParams& algParam){
+void GEBayes::setConfigDefaults(Configuration& configuration, AlgorithmParams& algParam){
 //   if(algParam.params["CALCTYPE"].compare("RSQUARED")==0){
 //     configuration.setStatusAdjust("MINMAX");
 //   }

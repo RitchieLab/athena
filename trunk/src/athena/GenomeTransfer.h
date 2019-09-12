@@ -32,7 +32,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _GENOMETRANSFER_H
 #define	_GENOMETRANSFER_H
 
-#include "Config.h"
+#include "Configuration.h"
 #include "Structs.h"
 #include <ga/ga.h>
 #include <mpi.h>

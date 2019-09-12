@@ -10,8 +10,8 @@ BalAccCalculator.cpp \
 BalAccCalculator.h \
 CalculatorFactory.cpp \
 CalculatorFactory.h \
-Config.cpp \
-Config.h \
+Configuration.cpp \
+Configuration.h \
 ConfigFileReader.cpp \
 ConfigFileReader.h \
 GE1DArrayGenome.cpp \

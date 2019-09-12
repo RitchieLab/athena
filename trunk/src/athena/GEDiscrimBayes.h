@@ -71,7 +71,7 @@ public:
 	void testSolution(Dataset* testSet, int nproc){}
 
 	/// For setting any defaults
-	void setConfigDefaults(Config& configuration, AlgorithmParams& algParam);
+	void setConfigDefaults(Configuration& configuration, AlgorithmParams& algParam);
 
 	/// Retrieves the models from BioFilter and stores the information in the algorithm
 	void getBioModels(std::string fileName, std::string bioFileType,
@@ -86,7 +86,7 @@ public:
 
 	/// Select best model from models passed and return
 	virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
-		Dataset* set, Config& configuration){}
+		Dataset* set, Configuration& configuration){}
 
 	virtual vector<Solution*> runValidation(std::string sumFile);
 

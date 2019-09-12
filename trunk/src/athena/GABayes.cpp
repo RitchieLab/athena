@@ -578,7 +578,7 @@ vector<Solution*> GABayes::runValidation(std::string sumFile){
 /// GADiscrimBayes Algorithm
 /// @param configuration Config
 ///
-void GABayes::setConfigDefaults(Config& configuration, AlgorithmParams& algParam){
+void GABayes::setConfigDefaults(Configuration& configuration, AlgorithmParams& algParam){
 	// algorithm will write its own output
 	configuration.setLogType("NONE");
 // 	configuration.setSummaryOnly("SUPPRESS");

@@ -479,11 +479,11 @@ vector<Solution*> GADiscrimBayes::runValidation(std::string sumFile){
 /// GADiscrimBayes Algorithm
 /// @param configuration Config
 ///
-void GADiscrimBayes::setConfigDefaults(Config& configuration, AlgorithmParams& algParam){
+void GADiscrimBayes::setConfigDefaults(Configuration& configuration, AlgorithmParams& algParam){
 
 	// algorithm will write its own output
 	configuration.setLogType("NONE");
-	if(configuration.getSummaryOnly()==Config::True){
+	if(configuration.getSummaryOnly()==Configuration::True){
 		outputDotFiles=false;
 	}
 	configuration.setSummaryOnly("SUPPRESS");

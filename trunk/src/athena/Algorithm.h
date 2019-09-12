@@ -28,7 +28,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Dataset.h>
 #include <Stringmanip.h>
-#include "Config.h"
+#include "Configuration.h"
 #include "Population.h"
 #include "AthenaExcept.h"
 #include "AlgorithmLog.h"
@@ -164,11 +164,11 @@ public:
 
 		virtual void setFitnessName(std::string fname){fitnessName = fname;}
 
-		virtual void setConfigDefaults(Config& configuration,AlgorithmParams& algParam)=0;
+		virtual void setConfigDefaults(Configuration& configuration,AlgorithmParams& algParam)=0;
 
 		/// Select best model from models passed and return
 		virtual void selectBestModel(std::vector<Solution*>& solutions, data_manage::Dataholder * holder,
-			Dataset* set, Config& configuration)=0;
+			Dataset* set, Configuration& configuration)=0;
 
 		/// Runs models from summary file against validation set
 		virtual vector<Solution*> runValidation(std::string sumFile)=0;

@@ -47,7 +47,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 
 void exitApp(AthenaExcept& he, int myRank);
 void exitApp(DataExcept& de, int myRank);
-void adjustSeed(Config& config, int orig_seed, int cv, int nproc, int myRank);
+void adjustSeed(Configuration& config, int orig_seed, int cv, int nproc, int myRank);
 std::string timeDiff(double dif);
 void reportExcluded(vector<unsigned int> genotypes, vector<unsigned int> contins);
 
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
 
 		string configFile = argv[1];
 		ConfigFileReader configRead;
-		Config config;
+		Configuration config;
 		ScaleData* scaler = NULL, *continScaler=NULL;
 
 
@@ -292,7 +292,7 @@ int main(int argc, char** argv) {
 		else{
 
 		int currCV=config.getStartCV()-1;
-	if(currCV==0 and config.getSummaryOnly()!=Config::Suppress){
+	if(currCV==0 and config.getSummaryOnly()!=Configuration::Suppress){
 		writer.setFiles(mapFileUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
 	}
 
@@ -363,7 +363,7 @@ int main(int argc, char** argv) {
 	  Population& pop = pops.back();
 	  bestSolutions.push_back(pop[0]->clone());
 		// update output when needed
-		if(myRank ==0 or config.getSummaryOnly()==Config::All){
+		if(myRank ==0 or config.getSummaryOnly()==Configuration::All){
 			if(pop.getConvertScores()){
 				if(numCV > 1)
 						pop.convertScores(&(cvSet.getInterval(currCV).getTraining()),
@@ -371,7 +371,7 @@ int main(int argc, char** argv) {
 				else
 					pop.convertScores(&(cvSet.getInterval(0).getTraining()), alg->getFitnessName());
 			}
-			if(config.getSummaryOnly()==Config::All){
+			if(config.getSummaryOnly()==Configuration::All){
 				writer.outputAllModels(alg, pop, myRank, currCV,scaler->outputScaleInfo(), data,
 					mapFileUsed, config.getOttEncoded(), continMapUsed, numCV > 1);
 			}
@@ -412,17 +412,17 @@ int main(int argc, char** argv) {
 				nModels = nproc;
 #endif
 
-		if(config.getSummaryOnly()!=Config::Suppress){
+		if(config.getSummaryOnly()!=Configuration::Suppress){
 			writer.outputSummary(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(), continMapUsed,
 				 alg->getFitnessName());
 			writer.outputPareto(pop, currCV, data, alg, mapFileUsed, config.getOttEncoded(),
 			continMapUsed, alg->getFitnessName(), alg->getAdditionalOutputNames());
 			switch(config.getSummaryOnly()){
-				case Config::All:
-				case Config::False:
+				case Configuration::All:
+				case Configuration::False:
 					writer.outputGraphic(alg, pop, currCV, config.getOutputName(), nModels, data,
 						mapFileUsed, config.getOttEncoded(), continMapUsed, config.getImgWriter());
-				case Config::Best:
+				case Configuration::Best:
 					writer.outputBestModels(pop, nModels, currCV,scaler->outputScaleInfo(), data,
 						mapFileUsed, config.getOttEncoded(), continMapUsed);
 				default:
@@ -442,7 +442,7 @@ int main(int argc, char** argv) {
 #ifdef HAVE_CXX_MPI
 if(myRank==0){
 #endif
-	if(config.getSummaryOnly()!=Config::Suppress){
+	if(config.getSummaryOnly()!=Configuration::Suppress){
 		writer.outputEquations(alg, bestSolutions, data, mapFileUsed, config.getOttEncoded(),
 			continMapUsed);
 	}
@@ -500,7 +500,7 @@ if(myRank==0){
 #ifdef HAVE_CXX_MPI
 		if(myRank==0){
 #endif
-		if(config.getSummaryOnly()==Config::All){
+		if(config.getSummaryOnly()==Configuration::All){
 			for(int cv=0; cv < numCV; cv++){
 				writer.combineAllModels(nproc, cv, alg);
 			}
@@ -575,7 +575,7 @@ void exitApp(DataExcept& de, int myRank){
 /// @param nproc Total number of processors
 /// @param myRank Rank of this process
 ///
-void adjustSeed(Config& config, int origSeed, int cv, int nproc, int myRank){
+void adjustSeed(Configuration& config, int origSeed, int cv, int nproc, int myRank){
 	int newSeed = origSeed + nproc * cv + myRank;
 	config.setRandSeed(newSeed);
 }

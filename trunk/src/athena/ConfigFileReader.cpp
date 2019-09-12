@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Config.h"
+// #include "Configuration.h"
 
 #include "ConfigFileReader.h"
 #include <sstream>
@@ -80,10 +80,10 @@ void ConfigFileReader::initializeKeywords(){
 ///
 /// Reads configuration file and stores parameters
 /// @param configFile
-/// @return Config
+/// @return Configuration
 ///
-Config ConfigFileReader::readConfig(string configFile){
-	 Config configuration;
+Configuration ConfigFileReader::readConfig(string configFile){
+	 Configuration configuration;
 		
 	 ifstream configStream(configFile.c_str(), ios::in);
 	 if(!configStream.is_open()){

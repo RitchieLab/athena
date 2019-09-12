@@ -16,18 +16,18 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "Config.h"
+#include "Configuration.h"
 
 using namespace std;
 
 /// /// Constructor ///
-Config::Config(){
+Configuration::Configuration(){
 		initialize();
 }
 
 
 /// /// Initializes variables ///
-void Config::initialize(){
+void Configuration::initialize(){
 		dataType = "TEXT";
 		outName = "athena";
 		mapName = "";
@@ -75,7 +75,7 @@ void Config::initialize(){
 }
 
 /// /// Checks configuration parameters for errors /// @throws AthenaExcept /// void
-void Config::checkConfig(){
+void Configuration::checkConfig(){
 	if(numExchanges < 0)
 		throw AthenaExcept("NUMEXCHANGES must be greater than zero");
 }
