@@ -19,6 +19,7 @@ along with ATHENA.  If not, see <http://www.gnu.org/licenses/>.
 #include "GEObjective.h"
 #include <math.h>
 #include "Structs.h"
+#include <algorithm>
 
 AthenaGrammarSI* GEObjective::mapper = NULL;
 data_manage::Dataset* GEObjective::set = NULL;
