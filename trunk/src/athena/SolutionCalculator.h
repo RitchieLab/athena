@@ -47,7 +47,7 @@ public:
 
 		virtual ~SolutionCalculator(){}
 
-		virtual void addIndScore(float score, float status)=0;
+		virtual float addIndScore(float score, float status)=0;
 
 		virtual float getScore()=0;
 

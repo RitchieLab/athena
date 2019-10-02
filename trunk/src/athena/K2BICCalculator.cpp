@@ -59,9 +59,10 @@ void K2BICCalculator::evaluateAdditionalOutput(std::vector<stat::TestResult>& re
 /// @param score
 /// @param stat is number of parameters to use in penalty term
 ///
-void K2BICCalculator::addIndScore(float score, float stat){
+float K2BICCalculator::addIndScore(float score, float stat){
 	 k2Score += score;
 	 // penalty term
 	 k2Score -= kTerm * stat;
+	 return score;
 }
 

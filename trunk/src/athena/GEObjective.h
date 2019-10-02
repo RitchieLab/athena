@@ -70,6 +70,15 @@ public:
 		/// sets the Dataset for objective function to work with
 		static void setDataset(data_manage::Dataset* ds);
 		
+		/// shuffles indexes for dataset for use with lexicase selection
+		static void shuffleLexicase();
+		
+		/// record scores within genome for each sample in data
+		static void keepScore(bool k){recordScores = k;}
+		
+		/// return absolute difference between result and status
+		static float singleShuffledResult(GAGenome& g, int indIdx);
+		
 		/// sets the Dataset for reference when calculating additional output
 		static void setRefDataset(data_manage::Dataset* ds);
 		
@@ -125,7 +134,6 @@ public:
 		/// Return values for final output
 		static vector<std::string> getAdditionalFinalOutput(GAGenome& g);
 		
-		
 		/// Optimizes current model using process provided by SolutionCreator
 		static void optimizeSolution(GAGenome& g);
 		
@@ -143,11 +151,15 @@ public:
 		static int rank;
 private:
 
+		static int randomfunc(int j);
+
 		static AthenaGrammarSI* mapper;
 		static data_manage::Dataset* set, *referenceSet;
+		static std::vector<int> shuffledSetIndx;
 		static SolutionCreator* solCreator;
 		static unsigned int maxGenSize;
-		static bool additionalLogging;  
+		static bool additionalLogging, recordScores;  
+
 };
 
 #endif	/* _GEOBJECTIVE_H */

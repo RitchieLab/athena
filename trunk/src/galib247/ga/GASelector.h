@@ -155,6 +155,51 @@ public:
 #endif
 
 
+/* ----------------------------------------------------------------------------
+	This version of the selector uses Lexicase selection.
+---------------------------------------------------------------------------- */
+#if USE_LEXICASE_SELECTOR == 1
+typedef void (*DataShuffler)();
+typedef float (*LexicaseEval)(GAGenome &, int indIdx);
+
+class GALexicaseSelector : public GASelectionScheme {
+public:
+  GADefineIdentity("GALexicaseSelector", GAID::LexicaseSelection);
+
+  GALexicaseSelector(int w=GASelectionScheme::SCALED) : GASelectionScheme(w) { }
+  GALexicaseSelector(DataShuffler df, LexicaseEval ef, int dsize, int w=GASelectionScheme::SCALED) : 
+    GASelectionScheme(w){ dshuffler=df; lexieval=ef; datasize=dsize;}
+  
+  GALexicaseSelector(const GALexicaseSelector& orig) { copy(orig); }
+  GALexicaseSelector& operator=(const GASelectionScheme& orig) 
+    { if(&orig != this) copy(orig); return *this; }
+  virtual ~GALexicaseSelector() {}
+  virtual GASelectionScheme* clone() const
+    { return new GALexicaseSelector(dshuffler, lexieval, datasize); }
+  virtual GAGenome& select() const;
+  virtual void copy(const GASelectionScheme& orig) {
+  	GASelectionScheme::copy(orig);
+  	const GALexicaseSelector& sel = DYN_CAST(const GALexicaseSelector&, orig);
+  	dshuffler = sel.dshuffler;
+  	lexieval = sel.lexieval;
+  }
+  LexicaseEval Lexievaluator() const {return lexieval;}
+  LexicaseEval Lexievaluator(LexicaseEval f){return (lexieval=f);}
+  DataShuffler Datashuffler() const {return dshuffler;}
+  DataShuffler Datashuffler(DataShuffler f);
+  void SetDataSize(int s){datasize=s;}
+  int GetDataSize(){return datasize;}
+  
+  protected:
+    DataShuffler dshuffler;
+    LexicaseEval lexieval;
+    int datasize;
+};
+
+#endif
+
+
+
 
 /* ----------------------------------------------------------------------------
    This version of the selector uses two rounds of selection. 

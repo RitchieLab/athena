@@ -968,6 +968,13 @@ float BayesSolutionCreator::evaluate(Dataset* set){
 }
 
 
+///
+/// Placeholder for storing individual scores
+///
+float BayesSolutionCreator::evaluate(Dataset* dset, std::vector<float>& storage){
+	return evaluate(dset);
+}
+
 
 ///
 /// For Networks, the detailed logging involves any

@@ -41,7 +41,7 @@ public:
 		void reset();
 
 		/// adds evaluation score to results
-		void addIndScore(float score, float status);
+		float addIndScore(float score, float status);
 
 		/// returns balanced accuracy
 		float getScore(){

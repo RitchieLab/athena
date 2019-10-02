@@ -253,7 +253,9 @@ protected:
 			#endif
 			RouletteWheelSelection,
 			ParetoFrontSelection,
-			ParetoRankSelection
+			ParetoRankSelection,
+			LexicaseSelection,
+			UniformSelection
 		};
 
 		enum BioSelectionType{

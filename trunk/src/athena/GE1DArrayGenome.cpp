@@ -114,6 +114,7 @@ void GE1DArrayGenome::helpCopy(const GE1DArrayGenome& source)
 	numIndsEvaluated = source.numIndsEvaluated;
 	ssTotal = source.ssTotal;
 	estab=source.estab;
+	indivScores = source.indivScores;
 }
 
 int GE1DArrayGenome::helpCompare(const GE1DArrayGenome& source) const
@@ -404,7 +405,6 @@ int GE1DArrayGenome::blockCrossover(const GAGenome& p1,
 	if(!mom.isValid() && !dad.isValid()){
 		return effCrossover(p1,p2,c1,c2);
 	}
-// cout << "block cross" << endl;	
 	int nc=0;
 	int momsite;
 	int dadsite;

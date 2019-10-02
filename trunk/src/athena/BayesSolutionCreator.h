@@ -77,6 +77,9 @@ public:
 
 		/// returns fitness score through evaluation of solution
 		virtual float evaluate(Dataset* set);
+		
+		/// evaluates and stores output 
+		float evaluate(Dataset* dset, std::vector<float>& storage);
 
 		virtual vector<std::string> getAdditionalOutputNames(){
 			vector<std::string> calcNames = calculator->getAdditionalOutputNames();

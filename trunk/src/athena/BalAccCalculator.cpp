@@ -62,8 +62,9 @@ void BalAccCalculator::evaluateAdditionalOutput(std::vector<stat::TestResult>& r
 ///
 /// Adds score to running total within object
 /// @param score
+/// @return predicted score
 ///
-void BalAccCalculator::addIndScore(float score, float stat){
+float BalAccCalculator::addIndScore(float score, float stat){
 	 
 		unsigned int result = score > 0.5?1:0;
 		unsigned int status = (unsigned int)stat;
@@ -78,5 +79,7 @@ void BalAccCalculator::addIndScore(float score, float stat){
 				caseRight++;
 		else
 				controlRight++;
+				
+		return result;
 }
 

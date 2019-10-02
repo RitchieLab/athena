@@ -112,6 +112,12 @@ public:
 	
 	void clearScores();
 	
+	float getIndivScore(unsigned int indIndex){return indivScores[indIndex];}
+	void setIndivScore(unsigned int indIndex, float val){indivScores[indIndex]=val;}
+	void resizeIndivScores(unsigned int size){indivScores.resize(size);}
+	std::vector<float> & getIndivScores(){return indivScores;}
+	void clearIndivScores(){indivScores.clear();}
+	
 	static void setMapper(AthenaGrammarSI* m){mapper = m;}
 	
 	static int myRank;
@@ -127,6 +133,7 @@ private:
 	int genomeID, numEpochsTrained, numIndsEvaluated, numNodes, complexity;
 	
 	std::vector<int> genos, covars;
+	std::vector<float> indivScores;
 	Establishinator estab;		// establishes newly initialized genomes that don't need full evaulation function
 	static AthenaGrammarSI* mapper;
 	

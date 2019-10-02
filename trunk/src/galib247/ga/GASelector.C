@@ -84,7 +84,6 @@ GAGenome &
 GARouletteWheelSelector::select() const {
   float cutoff;
   int i, upper, lower;
-
   cutoff = GARandomFloat();
   lower = 0; upper = pop->size()-1;
   while(upper >= lower){
@@ -592,3 +591,65 @@ GAQuickSort(unsigned int *c, float *s, int l, int r) {
 }
 
 #endif
+
+
+/* ----------------------------------------------------------------------------
+Lexicase Selection
+---------------------------------------------------------------------------- */
+#if USE_LEXICASE_SELECTOR == 1
+#include<vector>
+
+GAGenome&
+GALexicaseSelector::select() const {
+
+  // shuffle the dataset
+//   this->Datashuffler();
+  (*dshuffler)();
+
+  // track the best models
+  std::vector<int> best, included;
+    
+  int npop = pop->size();
+  // initialize with all inds
+  for(std::size_t i=0; i < npop; i++){
+  	included.push_back(i);
+  }
+
+  float bestval, currval;
+    
+  for(int i = 0; i < datasize; i++){
+  	bestval = 1e30;
+  	for(std::vector<int>::iterator iter=included.begin(); iter != included.end(); ++iter){
+		currval = (*lexieval)(pop->individual(*iter),i);
+  		if(currval == bestval){
+  			best.push_back(*iter);
+  		}
+  		else if(currval < bestval){
+  			bestval = currval;
+  			best.clear();
+  			best.push_back(*iter);
+  		}
+  	}
+
+  	// if only one individual in best return it
+	if(best.size() == 1){
+		return pop->individual(best.front());
+	}
+	else if(best.size() > 1){ // when multiple update included
+		included = best;
+		best.clear();
+	}
+  }
+  // all samples exhausted and still multiple individuals in included
+  // return one of the inds in included at random
+//   return pop->individual(GARandomInt(0, pop->size()-1)); 
+  return pop->individual(included[GARandomInt(0, included.size()-1)]);
+}
+
+ DataShuffler GALexicaseSelector::Datashuffler(DataShuffler f){
+	return (dshuffler=f);
+ }
+
+#endif
+
+

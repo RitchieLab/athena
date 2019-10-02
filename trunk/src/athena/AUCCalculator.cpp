@@ -82,10 +82,13 @@ float AUCCalculator::getScore(){
 /// @param score for the individual evaluation
 /// @param stat Status for the individual evaluation
 ///
-void AUCCalculator::addIndScore(float score, float stat){ 
+float AUCCalculator::addIndScore(float score, float stat){ 
 	stat::TestResult tempResult;
 	tempResult.score = score;
 	tempResult.status = stat;
 	results.push_back(tempResult);
+	// just return back original score -- may add another step to 
+	// determine the best threshold based on AUC for balanced accuracy
+	return score;
 }
 

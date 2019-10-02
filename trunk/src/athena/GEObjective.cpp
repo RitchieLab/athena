@@ -26,6 +26,8 @@ data_manage::Dataset* GEObjective::referenceSet = NULL;
 SolutionCreator* GEObjective::solCreator = NULL;
 unsigned int GEObjective::maxGenSize = 250;
 bool GEObjective::additionalLogging = false;
+bool GEObjective::recordScores = false;
+std::vector<int> GEObjective::shuffledSetIndx;
 
 int GEObjective::rank=0;
 
@@ -60,6 +62,7 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 				}catch(AthenaExcept& ae){
 					fitness = solCreator->getWorst();
 	  			 genome.clearScores();
+	  			 genome.clearIndivScores();
 	  			 return fitness;
 				}
 
@@ -69,7 +72,10 @@ float GEObjective::GEObjectiveFunc(GAGenome& g){
 				mapper->changeVariables(genome, solCreator->getChangedVariables());		
 			}
 
-			fitness = solCreator->evaluate(set);
+			if(!recordScores)
+				fitness = solCreator->evaluate(set);
+			else
+				fitness = solCreator->evaluate(set, genome.getIndivScores());
 // cout << "success: fitness=" << fitness << endl;
 			if(additionalLogging){
 				solCreator->detailedLogging();
@@ -309,6 +315,10 @@ void GEObjective::setDataset(data_manage::Dataset* ds){
 		throw AthenaExcept(solCreator->getCalculator()->getName() + " requires a case-control dataset");
 	}
 	solCreator->setCalculatorConstant(ds);
+
+	for(unsigned int i=0; i < ds->numInds(); i++){
+		shuffledSetIndx.push_back(i);
+	}
 }
 
 ///
@@ -321,6 +331,37 @@ void GEObjective::setRefDataset(data_manage::Dataset* ds){
 // 	}
 // 	solCreator->setCalculatorConstant(ds);
 }
+
+
+
+///		
+/// shuffles indexes for dataset for use with lexicase selection
+///
+void GEObjective::shuffleLexicase(){
+	recordScores = true;
+
+	std::random_shuffle(shuffledSetIndx.begin(), shuffledSetIndx.end(), randomfunc);
+}
+
+int GEObjective::randomfunc(int j){ 
+    return rand() % j; 
+} 
+
+
+///
+/// Returns absolute value difference for the for the shuffled index
+///
+float GEObjective::singleShuffledResult(GAGenome& g, int indIdx){
+	
+	GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
+	
+	// missing returns -1 as does an invalid network
+	if(!genome.isValid() || genome.getIndivScore(shuffledSetIndx[indIdx]) == -1){
+		return 1.0;
+	}
+	return fabs(genome.getIndivScore(shuffledSetIndx[indIdx]) - (*set)[shuffledSetIndx[indIdx]]->status());
+}
+
 
 ///
 /// Optimizes current model using process provided by SolutionCreator
@@ -357,7 +398,6 @@ void GEObjective::optimizeSolution(GAGenome& g){
 		oldScore = genome.score();
 		// network is not optimizable
 		if(oldScore == solCreator->getWorst()){
-// cout << "worst score " << endl;
 			return;
 		}
 

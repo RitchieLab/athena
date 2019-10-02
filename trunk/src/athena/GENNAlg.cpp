@@ -767,6 +767,7 @@ void GENNAlg::initialize(){
 		ga->pruneplant(GE1DArrayGenome::pruneAndPlant);
 #endif
 
+// 		GALexicaseSelector * sel;
 		// Set selector type
 		GASelectionScheme* selector;
 		switch(gaSelector){
@@ -779,7 +780,15 @@ void GENNAlg::initialize(){
 			  break;
 			case ParetoRankSelection:
  			  selector = new GAParetoRankSelector;
-			  break;			  
+			  break;
+			case UniformSelection:
+				selector = new GAUniformSelector;
+				break;
+			case LexicaseSelection:
+			  selector = new GALexicaseSelector(GEObjective::shuffleLexicase, 
+			  	GEObjective::singleShuffledResult, set->numInds());
+			  GEObjective::keepScore(true);
+			  break;
 #ifdef ATHENA_BLOAT_CONTROL
 			case DoubleTournamentSelection:
 				selector = new GADoubleTournamentSelector(doubleTourneyD, doubleTourneyF, fitFirst);

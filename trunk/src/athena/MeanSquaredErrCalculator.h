@@ -45,7 +45,7 @@ class MeanSquaredErrCalculator: public SolutionCalcImp<MeanSquaredErrCalculator>
 		void reset();
 
 		/// adds evaluation score to results
-		void addIndScore(float score, float status);
+		float addIndScore(float score, float status);
 
 		/// returns mean squared error
 		float getScore(){

@@ -65,6 +65,9 @@ public:
 		/// returns fitness score through evaluation of solution
 		virtual float evaluate(Dataset* set)=0;
 		
+		/// evaluates and stores output 
+		virtual float evaluate(Dataset* dset, std::vector<float>& storage)=0;
+		
 		/// evaluate for further output information (such as AUC)
 		virtual void evaluateForOutput(Dataset* set, Dataset* refSet){
 			evaluateForOutput(set);

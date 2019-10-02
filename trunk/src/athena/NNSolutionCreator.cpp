@@ -449,6 +449,47 @@ float NNSolutionCreator::evaluate(Dataset* set){
 }
 
 
+///
+/// Evaluates the neural network and returns the balanced accuracy
+/// of the neural network.
+/// @param dset Dataset to use
+/// @param storage Vector to store individual scores in
+///
+float NNSolutionCreator::evaluate(Dataset* dset, std::vector<float>& storage){
+	 
+		// to check for missing data use the list of variables gotten from the
+		// creation of the stack and then check each ind to  make sure
+		// there is a value in each
+		Individual * ind;
+		nIndsEvaluated = 0;
+
+		calculator->reset();
+		float score;
+		storage.assign(dset->numInds(),-1);
+
+		// when missing skip that ind
+		for(unsigned int i=0; i < dset->numInds(); i++){
+				ind = (*dset)[i];
+		
+				ContinVariable::setInd(ind);
+				GenotypeTerm::setInd(ind);
+			
+				if(!useInd(ind, dset)){
+						// missing will never be correct for a case/control
+						// and will be in the middle of the 0 to 1 distribution for quantitative 
+						// values
+						// or should it be a special value and handled differently?
+						continue;
+				}
+
+				nIndsEvaluated++;
+				score = evaluateInd(ind);
+				storage[i]=calculator->addIndScore(score, ind->getStatus());
+		}
+		return calculator->getScore(); 
+}
+
+
 
 ///
 /// For Networks, the detailed logging determines the depth in nodes of the

@@ -242,7 +242,8 @@ protected:
 			#endif
 			RouletteWheelSelection,
 			ParetoFrontSelection,
-			ParetoRankSelection
+			ParetoRankSelection,
+			LexicaseSelection
 		};
 	
 		

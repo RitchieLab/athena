@@ -38,7 +38,7 @@ public:
 
     Selection=40,
     RankSelection, RouletteWheelSelection, TournamentSelection,
-    UniformSelection, SRSSelection, DSSelection, DoubleTournamentSelection,GAParetoSelection,
+    UniformSelection, SRSSelection, DSSelection, DoubleTournamentSelection,GAParetoSelection,LexicaseSelection,
 
     Genome=50, 
     BinaryStringGenome, BinaryStringGenome2D, BinaryStringGenome3D, 

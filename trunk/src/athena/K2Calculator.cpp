@@ -60,7 +60,8 @@ void K2Calculator::evaluateAdditionalOutput(std::vector<stat::TestResult>& resul
 /// Adds score to running total within object
 /// @param score
 ///
-void K2Calculator::addIndScore(float score, float stat){
+float K2Calculator::addIndScore(float score, float stat){
 	 k2Score += score;
+	 return score;
 }
 

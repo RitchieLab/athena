@@ -231,6 +231,8 @@ void Algorithm::initializeParams(){
 	 gaSelectorMap["ROULETTE"] = RouletteWheelSelection;
 	 gaSelectorMap["PARETO"] = ParetoFrontSelection;
 	 gaSelectorMap["PARETORANK"] = ParetoRankSelection;
+	 gaSelectorMap["LEXICASE"] = LexicaseSelection;
+	 gaSelectorMap["UNIFORM"] = UniformSelection;
 	 
 // 	 biofilterSelectorType = orderedSelect;
 #ifdef ATHENA_BLOAT_CONTROL

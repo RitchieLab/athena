@@ -56,6 +56,9 @@ public:
 		/// returns fitness score through evaluation of solution
 		virtual float evaluate(Dataset* set);
 		
+		/// evaluates and stores output 
+		virtual float evaluate(Dataset* dset, std::vector<float>& storage);
+		
 		/// optimize solution by running back propagation
 		int optimizeSolution(std::vector<std::string>& symbols, Dataset* set);
 		

@@ -40,9 +40,10 @@ void MeanAbsErrCalculator::reset(){
 /// Adds score to running total within object
 /// @param score
 ///
-void MeanAbsErrCalculator::addIndScore(float score, float stat){
+float MeanAbsErrCalculator::addIndScore(float score, float stat){
 		totalIndsTested++;
 		obsTotal += abs(stat);
 		errTotal += abs(score - stat);
+		return score;
 }
 

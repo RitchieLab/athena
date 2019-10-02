@@ -67,6 +67,26 @@ float NNSolutionCreatorIncludeAll::evaluate(Dataset* set){
 }
 
 
+
+///
+/// Evaluates the neural network and returns the balanced accuracy
+/// of the neural network.
+/// @param dset Dataset to use
+/// @param storage Vector to store individual scores in
+///
+float NNSolutionCreatorIncludeAll::evaluate(Dataset* dset, std::vector<float>& storage){
+
+	if(allVarsIncluded)
+		return NNSolutionCreator::evaluate(dset, storage);
+	else{
+		storage.clear();
+		return calculator->getWorst();
+	}
+	
+}
+
+
+
 ///
 /// Takes list of symbols and Dataset to establish list of terminals that must 
 /// be part of the neural network for it to receive 

@@ -41,6 +41,9 @@ class NNSolutionCreatorIncludeOnce: public NNSolutionCreator{
 		/// returns fitness score through evaluation of solution
 		float evaluate(Dataset* set);
 		
+		/// evaluates and stores output 
+		virtual float evaluate(Dataset* dset, std::vector<float>& storage);
+		
 		/// passes vector of symbols that must be part of the neural network
 		void requiredSymbols(vector<string>& symbols, Dataset* set);
 		

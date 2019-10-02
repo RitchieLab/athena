@@ -40,12 +40,13 @@ void MeanSquaredErrCalculator::reset(){
 /// Adds score to running total within object
 /// @param score
 ///
-void MeanSquaredErrCalculator::addIndScore(float score, float stat){
+float MeanSquaredErrCalculator::addIndScore(float score, float stat){
 		float difference = score - stat;
 		squaredErrorTotal += difference * difference;
 		totalIndsTested++;
 		ssTotal += stat;
 		statTotal.push_back(stat);
+		return score;
 }
 
 

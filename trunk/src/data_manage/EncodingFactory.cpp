@@ -79,6 +79,7 @@ DummyConvert* EncodingFactory::createEncoder(string encodeType){
 ///
 void EncodingFactory::setEncodeMap(){
 	encodeMap["ADD_QUAD"]=Add_quad;
+	encodeMap["ADDQUAD"]=Add_quad;
 	encodeMap["OTT"]=Add_quad;
 	encodeMap["TRUE"]=Add_quad;
 	encodeMap["STEPHEN"]=Additive;
