@@ -182,6 +182,7 @@ public:
   	const GALexicaseSelector& sel = DYN_CAST(const GALexicaseSelector&, orig);
   	dshuffler = sel.dshuffler;
   	lexieval = sel.lexieval;
+  	datasize = sel.datasize;
   }
   LexicaseEval Lexievaluator() const {return lexieval;}
   LexicaseEval Lexievaluator(LexicaseEval f){return (lexieval=f);}
@@ -198,6 +199,57 @@ public:
 
 #endif
 
+
+/* ----------------------------------------------------------------------------
+	This version of the selector uses Epsilon-Lexicase selection.
+---------------------------------------------------------------------------- */
+#if USE_EPSILON_LEXICASE_SELECTOR == 1
+#include<vector>
+typedef void (*EpsilonDataShuffler)();
+typedef float (*EpsilonLexicaseEval)(GAGenome &, int indIdx);
+typedef float (*EpsilonLexicaseScore)(GAGenome &, int indIdx);
+
+class GAEpsilonLexicaseSelector : public GASelectionScheme {
+public:
+  GADefineIdentity("GAEpsilonLexicaseSelector", GAID::EpsilonLexicaseSelection);
+
+  GAEpsilonLexicaseSelector(int w=GASelectionScheme::SCALED) : GASelectionScheme(w) { }
+  GAEpsilonLexicaseSelector(EpsilonDataShuffler df, EpsilonLexicaseEval ef, EpsilonLexicaseScore of, int dsize, int w=GASelectionScheme::SCALED) : 
+    GASelectionScheme(w){ dshuffler=df; lexieval=ef; scoreorig=of; datasize=dsize;}
+  
+  GAEpsilonLexicaseSelector(const GAEpsilonLexicaseSelector& orig) { copy(orig); }
+  GAEpsilonLexicaseSelector& operator=(const GASelectionScheme& orig) 
+    { if(&orig != this) copy(orig); return *this; }
+  virtual ~GAEpsilonLexicaseSelector() {}
+  virtual GASelectionScheme* clone() const
+    { return new GAEpsilonLexicaseSelector(dshuffler, lexieval, scoreorig, datasize); }
+  virtual GAGenome& select() const;
+  virtual void copy(const GASelectionScheme& orig) {
+  	GASelectionScheme::copy(orig);
+  	const GAEpsilonLexicaseSelector& sel = DYN_CAST(const GAEpsilonLexicaseSelector&, orig);
+  	dshuffler = sel.dshuffler;
+  	lexieval = sel.lexieval;
+  	scoreorig = sel.scoreorig;
+  	datasize = sel.datasize;
+  }
+  EpsilonLexicaseEval Lexievaluator() const {return lexieval;}
+  EpsilonLexicaseEval Lexievaluator(EpsilonLexicaseEval f){return (lexieval=f);}
+  EpsilonLexicaseScore Epsilonlexicasescore() const {return scoreorig;}
+  EpsilonLexicaseScore Epsilonlexicasescore(EpsilonLexicaseScore f){return (scoreorig=f);}
+  EpsilonDataShuffler Datashuffler() const {return dshuffler;}
+  EpsilonDataShuffler Datashuffler(EpsilonDataShuffler f);
+  void SetDataSize(int s){datasize=s;}
+  int GetDataSize(){return datasize;}
+  
+  protected:
+  	float getMedian(std::vector<float>& ) const;
+    EpsilonDataShuffler dshuffler;
+    EpsilonLexicaseEval lexieval;
+    EpsilonLexicaseScore scoreorig;
+    int datasize;
+};
+
+#endif
 
 
 

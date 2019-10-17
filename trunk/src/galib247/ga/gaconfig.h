@@ -550,6 +550,7 @@ of the objects in GAlib.
 #define USE_SRS_SELECTOR             1
 #define USE_UNIFORM_SELECTOR         1
 #define USE_LEXICASE_SELECTOR        1
+#define USE_EPSILON_LEXICASE_SELECTOR 1
 
 // These are the compiled-in defaults for various genomes and GA objects
 #define DEFAULT_SCALING              GALinearScaling

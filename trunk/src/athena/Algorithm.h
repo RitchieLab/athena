@@ -255,7 +255,8 @@ protected:
 			ParetoFrontSelection,
 			ParetoRankSelection,
 			LexicaseSelection,
-			UniformSelection
+			UniformSelection,
+			EpsilonLexicaseSelection
 		};
 
 		enum BioSelectionType{

@@ -355,12 +355,21 @@ int GEObjective::randomfunc(int j){
 float GEObjective::singleShuffledResult(GAGenome& g, int indIdx){
 	
 	GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
-	
+
 	// missing returns -1 as does an invalid network
 	if(!genome.isValid() || genome.getIndivScore(shuffledSetIndx[indIdx]) == -1){
 		return 1.0;
 	}
 	return fabs(genome.getIndivScore(shuffledSetIndx[indIdx]) - (*set)[shuffledSetIndx[indIdx]]->status());
+}
+
+///
+/// Returns original score for the for the shuffled index
+///
+float GEObjective::originalScore(GAGenome& g, int indIdx){
+	
+	GE1DArrayGenome& genome = static_cast<GE1DArrayGenome&>(g);
+	return genome.getIndivScore(shuffledSetIndx[indIdx]);
 }
 
 

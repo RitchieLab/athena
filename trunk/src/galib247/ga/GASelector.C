@@ -601,7 +601,8 @@ Lexicase Selection
 
 GAGenome&
 GALexicaseSelector::select() const {
-
+cout << "start lexicase" << endl;
+exit(1);
   // shuffle the dataset
 //   this->Datashuffler();
   (*dshuffler)();
@@ -648,6 +649,108 @@ GALexicaseSelector::select() const {
 
  DataShuffler GALexicaseSelector::Datashuffler(DataShuffler f){
 	return (dshuffler=f);
+ }
+
+#endif
+
+
+
+/* ----------------------------------------------------------------------------
+Lexicase Selection
+---------------------------------------------------------------------------- */
+#if USE_EPSILON_LEXICASE_SELECTOR == 1
+#include <math.h>
+#include <algorithm>
+
+GAGenome&
+GAEpsilonLexicaseSelector::select() const {
+
+// cout << "###############  start epsilon selection ############" << endl;
+
+  // shuffle the dataset
+  (*dshuffler)();
+
+  // track the best models
+  std::vector<int> best, included;
+    
+  int npop = pop->size();
+  // initialize with all inds
+  for(std::size_t i=0; i < npop; i++){
+  	included.push_back(i);
+  }
+
+  float currval, median, absmedian;
+  
+  std::vector<float> scores;
+    
+  for(int i = 0; i < datasize; i++){
+  	scores.clear();
+// cout << "sample #" << i+1 << endl;
+  	// determine the absolute median
+  	// get all individual scores for this test case
+  	for(std::vector<int>::iterator iter=included.begin(); iter != included.end(); ++iter){
+  		// exclude missing scores for calculation of median
+// cout << "score is " << (*scoreorig)(pop->individual(*iter),i)  << endl;
+  		if((*scoreorig)(pop->individual(*iter),i) != -1)
+  			scores.push_back((*lexieval)(pop->individual(*iter),i));
+//   		scores.push_back((*lexieval)(pop->individual(*iter),i));
+  	}
+  	
+  	median = getMedian(scores);
+// cout << "median=" << median << endl;
+
+  	// calculate deviation for each score
+  	for(std::vector<float>::iterator iter=scores.begin(); iter != scores.end(); ++iter){
+  		*iter = fabs(*iter - median);
+  	}
+  	// get median absolute deviation that will be threshold for success
+    absmedian = getMedian(scores);
+// cout << "median absolute deviaton=" << absmedian << endl;
+  
+  	for(std::vector<int>::iterator iter=included.begin(); iter != included.end(); ++iter){
+		currval = (*lexieval)(pop->individual(*iter),i);
+// cout << "currval=" << currval;
+		if(currval < absmedian){
+			best.push_back(*iter);
+// cout << " included";
+		}
+// cout << endl;
+  	}
+// cout << "best size=" << best.size() << endl;
+  	// if only one individual in best return it
+	if(best.size() == 1){
+// cout << "one left RETURNED"<< endl; //exit(1);
+		return pop->individual(best.front());
+	}
+	else if(best.size() > 1){ // when multiple update included
+		included = best;
+		best.clear();
+	}
+  }
+// cout << "RETURN random" << endl;// exit(1);
+  // all samples exhausted and still multiple individuals in included
+  // return one of the inds in included at random
+//   return pop->individual(GARandomInt(0, pop->size()-1)); 
+  return pop->individual(included[GARandomInt(0, included.size()-1)]);
+}
+
+ EpsilonDataShuffler GAEpsilonLexicaseSelector::Datashuffler(DataShuffler f){
+	return (dshuffler=f);
+ }
+ 
+ float GAEpsilonLexicaseSelector::getMedian(std::vector<float>& v) const{
+ 	if(v.size() == 1)
+	 	return v.front();
+	 	
+ 	sort(v.begin(), v.end());
+// for(size_t i=0; i!=v.size(); i++){
+// cout << "[" << i <<"]" << v[i] << " ";
+// }
+// cout << endl;
+ 	if(v.size() % 2)
+ 		return v[v.size() / 2];
+ 	else
+ 		return (v[v.size()/2 -1] + v[v.size()/2])/2.0;
  }
 
 #endif

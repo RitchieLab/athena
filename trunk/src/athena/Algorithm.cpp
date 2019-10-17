@@ -232,6 +232,7 @@ void Algorithm::initializeParams(){
 	 gaSelectorMap["PARETO"] = ParetoFrontSelection;
 	 gaSelectorMap["PARETORANK"] = ParetoRankSelection;
 	 gaSelectorMap["LEXICASE"] = LexicaseSelection;
+	 gaSelectorMap["EPSILON"] = EpsilonLexicaseSelection;
 	 gaSelectorMap["UNIFORM"] = UniformSelection;
 	 
 // 	 biofilterSelectorType = orderedSelect;

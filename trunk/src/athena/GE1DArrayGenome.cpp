@@ -62,10 +62,11 @@ void GE1DArrayGenome::copy(const GAGenome& source)
 
 void GE1DArrayGenome::copy(const GE1DArrayGenome& orig,
 	int r, int x, unsigned int& l){
-	
+// cout << "copy" << endl;
 	const GA1DArrayGenome<int>& g = DYN_CAST(const GA1DArrayGenome<int>&, orig);
 	
 	GA1DArrayGenome<int>::copy(g,r,x,l);
+	this->helpCopy(orig);
 	
 	
 }
@@ -77,6 +78,7 @@ void GE1DArrayGenome::copy(GE1DArrayGenome& orig,
 	const GA1DArrayGenome<int>& g = DYN_CAST(const GA1DArrayGenome<int>&, orig);
 	
 	GA1DArrayGenome<int>::copy(g,r,x,l);
+	this->helpCopy(orig);
 }
 
 

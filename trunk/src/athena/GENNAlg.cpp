@@ -789,6 +789,11 @@ void GENNAlg::initialize(){
 			  	GEObjective::singleShuffledResult, set->numInds());
 			  GEObjective::keepScore(true);
 			  break;
+			case EpsilonLexicaseSelection:
+				selector = new GAEpsilonLexicaseSelector(GEObjective::shuffleLexicase, 
+			  	GEObjective::singleShuffledResult, GEObjective::originalScore, set->numInds());
+			    GEObjective::keepScore(true);
+			    break;
 #ifdef ATHENA_BLOAT_CONTROL
 			case DoubleTournamentSelection:
 				selector = new GADoubleTournamentSelector(doubleTourneyD, doubleTourneyF, fitFirst);

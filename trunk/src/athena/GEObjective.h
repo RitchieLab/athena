@@ -79,6 +79,9 @@ public:
 		/// return absolute difference between result and status
 		static float singleShuffledResult(GAGenome& g, int indIdx);
 		
+		/// return original score
+		static float originalScore(GAGenome & g, int indIdx);
+		
 		/// sets the Dataset for reference when calculating additional output
 		static void setRefDataset(data_manage::Dataset* ds);
 		

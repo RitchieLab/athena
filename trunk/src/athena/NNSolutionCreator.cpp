@@ -448,7 +448,7 @@ float NNSolutionCreator::evaluate(Dataset* set){
 		return calculator->getScore(); 
 }
 
-
+ 
 ///
 /// Evaluates the neural network and returns the balanced accuracy
 /// of the neural network.
@@ -456,7 +456,6 @@ float NNSolutionCreator::evaluate(Dataset* set){
 /// @param storage Vector to store individual scores in
 ///
 float NNSolutionCreator::evaluate(Dataset* dset, std::vector<float>& storage){
-	 
 		// to check for missing data use the list of variables gotten from the
 		// creation of the stack and then check each ind to  make sure
 		// there is a value in each
@@ -486,6 +485,7 @@ float NNSolutionCreator::evaluate(Dataset* dset, std::vector<float>& storage){
 				score = evaluateInd(ind);
 				storage[i]=calculator->addIndScore(score, ind->getStatus());
 		}
+
 		return calculator->getScore(); 
 }
 
