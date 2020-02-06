@@ -50,6 +50,7 @@ void exitApp(DataExcept& de, int myRank);
 void adjustSeed(Configuration& config, int orig_seed, int cv, int nproc, int myRank);
 std::string timeDiff(double dif);
 void reportExcluded(vector<unsigned int> genotypes, vector<unsigned int> contins);
+double elapsedEps = 0.0;
 
 int main(int argc, char** argv) {
 
@@ -65,9 +66,9 @@ int main(int argc, char** argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 #endif /* end HAVE_CXX_MPI code block */
 
-		string versionDate = "10/17/2019";
+		string versionDate = "02/03/2020";
 		string execName = "ATHENA";
-		string version = "1.3.0";
+		string version = "1.2.0";
 		 time_t start,end;
 
 		if(argc < 2){

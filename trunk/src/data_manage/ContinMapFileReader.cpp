@@ -51,6 +51,7 @@ void ContinMapFileReader::parseMapFile(string mapFile, Dataholder* dataholder){
 		stringstream ss(line);
 
 		ss >> continID;
+		numNames++;
 		if(ss >> groupID)
 			dataholder->addCovarName(continID, groupID);
 		else

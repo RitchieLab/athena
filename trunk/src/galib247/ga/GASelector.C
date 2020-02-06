@@ -601,8 +601,6 @@ Lexicase Selection
 
 GAGenome&
 GALexicaseSelector::select() const {
-cout << "start lexicase" << endl;
-exit(1);
   // shuffle the dataset
 //   this->Datashuffler();
   (*dshuffler)();
