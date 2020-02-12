@@ -739,6 +739,7 @@ GAEpsilonLexicaseSelector::select() const {
  float GAEpsilonLexicaseSelector::getMedian(std::vector<float>& v) const{
  	if(v.size() == 1)
 	 	return v.front();
+/*
 	 	
  	sort(v.begin(), v.end());
 // for(size_t i=0; i!=v.size(); i++){
@@ -749,6 +750,10 @@ GAEpsilonLexicaseSelector::select() const {
  		return v[v.size() / 2];
  	else
  		return (v[v.size()/2 -1] + v[v.size()/2])/2.0;
+*/
+	int sortedIdx =  (v.size() + v.size() % 2)/2 -1;
+	nth_element(v.begin(), v.begin()+sortedIdx, v.end());
+        return v[sortedIdx];
  }
 
 #endif
